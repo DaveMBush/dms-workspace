@@ -62,7 +62,7 @@ Greet `{user_name}`, speaking in `{communication_language}`.
 
 Execute each entry in `{workflow.activation_steps_append}` in order.
 
-Activation is complete. Begin the workflow below.
+Activation is complete. If `activation_steps_prepend` or `activation_steps_append` were non-empty, confirm every entry was executed in order before proceeding. Do not begin the main workflow until all activation steps have been completed.
 
 ## Paths
 
@@ -70,14 +70,14 @@ Activation is complete. Begin the workflow below.
 
 ## Input Files
 
-| Input            | Path                                                                                                     | Load Strategy |
-| ---------------- | -------------------------------------------------------------------------------------------------------- | ------------- |
-| PRD              | `{planning_artifacts}/*prd*.md` (whole) or `{planning_artifacts}/*prd*/*.md` (sharded)                   | FULL_LOAD     |
-| Epics            | `{planning_artifacts}/*epic*.md` (whole) or `{planning_artifacts}/*epic*/*.md` (sharded)                 | FULL_LOAD     |
-| Architecture     | `{planning_artifacts}/*architecture*.md` (whole) or `{planning_artifacts}/*architecture*/*.md` (sharded) | FULL_LOAD     |
-| UX Design        | `{planning_artifacts}/*ux*.md` (whole) or `{planning_artifacts}/*ux*/*.md` (sharded)                     | FULL_LOAD     |
-| Spec             | `{planning_artifacts}/*spec-*.md` (whole)                                                                | FULL_LOAD     |
-| Document Project | `{project_knowledge}/index.md` (sharded)                                                                 | INDEX_GUIDED  |
+| Input | Path | Load Strategy |
+|-------|------|---------------|
+| PRD | `{planning_artifacts}/*prd*.md` (whole) or `{planning_artifacts}/*prd*/*.md` (sharded) | FULL_LOAD |
+| Epics | `{planning_artifacts}/*epic*.md` (whole) or `{planning_artifacts}/*epic*/*.md` (sharded) | FULL_LOAD |
+| Architecture | `{planning_artifacts}/*architecture*.md` (whole) or `{planning_artifacts}/*architecture*/*.md` (sharded) | FULL_LOAD |
+| UX Design | `{planning_artifacts}/*ux*.md` (whole) or `{planning_artifacts}/*ux*/*.md` (sharded) | FULL_LOAD |
+| Spec | `{planning_artifacts}/*spec-*.md` (whole) | FULL_LOAD |
+| Document Project | `{project_knowledge}/index.md` (sharded) | INDEX_GUIDED |
 
 ## Execution
 

@@ -62,9 +62,20 @@ type ButtonProps = {
   variant?: 'primary' | 'secondary' | 'danger';
 };
 
-export const Button = ({ label, onClick, disabled = false, loading = false, variant = 'primary' }: ButtonProps) => {
+export const Button = ({
+  label,
+  onClick,
+  disabled = false,
+  loading = false,
+  variant = 'primary'
+}: ButtonProps) => {
   return (
-    <button onClick={onClick} disabled={disabled || loading} className={`btn btn-${variant}`} data-testid="button">
+    <button
+      onClick={onClick}
+      disabled={disabled || loading}
+      className={`btn btn-${variant}`}
+      data-testid="button"
+    >
       {loading ? <Spinner /> : label}
     </button>
   );
@@ -112,12 +123,7 @@ test.describe('Button Component', () => {
   test('should call onClick when clicked', async ({ mount }) => {
     let clicked = false;
     const component = await mount(
-      <Button
-        label="Submit"
-        onClick={() => {
-          clicked = true;
-        }}
-      />
+      <Button label="Submit" onClick={() => { clicked = true; }} />
     );
 
     await component.getByRole('button').click();
@@ -163,14 +169,16 @@ export const AllTheProviders: FC<Props> = ({ children, initialAuth }) => {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: { retry: false },
-      mutations: { retry: false },
-    },
+      mutations: { retry: false }
+    }
   });
 
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <AuthProvider initialAuth={initialAuth}>{children}</AuthProvider>
+        <AuthProvider initialAuth={initialAuth}>
+          {children}
+        </AuthProvider>
       </BrowserRouter>
     </QueryClientProvider>
   );
@@ -184,7 +192,12 @@ import { AllTheProviders } from '../../test-utils/AllTheProviders';
 Cypress.Commands.add('wrappedMount', (component, options = {}) => {
   const { initialAuth, ...mountOptions } = options;
 
-  return mount(<AllTheProviders initialAuth={initialAuth}>{component}</AllTheProviders>, mountOptions);
+  return mount(
+    <AllTheProviders initialAuth={initialAuth}>
+      {component}
+    </AllTheProviders>,
+    mountOptions
+  );
 });
 
 // Usage in tests
@@ -196,7 +209,7 @@ describe('UserProfile Component', () => {
     const user = { id: 1, name: 'John Doe', email: 'john@example.com' };
 
     cy.wrappedMount(<UserProfile />, {
-      initialAuth: { user, token: 'fake-token' },
+      initialAuth: { user, token: 'fake-token' }
     });
 
     cy.contains('John Doe').should('be.visible');
@@ -205,7 +218,7 @@ describe('UserProfile Component', () => {
 
   it('should show login prompt when not authenticated', () => {
     cy.wrappedMount(<UserProfile />, {
-      initialAuth: { user: null, token: null },
+      initialAuth: { user: null, token: null }
     });
 
     cy.contains('Please log in').should('be.visible');
@@ -293,14 +306,17 @@ describe('Form Component Accessibility', () => {
     cy.get('button[type="submit"]').click(); // Submit without data
 
     // Error has role="alert" and aria-live="polite"
-    cy.get('[role="alert"]').should('be.visible').and('have.attr', 'aria-live', 'polite').and('contain', 'Email is required');
+    cy.get('[role="alert"]')
+      .should('be.visible')
+      .and('have.attr', 'aria-live', 'polite')
+      .and('contain', 'Email is required');
   });
 
   it('should have sufficient color contrast', () => {
     cy.checkA11y(null, {
       rules: {
-        'color-contrast': { enabled: true },
-      },
+        'color-contrast': { enabled: true }
+      }
     });
   });
 });
@@ -314,7 +330,8 @@ test.describe('Form Component Accessibility', () => {
   test('should have no accessibility violations', async ({ mount, page }) => {
     await mount(<Form />);
 
-    const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
+    const accessibilityScanResults = await new AxeBuilder({ page })
+      .analyze();
 
     expect(accessibilityScanResults.violations).toEqual([]);
   });
@@ -394,7 +411,7 @@ describe('Button Visual Regression', () => {
     // Option 2: cypress-plugin-snapshots (local snapshots)
     cy.get('button').toMatchImageSnapshot({
       name: 'button-primary',
-      threshold: 0.01, // 1% threshold for pixel differences
+      threshold: 0.01 // 1% threshold for pixel differences
     });
   });
 
@@ -417,12 +434,12 @@ export default defineConfig({
   expect: {
     toHaveScreenshot: {
       maxDiffPixels: 100, // Allow 100 pixels difference
-      threshold: 0.2, // 20% threshold
-    },
+      threshold: 0.2 // 20% threshold
+    }
   },
   use: {
-    screenshot: 'only-on-failure',
-  },
+    screenshot: 'only-on-failure'
+  }
 });
 
 // Update snapshots when intentional changes are made

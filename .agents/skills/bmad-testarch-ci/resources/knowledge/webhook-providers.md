@@ -88,7 +88,10 @@ import type { WebhookProvider, ReceivedWebhook, WebhookQueryFilter } from '@seon
 import type { APIRequestContext } from '@playwright/test';
 
 export class CustomWebhookProvider implements WebhookProvider {
-  constructor(private readonly baseUrl: string, private readonly request: APIRequestContext) {}
+  constructor(
+    private readonly baseUrl: string,
+    private readonly request: APIRequestContext,
+  ) {}
 
   async getReceivedWebhooks(filter?: WebhookQueryFilter): Promise<ReceivedWebhook[]> {
     const params = new URLSearchParams();

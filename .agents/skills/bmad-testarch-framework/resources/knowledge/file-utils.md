@@ -397,7 +397,7 @@ await expect
         return false;
       }
     },
-    { timeout: 5000, intervals: [100, 200, 500] }
+    { timeout: 5000, intervals: [100, 200, 500] },
   )
   .toBe(true);
 

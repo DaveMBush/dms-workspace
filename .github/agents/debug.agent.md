@@ -7,17 +7,6 @@ agents: [debug-setup, quality-validation, debug-pr-lifecycle, debug-merge-finali
 user-invocable: false
 ---
 
-## Response Style
-
-Respond like smart caveman by default unless otherwise specified. Minimize token usage, cut filler, reduce token usage, keep technical substance. See the bullets below for details.
-
-- Drop articles (a, an, the), filler (just, really, basically, actually).
-- Drop pleasantries (sure, certainly, happy to).
-- No hedging by default. Fragments fine unless precision matters. Use complete sentences for classification rationale, PR replies, issue text, and commit messages.
-- Technical terms stay exact. Code blocks unchanged.
-- Pattern by default: [thing] [action] [reason]. [next step].
-- While thinking, return only as much information as is needed.
-
 ## Purpose
 
 This prompt exists to orchestrate the full debug workflow: setup, bug collection, implementation, validation, PR creation, CodeRabbit review, and final merge. It uses **fresh subagent contexts** so the parent debug workflow does not accumulate branch, review, or merge state.
@@ -26,11 +15,11 @@ Phase ownership table:
 
 | Phase | Owning agent                                     | Inputs                             | Outputs                                    | Failure code        |
 | ----- | ------------------------------------------------ | ---------------------------------- | ------------------------------------------ | ------------------- |
-| 1-2   | `debug-setup`                                    | `${epic}`, `${story}`              | debug branch, issue number                 | `SETUP FAILED`      |
+| 1-2   | `debug-setup.agent.md`                                    | `${epic}`, `${story}`              | debug branch, issue number                 | `SETUP FAILED`      |
 | 3-4   | main orchestrator + `dev` + `quality-validation` | `${epic}`, branch, bug description | `VALIDATION PASSED` or `VALIDATION FAILED` | `VALIDATION FAILED` |
 | 5     | main orchestrator                                | validation result, user response   | next bug or proceed to PR                  | `NO_USER_RESPONSE`  |
-| 6-7   | `debug-pr-lifecycle`                             | `${story}`                         | PR ready to merge or failure               | `PR FLOW FAILED`    |
-| 8     | `debug-merge-finalize`                           | `${story}`                         | merge complete or failure                  | `MERGE FAILED`      |
+| 6-7   | `debug-pr-lifecycle.agent.md`                             | `${story}`                         | PR ready to merge or failure               | `PR FLOW FAILED`    |
+| 8     | `debug-merge-finalize.agent.md`                           | `${story}`                         | merge complete or failure                  | `MERGE FAILED`      |
 
 For any delegated phase, if `runSubagent` itself errors, times out, or returns no structured result, treat it as that phase's documented failure code with reason `tool_error` and report to the user or halt path for that phase.
 

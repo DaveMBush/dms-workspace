@@ -168,14 +168,14 @@ await pact
     setJsonContent({
       query: { name: 'Inception' },
       headers: { Accept: 'application/json' },
-    })
+    }),
   )
   .willRespondWith(
     200,
     setJsonBody({
       status: 200,
       data: { id: integer(1), name: string('Inception') },
-    })
+    }),
   );
 ```
 
@@ -307,7 +307,7 @@ provider.given(
   ...createProviderState({
     name: 'user exists',
     params: { id: 1, createdAt: new Date(), metadata: { role: 'admin' } },
-  })
+  }),
 );
 ```
 

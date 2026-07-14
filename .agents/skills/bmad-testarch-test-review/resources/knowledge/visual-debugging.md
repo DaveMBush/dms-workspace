@@ -201,16 +201,14 @@ export const test = base.extend<DebugFixture>({
         stack: error.stack,
       }));
       const networkRequests = await Promise.all(
-        (
-          await page.requests()
-        ).map(async (request: Request) => {
+        (await page.requests()).map(async (request: Request) => {
           const response = await request.response();
           return {
             url: request.url(),
             method: request.method(),
             status: response?.status() ?? 0,
           };
-        })
+        }),
       );
 
       // Save console logs

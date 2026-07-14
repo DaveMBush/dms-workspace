@@ -1,15 +1,15 @@
 ---
 name: 'step-04e-aggregate-nfr'
-description: 'Aggregate NFR domain assessments into executive summary'
+description: 'Aggregate NFR domain evidence audits into executive summary'
 nextStepFile: '{skill-root}/steps-c/step-05-generate-report.md'
 outputFile: '{test_artifacts}/nfr-assessment.md'
 ---
 
-# Step 4E: Aggregate NFR Assessment Results
+# Step 4E: Aggregate NFR Evidence Audit Results
 
 ## STEP GOAL
 
-Read outputs from 4 parallel NFR subagents, calculate overall risk level, aggregate compliance status, and identify cross-domain risks.
+Read outputs from 4 parallel NFR evidence audit subagents, calculate overall risk level, aggregate compliance status, and identify cross-domain risks.
 
 ---
 
@@ -125,7 +125,7 @@ const allPriorityActions = domains.flatMap((domain) =>
     domain,
     action,
     urgency: assessments[domain].risk_level === 'HIGH' ? 'URGENT' : 'NORMAL',
-  }))
+  })),
 );
 
 // Sort by urgency
@@ -138,9 +138,21 @@ const prioritizedActions = allPriorityActions.sort((a, b) => (a.urgency === 'URG
 
 ```javascript
 const resolvedMode = subagentContext?.execution?.resolvedMode ?? 'unknown';
-const subagentExecutionLabel = resolvedMode === 'sequential' ? 'SEQUENTIAL (4 NFR domains)' : resolvedMode === 'agent-team' ? 'AGENT-TEAM (4 NFR domains)' : resolvedMode === 'subagent' ? 'SUBAGENT (4 NFR domains)' : 'MODE-DEPENDENT (4 NFR domains)';
+const subagentExecutionLabel =
+  resolvedMode === 'sequential'
+    ? 'SEQUENTIAL (4 NFR domains)'
+    : resolvedMode === 'agent-team'
+      ? 'AGENT-TEAM (4 NFR domains)'
+      : resolvedMode === 'subagent'
+        ? 'SUBAGENT (4 NFR domains)'
+        : 'MODE-DEPENDENT (4 NFR domains)';
 
-const performanceGainLabel = resolvedMode === 'sequential' ? 'baseline (no parallel speedup)' : resolvedMode === 'agent-team' || resolvedMode === 'subagent' ? '~67% faster than sequential' : 'mode-dependent';
+const performanceGainLabel =
+  resolvedMode === 'sequential'
+    ? 'baseline (no parallel speedup)'
+    : resolvedMode === 'agent-team' || resolvedMode === 'subagent'
+      ? '~67% faster than sequential'
+      : 'mode-dependent';
 
 const executiveSummary = {
   overall_risk: overallRisk,
@@ -174,7 +186,7 @@ fs.writeFileSync('/tmp/tea-nfr-summary-{{timestamp}}.json', JSON.stringify(execu
 ### 7. Display Summary to User
 
 ```
-✅ NFR Assessment Complete ({subagentExecutionLabel})
+✅ NFR Evidence Audit Complete ({subagentExecutionLabel})
 
 🎯 Overall Risk Level: {overallRisk}
 

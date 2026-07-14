@@ -50,19 +50,16 @@ Tests exist OR gaps are explicitly acknowledged.
 Resolve the oracle in this order:
 
 1. **Formal requirements first**
-
    - Story/epic acceptance criteria
    - PRD / test design / tech spec
    - Inline requirements provided by the user
 
 2. **Contract/spec artifacts second**
-
    - OpenAPI / Swagger
    - GraphQL schema or SDL
    - Other machine-readable contract definitions
 
 3. **External pointers third**
-
    - Placeholder files that point to external trackers or docs such as Jira, Linear, Confluence, shared docs, or other systems of record
    - Follow the pointer automatically only when a compatible adapter/plugin/MCP is available in the active runtime
    - Record `externalPointerStatus` as one of: `not_used`, `resolved`, `skipped`, or `unavailable`

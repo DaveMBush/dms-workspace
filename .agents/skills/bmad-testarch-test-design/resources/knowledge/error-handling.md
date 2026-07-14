@@ -50,7 +50,7 @@ test.describe('API Error Handling', () => {
           error: 'Internal server error',
           code: 'INTERNAL_ERROR',
         }),
-      })
+      }),
     );
 
     // Act: Navigate to page that fetches users
@@ -228,13 +228,13 @@ test.describe('Network Retry Logic', () => {
         event: 'api_retry',
         attempt: 1,
         endpoint: '/api/products',
-      })
+      }),
     );
     expect(telemetryEvents).toContainEqual(
       expect.objectContaining({
         event: 'api_retry',
         attempt: 2,
-      })
+      }),
     );
   });
 
@@ -382,7 +382,7 @@ test.describe('Error Telemetry', () => {
       route.fulfill({
         status: 500,
         body: JSON.stringify({ error: 'Payment processor unavailable' }),
-      })
+      }),
     );
 
     // Act: Trigger error
@@ -403,7 +403,7 @@ test.describe('Error Telemetry', () => {
           statusCode: 500,
           userId: expect.any(String),
         }),
-      })
+      }),
     );
 
     // Assert: Sensitive data NOT logged
@@ -457,7 +457,7 @@ test.describe('Error Telemetry', () => {
       expect.objectContaining({
         category: 'navigation',
         message: '/users',
-      })
+      }),
     );
   });
 });
@@ -601,14 +601,14 @@ test.describe('Service Unavailability', () => {
             { id: 2, name: 'Cached Product 2' },
           ],
           timestamp: Date.now(),
-        })
+        }),
       );
     });
 
     // Mock API unavailable
     await page.route(
       '**/api/products',
-      (route) => route.abort('connectionrefused') // Simulate server down
+      (route) => route.abort('connectionrefused'), // Simulate server down
     );
 
     // Act

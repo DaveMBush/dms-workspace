@@ -1,6 +1,6 @@
 ---
 name: bmad-prfaq
-description: Working Backwards PRFAQ challenge to forge product concepts. Use when the user requests to 'create a PRFAQ', 'work backwards', or 'run the PRFAQ challenge'.
+description: Working Backwards PRFAQ challenge that stress-tests a product concept customer-first. Use when the user requests to 'create a PRFAQ', 'work backwards', or 'run the PRFAQ challenge'.
 ---
 
 # Working Backwards: The PRFAQ Challenge
@@ -51,7 +51,6 @@ Treat every entry in `{workflow.persistent_facts}` as foundational context you c
 ### Step 4: Load Config
 
 Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
-
 - Use `{user_name}` for greeting
 - Use `{communication_language}` for all communications
 - Use `{document_output_language}` for output documents
@@ -66,19 +65,17 @@ Greet `{user_name}`, speaking in `{communication_language}`. Be warm but efficie
 
 Execute each entry in `{workflow.activation_steps_append}` in order.
 
-Activation is complete. Continue below.
+Activation is complete. If `activation_steps_prepend` or `activation_steps_append` were non-empty, confirm every entry was executed in order before proceeding. Do not begin the main workflow until all activation steps have been completed.
 
 ## Pre-workflow Setup
 
 1. **Resume detection:** Check if `{planning_artifacts}/prfaq-{project_name}.md` already exists. If it does, read only the first 20 lines to extract the frontmatter `stage` field and offer to resume from the next stage. Do not read the full document. If the user confirms, route directly to that stage's reference file.
 
 2. **Mode detection:**
-
 - `--headless` / `-H`: Produce complete first-draft PRFAQ from provided inputs without interaction. Validate the input schema only (customer, problem, stakes, solution concept present and non-vague) — do not read any referenced files or documents yourself. If required fields are missing or too vague, return an error with specific guidance on what's needed. Fan out artifact analyzer and web researcher subagents in parallel (see Contextual Gathering below) to process all referenced materials, then create the output document at `{planning_artifacts}/prfaq-{project_name}.md` using `./assets/prfaq-template.md` and route to `./references/press-release.md`.
 - Default: Full interactive coaching — the gauntlet.
 
 **Headless input schema:**
-
 - **Required:** customer (specific persona), problem (concrete), stakes (why it matters), solution (concept)
 - **Optional:** competitive context, technical constraints, team/org context, target market, existing research
 
@@ -103,7 +100,6 @@ When the user gets stuck, offer concrete suggestions based on what they've share
 **Concept type detection:** Early in the conversation, identify whether this is a commercial product, internal tool, open-source project, or community/nonprofit initiative. Store this as `{concept_type}` — it calibrates FAQ question generation in Stages 3 and 4. Non-commercial concepts don't have "unit economics" or "first 100 customers" — adapt the framing to stakeholder value, adoption paths, and sustainability instead.
 
 **Essentials to capture before progressing:**
-
 - Who is the customer/user? (specific persona, not "everyone")
 - What is their problem? (concrete and felt, not abstract)
 - Why does this matter to them? (stakes and consequences)
@@ -111,7 +107,7 @@ When the user gets stuck, offer concrete suggestions based on what they've share
 
 **Fast-track:** If the user provides all four essentials in their opening message (or via structured input), acknowledge and confirm understanding, then move directly to document creation and Stage 2 without extended discovery.
 
-**Graceful redirect:** If after 2-3 exchanges the user can't articulate a customer or problem, don't force it — suggest the idea may need more exploration first and recommend they invoke the `bmad-brainstorming` skill to develop it further.
+**Graceful redirect:** If after 2-3 exchanges the user can't articulate a customer or problem, don't force it. Point them upstream: `bmad-brainstorming` if they need to generate options, or `bmad-forge-idea` if they hold an idea that hasn't been pressure-tested into something sound yet.
 
 **Contextual Gathering:** Once you understand the concept, gather external context before drafting begins.
 
@@ -130,10 +126,10 @@ When the user gets stuck, offer concrete suggestions based on what they've share
 
 ## Stages
 
-| #   | Stage             | Purpose                                      | Location                        |
-| --- | ----------------- | -------------------------------------------- | ------------------------------- |
-| 1   | Ignition          | Raw concept, enforce customer-first thinking | SKILL.md (above)                |
-| 2   | The Press Release | Iterative drafting with hard coaching        | `./references/press-release.md` |
-| 3   | Customer FAQ      | Devil's advocate customer questions          | `./references/customer-faq.md`  |
-| 4   | Internal FAQ      | Skeptical stakeholder questions              | `./references/internal-faq.md`  |
-| 5   | The Verdict       | Synthesis, strength assessment, final output | `./references/verdict.md`       |
+| # | Stage | Purpose | Location |
+|---|-------|---------|----------|
+| 1 | Ignition | Raw concept, enforce customer-first thinking | SKILL.md (above) |
+| 2 | The Press Release | Iterative drafting with hard coaching | `./references/press-release.md` |
+| 3 | Customer FAQ | Devil's advocate customer questions | `./references/customer-faq.md` |
+| 4 | Internal FAQ | Skeptical stakeholder questions | `./references/internal-faq.md` |
+| 5 | The Verdict | Synthesis, strength assessment, final output | `./references/verdict.md` |

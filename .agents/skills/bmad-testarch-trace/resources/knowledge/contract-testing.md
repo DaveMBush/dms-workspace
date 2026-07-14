@@ -83,7 +83,7 @@ describe('User API Contract', () => {
               name: 'John Doe',
               email: 'john@example.com',
               role: 'user',
-            })
+            }),
           );
         });
     });
@@ -154,7 +154,7 @@ describe('User API Contract', () => {
               name: 'Jane Smith',
               email: 'jane@example.com',
               role: 'admin',
-            })
+            }),
           );
         });
     });
@@ -630,7 +630,12 @@ describe('User API Resilience Contract', () => {
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 
 export class ApiError extends Error {
-  constructor(message: string, public code: string, public retryable: boolean = false, public retryAfter?: number) {
+  constructor(
+    message: string,
+    public code: string,
+    public retryable: boolean = false,
+    public retryAfter?: number,
+  ) {
     super(message);
   }
 }
@@ -638,7 +643,10 @@ export class ApiError extends Error {
 /**
  * User API client with retry and error handling
  */
-export async function getUserById(id: number, config?: AxiosRequestConfig & { retries?: number; retryDelay?: number; respectRateLimit?: boolean }): Promise<User> {
+export async function getUserById(
+  id: number,
+  config?: AxiosRequestConfig & { retries?: number; retryDelay?: number; respectRateLimit?: boolean },
+): Promise<User> {
   const { retries = 3, retryDelay = 1000, respectRateLimit = true, ...axiosConfig } = config || {};
 
   let lastError: Error;
@@ -717,7 +725,23 @@ const PACTICIPANT = 'user-api-service';
 function tagRelease(version: string, environment: 'staging' | 'production') {
   console.log(`🏷️  Tagging ${PACTICIPANT} v${version} as ${environment}`);
 
-  execFileSync('pact-broker', ['create-version-tag', '--pacticipant', PACTICIPANT, '--version', version, '--tag', environment, '--broker-base-url', PACT_BROKER_BASE_URL, '--broker-token', PACT_BROKER_TOKEN], { stdio: 'inherit' });
+  execFileSync(
+    'pact-broker',
+    [
+      'create-version-tag',
+      '--pacticipant',
+      PACTICIPANT,
+      '--version',
+      version,
+      '--tag',
+      environment,
+      '--broker-base-url',
+      PACT_BROKER_BASE_URL,
+      '--broker-token',
+      PACT_BROKER_TOKEN,
+    ],
+    { stdio: 'inherit' },
+  );
 }
 
 /**
@@ -726,7 +750,23 @@ function tagRelease(version: string, environment: 'staging' | 'production') {
 function recordDeployment(version: string, environment: 'staging' | 'production') {
   console.log(`📝 Recording deployment of ${PACTICIPANT} v${version} to ${environment}`);
 
-  execFileSync('pact-broker', ['record-deployment', '--pacticipant', PACTICIPANT, '--version', version, '--environment', environment, '--broker-base-url', PACT_BROKER_BASE_URL, '--broker-token', PACT_BROKER_TOKEN], { stdio: 'inherit' });
+  execFileSync(
+    'pact-broker',
+    [
+      'record-deployment',
+      '--pacticipant',
+      PACTICIPANT,
+      '--version',
+      version,
+      '--environment',
+      environment,
+      '--broker-base-url',
+      PACT_BROKER_BASE_URL,
+      '--broker-token',
+      PACT_BROKER_TOKEN,
+    ],
+    { stdio: 'inherit' },
+  );
 }
 
 /**
@@ -736,7 +776,23 @@ function recordDeployment(version: string, environment: 'staging' | 'production'
 function cleanupOldPacts() {
   console.log(`🧹 Cleaning up old pacts for ${PACTICIPANT}`);
 
-  execFileSync('pact-broker', ['clean', '--pacticipant', PACTICIPANT, '--broker-base-url', PACT_BROKER_BASE_URL, '--broker-token', PACT_BROKER_TOKEN, '--keep-latest-for-branch', '1', '--keep-min-age', '30'], { stdio: 'inherit' });
+  execFileSync(
+    'pact-broker',
+    [
+      'clean',
+      '--pacticipant',
+      PACTICIPANT,
+      '--broker-base-url',
+      PACT_BROKER_BASE_URL,
+      '--broker-token',
+      PACT_BROKER_TOKEN,
+      '--keep-latest-for-branch',
+      '1',
+      '--keep-min-age',
+      '30',
+    ],
+    { stdio: 'inherit' },
+  );
 }
 
 /**
@@ -746,7 +802,27 @@ function canIDeploy(version: string, toEnvironment: string): boolean {
   console.log(`🔍 Checking if ${PACTICIPANT} v${version} can deploy to ${toEnvironment}`);
 
   try {
-    execFileSync('pact-broker', ['can-i-deploy', '--pacticipant', PACTICIPANT, '--version', version, '--to-environment', toEnvironment, '--broker-base-url', PACT_BROKER_BASE_URL, '--broker-token', PACT_BROKER_TOKEN, '--retry-while-unknown', '10', '--retry-interval', '30'], { stdio: 'inherit' });
+    execFileSync(
+      'pact-broker',
+      [
+        'can-i-deploy',
+        '--pacticipant',
+        PACTICIPANT,
+        '--version',
+        version,
+        '--to-environment',
+        toEnvironment,
+        '--broker-base-url',
+        PACT_BROKER_BASE_URL,
+        '--broker-token',
+        PACT_BROKER_TOKEN,
+        '--retry-while-unknown',
+        '10',
+        '--retry-interval',
+        '30',
+      ],
+      { stdio: 'inherit' },
+    );
     return true;
   } catch (error) {
     console.error(`❌ Cannot deploy to ${toEnvironment}`);

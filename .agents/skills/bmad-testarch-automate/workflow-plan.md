@@ -8,16 +8,13 @@
 - step-04-validate-and-summarize.md
 
   ## Validate Mode (steps-v)
-
   - step-01-validate.md
 
   ## Edit Mode (steps-e)
-
   - step-01-assess.md
   - step-02-apply-edit.md
 
   ## Outputs
-
   - {test_artifacts}/automation-summary.md
 
 - Test files under {project-root}/tests
