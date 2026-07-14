@@ -214,7 +214,7 @@ test.describe('Checkout Flow - Feature Flag Variations', () => {
         properties: expect.objectContaining({
           variant: 'new_flow',
         }),
-      })
+      }),
     );
   });
 
@@ -251,7 +251,7 @@ test.describe('Checkout Flow - Feature Flag Variations', () => {
         properties: expect.objectContaining({
           variant: 'legacy_flow',
         }),
-      })
+      }),
     );
   });
 
@@ -387,7 +387,7 @@ export async function setFlagForUser(flagKey: FlagKey, userId: string, variation
           },
         ],
       },
-    })
+    }),
   );
 
   if (!response.ok()) {
@@ -405,7 +405,7 @@ export async function removeFlagTarget(flagKey: FlagKey, userId: string): Promis
       headers: {
         Authorization: LD_SDK_KEY!,
       },
-    })
+    }),
   );
 
   if (!response.ok() && response.status() !== 404) {
@@ -437,7 +437,7 @@ export async function setFlagRolloutPercentage(flagKey: FlagKey, percentage: num
           ],
         },
       },
-    })
+    }),
   );
 
   if (!response.ok()) {

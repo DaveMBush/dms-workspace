@@ -8,10 +8,9 @@ description: 'Execute story implementation following a context filled story spec
 **Goal:** Execute story implementation following a context filled story spec file.
 
 **Your Role:** Developer implementing the story.
-
 - Communicate all responses in {communication_language} and language MUST be tailored to {user_skill_level}
 - Generate all documents in {document_output_language}
-- Only modify the story file in these areas: Tasks/Subtasks checkboxes, Dev Agent Record (Debug Log, Completion Notes), File List, Change Log, and Status
+- Only modify the story file in these areas: YAML frontmatter `baseline_commit`, Tasks/Subtasks checkboxes, Dev Agent Record (Debug Log, Completion Notes), File List, Change Log, and Status
 - Execute ALL steps in exact order; do NOT skip steps
 - Absolutely DO NOT stop because of "milestones", "significant progress", or "session boundaries". Continue in a single execution until the story is COMPLETE (all ACs satisfied and all tasks/subtasks checked) UNLESS a HALT condition is triggered or the USER gives other instruction.
 - Do NOT schedule a "next session" or request review pauses unless a HALT condition applies. Only Step 9 decides completion.
@@ -55,6 +54,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 - `user_skill_level`
 - `implementation_artifacts`
 - `date` as system-generated current datetime
+- `project_context` = `**/project-context.md` (load if exists)
 
 ### Step 5: Greet the User
 
@@ -64,7 +64,7 @@ Greet `{user_name}`, speaking in `{communication_language}`.
 
 Execute each entry in `{workflow.activation_steps_append}` in order.
 
-Activation is complete. Begin the workflow below.
+Activation is complete. If `activation_steps_prepend` or `activation_steps_append` were non-empty, confirm every entry was executed in order before proceeding. Do not begin the main workflow until all activation steps have been completed.
 
 ## Paths
 
@@ -76,7 +76,7 @@ Activation is complete. Begin the workflow below.
 <workflow>
   <critical>Communicate all responses in {communication_language} and language MUST be tailored to {user_skill_level}</critical>
   <critical>Generate all documents in {document_output_language}</critical>
-  <critical>Only modify the story file in these areas: Tasks/Subtasks checkboxes, Dev Agent Record (Debug Log, Completion Notes), File List,
+  <critical>Only modify the story file in these areas: YAML frontmatter `baseline_commit`, Tasks/Subtasks checkboxes, Dev Agent Record (Debug Log, Completion Notes), File List,
     Change Log, and Status</critical>
   <critical>Execute ALL steps in exact order; do NOT skip steps</critical>
   <critical>Absolutely DO NOT stop because of "milestones", "significant progress", or "session boundaries". Continue in a single execution
@@ -205,7 +205,6 @@ Activation is complete. Begin the workflow below.
     </action>
     <action if="story file inaccessible">HALT: "Cannot develop story without access to story file"</action>
     <action if="incomplete task or subtask requirements ambiguous">ASK user to clarify or HALT</action>
-
   </step>
 
   <step n="2" goal="Load project context and story information">
@@ -219,7 +218,6 @@ Activation is complete. Begin the workflow below.
     <output>✅ **Context Loaded**
       Story and project context available for implementation
     </output>
-
   </step>
 
   <step n="3" goal="Detect review continuation and extract review context">
@@ -260,30 +258,43 @@ Activation is complete. Begin the workflow below.
         First incomplete task: {{first_task_description}}
       </output>
     </check>
-
   </step>
 
   <step n="4" goal="Mark story in-progress" tag="sprint-status">
+    <action>If story file YAML frontmatter already contains `baseline_commit`, preserve the existing value and do not overwrite it</action>
+
     <check if="{{sprint_status}} file exists">
       <action>Load the FULL file: {{sprint_status}}</action>
       <action>Read all development_status entries to find {{story_key}}</action>
-      <action>Get current status value for development_status[{{story_key}}]</action>
+      <action>Set {{current_status}} to development_status[{{story_key}}]</action>
+    </check>
 
-      <check if="current status == 'ready-for-dev' OR review_continuation == true">
+    <check if="{{sprint_status}} file does NOT exist">
+      <action>Set {{current_status}} to the story file Status section value</action>
+    </check>
+
+    <check if="{{current_status}} == 'ready-for-dev' AND story file YAML frontmatter does NOT contain baseline_commit">
+      <action>Run `git rev-parse HEAD` to capture current commit into {{baseline_commit}}; if git/version control is unavailable, set {{baseline_commit}} = `NO_VCS`</action>
+      <action>If story file YAML frontmatter exists, add `baseline_commit: {{baseline_commit}}` to the frontmatter</action>
+      <action>If story file has no YAML frontmatter, create frontmatter at the top containing only `baseline_commit: {{baseline_commit}}`</action>
+    </check>
+
+    <check if="{{sprint_status}} file exists">
+      <check if="{{current_status}} == 'ready-for-dev' OR (review_continuation == true AND {{current_status}} != 'in-progress')">
         <action>Update the story in the sprint status report to = "in-progress"</action>
         <action>Update last_updated field to current date</action>
         <output>🚀 Starting work on story {{story_key}}
-          Status updated: ready-for-dev → in-progress
+          Status updated: {{current_status}} → in-progress
         </output>
       </check>
 
-      <check if="current status == 'in-progress'">
+      <check if="{{current_status}} == 'in-progress'">
         <output>⏯️ Resuming work on story {{story_key}}
           Story is already marked in-progress
         </output>
       </check>
 
-      <check if="current status is neither ready-for-dev nor in-progress">
+      <check if="{{current_status}} is neither ready-for-dev nor in-progress">
         <output>⚠️ Unexpected story status: {{current_status}}
           Expected ready-for-dev or in-progress. Continuing anyway...
         </output>
@@ -296,7 +307,6 @@ Activation is complete. Begin the workflow below.
       <output>ℹ️ No sprint status file exists - story progress will be tracked in story file only</output>
       <action>Set {{current_sprint_status}} = "no-sprint-tracking"</action>
     </check>
-
   </step>
 
   <step n="5" goal="Implement task following red-green-refactor cycle">
@@ -328,7 +338,6 @@ Activation is complete. Begin the workflow below.
     <critical>NEVER proceed to next task until current task/subtask is complete AND tests pass</critical>
     <critical>Execute continuously without pausing until all tasks/subtasks are complete or explicit HALT condition</critical>
     <critical>Do NOT propose to pause for review until Step 9 completion gates are satisfied</critical>
-
   </step>
 
   <step n="6" goal="Author comprehensive tests">
@@ -397,7 +406,6 @@ Activation is complete. Begin the workflow below.
     <action if="no tasks remain">
       <goto step="9">Completion</goto>
     </action>
-
   </step>
 
   <step n="9" goal="Story completion and mark for review" tag="sprint-status">
@@ -449,7 +457,6 @@ Activation is complete. Begin the workflow below.
     <action if="regression failures exist">HALT - Fix regression issues before completing</action>
     <action if="File List is incomplete">HALT - Update File List with all changed files</action>
     <action if="definition-of-done validation fails">HALT - Address DoD failures before completing</action>
-
   </step>
 
   <step n="10" goal="Completion communication and user support">
@@ -487,8 +494,7 @@ Activation is complete. Begin the workflow below.
       <action>Suggest checking {sprint_status} to see project progress</action>
     </check>
     <action>Remain flexible - allow user to choose their own path or ask for other assistance</action>
-
-<action>Run: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow.on_complete` — if the resolved value is non-empty, follow it as the final terminal instruction before exiting.</action>
-</step>
+  <action>Run: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow.on_complete` — if the resolved value is non-empty, follow it as the final terminal instruction before exiting.</action>
+  </step>
 
 </workflow>

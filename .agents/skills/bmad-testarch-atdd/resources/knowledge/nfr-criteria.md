@@ -615,14 +615,12 @@ test.describe('Maintainability NFR: Observability Validation', () => {
 Before release gate:
 
 - [ ] **Security** (Playwright E2E + Security Tools):
-
   - [ ] Auth/authz tests green (unauthenticated redirect, RBAC enforced)
   - [ ] Secrets never logged or exposed in errors
   - [ ] OWASP Top 10 validated (SQL injection blocked, XSS sanitized)
   - [ ] Security audit completed (vulnerability scan, penetration test if applicable)
 
 - [ ] **Performance** (k6 Load Testing):
-
   - [ ] SLO/SLA targets met with k6 evidence (p95 <500ms, error rate <1%)
   - [ ] Load testing completed (expected load)
   - [ ] Stress testing completed (breaking point identified)
@@ -630,7 +628,6 @@ Before release gate:
   - [ ] Endurance testing completed (no memory leaks under sustained load)
 
 - [ ] **Reliability** (Playwright E2E + API Tests):
-
   - [ ] Error handling graceful (500 → user-friendly message + retry)
   - [ ] Retries implemented (3 attempts on transient failures)
   - [ ] Health checks monitored (/api/health endpoint)
@@ -638,7 +635,6 @@ Before release gate:
   - [ ] Offline handling validated (network disconnection graceful)
 
 - [ ] **Maintainability** (CI Tools):
-
   - [ ] Test coverage ≥80% (from CI coverage report)
   - [ ] Code duplication <5% (from jscpd CI job)
   - [ ] No critical/high vulnerabilities (from npm audit CI job)

@@ -110,7 +110,7 @@ const allViolations = dimensions.flatMap((dim) =>
   results[dim].violations.map((v) => ({
     ...v,
     dimension: dim,
-  }))
+  })),
 );
 
 // Group by severity
@@ -138,7 +138,7 @@ const allRecommendations = dimensions.flatMap((dim) =>
     dimension: dim,
     recommendation: rec,
     impact: results[dim].score < 70 ? 'HIGH' : 'MEDIUM',
-  }))
+  })),
 );
 
 // Sort by impact (HIGH first)

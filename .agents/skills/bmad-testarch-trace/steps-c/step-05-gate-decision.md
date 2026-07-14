@@ -49,7 +49,10 @@ const frontmatter = frontmatterMatch ? yaml.parse(frontmatterMatch[1]) : {};
 
 const matrixPath = frontmatter.tempCoverageMatrixPath;
 if (!matrixPath) {
-  throw new Error('❌ tempCoverageMatrixPath not found in progress frontmatter. ' + 'Step 4 must record the resolved temp file path before Step 5 can proceed.');
+  throw new Error(
+    '❌ tempCoverageMatrixPath not found in progress frontmatter. ' +
+      'Step 4 must record the resolved temp file path before Step 5 can proceed.',
+  );
 }
 const coverageMatrix = JSON.parse(fs.readFileSync(matrixPath, 'utf8'));
 
@@ -72,8 +75,19 @@ if (coverageMatrix.phase !== 'PHASE_1_COMPLETE') {
 
 ```javascript
 const stats = coverageMatrix.coverage_statistics;
-if (!stats || typeof stats !== 'object' || !stats.priority_breakdown || !stats.priority_breakdown.P0 || !stats.priority_breakdown.P1 || !stats.priority_breakdown.P2 || !stats.priority_breakdown.P3) {
-  throw new Error('Phase 1 coverage_statistics.priority_breakdown is missing or incomplete. ' + 'Step 4 must emit P0-P3 totals and coverage percentages before Step 5 can proceed.');
+if (
+  !stats ||
+  typeof stats !== 'object' ||
+  !stats.priority_breakdown ||
+  !stats.priority_breakdown.P0 ||
+  !stats.priority_breakdown.P1 ||
+  !stats.priority_breakdown.P2 ||
+  !stats.priority_breakdown.P3
+) {
+  throw new Error(
+    'Phase 1 coverage_statistics.priority_breakdown is missing or incomplete. ' +
+      'Step 4 must emit P0-P3 totals and coverage percentages before Step 5 can proceed.',
+  );
 }
 const priorityBreakdown = stats.priority_breakdown;
 const p0Coverage = priorityBreakdown.P0.percentage;
@@ -114,14 +128,27 @@ const deriveActiveTestCasesFromRequirements = (requirements) => {
 
   (requirements || []).forEach((req) => {
     (req.tests || []).forEach((test) => {
-      const stableId = test.id || [test.file, test.title || test.name, test.line].filter((value) => value !== undefined && value !== null && value !== '').join(':') || null;
+      const stableId =
+        test.id ||
+        [test.file, test.title || test.name, test.line]
+          .filter((value) => value !== undefined && value !== null && value !== '')
+          .join(':') ||
+        null;
 
       if (stableId === null || uniqueTests.has(stableId)) return;
 
       const explicitStatus = String(test.status || '')
         .trim()
         .toLowerCase();
-      const status = ['skipped', 'pending', 'fixme'].includes(explicitStatus) ? explicitStatus : test.fixme === true ? 'fixme' : test.pending === true ? 'pending' : test.skipped === true ? 'skipped' : 'active';
+      const status = ['skipped', 'pending', 'fixme'].includes(explicitStatus)
+        ? explicitStatus
+        : test.fixme === true
+          ? 'fixme'
+          : test.pending === true
+            ? 'pending'
+            : test.skipped === true
+              ? 'skipped'
+              : 'active';
 
       uniqueTests.set(stableId, status);
     });
@@ -130,7 +157,16 @@ const deriveActiveTestCasesFromRequirements = (requirements) => {
   return [...uniqueTests.values()].filter((status) => status === 'active').length;
 };
 const summarizedTestInventory = coverageMatrix.test_inventory?.summary || null;
-const activeTestCases = summarizedTestInventory === null ? deriveActiveTestCasesFromRequirements(coverageMatrix.requirements) : Math.max(0, (summarizedTestInventory.cases || 0) - (summarizedTestInventory.skipped_cases || 0) - (summarizedTestInventory.fixme_cases || 0) - (summarizedTestInventory.pending_cases || 0));
+const activeTestCases =
+  summarizedTestInventory === null
+    ? deriveActiveTestCasesFromRequirements(coverageMatrix.requirements)
+    : Math.max(
+        0,
+        (summarizedTestInventory.cases || 0) -
+          (summarizedTestInventory.skipped_cases || 0) -
+          (summarizedTestInventory.fixme_cases || 0) -
+          (summarizedTestInventory.pending_cases || 0),
+      );
 let effectiveOracleConfidence = oracleConfidence;
 if (effectiveOracleConfidence === 'high' && activeTestCases === 0) {
   effectiveOracleConfidence = 'medium';
@@ -183,17 +219,23 @@ if (!gateEligible) {
   // Rule 3: P1 coverage < 80% → FAIL
   else if (effectiveP1Coverage < 80) {
     gateDecision = 'FAIL';
-    rationale = hasP1Requirements ? `P1 coverage is ${effectiveP1Coverage}% (minimum: 80%). High-priority gaps must be addressed.` : `P1 requirements are not present; continuing with remaining gate criteria.`;
+    rationale = hasP1Requirements
+      ? `P1 coverage is ${effectiveP1Coverage}% (minimum: 80%). High-priority gaps must be addressed.`
+      : `P1 requirements are not present; continuing with remaining gate criteria.`;
   }
   // Rule 4: P1 coverage >= 90% and overall >= 80% with P0 at 100% → PASS
   else if (effectiveP1Coverage >= 90) {
     gateDecision = 'PASS';
-    rationale = hasP1Requirements ? `P0 coverage is 100%, P1 coverage is ${effectiveP1Coverage}% (target: 90%), and overall coverage is ${overallCoverage}% (minimum: 80%).` : `P0 coverage is 100% and overall coverage is ${overallCoverage}% (minimum: 80%). No P1 requirements detected.`;
+    rationale = hasP1Requirements
+      ? `P0 coverage is 100%, P1 coverage is ${effectiveP1Coverage}% (target: 90%), and overall coverage is ${overallCoverage}% (minimum: 80%).`
+      : `P0 coverage is 100% and overall coverage is ${overallCoverage}% (minimum: 80%). No P1 requirements detected.`;
   }
   // Rule 5: P1 coverage 80-89% with P0 at 100% and overall >= 80% → CONCERNS
   else if (effectiveP1Coverage >= 80) {
     gateDecision = 'CONCERNS';
-    rationale = hasP1Requirements ? `P0 coverage is 100% and overall coverage is ${overallCoverage}% (minimum: 80%), but P1 coverage is ${effectiveP1Coverage}% (target: 90%).` : `P0 coverage is 100% and overall coverage is ${overallCoverage}% (minimum: 80%), but additional non-P1 gaps need mitigation.`;
+    rationale = hasP1Requirements
+      ? `P0 coverage is 100% and overall coverage is ${overallCoverage}% (minimum: 80%), but P1 coverage is ${effectiveP1Coverage}% (target: 90%).`
+      : `P0 coverage is 100% and overall coverage is ${overallCoverage}% (minimum: 80%), but additional non-P1 gaps need mitigation.`;
   }
 
   // Rule 6: Manual waiver — set gateDecision = 'WAIVED' and update rationale here
@@ -202,10 +244,14 @@ if (!gateEligible) {
   // Oracle confidence overlay
   if (syntheticOracle && gateDecision === 'PASS' && effectiveOracleConfidence !== 'high') {
     gateDecision = 'CONCERNS';
-    rationale = `Coverage traced against inferred ${coverageBasis.replace('_', ' ')} with ${effectiveOracleConfidence} confidence. ` + `Base coverage meets PASS thresholds, but confidence is not high enough for an unconditional PASS.`;
+    rationale =
+      `Coverage traced against inferred ${coverageBasis.replace('_', ' ')} with ${effectiveOracleConfidence} confidence. ` +
+      `Base coverage meets PASS thresholds, but confidence is not high enough for an unconditional PASS.`;
   } else if (syntheticOracle && effectiveOracleConfidence === 'low' && gateDecision === 'NOT_EVALUATED') {
     gateDecision = 'CONCERNS';
-    rationale = `Coverage traced against inferred ${coverageBasis.replace('_', ' ')} with low confidence. ` + `Treat this result as advisory until the inferred journeys are confirmed or formalized.`;
+    rationale =
+      `Coverage traced against inferred ${coverageBasis.replace('_', ' ')} with low confidence. ` +
+      `Treat this result as advisory until the inferred journeys are confirmed or formalized.`;
   }
 }
 ```
@@ -269,13 +315,26 @@ const buildFallbackInventory = () => {
 
   (coverageMatrix.requirements || []).forEach((req) => {
     (req.tests || []).forEach((test) => {
-      const stableId = test.id || [test.file, test.title || test.name, test.line].filter((value) => value !== undefined && value !== null && value !== '').join(':') || null; // unresolvable — skip rather than manufacture a key
+      const stableId =
+        test.id ||
+        [test.file, test.title || test.name, test.line]
+          .filter((value) => value !== undefined && value !== null && value !== '')
+          .join(':') ||
+        null; // unresolvable — skip rather than manufacture a key
 
       if (stableId === null || uniqueTests.has(stableId)) return;
       const explicitStatus = String(test.status || '')
         .trim()
         .toLowerCase();
-      const status = ['skipped', 'pending', 'fixme'].includes(explicitStatus) ? explicitStatus : test.fixme === true ? 'fixme' : test.pending === true ? 'pending' : test.skipped === true ? 'skipped' : 'active';
+      const status = ['skipped', 'pending', 'fixme'].includes(explicitStatus)
+        ? explicitStatus
+        : test.fixme === true
+          ? 'fixme'
+          : test.pending === true
+            ? 'pending'
+            : test.skipped === true
+              ? 'skipped'
+              : 'active';
 
       uniqueTests.set(stableId, {
         id: stableId,
@@ -299,7 +358,7 @@ const buildFallbackInventory = () => {
           .trim()
           .toLowerCase();
         return byLevel[level] ? level : 'other';
-      })
+      }),
     );
     requirementLevels.forEach((level) => {
       byLevel[level].criteria_covered += 1;

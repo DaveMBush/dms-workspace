@@ -10,7 +10,6 @@ The conversation context before this skill was triggered IS your starting point 
 
 1. **Explicit argument**
    Did the user pass a PR, commit SHA, branch, or spec file this message?
-
    - PR reference → resolve to branch/commit via `gh pr view`. If resolution fails, ask for a SHA or branch.
    - Spec file, commit, or branch → use directly.
 
@@ -19,7 +18,6 @@ The conversation context before this skill was triggered IS your starting point 
 
 3. **Sprint tracking**
    Check for a sprint status file (`*sprint-status*`) in `{implementation_artifacts}` or `{planning_artifacts}`. If found, scan for stories with status `review`:
-
    - Exactly one → suggest it and confirm with the user.
    - Multiple → present as numbered options.
    - None → fall through.
@@ -29,7 +27,6 @@ The conversation context before this skill was triggered IS your starting point 
 
 5. **Ask**
    If none of the above identified a change, ask:
-
    - What changed and why?
    - Which commit, branch, or PR should I look at?
    - Do you have a spec, bug report, or anything else that explains what this change is supposed to do?

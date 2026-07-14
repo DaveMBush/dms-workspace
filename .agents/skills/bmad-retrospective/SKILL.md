@@ -8,7 +8,6 @@ description: 'Post-epic review to extract lessons and assess success. Use when t
 **Goal:** Post-epic review to extract lessons and assess success.
 
 **Your Role:** Developer facilitating retrospective.
-
 - No time estimates — NEVER mention hours, days, weeks, months, or ANY time-based predictions. AI has fundamentally changed development speed.
 - Communicate all responses in {communication_language} and language MUST be tailored to {user_skill_level}
 - Generate all documents in {document_output_language}
@@ -74,7 +73,7 @@ Greet `{user_name}`, speaking in `{communication_language}`.
 
 Execute each entry in `{workflow.activation_steps_append}` in order.
 
-Activation is complete. Begin the workflow below.
+Activation is complete. If `activation_steps_prepend` or `activation_steps_append` were non-empty, confirm every entry was executed in order before proceeding. Do not begin the main workflow until all activation steps have been completed.
 
 ## Paths
 
@@ -82,13 +81,13 @@ Activation is complete. Begin the workflow below.
 
 ## Input Files
 
-| Input                  | Description                                 | Path Pattern(s)                                                                                                                                                    | Load Strategy  |
-| ---------------------- | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------- |
-| epics                  | The completed epic for retrospective        | whole: `{planning_artifacts}/*epic*.md`, sharded_index: `{planning_artifacts}/*epic*/index.md`, sharded_single: `{planning_artifacts}/*epic*/epic-{{epic_num}}.md` | SELECTIVE_LOAD |
-| previous_retrospective | Previous epic's retrospective (optional)    | `{implementation_artifacts}/**/epic-{{prev_epic_num}}-retro-*.md`                                                                                                  | SELECTIVE_LOAD |
-| architecture           | System architecture for context             | whole: `{planning_artifacts}/*architecture*.md`, sharded: `{planning_artifacts}/*architecture*/*.md`                                                               | FULL_LOAD      |
-| prd                    | Product requirements for context            | whole: `{planning_artifacts}/*prd*.md`, sharded: `{planning_artifacts}/*prd*/*.md`                                                                                 | FULL_LOAD      |
-| document_project       | Brownfield project documentation (optional) | sharded: `{planning_artifacts}/*.md`                                                                                                                               | INDEX_GUIDED   |
+| Input | Description | Path Pattern(s) | Load Strategy |
+|-------|-------------|------------------|---------------|
+| epics | The completed epic for retrospective | whole: `{planning_artifacts}/*epic*.md`, sharded_index: `{planning_artifacts}/*epic*/index.md`, sharded_single: `{planning_artifacts}/*epic*/epic-{{epic_num}}.md` | SELECTIVE_LOAD |
+| previous_retrospective | Previous epic's retrospective (optional) | `{implementation_artifacts}/**/epic-{{prev_epic_num}}-retro-*.md` | SELECTIVE_LOAD |
+| architecture | System architecture for context | whole: `{planning_artifacts}/*architecture*.md`, sharded: `{planning_artifacts}/*architecture*/*.md` | FULL_LOAD |
+| prd | Product requirements for context | whole: `{planning_artifacts}/*prd*.md`, sharded: `{planning_artifacts}/*prd*/*.md` | FULL_LOAD |
+| document_project | Brownfield project documentation (optional) | sharded: `{planning_artifacts}/*.md` | INDEX_GUIDED |
 
 ## Required Inputs
 
@@ -226,12 +225,12 @@ Amelia (Developer): "Perfect. Epic {{epic_number}} is complete and ready for ret
 
 </step>
 
-<step n="0.5" goal="Discover and load project documents">
+<step n="2" goal="Discover and load project documents">
   <action>Load input files according to the Input Files table above. For SELECTIVE_LOAD inputs, load only the epic matching {{epic_number}}. For FULL_LOAD inputs, load the complete document. For INDEX_GUIDED inputs, check the index first and load relevant sections. After discovery, these content variables are available: {epics_content} (selective load for this epic), {architecture_content}, {prd_content}, {document_project_content}</action>
   <note>After discovery, these content variables are available: {epics_content} (selective load for this epic), {architecture_content}, {prd_content}, {document_project_content}</note>
 </step>
 
-<step n="2" goal="Deep Story Analysis - Extract Lessons from Implementation">
+<step n="3" goal="Deep Story Analysis - Extract Lessons from Implementation">
 
 <output>
 Amelia (Developer): "Before we start the team discussion, let me review all the story records to surface key themes. This'll help us have a richer conversation."
@@ -239,7 +238,7 @@ Amelia (Developer): "Before we start the team discussion, let me review all the 
 Charlie (Senior Dev): "Good idea - those dev notes always have gold in them."
 </output>
 
-<action>For each story in epic {{epic_number}}, read the complete story file from {implementation_artifacts}/{{epic_number}}-{{story_num}}-\*.md</action>
+<action>For each story in epic {{epic_number}}, read the complete story file from {implementation_artifacts}/{{epic_number}}-{{story_num}}-*.md</action>
 
 <action>Extract and analyze from each story:</action>
 
@@ -325,7 +324,7 @@ Amelia (Developer): "We'll get to all of it. But first, let me load the previous
 
 </step>
 
-<step n="3" goal="Load and Integrate Previous Epic Retrospective">
+<step n="4" goal="Load and Integrate Previous Epic Retrospective">
 
 <action>Calculate previous epic number: {{prev_epic_num}} = {{epic_number}} - 1</action>
 
@@ -351,6 +350,7 @@ Amelia (Developer): "I found our retrospectives from Epic {{prev_epic_num}}. Let
 
     **Action Item Follow-Through:**
     - For each action item from Epic {{prev_epic_num}} retro, check if it was completed
+    - Cross-check the action_items section in {sprint_status_file} (if present) for Epic {{prev_epic_num}} entries and their current status
     - Look for evidence in current epic's story records
     - Mark each action item: ✅ Completed, ⏳ In Progress, ❌ Not Addressed
 
@@ -421,7 +421,7 @@ Charlie (Senior Dev): "First epic, first retro. Let's make it count."
 
 </step>
 
-<step n="4" goal="Preview Next Epic with Change Detection">
+<step n="5" goal="Preview Next Epic with Change Detection">
 
 <action>Calculate next epic number: {{next_epic_num}} = {{epic_number}} + 1</action>
 
@@ -434,7 +434,7 @@ Alice (Product Owner): "Good thinking - helps us connect what we learned to what
 <action>Attempt to load next epic using selective loading strategy:</action>
 
 **Try sharded first (more specific):**
-<action>Check if file exists: {planning_artifacts}/epic\*/epic-{{next_epic_num}}.md</action>
+<action>Check if file exists: {planning_artifacts}/epic*/epic-{{next_epic_num}}.md</action>
 
 <check if="sharded epic file found">
   <action>Load {planning_artifacts}/*epic*/epic-{{next_epic_num}}.md</action>
@@ -443,7 +443,7 @@ Alice (Product Owner): "Good thinking - helps us connect what we learned to what
 
 **Fallback to whole document:**
 <check if="sharded epic not found">
-<action>Check if file exists: {planning_artifacts}/epic\*.md</action>
+<action>Check if file exists: {planning_artifacts}/epic*.md</action>
 
   <check if="whole epic file found">
     <action>Load entire epics document</action>
@@ -510,7 +510,7 @@ Amelia (Developer): "No problem. We'll still do a thorough retro on Epic {{epic_
 
 </step>
 
-<step n="5" goal="Initialize Retrospective with Rich Context">
+<step n="6" goal="Initialize Retrospective with Rich Context">
 
 <action>Load agent roster from {agent_roster}</action>
 <action>Identify which agents participated in Epic {{epic_number}} based on story records</action>
@@ -600,7 +600,7 @@ Amelia (Developer): "Exactly. {user_name}, any questions before we dive in?"
 
 </step>
 
-<step n="6" goal="Epic Review Discussion - What Went Well, What Didn't">
+<step n="7" goal="Epic Review Discussion - What Went Well, What Didn't">
 
 <output>
 Amelia (Developer): "Let's start with the good stuff. What went well in Epic {{epic_number}}?"
@@ -674,7 +674,7 @@ Alice (Product Owner): "I appreciate that. I could've been more proactive about 
 Amelia (Developer): "This is good. We're identifying systemic improvements, not assigning blame."
 </output>
 
-<action>Continue the discussion, weaving in patterns discovered from the deep story analysis (Step 2)</action>
+<action>Continue the discussion, weaving in patterns discovered from the deep story analysis (Step 3)</action>
 
 <output>
 Amelia (Developer): "Speaking of patterns, I noticed something when reviewing all the story records..."
@@ -745,13 +745,13 @@ Amelia (Developer): "Does that capture it? Anyone have something important we mi
 
 </step>
 
-<step n="7" goal="Next Epic Preparation Discussion - Interactive and Collaborative">
+<step n="8" goal="Next Epic Preparation Discussion - Interactive and Collaborative">
 
 <check if="{{next_epic_exists}} == false">
   <output>
 Amelia (Developer): "Normally we'd discuss preparing for the next epic, but since Epic {{next_epic_num}} isn't defined yet, let's skip to action items."
   </output>
-  <action>Skip to Step 8</action>
+  <action>Skip to Step 9</action>
 </check>
 
 <output>
@@ -869,7 +869,7 @@ Amelia (Developer): "{user_name}, does this preparation plan work for you?"
 
 </step>
 
-<step n="8" goal="Synthesize Action Items with Significant Change Detection">
+<step n="9" goal="Synthesize Action Items with Significant Change Detection">
 
 <output>
 Amelia (Developer): "Let's capture concrete action items from everything we've discussed."
@@ -1110,7 +1110,7 @@ Amelia (Developer): "Everyone clear on what they own?"
 
 </step>
 
-<step n="9" goal="Critical Readiness Exploration - Interactive Deep Dive">
+<step n="10" goal="Critical Readiness Exploration - Interactive Deep Dive">
 
 <output>
 Amelia (Developer): "Before we close, I want to do a final readiness check."
@@ -1293,7 +1293,7 @@ Charlie (Senior Dev): "Better to catch this now than three stories into the next
 
 </step>
 
-<step n="10" goal="Retrospective Closure with Celebration and Commitment">
+<step n="11" goal="Retrospective Closure with Celebration and Commitment">
 
 <output>
 Amelia (Developer): "We've covered a lot of ground today. Let me bring this retrospective to a close."
@@ -1369,7 +1369,7 @@ Amelia (Developer): "See you all when prep work is done. Meeting adjourned!"
 
 </step>
 
-<step n="11" goal="Save Retrospective and Update Sprint Status">
+<step n="12" goal="Save Retrospective and Update Sprint Status">
 
 <action>Ensure retrospectives folder exists: {implementation_artifacts}</action>
 <action>Create folder if it doesn't exist</action>
@@ -1404,6 +1404,19 @@ Amelia (Developer): "See you all when prep work is done. Meeting adjourned!"
 <action>Find development_status key "epic-{{epic_number}}-retrospective"</action>
 <action>Verify current status (typically "optional" or "pending")</action>
 <action>Update development_status["epic-{{epic_number}}-retrospective"] = "done"</action>
+<action>Append each Epic {{epic_number}} action item to the action_items section, creating the section after development_status if missing. One entry per item:</action>
+
+```yaml
+action_items:
+  - epic: {{epic_number}}
+    action: "{{action_description}}"
+    owner: "{{owner}}"
+    status: open
+```
+
+<action>Quote action and owner values so punctuation (e.g., "#") cannot break YAML parsing</action>
+
+<action>Update Epic {{prev_epic_num}} action_items entries based on Step 4 follow-through: ✅ Completed → done, ⏳ In Progress → in-progress, ❌ Not Addressed → keep existing status (do not modify)</action>
 <action>Update last_updated field to current date</action>
 <action>Save file, preserving ALL comments and structure including STATUS DEFINITIONS</action>
 
@@ -1413,6 +1426,7 @@ Amelia (Developer): "See you all when prep work is done. Meeting adjourned!"
 
 Retrospective key: epic-{{epic_number}}-retrospective
 Status: {{previous_status}} → done
+Action items recorded: {{action_count}}
 </output>
 </check>
 
@@ -1426,7 +1440,7 @@ Retrospective document was saved successfully, but {sprint_status_file} may need
 
 </step>
 
-<step n="12" goal="Final Summary and Handoff">
+<step n="13" goal="Final Summary and Handoff">
 
 <output>
 **✅ Retrospective Complete, {user_name}!**
@@ -1448,7 +1462,6 @@ Retrospective document was saved successfully, but {sprint_status_file} may need
 1. **Review retrospective summary**: {implementation_artifacts}/epic-{{epic_number}}-retro-{date}.md
 
 2. **Execute preparation sprint** (Est: {{prep_days}} days)
-
    - Complete {{critical_count}} critical path items
    - Execute {{prep_task_count}} preparation tasks
    - Verify all action items are in progress

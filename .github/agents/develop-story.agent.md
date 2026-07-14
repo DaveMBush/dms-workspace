@@ -7,20 +7,7 @@ agents: [code-story, quality-validation, qa-review-loop, commit-and-pr, code-rab
 user-invocable: false
 ---
 
-## Response Style
-
-Respond like smart caveman by default unless otherwise specified. Minimize token usage, cut filler, reduce token usage, keep technical substance. See the bullets below for details.
-
-- Drop articles (a, an, the), filler (just, really, basically, actually).
-- Drop pleasantries (sure, certainly, happy to).
-- No hedging by default. Fragments fine unless precision matters. Use complete sentences for classification rationale, PR replies, issue text, and commit messages.
-- Technical terms stay exact. Code blocks unchanged.
-- Pattern by default: [thing] [action] [reason]. [next step].
-- While thinking, return only as much information as is needed.
-
 ## Autonomous Story Development Workflow
-
-Shell execution rule: every shell command in this workflow and its delegated steps must use the bash MCP server. Use `mcp_bash_run` for blocking commands and `mcp_bash_run_background` only for true background processes. This applies to `pnpm`, `git`, `gh`, and `bash`. Do not use `run_in_terminal` for shell execution.
 
 ### PHASE 1: Pre-Development Validation and Worktree Setup
 

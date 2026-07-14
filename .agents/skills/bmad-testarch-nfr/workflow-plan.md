@@ -1,4 +1,4 @@
-    # Workflow Plan: testarch-nfr
+    # Workflow Plan: testarch-nfr Evidence Audit
 
     ## Create Mode (steps-c)
     - step-01-load-context.md
@@ -9,14 +9,11 @@
 - step-05-generate-report.md
 
   ## Validate Mode (steps-v)
-
   - step-01-validate.md
 
   ## Edit Mode (steps-e)
-
   - step-01-assess.md
   - step-02-apply-edit.md
 
   ## Outputs
-
   - {test_artifacts}/nfr-assessment.md

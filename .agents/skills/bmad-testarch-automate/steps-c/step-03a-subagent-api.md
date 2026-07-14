@@ -127,26 +127,22 @@ The seven points to verify for each interaction:
 **Scrutiny Sequence** (for each endpoint in the coverage plan):
 
 1. **READ provider route handler and/or OpenAPI spec**: Find the handler file from `subagentContext.config.provider_endpoint_map` or by scanning the provider codebase. Also check for OpenAPI/Swagger spec files. Extract:
-
    - Exact status codes returned (`res.status(201)` / OpenAPI `responses` keys)
    - Response construction (`res.json({ data: ... })` / OpenAPI `schema`)
    - Error handling paths (what status codes for what conditions)
 
 2. **READ provider type/model/DTO definitions**: Find the response type referenced by the handler or OpenAPI `$ref` schemas. Extract:
-
    - Exact field names (`transaction_id` not `transactionId`)
    - Field types (`string` ID vs `number` ID / OpenAPI `type` + `format`)
    - Optional vs required fields (OpenAPI `required` array)
    - Nested object structures (OpenAPI `$ref`, `allOf`, `oneOf`)
 
 3. **READ provider validation schemas**: Find Joi/Zod/class-validator schemas or OpenAPI request body `schema.required`. Extract:
-
    - Required request fields and headers
    - Enum/union type allowed values (`"active" | "inactive"` / OpenAPI `enum`)
    - Request body constraints
 
 4. **Cross-reference findings** against consumer expectations:
-
    - Does the consumer expect the same field names the provider sends?
    - Does the consumer expect the same status codes the provider returns?
    - Does the consumer expect the same nesting the provider produces?

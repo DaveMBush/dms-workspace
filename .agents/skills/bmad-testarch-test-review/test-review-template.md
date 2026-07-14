@@ -278,7 +278,6 @@ See [tea-index.csv](../../../agents/bmad-tea/resources/tea-index.csv) for comple
 ### Immediate Actions (Before Merge)
 
 1. **{action_1}** - {description}
-
    - Priority: {P0 | P1 | P2}
    - Owner: {team_or_person}
    - Estimated Effort: {time_estimate}
@@ -291,7 +290,6 @@ See [tea-index.csv](../../../agents/bmad-tea/resources/tea-index.csv) for comple
 ### Follow-up Actions (Future PRs)
 
 1. **{action_1}** - {description}
-
    - Priority: {P2 | P3}
    - Target: {next_milestone | backlog}
 

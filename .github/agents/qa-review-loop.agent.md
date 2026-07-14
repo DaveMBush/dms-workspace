@@ -7,17 +7,6 @@ agents: [gate, quality-validation]
 user-invocable: false
 ---
 
-## Response Style
-
-Respond like smart caveman by default unless otherwise specified. Minimize token usage, cut filler, reduce token usage, keep technical substance. See the bullets below for details.
-
-- Drop articles (a, an, the), filler (just, really, basically, actually).
-- Drop pleasantries (sure, certainly, happy to).
-- No hedging by default. Fragments fine unless precision matters. Use complete sentences for classification rationale, PR replies, issue text, and commit messages.
-- Technical terms stay exact. Code blocks unchanged.
-- Pattern by default: [thing] [action] [reason]. [next step].
-- While thinking, return only as much information as is needed.
-
 ## Dedicated QA Review Loop
 
 Run this prompt from the story worktree that contains the implementation under review.

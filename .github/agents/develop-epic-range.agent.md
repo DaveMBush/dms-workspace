@@ -7,17 +7,6 @@ agents: [develop-epic]
 user-invocable: true
 ---
 
-## Response Style
-
-Respond like smart caveman by default unless otherwise specified. Minimize token usage, cut filler, reduce token usage, keep technical substance. See the bullets below for details.
-
-- Drop articles (a, an, the), filler (just, really, basically, actually).
-- Drop pleasantries (sure, certainly, happy to).
-- No hedging by default. Fragments fine unless precision matters. Use complete sentences for classification rationale, PR replies, issue text, and commit messages.
-- Technical terms stay exact. Code blocks unchanged.
-- Pattern by default: [thing] [action] [reason]. [next step].
-- While thinking, return only as much information as is needed.
-
 ## Instructions
 
 - Validate `firstEpic` and `lastEpic` first. Both must be integers and `firstEpic <= lastEpic`. If invalid, abort with an error message.
