@@ -1,7 +1,6 @@
 ---
 description: 'Fully autonomous story development: pre-development validation, implementation, quality validation, QA review, PR creation, CodeRabbit review, and merge'
 argument-hint: story=3-3
-model: Qwen3.6-27B-Claude-4.6-Opus-Deckard-Heretic-Uncensored-Thinking (customendpoint)
 tools: [vscode, execute, read, agent, edit, search, web, 'context7/*', 'playwright/*', 'github/*', 'nx-mcp-server/*', browser, todo]
 agents: [code-story, quality-validation, qa-review-loop, commit-and-pr, code-rabbit, merge-finalize]
 user-invocable: false
@@ -224,4 +223,4 @@ When it returns `MERGE COMPLETE`: the story workflow is complete.
 - This workflow is designed for zero human intervention on happy path
 - All quality gates maintained while maximizing autonomy
 - MCP servers provide validation and documentation resources
-- See `skill:bmad-workflow` for detailed patterns and best practices
+- See `skill:bmad-workflow-builder` for detailed patterns and best practices

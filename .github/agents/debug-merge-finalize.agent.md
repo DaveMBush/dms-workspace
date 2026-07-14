@@ -1,7 +1,6 @@
 ---
 description: 'Verify debug PR mergeability, resolve merge conflicts with rebase, squash-merge the PR, verify issue auto-close, and delete the local debug branch'
 argument-hint: story=3-5
-model: Qwen3.6-27B-Claude-4.6-Opus-Deckard-Heretic-Uncensored-Thinking (customendpoint)
 tools: [vscode, execute, read, agent, edit, search, web, 'context7/*', 'playwright/*', 'github/*', 'nx-mcp-server/*', browser, todo]
 agents: [quality-validation]
 user-invocable: false
@@ -9,7 +8,7 @@ user-invocable: false
 
 ## Dedicated Debug Merge And Finalize Workflow
 
-**IMPORTANT**: This workflow uses the `#skill:bmad-workflow` skill.
+**IMPORTANT**: This workflow uses the `#skill:bmad-workflow-builder` skill.
 
 Run this prompt from the repository root after the debug PR is ready to merge.
 

@@ -1,7 +1,6 @@
 ---
 description: 'Handle CodeRabbit review loop for a story PR — poll review comments, classify suggestions, apply in-scope fixes, run quality validation, and loop until PR is ready to merge'
 argument-hint: story=3-3
-model: Qwen3.6-27B-Claude-4.6-Opus-Deckard-Heretic-Uncensored-Thinking (customendpoint)
 tools: [vscode, execute, read, agent, edit, search, web, 'context7/*', 'playwright/*', 'github/*', 'nx-mcp-server/*', browser, todo]
 agents: [quality-validation]
 user-invocable: false
@@ -46,7 +45,7 @@ Behavior (concise):
 
 Key steps:
 
-0. Invoke the `#skill:bmad-workflow` via `mcp_skills_load(name="bmad-workflow")` and read the "CodeRabbit Review Loop Pattern" section before executing the steps below.
+0. Invoke the `#skill:bmad-workflow-builder` via `mcp_skills_load(name="bmad-workflow-builder")` and read the "CodeRabbit Review Loop Pattern" section before executing the steps below.
 
 1. Resolve `GIT_COMMON_DIR=$(git rev-parse --git-common-dir)` and read `$GIT_COMMON_DIR/tmp/story-${story}-meta.json` into local state; validate required keys immediately; then use `worktreePath` from that state as the `cwd` for subsequent bash MCP calls
 
@@ -80,4 +79,4 @@ Notes:
 
 - Use state file to avoid passing large context
 - Make operations idempotent: re-running should continue safely
-- Inline steps above are source of truth for execution. Detailed background remains in the "CodeRabbit Review Loop Pattern" section of `#skill:bmad-workflow` skill.
+- Inline steps above are source of truth for execution. Detailed background remains in the "CodeRabbit Review Loop Pattern" section of `#skill:bmad-workflow-builder` skill.

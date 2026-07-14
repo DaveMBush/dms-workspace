@@ -1,6 +1,5 @@
 ---
-description: 'Generate epics and stories from a planning file using bmad-create-epics-and-stories and bmad-create-story skills, then set all story statuses to Approved'
-model: Qwen3.6-27B-Claude-4.6-Opus-Deckard-Heretic-Uncensored-Thinking (customendpoint)
+description: 'Generate epics and stories from a planning file using #skill:bmad-create-epics-and-stories and #skill:bmad-create-story skills, then set all story statuses to Approved'
 argument-hint: file=epics-2026-03-31.md
 tools: [vscode, execute, read, agent, edit, search, web, 'context7/*', 'playwright/*', 'github/*', 'nx-mcp-server/*', browser, todo]
 user-invocable: true
@@ -14,7 +13,7 @@ Use the agent tool to invoke the `#skill:bmad-create-epics-and-stories` skill, p
 
 If the skill fails, if the expected epics file is not present at `_bmad-output/planning-artifacts/${file}`, or if the resulting epics file contains zero stories, stop and report the failure. Do not proceed to story creation.
 
-Once that completes, iterate sequentially over each story metadata file generated for that epics run under `_bmad-output/planning-artifacts/story-meta/`, and invoke `bmad-create-story` with that story metadata file as input. If creation of an individual story fails, log the failure, continue with the remaining stories, and report all failures at the end.
+Once that completes, iterate sequentially over each story metadata file generated for that epics run under `_bmad-output/planning-artifacts/story-meta/`, and invoke `#skill:bmad-create-story` with that story metadata file as input. If creation of an individual story fails, log the failure, continue with the remaining stories, and report all failures at the end.
 
 After each story is created, edit its status field to `Approved`.
 
