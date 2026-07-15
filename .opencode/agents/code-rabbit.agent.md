@@ -1,7 +1,7 @@
 ---
 description: 'Handle CodeRabbit review loop for a story PR — poll review comments, classify suggestions, apply in-scope fixes, run quality validation, and loop until PR is ready to merge'
 argument-hint: story=3-3
-tools: {execute: true, read: true, agent: true, edit: true, 'context7/*': true, 'playwright/*': true, 'github/*': true, todo: true}
+tools: { execute: true, read: true, agent: true, edit: true, 'context7/*': true, 'playwright/*': true, 'github/*': true, todo: true }
 agents: [quality-validation]
 user-invocable: false
 ---
@@ -66,7 +66,7 @@ If the PR CI pipeline is still running, wait and re-check every 120s (max timeou
 
 7. Apply valid in-scope fixes. For valid out-of-scope suggestions, reply on the PR thread acknowledging the finding and create a follow-up issue via `gh issue create` linked to the story; do not apply the change. For invalid suggestions, reply briefly with the verification result. Then call the `runSubagent` tool with:
    - `description`: `"Validation for story ${story} after CodeRabbit fixes"`
-   - `prompt`: Read the full contents of `.github/agents/quality-validation.agent.md` and include them verbatim, substituting `context` with `story-${story}-cr`.
+   - `prompt`: Read the full contents of `.opencode/agents//quality-validation.agent.md` and include them verbatim, substituting `context` with `story-${story}-cr`.
 
 - If quality-validation fails, do not commit. Revert only changes from the current iteration if they can be safely discarded, set `state.status = "validation_failed"`, and retry the classify/apply/validate cycle at most 2 times. If the failing changes cannot be isolated safely or retries are exhausted, ask for guidance.
 

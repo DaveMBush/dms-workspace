@@ -1,7 +1,7 @@
 ---
 description: 'QA gate: review story-scoped changes for acceptance criteria, code quality, and test coverage'
 argument-hint: story=3-3
-tools: {execute: true, read: true, agent: true, edit: true, 'context7/*': true, 'playwright/*': true, todo: true}
+tools: { execute: true, read: true, agent: true, edit: true, 'context7/*': true, 'playwright/*': true, todo: true }
 user-invocable: false
 ---
 
@@ -28,7 +28,7 @@ If `git merge-base` fails, or if both diff commands fail, return a short report 
 
 Exclude non-reviewable files from the review scope: binary files, lockfiles (`package-lock.json`, `pnpm-lock.yaml`, `yarn.lock`, `bun.lockb`), and generated directories or outputs (`dist/`, `build/`, `.next/`, `coverage/`).
 
-Exclude story artifacts and QA workflow files from the review scope because they are operational context, not story implementation: `_bmad-output/implementation-artifacts/`, `.github/agents/`.
+Exclude story artifacts and QA workflow files from the review scope because they are operational context, not story implementation: `_bmad-output/implementation-artifacts/`, `.opencode/agents//`.
 
 If both committed diff and working-tree fallback return zero changed files, or if no reviewable changed files remain after exclusions, inspect the story scope before failing. If the story is explicitly investigation-only, documentation-only, or otherwise states that no implementation changes are expected, assess the acceptance criteria from the story artifact itself and return `GATE: PASS` when that evidence is complete. Otherwise return a short report with reason `no changes detected vs origin/main or working tree` and make the final line exactly `GATE: FAIL`.
 

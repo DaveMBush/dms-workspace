@@ -1,7 +1,7 @@
 ---
 description: 'Fully autonomous story development: pre-development validation, implementation, quality validation, QA review, PR creation, CodeRabbit review, and merge'
 argument-hint: story=3-3
-tools: {execute: true, read: true, agent: true, edit: true, 'context7/*': true, 'playwright/*': true, todo: true}
+tools: { execute: true, read: true, agent: true, edit: true, 'context7/*': true, 'playwright/*': true, todo: true }
 agents: [code-story, quality-validation, qa-review-loop, commit-and-pr, code-rabbit, merge-finalize]
 user-invocable: false
 ---
@@ -73,7 +73,7 @@ mcp_bash_run({ command: "git worktree add ../dms/story-${story} ${BRANCH_NAME}",
 Call the `runSubagent` tool now with the following parameters to implement the story in a fresh subagent context:
 
 - `description`: `"Implement story ${story}"`
-- `prompt`: Prepend `WORKTREE_PATH: <WORKTREE_ABS_PATH>` and `Use this path as the cwd for all bash MCP calls and file edits.` then read the full contents of `.github/agents/code-story.agent.md` and append them verbatim, substituting `${story}` with the actual story ID.
+- `prompt`: Prepend `WORKTREE_PATH: <WORKTREE_ABS_PATH>` and `Use this path as the cwd for all bash MCP calls and file edits.` then read the full contents of `.opencode/agents//code-story.agent.md` and append them verbatim, substituting `${story}` with the actual story ID.
 
 Expected result from this subagent is `DONE: ${story}`. If the subagent errors, times out, returns empty output, or returns anything else, ask: `Phase 2 implementation subagent returned unexpected output for ${story}: <output>. Reply with stop, continue, or instructions.`
 
@@ -86,7 +86,7 @@ If `code-story.agent.md` encounters issues, it must handle internal retries as r
 Call the `runSubagent` tool now with the following parameters to run the quality validation loop in a fresh subagent context:
 
 - `description`: `"Validate story ${story}"`
-- `prompt`: Prepend `WORKTREE_PATH: <WORKTREE_ABS_PATH>` and `Use this path as the cwd for all bash MCP calls.` then read the full contents of `.github/agents/quality-validation.agent.md` and append them verbatim, substituting `context` with `story-${story}`.
+- `prompt`: Prepend `WORKTREE_PATH: <WORKTREE_ABS_PATH>` and `Use this path as the cwd for all bash MCP calls.` then read the full contents of `.opencode/agents//quality-validation.agent.md` and append them verbatim, substituting `context` with `story-${story}`.
 
 #### Validation Rules
 
@@ -119,7 +119,7 @@ This keeps the story workflow context small while the validation loop handles:
 Call the `runSubagent` tool now with the following parameters to run the QA review loop in a fresh subagent context:
 
 - `description`: `"QA review for story ${story}"`
-- `prompt`: Prepend `WORKTREE_PATH: <WORKTREE_ABS_PATH>` and `Use this path as the cwd for all bash MCP calls.` then read the full contents of `.github/agents/qa-review-loop.agent.md` and append them verbatim, substituting `${story}` with the actual story ID.
+- `prompt`: Prepend `WORKTREE_PATH: <WORKTREE_ABS_PATH>` and `Use this path as the cwd for all bash MCP calls.` then read the full contents of `.opencode/agents//qa-review-loop.agent.md` and append them verbatim, substituting `${story}` with the actual story ID.
 
 This keeps the story workflow context small while the QA review subagent handles:
 
@@ -140,7 +140,7 @@ When it returns `QA PASSED`: IMMEDIATELY move to Phase 5.
 Once all validations pass, call the `runSubagent` tool now with the following parameters:
 
 - `description`: `"Commit and create PR for story ${story}"`
-- `prompt`: Prepend `WORKTREE_PATH: <WORKTREE_ABS_PATH>` and `Use this path as the cwd for all bash MCP calls.` then read the full contents of `.github/agents/commit-and-pr.agent.md` and append them verbatim, substituting `${story}` with the actual story ID.
+- `prompt`: Prepend `WORKTREE_PATH: <WORKTREE_ABS_PATH>` and `Use this path as the cwd for all bash MCP calls.` then read the full contents of `.opencode/agents//commit-and-pr.agent.md` and append them verbatim, substituting `${story}` with the actual story ID.
 
 This will:
 
@@ -178,7 +178,7 @@ Phase 6 has been delegated to a dedicated, resumable subagent. After Phase 5 com
 Then call the `runSubagent` tool now with the following parameters to handle the full CodeRabbit loop:
 
 - `description`: `"CodeRabbit review for story ${story}"`
-- `prompt`: Read the full contents of `.github/agents/code-rabbit.agent.md` and include them verbatim as the prompt, substituting `${story}` with the actual story ID.
+- `prompt`: Read the full contents of `.opencode/agents//code-rabbit.agent.md` and include them verbatim as the prompt, substituting `${story}` with the actual story ID.
 
 The `code-rabbit` subagent will poll `mcp_github_pull_request_read method:get_review_comments`, classify suggestions, apply in-scope fixes, run Phase 3 validations, commit/push, and loop until the PR is ready to merge or max iterations are reached. It updates the `.git/tmp/story-${story}-meta.json` file as it proceeds so the process can be resumed safely.
 
@@ -191,7 +191,7 @@ Use the `code-rabbit.agent.md` subagent to keep the story prompt small, idempote
 Delegate Phase 7 by calling the `runSubagent` tool now with the following parameters:
 
 - `description`: `"Merge and finalize story ${story}"`
-- `prompt`: Read the full contents of `.github/agents/merge-finalize.agent.md` and include them verbatim as the prompt, substituting `${story}` with the actual story ID.
+- `prompt`: Read the full contents of `.opencode/agents//merge-finalize.agent.md` and include them verbatim as the prompt, substituting `${story}` with the actual story ID.
 
 This keeps the story workflow context small while the merge subagent handles:
 

@@ -1,7 +1,7 @@
 ---
 description: 'Verify story PR mergeability, resolve merge conflicts with rebase, squash-merge the PR, verify issue auto-close, and remove the story worktree'
 argument-hint: story=3-3
-tools: {execute: true, read: true, agent: true, edit: true, 'context7/*': true, 'playwright/*': true, todo: true}
+tools: { execute: true, read: true, agent: true, edit: true, 'context7/*': true, 'playwright/*': true, todo: true }
 agents: [quality-validation]
 user-invocable: false
 ---
@@ -22,7 +22,7 @@ Before doing anything else, read all of the following:
 
 1. `_bmad-output/project-context.md`
 2. `_bmad/bmm/config.yaml`
-3. `.github/agents/quality-validation.agent.md`
+3. `.opencode/agents//quality-validation.agent.md`
 4. `$(git rev-parse --git-common-dir)/tmp/story-${story}-meta.json`
 
 ### Execution Rules
@@ -41,7 +41,7 @@ Before doing anything else, read all of the following:
 7. After any conflict fix, call the `runSubagent` tool with:
 
    - `description`: `"Validation for story ${story} after merge conflict resolution"`
-   - `prompt`: Read the full contents of `.github/agents/quality-validation.agent.md` and include them verbatim, substituting `context` with `story-${story}-merge`.
+   - `prompt`: Read the full contents of `.opencode/agents//quality-validation.agent.md` and include them verbatim, substituting `context` with `story-${story}-merge`.
 
 8. Verify PR `mergeable` state via GitHub tools until it is `true` or `false`.
 9. If story changes include UI, run a quick Playwright sanity validation; if they include unfamiliar API usage, run a quick Context7 check.
