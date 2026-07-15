@@ -1,7 +1,7 @@
 ---
 description: 'Verify debug PR mergeability, resolve merge conflicts with rebase, squash-merge the PR, verify issue auto-close, and delete the local debug branch'
 argument-hint: story=3-5
-tools: {execute: true, read: true, agent: true, edit: true, 'context7/*': true, 'playwright/*': true, 'github/*': true, todo: true}
+tools: { execute: true, read: true, agent: true, edit: true, 'context7/*': true, 'playwright/*': true, 'github/*': true, todo: true }
 agents: [quality-validation]
 user-invocable: false
 ---
@@ -24,7 +24,7 @@ Before doing anything else, read all of the following:
 
 1. `_bmad-output/project-context.md`
 2. `_bmad/bmm/config.yaml`
-3. `.github/agents/quality-validation.agent.md`
+3. `.opencode/agents//quality-validation.agent.md`
 4. `$(git rev-parse --git-common-dir)/tmp/story-${story}-meta.json`
 
 If the metadata file is missing or malformed, or if it lacks PR number, `branch`, or `repo`, return `MERGE FAILED: missing metadata` and exit.
@@ -51,7 +51,7 @@ git merge-tree --quiet $(git merge-base HEAD origin/main) HEAD origin/main
 5. After any conflict fix, call the `runSubagent` tool with:
 
    - `description`: `"Validation for story ${story} after merge conflict resolution"`
-   - `prompt`: Read the full contents of `.github/agents/quality-validation.agent.md` and include them verbatim, substituting `context` with `debug-${story}-merge`.
+   - `prompt`: Read the full contents of `.opencode/agents//quality-validation.agent.md` and include them verbatim, substituting `context` with `debug-${story}-merge`.
    - If the quality-validation subagent returns failure, treat that as a conflict-resolution failure and count it toward the 3-cycle limit in rule 4.
 
 6. Phase 3 - Mergeability verification: verify PR `mergeable` state via GitHub tools until it is `true` or `false`. If it becomes `false`, return `MERGE FAILED: PR not mergeable`.

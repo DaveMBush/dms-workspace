@@ -1,7 +1,7 @@
 ---
 description: 'Fully autonomous epic development: discover all stories, validate Approved status, then develop each story sequentially from implementation through merge'
 argument-hint: epic=AD
-tools: {execute: true, read: true, agent: true, edit: true, 'context7/*': true, 'playwright/*': true, todo: true}
+tools: { execute: true, read: true, agent: true, edit: true, 'context7/*': true, 'playwright/*': true, todo: true }
 agents: [develop-story, debug]
 user-invocable: false
 ---
@@ -63,8 +63,8 @@ For each story in the ordered list:
 3. **Delegate Story Development**
 
    - **CRITICAL**: Delegate to the correct workflow using `runSubagent`. Do NOT implement the story inline or run long manual steps here.
-   - **For standard stories**: call `runSubagent` with `description: "Develop story ${current_story}"` and `prompt`: the contents of `.github/agents/develop-story.agent.md` with `${story}` substituted.
-   - **For bug fix stories**: call `runSubagent` with `description: "Debug story ${current_story}"` and `prompt`: the contents of `.github/agents/debug.agent.md` with `${epic}` and `${story}` substituted.
+   - **For standard stories**: call `runSubagent` with `description: "Develop story ${current_story}"` and `prompt`: the contents of `.opencode/agents//develop-story.agent.md` with `${story}` substituted.
+   - **For bug fix stories**: call `runSubagent` with `description: "Debug story ${current_story}"` and `prompt`: the contents of `.opencode/agents//debug.agent.md` with `${epic}` and `${story}` substituted.
    - If `runSubagent` does not complete within the runtime limit of the host environment, treat it as a failure and follow the failure decision table below.
 
 4. **Validate and Record Story Meta**

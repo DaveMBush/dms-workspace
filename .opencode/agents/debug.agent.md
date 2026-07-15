@@ -1,7 +1,7 @@
 ---
 description: 'Fully autonomous bug fix workflow: validate epic, collect bug description, implement fix, run quality validation, create PR, run CodeRabbit review, and merge'
 argument-hint: epic=3 story=3-5
-tools: {execute: true, read: true, agent: true, edit: true, 'context7/*': true, 'playwright/*': true, todo: true}
+tools: { execute: true, read: true, agent: true, edit: true, 'context7/*': true, 'playwright/*': true, todo: true }
 agents: [debug-setup, quality-validation, debug-pr-lifecycle, debug-merge-finalize]
 user-invocable: false
 ---
@@ -14,11 +14,11 @@ Phase ownership table:
 
 | Phase | Owning agent                                     | Inputs                             | Outputs                                    | Failure code        |
 | ----- | ------------------------------------------------ | ---------------------------------- | ------------------------------------------ | ------------------- |
-| 1-2   | `debug-setup.agent.md`                                    | `${epic}`, `${story}`              | debug branch, issue number                 | `SETUP FAILED`      |
+| 1-2   | `debug-setup.agent.md`                           | `${epic}`, `${story}`              | debug branch, issue number                 | `SETUP FAILED`      |
 | 3-4   | main orchestrator + `dev` + `quality-validation` | `${epic}`, branch, bug description | `VALIDATION PASSED` or `VALIDATION FAILED` | `VALIDATION FAILED` |
 | 5     | main orchestrator                                | validation result, user response   | next bug or proceed to PR                  | `NO_USER_RESPONSE`  |
-| 6-7   | `debug-pr-lifecycle.agent.md`                             | `${story}`                         | PR ready to merge or failure               | `PR FLOW FAILED`    |
-| 8     | `debug-merge-finalize.agent.md`                           | `${story}`                         | merge complete or failure                  | `MERGE FAILED`      |
+| 6-7   | `debug-pr-lifecycle.agent.md`                    | `${story}`                         | PR ready to merge or failure               | `PR FLOW FAILED`    |
+| 8     | `debug-merge-finalize.agent.md`                  | `${story}`                         | merge complete or failure                  | `MERGE FAILED`      |
 
 For any delegated phase, if `runSubagent` itself errors, times out, or returns no structured result, treat it as that phase's documented failure code with reason `tool_error` and report to the user or halt path for that phase.
 
@@ -37,7 +37,7 @@ Delegate epic validation and branch setup to a dedicated setup subagent using `r
 Call the `runSubagent` tool now with the following parameters:
 
 - `description`: `"Debug setup for story ${story}"`
-- `prompt`: Read the full contents of `.github/agents/debug-setup.agent.md` and include them verbatim, substituting `${story}` and `${epic}` with the actual values.
+- `prompt`: Read the full contents of `.opencode/agents//debug-setup.agent.md` and include them verbatim, substituting `${story}` and `${epic}` with the actual values.
 
 This keeps the debug workflow context small while the setup subagent handles:
 
@@ -85,7 +85,7 @@ Tasks:
 3. If the bug description mentions UI, browser, rendering, or user interaction, use the Playwright MCP server to reproduce the problem and confirm the fix.
 4. Delegate validation to a fresh subagent. Call the `runSubagent` tool with:
    - `description`: `"Validate debug fix for story ${story}"`
-   - `prompt`: Read the full contents of `.github/agents/quality-validation.agent.md` and include them verbatim, substituting `context` with `debug-${story}`.
+   - `prompt`: Read the full contents of `.opencode/agents//quality-validation.agent.md` and include them verbatim, substituting `context` with `debug-${story}`.
    - If the validation subagent returns `VALIDATION FAILED`, report the failure to the user, then return `VALIDATION FAILED: <reason>` to the caller without further action.
 5. Return a summary of: files changed, what the fix was, and either
    "VALIDATION PASSED" or "VALIDATION FAILED: <reason>".
@@ -141,7 +141,7 @@ Before spawning the next subagent, emit and complete this numbered todo checklis
 Once all bugs are fixed and no more bug work requested, call the `runSubagent` tool now with the following parameters to handle PR creation and CodeRabbit in a fresh subagent context:
 
 - `description`: `"Debug PR lifecycle for story ${story}"`
-- `prompt`: Read the full contents of `.github/agents/debug-pr-lifecycle.agent.md` and include them verbatim as the prompt, substituting `${story}` with the actual story ID.
+- `prompt`: Read the full contents of `.opencode/agents//debug-pr-lifecycle.agent.md` and include them verbatim as the prompt, substituting `${story}` with the actual story ID.
 
 This keeps the debug workflow context small while the PR lifecycle subagent handles:
 
@@ -171,7 +171,7 @@ The PR lifecycle subagent runs the CodeRabbit Review Loop Pattern from `#skill:b
 Call the `runSubagent` tool now with the following parameters to handle the final merge and cleanup in a fresh subagent context:
 
 - `description`: `"Debug merge and finalize for story ${story}"`
-- `prompt`: Read the full contents of `.github/agents/debug-merge-finalize.agent.md` and include them verbatim as the prompt, substituting `${story}` with the actual story ID.
+- `prompt`: Read the full contents of `.opencode/agents//debug-merge-finalize.agent.md` and include them verbatim as the prompt, substituting `${story}` with the actual story ID.
 
 This keeps the debug workflow context small while the merge subagent handles:
 

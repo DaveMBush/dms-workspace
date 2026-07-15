@@ -1,7 +1,7 @@
 ---
 description: 'QA review and remediation loop: run the gate up to 10 times, auto-apply fixes using Context7 and Playwright, re-validate after each fix until the gate passes'
 argument-hint: story=3-3
-tools: {execute: true, read: true, agent: true, edit: true, 'context7/*': true, 'playwright/*': true, todo: true}
+tools: { execute: true, read: true, agent: true, edit: true, 'context7/*': true, 'playwright/*': true, todo: true }
 agents: [gate, quality-validation]
 user-invocable: false
 ---
@@ -19,8 +19,8 @@ This prompt exists to run the full QA gate, remediation, and re-validation cycle
 Before doing anything else, read all of the following:
 
 1. `_bmad-output/project-context.md`
-2. `.github/agents/gate.agent.md`
-3. `.github/agents/quality-validation.agent.md`
+2. `.opencode/agents//gate.agent.md`
+3. `.opencode/agents//quality-validation.agent.md`
 
 If any required startup file is missing or unreadable, return `QA FAILED: missing required context file <path>` immediately without running the gate.
 
@@ -34,7 +34,7 @@ If any required startup file is missing or unreadable, return `QA FAILED: missin
 
    - For each gate attempt from 1 through 10, call the `runSubagent` tool with:
      - `description`: `"QA gate for story ${story}"`
-     - `prompt`: Prepend `WORKTREE_PATH: <WORKTREE_PATH>` and `Use this path as the cwd for all bash MCP calls.` then read the full contents of `.github/agents/gate.agent.md` and append them verbatim, substituting `${story}` with the actual story ID.
+     - `prompt`: Prepend `WORKTREE_PATH: <WORKTREE_PATH>` and `Use this path as the cwd for all bash MCP calls.` then read the full contents of `.opencode/agents//gate.agent.md` and append them verbatim, substituting `${story}` with the actual story ID.
    - If the final line is exactly `GATE: PASS`, return immediately with `QA PASSED`.
    - If the final line is exactly `GATE: FAIL`, continue to remediation and then re-validation within the same attempt.
    - If the gate returns anything else, treat that as `ERROR/UNKNOWN` for this attempt.
@@ -57,7 +57,7 @@ If any required startup file is missing or unreadable, return `QA FAILED: missin
 8. After applying remediation items, call the `runSubagent` tool with:
 
    - `description`: `"Validation for story ${story} after QA fixes"`
-   - `prompt`: Prepend `WORKTREE_PATH: <WORKTREE_PATH>` and `Use this path as the cwd for all bash MCP calls.` then read the full contents of `.github/agents/quality-validation.agent.md` and append them verbatim, replacing every occurrence of the literal token `${context}` with `story-${story}-qa`.
+   - `prompt`: Prepend `WORKTREE_PATH: <WORKTREE_PATH>` and `Use this path as the cwd for all bash MCP calls.` then read the full contents of `.opencode/agents//quality-validation.agent.md` and append them verbatim, replacing every occurrence of the literal token `${context}` with `story-${story}-qa`.
 
 9. Interpret the re-validation result exactly as follows:
 
