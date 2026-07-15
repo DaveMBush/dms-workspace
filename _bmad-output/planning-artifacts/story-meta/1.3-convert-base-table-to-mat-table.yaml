@@ -1,0 +1,9 @@
+===
+story_id: 1.3
+story_key: 1.3-convert-base-table-to-mat-table
+story_title: Convert base-table component to <mat-table> with ng-container matColumnDef
+epic_num: 1
+story_num: 3
+status: Approved
+epic_title: Migrate base-table to <mat-table> Column Definition Pattern
+===

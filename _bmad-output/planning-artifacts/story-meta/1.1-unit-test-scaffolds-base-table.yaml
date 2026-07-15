@@ -1,0 +1,9 @@
+===
+story_id: 1.1
+story_key: 1.1-unit-test-scaffolds-base-table
+story_title: Unit test scaffolds for base-table component (skip)
+epic_num: 1
+story_num: 1
+status: Approved
+epic_title: Migrate base-table to <mat-table> Column Definition Pattern
+===

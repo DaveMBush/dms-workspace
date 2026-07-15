@@ -1,0 +1,9 @@
+===
+story_id: 1.4
+story_key: 1.4-update-base-table-consumers
+story_title: Update base-table consumer components for the new DOM structure
+epic_num: 1
+story_num: 4
+status: Approved
+epic_title: Migrate base-table to <mat-table> Column Definition Pattern
+===

@@ -1,0 +1,9 @@
+===
+story_id: 1.6
+story_key: 1.6-update-consumer-e2e-tests
+story_title: Update consumer E2E tests for new <mat-table> DOM
+epic_num: 1
+story_num: 6
+status: Approved
+epic_title: Migrate base-table to <mat-table> Column Definition Pattern
+===
