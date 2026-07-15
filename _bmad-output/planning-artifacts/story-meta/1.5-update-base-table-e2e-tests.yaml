@@ -1,0 +1,9 @@
+===
+story_id: 1.5
+story_key: 1.5-update-base-table-e2e-tests
+story_title: Update base-table E2E regression tests for new <mat-table> DOM
+epic_num: 1
+story_num: 5
+status: Approved
+epic_title: Migrate base-table to <mat-table> Column Definition Pattern
+===
