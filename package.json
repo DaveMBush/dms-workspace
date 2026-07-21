@@ -49,7 +49,7 @@
     "@prisma/adapter-better-sqlite3": "^7.2.0",
     "@smarttools/smart-core": "3.0.0",
     "@smarttools/smart-signals": "3.0.0",
-    "axios": "^1.16.0",
+    "axios": "^1.18.0",
     "chart.js": "^4.5.1",
     "cheerio": "^1.0.0",
     "dotenv": "^17.3.1",
@@ -158,7 +158,7 @@
     "tslib": "^2.3.0",
     "typescript": "5.9.3",
     "typescript-eslint": "8.59.0",
-    "vite": "8.1.3",
+    "vite": "8.1.4",
     "vitest": "4.1.0"
   },
   "packageManager": "pnpm@10.12.1",
