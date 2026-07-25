@@ -1,5 +1,3 @@
-import { FlatCompat } from '@eslint/eslintrc';
-import js from '@eslint/js';
 import eslintPluginJsdoc from 'eslint-plugin-jsdoc';
 import nxEslintPlugin from '@nx/eslint-plugin';
 import eslintPluginSonarjs from 'eslint-plugin-sonarjs';
@@ -14,16 +12,12 @@ import eslintPluginMaxParamsNoConstructor from 'eslint-plugin-max-params-no-cons
 import typescriptEslintParser from '@typescript-eslint/parser';
 import playwright from 'eslint-plugin-playwright';
 import vitest from '@vitest/eslint-plugin';
+import angular from 'angular-eslint';
 
 // can't support function until NX eslint supports ESM or
 // functional supports CommonJS OR I figure out how to get
 // configs working with dynamic imports (async await import()
 //const functional = require('eslint-plugin-functional');
-
-const compat = new FlatCompat({
-  baseDirectory: import.meta.dirname,
-  recommendedConfig: js.configs.recommended,
-});
 
 const eslintConfig = async () => {
   const { default: stylisticEslintPlugin } = await import(
@@ -64,7 +58,6 @@ const eslintConfig = async () => {
         sonarjs: eslintPluginSonarjs,
         import: eslintPluginImport,
         //functional,
-        // '@angular-eslint': angularEslintEslintPlugin, // Registered by FlatCompat
         'eslint-comments': eslintPluginEslintComments,
         unicorn,
         '@smarttools/rxjs': smarttoolsEslintPluginRxjs,
@@ -149,75 +142,68 @@ const eslintConfig = async () => {
         },
       },
     },
-    ...compat
-      .config({
-        extends: ['plugin:@nx/typescript'],
-        plugins: ['simple-import-sort'],
-      })
-      .map((config) => ({
-        ...config,
-        files: ['**/*.ts', '**/*.tsx', '**/*.cts', '**/*.mts'],
-        languageOptions: {
-          ...config.languageOptions,
-          parserOptions: {
-            ...config.languageOptions?.parserOptions,
-            project: [
-              'apps/dms-material/tsconfig.json',
-              'apps/dms-material/tsconfig.app.json',
-              'apps/dms-material/tsconfig.spec.json',
-              'apps/dms-material/.storybook/tsconfig.json',
-              'apps/server/tsconfig.app.json',
-              'apps/dms-material-e2e/tsconfig.json',
-              'apps/electron/tsconfig.json',
-            ],
-          },
-        },
-        rules: {
-          ...config.rules,
-          'simple-import-sort/imports': [
-            'error',
-            {
-              groups: [
-                ['^\\u0000'],
-                ['^@?\\w'],
-                ['^(@smart)(/.*|$)'],
-                ['^'],
-                ['^\\.'],
-              ],
-            },
+    // Flat-native: replaces compat.config({ extends: ['plugin:@nx/typescript'], plugins: ['simple-import-sort'] })
+    {
+      files: ['**/*.ts', '**/*.tsx', '**/*.cts', '**/*.mts'],
+      ...nxEslintPlugin.configs['flat/typescript'],
+      languageOptions: {
+        ...nxEslintPlugin.configs['flat/typescript'].languageOptions,
+        parserOptions: {
+          ...nxEslintPlugin.configs['flat/typescript'].languageOptions?.parserOptions,
+          project: [
+            'apps/dms-material/tsconfig.json',
+            'apps/dms-material/tsconfig.app.json',
+            'apps/dms-material/tsconfig.spec.json',
+            'apps/dms-material/.storybook/tsconfig.json',
+            'apps/server/tsconfig.app.json',
+            'apps/dms-material-e2e/tsconfig.json',
+            'apps/electron/tsconfig.json',
           ],
-          'simple-import-sort/exports': 'error',
         },
-      })),
-    ...compat
-      .config({
-        extends: [
-          'plugin:@nx/angular',
-          'plugin:@angular-eslint/template/process-inline-templates',
-          'plugin:sonarjs/recommended-legacy',
-        ],
-      })
-      .map((config) => ({
-        ...config,
-        files: ['**/*.ts'],
-        ignores: ['**/playwright.config.ts'],
-        languageOptions: {
-          ...config.languageOptions,
-          parserOptions: {
-            ...config.languageOptions?.parserOptions,
-            project: [
-              'apps/dms-material/tsconfig.json',
-              'apps/dms-material/tsconfig.app.json',
-              'apps/dms-material/tsconfig.spec.json',
-              'apps/dms-material/.storybook/tsconfig.json',
-              'apps/server/tsconfig.app.json',
-              'apps/dms-material-e2e/tsconfig.json',
-              'apps/electron/tsconfig.json',
+      },
+      rules: {
+        ...nxEslintPlugin.configs['flat/typescript'].rules,
+        'simple-import-sort/imports': [
+          'error',
+          {
+            groups: [
+              ['^\\u0000'],
+              ['^@?\\w'],
+              ['^(@smart)(/.*|$)'],
+              ['^'],
+              ['^\\.'],
             ],
           },
+        ],
+        'simple-import-sort/exports': 'error',
+      },
+    },
+    {
+      files: ['**/*.ts'],
+      processor: angular.processInlineTemplates,
+    },
+    ...nxEslintPlugin.configs['flat/angular'].map((config) => ({
+      ...config,
+      files: ['**/*.ts'],
+      ignores: ['**/playwright.config.ts'],
+      languageOptions: {
+        ...config.languageOptions,
+        parserOptions: {
+          ...config.languageOptions?.parserOptions,
+          project: [
+            'apps/dms-material/tsconfig.json',
+            'apps/dms-material/tsconfig.app.json',
+            'apps/dms-material/tsconfig.spec.json',
+            'apps/dms-material/.storybook/tsconfig.json',
+            'apps/server/tsconfig.app.json',
+            'apps/dms-material-e2e/tsconfig.json',
+            'apps/electron/tsconfig.json',
+          ],
         },
-        rules: {
-          ...config.rules,
+      },
+      rules: {
+        ...(eslintPluginSonarjs.configs['recommended-legacy'].rules ?? {}),
+        ...config.rules,
           complexity: [
             'error',
             {
@@ -867,54 +853,51 @@ const eslintConfig = async () => {
         'max-statements-per-line': 'off',
       },
     },
-    ...compat
-      .config({
-        extends: ['plugin:@nx/angular-template'],
-      })
-      .map((config) => ({
-        ...config,
-        files: ['**/*.html'],
-        rules: {
-          ...config.rules,
-          '@angular-eslint/template/alt-text': 'error',
-          '@angular-eslint/template/elements-content': 'error',
-          '@angular-eslint/template/label-has-associated-control': [
-            'error',
-            {},
-          ],
-          '@angular-eslint/template/table-scope': 'error',
-          '@angular-eslint/template/valid-aria': 'error',
-          '@angular-eslint/template/banana-in-box': 'error',
-          '@angular-eslint/template/click-events-have-key-events': 'error',
-          '@angular-eslint/template/conditional-complexity': 'error',
-          '@angular-eslint/template/cyclomatic-complexity': 'error',
-          '@angular-eslint/template/eqeqeq': [
-            'error',
-            {
-              allowNullOrUndefined: true,
-            },
-          ],
-          '@angular-eslint/template/mouse-events-have-key-events': 'error',
-          '@angular-eslint/template/no-any': 'error',
-          '@angular-eslint/template/no-autofocus': 'error',
-          '@angular-eslint/template/no-call-expression': [
-            'error',
-            {
-              allowSuffix: '$',
-            },
-          ],
-          '@angular-eslint/template/no-distracting-elements': 'error',
-          '@angular-eslint/template/no-negated-async': 'error',
-          '@angular-eslint/template/no-positive-tabindex': 'error',
-          '@angular-eslint/template/use-track-by-function': 'error',
-          '@angular-eslint/template/no-duplicate-attributes': [
-            'error',
-            {
-              allowTwoWayDataBinding: true,
-            },
-          ],
-        },
-      })),
+    // Flat-native: replaces compat.config({ extends: ['plugin:@nx/angular-template'] })
+    {
+      files: ['**/*.html'],
+      ...nxEslintPlugin.configs['flat/angular-template'],
+      rules: {
+        ...nxEslintPlugin.configs['flat/angular-template'].rules,
+        '@angular-eslint/template/alt-text': 'error',
+        '@angular-eslint/template/elements-content': 'error',
+        '@angular-eslint/template/label-has-associated-control': [
+          'error',
+          {},
+        ],
+        '@angular-eslint/template/table-scope': 'error',
+        '@angular-eslint/template/valid-aria': 'error',
+        '@angular-eslint/template/banana-in-box': 'error',
+        '@angular-eslint/template/click-events-have-key-events': 'error',
+        '@angular-eslint/template/conditional-complexity': 'error',
+        '@angular-eslint/template/cyclomatic-complexity': 'error',
+        '@angular-eslint/template/eqeqeq': [
+          'error',
+          {
+            allowNullOrUndefined: true,
+          },
+        ],
+        '@angular-eslint/template/mouse-events-have-key-events': 'error',
+        '@angular-eslint/template/no-any': 'error',
+        '@angular-eslint/template/no-autofocus': 'error',
+        '@angular-eslint/template/no-call-expression': [
+          'error',
+          {
+            allowSuffix: '$',
+          },
+        ],
+        '@angular-eslint/template/no-distracting-elements': 'error',
+        '@angular-eslint/template/no-negated-async': 'error',
+        '@angular-eslint/template/no-positive-tabindex': 'error',
+        '@angular-eslint/template/use-track-by-function': 'error',
+        '@angular-eslint/template/no-duplicate-attributes': [
+          'error',
+          {
+            allowTwoWayDataBinding: true,
+          },
+        ],
+      },
+    },
     {
       files: ['**/*.js', '**/*.jsx'],
       languageOptions: {
@@ -928,17 +911,14 @@ const eslintConfig = async () => {
         'no-console': 'off',
       },
     },
-    ...compat
-      .config({
-        extends: ['plugin:@nx/javascript'],
-      })
-      .map((config) => ({
-        ...config,
-        files: ['**/*.js', '**/*.jsx', '**/*.cjs', '**/*.mjs'],
-        rules: {
-          ...config.rules,
-        },
-      })),
+    // Flat-native: replaces compat.config({ extends: ['plugin:@nx/javascript'] })
+    {
+      files: ['**/*.js', '**/*.jsx', '**/*.cjs', '**/*.mjs'],
+      ...nxEslintPlugin.configs['flat/javascript'],
+      rules: {
+        ...nxEslintPlugin.configs['flat/javascript'].rules,
+      },
+    },
     {
       files: [
         '**/auth-error-handler.function.ts',
