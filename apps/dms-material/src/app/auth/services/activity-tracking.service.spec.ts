@@ -38,14 +38,11 @@ const mockNgZone = {
 
 describe('ActivityTrackingService', () => {
   let service: ActivityTrackingService;
-  let ngZone: NgZone;
   let addEventListenerSpy: ReturnType<typeof vi.spyOn>;
-  let removeEventListenerSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
     // Mock document event listeners
     addEventListenerSpy = vi.spyOn(document, 'addEventListener');
-    removeEventListenerSpy = vi.spyOn(document, 'removeEventListener');
 
     TestBed.configureTestingModule({
       providers: [
@@ -55,7 +52,6 @@ describe('ActivityTrackingService', () => {
     });
 
     service = TestBed.inject(ActivityTrackingService);
-    ngZone = TestBed.inject(NgZone);
 
     vi.clearAllMocks();
   });

@@ -10,9 +10,7 @@ import { NotificationService } from '../../shared/services/notification.service'
 
 describe('ProfileActionsService', () => {
   let service: ProfileActionsService;
-  let authService: jest.Mocked<AuthService>;
   let profileService: jest.Mocked<ProfileService>;
-  let router: jest.Mocked<Router>;
   let confirmDialogService: jest.Mocked<ConfirmDialogService>;
   let notificationService: jest.Mocked<NotificationService>;
 
@@ -54,11 +52,9 @@ describe('ProfileActionsService', () => {
     });
 
     service = TestBed.inject(ProfileActionsService);
-    authService = TestBed.inject(AuthService) as jest.Mocked<AuthService>;
     profileService = TestBed.inject(
       ProfileService
     ) as jest.Mocked<ProfileService>;
-    router = TestBed.inject(Router) as jest.Mocked<Router>;
     confirmDialogService = TestBed.inject(
       ConfirmDialogService
     ) as jest.Mocked<ConfirmDialogService>;

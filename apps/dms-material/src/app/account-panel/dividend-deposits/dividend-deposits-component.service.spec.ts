@@ -68,7 +68,7 @@ function createDivDeposit(overrides: Partial<DivDeposit> = {}): DivDeposit {
 }
 
 // Story 94.2: symbols are now embedded directly on each DivDeposit row
-const TEST_SYMBOLS = ['PDI', 'AAPL', 'MSFT'];
+const testSymbols = ['PDI', 'AAPL', 'MSFT'];
 
 // Helper to create a mock SmartArray-like array with specified length
 function createMockDivDepositsArray(count: number): DivDeposit[] {
@@ -80,7 +80,7 @@ function createMockDivDepositsArray(count: number): DivDeposit[] {
         amount: (i + 1) * 10,
         divDepositTypeId: i % 2 === 0 ? 'type-1' : 'type-2',
         universeId: `universe-${(i % 3) + 1}`,
-        symbol: TEST_SYMBOLS[i % 3],
+        symbol: testSymbols[i % 3],
       })
     );
   }
@@ -201,9 +201,9 @@ describe('DividendDepositsComponentService - Virtual Data Access (AX.3)', () => 
     const dividends = service.dividends();
 
     // Symbols come from d.symbol directly, not from a universe lookup
-    expect(dividends[0].symbol).toBe('PDI'); // TEST_SYMBOLS[0]
-    expect(dividends[1].symbol).toBe('AAPL'); // TEST_SYMBOLS[1]
-    expect(dividends[2].symbol).toBe('MSFT'); // TEST_SYMBOLS[2]
+    expect(dividends[0].symbol).toBe('PDI'); // testSymbols[0]
+    expect(dividends[1].symbol).toBe('AAPL'); // testSymbols[1]
+    expect(dividends[2].symbol).toBe('MSFT'); // testSymbols[2]
   });
 
   // AC: Test that deposit type names are resolved for visible items

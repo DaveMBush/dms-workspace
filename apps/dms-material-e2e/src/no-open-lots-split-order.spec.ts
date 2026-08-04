@@ -1,6 +1,5 @@
 import path from 'path';
 import { expect, Page, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 import { seedNoOpenLotsE2eData } from './helpers/seed-no-open-lots-e2e-data.helper';
 import { initializePrismaClient } from './helpers/shared-prisma-client.helper';
@@ -39,17 +38,23 @@ async function navigateToUniverse(page: Page): Promise<void> {
 
 async function openImportDialog(page: Page): Promise<void> {
   const importButton = page.locator(
-    '[data-testid="import-transactions-button"]'
+    '[data-testid="import-transactions-button"]',
   );
   await expect(importButton).toBeVisible({ timeout: 10000 });
   await importButton.click();
   await expect(
-    page.getByRole('heading', { name: 'Import Fidelity Transactions' })
+    page.getByRole('heading', { name: 'Import Fidelity Transactions' }),
   ).toBeVisible({ timeout: 5000 });
 }
 
 async function uploadFile(page: Page, filename: string): Promise<void> {
-  const filePath = path.join(FIXTURES_DIR, filename);
+  const filePath = path.resolve(
+    process.cwd(),
+    'apps',
+    'dms-material-e2e',
+    'fixtures',
+    filename,
+  );
   const fileInput = page.locator('input[type="file"]');
   await fileInput.setInputFiles(filePath);
 }
@@ -105,15 +110,15 @@ test.describe('No Open Lots Split Ordering Bug (Story 63.1)', () => {
   }) => {
     await navigateToUniverse(page);
 
-    const responsePromise = page.waitForResponse(function isImportResponse(
-      response
-    ) {
-      return (
-        response.url().includes('/api/import/fidelity') &&
-        response.request().method() === 'POST' &&
-        response.status() === 200
-      );
-    });
+    const responsePromise = page.waitForResponse(
+      function isImportResponse(response) {
+        return (
+          response.url().includes('/api/import/fidelity') &&
+          response.request().method() === 'POST' &&
+          response.status() === 200
+        );
+      },
+    );
 
     await openImportDialog(page);
     await uploadFile(page, 'fidelity-split-order-bug.csv');
@@ -133,7 +138,7 @@ test.describe('No Open Lots Split Ordering Bug (Story 63.1)', () => {
 
     // Dialog should close automatically on success.
     await expect(
-      page.getByRole('heading', { name: 'Import Fidelity Transactions' })
+      page.getByRole('heading', { name: 'Import Fidelity Transactions' }),
     ).not.toBeVisible({ timeout: 10000 });
 
     // Verify via direct DB query that the reverse split was applied.
@@ -152,11 +157,10 @@ test.describe('No Open Lots Split Ordering Bug (Story 63.1)', () => {
 
       const totalQty = openLots.reduce(function sumQty(
         sum: number,
-        lot: { quantity: number }
+        lot: { quantity: number },
       ) {
         return sum + lot.quantity;
-      },
-      0);
+      }, 0);
 
       // 1000 pre-split shares ÷ 5 = 200 post-split shares.
       // FAILS while bug is present (actual total = 1000 because split was skipped).
@@ -192,7 +196,7 @@ test.describe('No Open Lots Split Ordering Bug (Story 63.1)', () => {
     await page.evaluate((symbol: string) => {
       localStorage.setItem(
         'dms-sort-filter-state',
-        JSON.stringify({ universes: { filters: { symbol } } })
+        JSON.stringify({ universes: { filters: { symbol } } }),
       );
     }, TSTX_SYMBOL);
 
@@ -257,15 +261,15 @@ test.describe('No Open Lots — Ascending Date Order (Story 63.3)', () => {
   }) => {
     await navigateToUniverse(page);
 
-    const responsePromise = page.waitForResponse(function isImportResponse(
-      response
-    ) {
-      return (
-        response.url().includes('/api/import/fidelity') &&
-        response.request().method() === 'POST' &&
-        response.status() === 200
-      );
-    });
+    const responsePromise = page.waitForResponse(
+      function isImportResponse(response) {
+        return (
+          response.url().includes('/api/import/fidelity') &&
+          response.request().method() === 'POST' &&
+          response.status() === 200
+        );
+      },
+    );
 
     await openImportDialog(page);
     await uploadFile(page, 'fidelity-split-order-ascending.csv');
@@ -283,7 +287,7 @@ test.describe('No Open Lots — Ascending Date Order (Story 63.3)', () => {
     expect(body.errors).toHaveLength(0);
 
     await expect(
-      page.getByRole('heading', { name: 'Import Fidelity Transactions' })
+      page.getByRole('heading', { name: 'Import Fidelity Transactions' }),
     ).not.toBeVisible({ timeout: 10000 });
 
     const prisma = await initializePrismaClient();
@@ -297,11 +301,10 @@ test.describe('No Open Lots — Ascending Date Order (Story 63.3)', () => {
 
       const totalQty = openLots.reduce(function sumQty(
         sum: number,
-        lot: { quantity: number }
+        lot: { quantity: number },
       ) {
         return sum + lot.quantity;
-      },
-      0);
+      }, 0);
 
       // 1000 pre-split shares ÷ 5 = 200 post-split shares.
       expect(totalQty).toBe(200);

@@ -104,7 +104,7 @@ export class SummaryDisplayComponent {
 
     for (const key of Object.keys(source) as (keyof typeof source)[]) {
       const sourceValue = source[key];
-      const targetValue = result[key as keyof typeof result];
+      const targetValue = result[key];
 
       if (
         this.isNonArrayObject(sourceValue) &&

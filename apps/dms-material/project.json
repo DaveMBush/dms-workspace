@@ -128,7 +128,14 @@
         "compodoc": false,
         "configDir": "apps/dms-material/.storybook",
         "browserTarget": "dms-material:build:development",
-        "experimentalZoneless": false
+        "experimentalZoneless": false,
+        "styles": [
+          "apps/dms-material/src/tailwind-imports.css",
+          "apps/dms-material/src/styles.scss"
+        ],
+        "stylePreprocessorOptions": {
+          "includePaths": ["apps/dms-material/src"]
+        }
       },
       "configurations": {
         "ci": {
@@ -144,7 +151,14 @@
         "compodoc": false,
         "configDir": "apps/dms-material/.storybook",
         "browserTarget": "dms-material:build:development",
-        "experimentalZoneless": false
+        "experimentalZoneless": false,
+        "styles": [
+          "apps/dms-material/src/tailwind-imports.css",
+          "apps/dms-material/src/styles.scss"
+        ],
+        "stylePreprocessorOptions": {
+          "includePaths": ["apps/dms-material/src"]
+        }
       },
       "configurations": {
         "ci": {
@@ -157,8 +171,10 @@
       "dependsOn": ["build-storybook"],
       "options": {
         "buildTarget": "dms-material:build-storybook",
+        "port": 4400,
         "staticFilePath": "dist/storybook/dms-material",
-        "spa": true
+        "watch": true,
+        "quiet": true
       }
     }
   }

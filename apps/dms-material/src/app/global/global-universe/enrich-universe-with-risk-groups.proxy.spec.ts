@@ -11,7 +11,7 @@ import { enrichUniverseWithRiskGroups } from './enrich-universe-with-risk-groups
 function makeProxy(
   items: (Universe | undefined)[],
   getIdAtIndex: (i: number) => string | undefined
-) {
+): Universe[] {
   return Object.assign(items as Universe[], { getIdAtIndex });
 }
 

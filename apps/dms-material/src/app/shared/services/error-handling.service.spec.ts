@@ -120,7 +120,6 @@ describe('ErrorHandlingService', () => {
     it('should show persistent notification by default', () => {
       const error = new Error('Test error');
       service.handleOperationError(error, 'test operation');
-
       expect(notification.showPersistent).toHaveBeenCalledWith(
         'Failed to test operation: Test error',
         'error'
@@ -151,7 +150,6 @@ describe('ErrorHandlingService', () => {
         new Error('Connection timeout'),
         'sync universe'
       );
-
       expect(notification.showPersistent).toHaveBeenCalledWith(
         'Failed to sync universe: Connection timeout',
         'error'
@@ -163,7 +161,6 @@ describe('ErrorHandlingService', () => {
         error: { message: 'Database connection failed' },
       };
       service.handleOperationError(error, 'update fields');
-
       expect(notification.showPersistent).toHaveBeenCalledWith(
         'Failed to update fields: Database connection failed',
         'error'
@@ -175,7 +172,6 @@ describe('ErrorHandlingService', () => {
         hideLoading: false,
         persistent: false,
       });
-
       expect(globalLoading.hide).not.toHaveBeenCalled();
       expect(notification.error).toHaveBeenCalled();
       expect(notification.showPersistent).not.toHaveBeenCalled();

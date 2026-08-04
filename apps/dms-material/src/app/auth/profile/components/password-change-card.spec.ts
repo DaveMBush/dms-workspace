@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-hardcoded-passwords -- just testing */
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { PasswordChangeCardComponent } from './password-change-card';
 import { ProfileService } from '../../services/profile.service';

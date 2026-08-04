@@ -1,7 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
-import { AuthSession } from '../auth.types';
 import { storeAuthTokens } from '../utils/store-auth-tokens.function';
 import { SecureCookieService } from './secure-cookie.service';
 import { TokenData } from './token-data.interface';
@@ -30,7 +29,7 @@ export class TokenHandlerService {
     if (this.secureCookieService.isSecureCookiesEnabled()) {
       await this.handleSecureCookieStorage(tokenData);
     } else {
-      storeAuthTokens(tokenData as AuthSession);
+      storeAuthTokens(tokenData);
     }
   }
 
@@ -59,7 +58,7 @@ export class TokenHandlerService {
       );
     } catch {
       // Fallback to localStorage if secure cookie fails
-      storeAuthTokens(tokenData as AuthSession);
+      storeAuthTokens(tokenData);
     }
   }
 

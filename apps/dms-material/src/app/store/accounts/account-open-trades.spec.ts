@@ -12,17 +12,17 @@ describe('Account openTrades PartialArrayDefinition (Story 40.3)', () => {
         startIndex: 0,
         indexes: ['trade-1', 'trade-2'],
         length: 10,
-      } as unknown as Account['openTrades'],
+      },
       soldTrades: {
         startIndex: 0,
         indexes: [],
         length: 0,
-      } as unknown as Account['soldTrades'],
+      },
       divDeposits: {
         startIndex: 0,
         indexes: [],
         length: 0,
-      } as unknown as Account['divDeposits'],
+      },
       months: [],
     };
 

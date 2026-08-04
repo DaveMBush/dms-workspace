@@ -1,9 +1,9 @@
 /// <reference types='vitest' />
+import { existsSync, readdirSync, statSync } from 'fs';
+import { basename, join, relative } from 'path';
 import angular from '@analogjs/vite-plugin-angular';
 import { nxCopyAssetsPlugin } from '@nx/vite/plugins/nx-copy-assets.plugin';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
-import { existsSync, readdirSync, statSync } from 'fs';
-import { basename, join, relative } from 'path';
 import { defineConfig } from 'vite';
 
 /**
@@ -76,7 +76,7 @@ export default defineConfig(() => ({
     coverage: {
       reportsDirectory: '../../coverage/apps/dms-material',
       provider: 'v8' as const,
-      all: false,
+
       include: getTestedSourceFiles(),
       exclude: [
         // Files with insufficient test coverage for 100% thresholds

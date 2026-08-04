@@ -26,7 +26,7 @@ interface ImportApiResponse {
   warnings: string[];
 }
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+const maxFileSize = 10 * 1024 * 1024; // 10MB
 
 @Component({
   selector: 'dms-import-fidelity-dialog',
@@ -71,7 +71,7 @@ export class ImportDialogComponent {
       ]);
       return;
     }
-    if (file.size > MAX_FILE_SIZE) {
+    if (file.size > maxFileSize) {
       this.selectedFile = null;
       this.errors.set(['File size exceeds the maximum limit of 10MB.']);
       return;

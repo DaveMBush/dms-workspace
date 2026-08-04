@@ -13,12 +13,12 @@ import { Trade } from '../../store/trades/trade.interface';
 import { OpenPosition } from '../../store/trades/open-position.interface';
 
 // Mock the entire selectOpenTrades module to avoid SmartNgRX initialization
-const { mockSelectTradesFunc, mockTradesAddFunc } = vi.hoisted(() => {
+const { mockSelectTradesFunc, _mockTradesAddFunc } = vi.hoisted(() => {
   const mockAdd = vi.fn();
   const mockSelect = vi.fn().mockReturnValue([]);
   // Make the return value also have an .add() method for SmartNgRX proxy pattern
   mockSelect.mockReturnValue(Object.assign([], { add: mockAdd }));
-  return { mockSelectTradesFunc: mockSelect, mockTradesAddFunc: mockAdd };
+  return { mockSelectTradesFunc: mockSelect, _mockTradesAddFunc: mockAdd };
 });
 vi.mock('../../store/trades/selectors/select-trades.function', () => ({
   selectOpenTrades: mockSelectTradesFunc,
@@ -219,7 +219,7 @@ describe('OpenPositionsComponent', () => {
           lastPrice: 160,
           unrealizedGainPercent: 6.67,
           unrealizedGain: 1000,
-        } as OpenPosition,
+        },
         {
           id: '3',
           symbol: 'GOOGL',
@@ -236,7 +236,7 @@ describe('OpenPositionsComponent', () => {
           lastPrice: 110,
           unrealizedGainPercent: 10,
           unrealizedGain: 750,
-        } as OpenPosition,
+        },
       ];
 
       // Inject mockTrades and mockOpenPositions into service
@@ -288,7 +288,7 @@ describe('OpenPositionsComponent', () => {
         lastPrice: 520,
         unrealizedGainPercent: 4,
         unrealizedGain: 200,
-      } as OpenPosition;
+      };
 
       mockOpenPositionsService.selectOpenPositions.set([
         ...mockOpenPositions,
@@ -417,7 +417,7 @@ describe('OpenPositionsComponent', () => {
           lastPrice: 160,
           unrealizedGainPercent: 6.67,
           unrealizedGain: 1000,
-        } as OpenPosition,
+        },
       ];
       mockOpenPositionsService.selectOpenPositions.set(mockPositions);
 
@@ -454,7 +454,7 @@ describe('OpenPositionsComponent', () => {
           lastPrice: 160,
           unrealizedGainPercent: 6.67,
           unrealizedGain: 1000,
-        } as OpenPosition,
+        },
       ];
       mockOpenPositionsService.selectOpenPositions.set(mockPositions);
 
@@ -500,7 +500,7 @@ describe('OpenPositionsComponent', () => {
         lastPrice: 160,
         unrealizedGainPercent: 6.67,
         unrealizedGain: 1000,
-      } as OpenPosition;
+      };
 
       mockOpenPositionsService.trades.set([mockTrade]);
       mockOpenPositionsService.selectOpenPositions.set([mockPosition]);
@@ -681,7 +681,7 @@ describe('OpenPositionsComponent', () => {
         lastPrice: 160,
         unrealizedGainPercent: 6.67,
         unrealizedGain: 1000,
-      } as OpenPosition;
+      };
 
       mockOpenPositionsService.trades.set([mockTrade]);
       mockOpenPositionsService.selectOpenPositions.set([mockPosition]);
@@ -964,7 +964,7 @@ describe('OpenPositionsComponent - Account Selection Integration', () => {
           lastPrice: 160,
           unrealizedGainPercent: 6.67,
           unrealizedGain: 1000,
-        } as OpenPosition,
+        },
       ];
 
       fixture.detectChanges();
@@ -996,7 +996,7 @@ describe('OpenPositionsComponent - Account Selection Integration', () => {
           lastPrice: 160,
           unrealizedGainPercent: 6.67,
           unrealizedGain: 1000,
-        } as OpenPosition,
+        },
       ];
 
       const account2Positions: OpenPosition[] = [
@@ -1016,7 +1016,7 @@ describe('OpenPositionsComponent - Account Selection Integration', () => {
           lastPrice: 310,
           unrealizedGainPercent: 3.33,
           unrealizedGain: 500,
-        } as OpenPosition,
+        },
         {
           id: '11',
           symbol: 'GOOGL',
@@ -1033,7 +1033,7 @@ describe('OpenPositionsComponent - Account Selection Integration', () => {
           lastPrice: 110,
           unrealizedGainPercent: 10,
           unrealizedGain: 750,
-        } as OpenPosition,
+        },
       ];
 
       fixture.detectChanges();
@@ -1074,7 +1074,7 @@ describe('OpenPositionsComponent - Account Selection Integration', () => {
           lastPrice: 160,
           unrealizedGainPercent: 6.67,
           unrealizedGain: 1000,
-        } as OpenPosition,
+        },
       ];
 
       fixture.detectChanges();
@@ -1146,7 +1146,7 @@ describe('OpenPositionsComponent - Account Selection Integration', () => {
           lastPrice: 520,
           unrealizedGainPercent: 4,
           unrealizedGain: 400,
-        } as OpenPosition,
+        },
       ];
 
       fixture.detectChanges();
@@ -1194,7 +1194,7 @@ describe('OpenPositionsComponent - Account Selection Integration', () => {
           lastPrice: 160,
           unrealizedGainPercent: 6.67,
           unrealizedGain: 1000,
-        } as OpenPosition,
+        },
         {
           id: '2',
           symbol: 'MSFT',
@@ -1211,7 +1211,7 @@ describe('OpenPositionsComponent - Account Selection Integration', () => {
           lastPrice: 310,
           unrealizedGainPercent: 3.33,
           unrealizedGain: 500,
-        } as OpenPosition,
+        },
       ];
 
       fixture.detectChanges();
@@ -1275,7 +1275,7 @@ describe('OpenPositionsComponent - Account Selection Integration', () => {
           lastPrice: 160,
           unrealizedGainPercent: 6.67,
           unrealizedGain: 1000,
-        } as OpenPosition,
+        },
       ];
 
       fixture.detectChanges();

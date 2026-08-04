@@ -256,9 +256,6 @@ describe('PerformanceLoggingService', () => {
 
   describe('memory management', () => {
     it('should limit stored metrics to maximum count', () => {
-      // Set up service with smaller limit for testing
-      const maxMetrics = 3;
-
       // Mock the private maxMetrics property by adding more metrics than the limit
       for (let i = 0; i < 5; i++) {
         service.logPerformanceMetric({

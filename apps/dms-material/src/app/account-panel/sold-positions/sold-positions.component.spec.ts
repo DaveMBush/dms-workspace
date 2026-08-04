@@ -138,7 +138,8 @@ describe('SoldPositionsComponent', () => {
   });
 
   it('should call onCellEdit without error', () => {
-    const trade = { id: '1', symbol: 'AAPL' } as any;
+    // @ts-expect-error - test uses minimal mock object
+    const trade = { id: '1', symbol: 'AAPL' };
     expect(() => component.onCellEdit(trade, 'sell', 150)).not.toThrow();
   });
 

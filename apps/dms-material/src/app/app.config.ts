@@ -1,6 +1,5 @@
 import {
   provideHttpClient,
-  withFetch,
   withInterceptors,
   withInterceptorsFromDi,
 } from '@angular/common/http';
@@ -140,8 +139,7 @@ export const appConfig: ApplicationConfig = {
     // HTTP client with auth interceptor
     provideHttpClient(
       withInterceptors([authInterceptor, sortInterceptor]),
-      withInterceptorsFromDi(),
-      withFetch()
+      withInterceptorsFromDi()
     ),
 
     // Router

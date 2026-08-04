@@ -11,7 +11,7 @@ import { SortFilterStateService } from '../../shared/services/sort-filter-state.
 import { TableState } from '../../shared/services/table-state.interface';
 import { migrateTableState } from '../../shared/utils/migrate-table-state.function';
 
-const FIELD_NAME_MAP: Record<string, Record<string, string>> = {
+const fieldNameMap: Record<string, Record<string, string>> = {
   universes: {
     risk_group: 'risk_group',
   },
@@ -24,7 +24,7 @@ const FIELD_NAME_MAP: Record<string, Record<string, string>> = {
 };
 
 function mapSortField(tableName: string, frontendField: string): string {
-  const tableMap = FIELD_NAME_MAP[tableName];
+  const tableMap = fieldNameMap[tableName];
   if (tableMap === undefined) {
     return frontendField;
   }

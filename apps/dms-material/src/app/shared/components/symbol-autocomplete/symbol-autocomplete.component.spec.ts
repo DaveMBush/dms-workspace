@@ -85,6 +85,6 @@ describe('SymbolAutocompleteComponent', () => {
   });
 
   it('should display empty string when option is null', () => {
-    expect(component.displayFn(null as any)).toBe('');
+    expect(component.displayFn(null)).toBe('');
   });
 });

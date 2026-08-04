@@ -47,7 +47,8 @@ class MockStorageEvent extends Event {
 }
 
 // Add to global window object
-(global as any).StorageEvent = MockStorageEvent;
+// eslint-disable-next-line @typescript-eslint/naming-convention -- this is what is is called
+(global as unknown as { StorageEvent: typeof MockStorageEvent }).StorageEvent = MockStorageEvent;
 
 describe('UserStateService', () => {
   let service: UserStateService;

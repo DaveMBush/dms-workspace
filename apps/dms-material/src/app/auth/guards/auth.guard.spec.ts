@@ -49,7 +49,7 @@ describe('Auth Guards', () => {
       mockAuthService.isAuthenticated.mockReturnValue(true);
       mockAuthService.isSessionValid.mockResolvedValue(true);
 
-      const result = await TestBed.runInInjectionContext(() =>
+      const result = await TestBed.runInInjectionContext(async () =>
         authGuard(mockRoute, mockState)
       );
 
@@ -64,7 +64,7 @@ describe('Auth Guards', () => {
       mockAuthService.isSessionValid.mockResolvedValue(false);
       mockAuthService.signOut.mockResolvedValue(undefined);
 
-      const result = await TestBed.runInInjectionContext(() =>
+      const result = await TestBed.runInInjectionContext(async () =>
         authGuard(mockRoute, mockState)
       );
 
@@ -78,7 +78,7 @@ describe('Auth Guards', () => {
       mockAuthService.isAuthenticated.mockReturnValue(false);
       mockRouter.navigate.mockResolvedValue(true);
 
-      const result = await TestBed.runInInjectionContext(() =>
+      const result = await TestBed.runInInjectionContext(async () =>
         authGuard(mockRoute, mockState)
       );
 
@@ -93,7 +93,7 @@ describe('Auth Guards', () => {
       mockAuthService.isAuthenticated.mockReturnValue(false);
       mockRouter.navigate.mockRejectedValue(new Error('Navigation failed'));
 
-      const result = await TestBed.runInInjectionContext(() =>
+      const result = await TestBed.runInInjectionContext(async () =>
         authGuard(mockRoute, mockState)
       );
 
@@ -111,7 +111,7 @@ describe('Auth Guards', () => {
       );
       mockAuthService.signOut.mockResolvedValue(undefined);
 
-      const result = await TestBed.runInInjectionContext(() =>
+      const result = await TestBed.runInInjectionContext(async () =>
         authGuard(mockRoute, mockState)
       );
 
@@ -126,7 +126,7 @@ describe('Auth Guards', () => {
       mockAuthService.isSessionValid.mockResolvedValue(false);
       mockAuthService.signOut.mockRejectedValue(new Error('SignOut failed'));
 
-      const result = await TestBed.runInInjectionContext(() =>
+      const result = await TestBed.runInInjectionContext(async () =>
         authGuard(mockRoute, mockState)
       );
 
@@ -144,7 +144,7 @@ describe('Auth Guards', () => {
       mockAuthService.isAuthenticated.mockReturnValue(false);
       mockRouter.navigate.mockResolvedValue(true);
 
-      const result = await TestBed.runInInjectionContext(() =>
+      const result = await TestBed.runInInjectionContext(async () =>
         authGuard(mockRoute, complexState)
       );
 
@@ -161,7 +161,7 @@ describe('Auth Guards', () => {
     it('should allow access when user is not authenticated', async () => {
       mockAuthService.isAuthenticated.mockReturnValue(false);
 
-      const result = await TestBed.runInInjectionContext(() =>
+      const result = await TestBed.runInInjectionContext(async () =>
         guestGuard(mockRoute, mockState)
       );
 
@@ -174,7 +174,7 @@ describe('Auth Guards', () => {
       mockAuthService.isAuthenticated.mockReturnValue(true);
       mockRouter.navigate.mockResolvedValue(true);
 
-      const result = await TestBed.runInInjectionContext(() =>
+      const result = await TestBed.runInInjectionContext(async () =>
         guestGuard(mockRoute, mockState)
       );
 
@@ -187,7 +187,7 @@ describe('Auth Guards', () => {
       mockAuthService.isAuthenticated.mockReturnValue(true);
       mockRouter.navigate.mockRejectedValue(new Error('Navigation failed'));
 
-      const result = await TestBed.runInInjectionContext(() =>
+      const result = await TestBed.runInInjectionContext(async () =>
         guestGuard(mockRoute, mockState)
       );
 
@@ -203,9 +203,9 @@ describe('Auth Guards', () => {
       mockAuthService.isSessionValid.mockResolvedValue(true);
 
       const results = await Promise.all([
-        TestBed.runInInjectionContext(() => authGuard(mockRoute, mockState)),
-        TestBed.runInInjectionContext(() => authGuard(mockRoute, mockState)),
-        TestBed.runInInjectionContext(() => authGuard(mockRoute, mockState)),
+        TestBed.runInInjectionContext(async () => authGuard(mockRoute, mockState)),
+        TestBed.runInInjectionContext(async () => authGuard(mockRoute, mockState)),
+        TestBed.runInInjectionContext(async () => authGuard(mockRoute, mockState)),
       ]);
 
       expect(results).toEqual([true, true, true]);
@@ -223,9 +223,9 @@ describe('Auth Guards', () => {
       mockRouter.navigate.mockResolvedValue(true);
 
       const results = await Promise.all([
-        TestBed.runInInjectionContext(() => authGuard(mockRoute, mockState)),
-        TestBed.runInInjectionContext(() => authGuard(mockRoute, mockState)),
-        TestBed.runInInjectionContext(() => authGuard(mockRoute, mockState)),
+        TestBed.runInInjectionContext(async () => authGuard(mockRoute, mockState)),
+        TestBed.runInInjectionContext(async () => authGuard(mockRoute, mockState)),
+        TestBed.runInInjectionContext(async () => authGuard(mockRoute, mockState)),
       ]);
 
       expect(results).toEqual([true, true, false]);

@@ -1,6 +1,6 @@
+import { existsSync, readdirSync, statSync } from 'fs';
+import { basename, dirname, join, relative } from 'path';
 import { defineConfig } from 'vitest/config';
-import { readdirSync, existsSync, statSync } from 'fs';
-import { join, dirname, basename, relative } from 'path';
 
 /**
  * Dynamically determines which source files should be included in coverage
@@ -60,7 +60,7 @@ export default defineConfig({
     coverage: {
       reportsDirectory: '../../coverage/apps/server',
       provider: 'v8' as const,
-      all: false,
+
       include: getTestedSourceFiles(),
       exclude: [
         // Files with complex integration dependencies that are covered by e2e tests
@@ -92,19 +92,11 @@ export default defineConfig({
         statements: 100,
       },
     },
-    // Use unique database file per worker for isolation
-    // Vitest automatically provides a unique workerId for each worker
+    // Use unique database file per worker for isolation (default behavior with forks pool)
     env: {
       DATABASE_PROVIDER: 'sqlite',
       DATABASE_URL: 'file:./test-database.db',
       NODE_ENV: 'test',
-    },
-    // Ensure tests run in isolated pools to prevent database conflicts
-    poolOptions: {
-      threads: {
-        singleThread: false,
-        isolate: true,
-      },
     },
     // Clean up test databases after all tests complete
     globalTeardown: './vitest.teardown.ts',

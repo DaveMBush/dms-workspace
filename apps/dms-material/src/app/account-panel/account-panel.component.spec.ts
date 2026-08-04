@@ -139,7 +139,7 @@ describe('AccountPanelComponent', () => {
 
       Object.defineProperty(
         component,
-        'dialog' as keyof AccountPanelComponent,
+        'dialog',
         {
           get: () => mockDialog,
           configurable: true,

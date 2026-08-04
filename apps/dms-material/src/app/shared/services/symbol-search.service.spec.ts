@@ -46,7 +46,7 @@ describe('SymbolSearchService', () => {
 
       const req = httpMock.expectOne(
         (request) =>
-          request.url.includes('/api/symbol/search') &&
+          (Boolean(request.url.includes('/api/symbol/search'))) &&
           request.params.get('query') === query
       );
       expect(req.request.method).toBe('GET');

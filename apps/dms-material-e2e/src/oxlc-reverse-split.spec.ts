@@ -1,9 +1,8 @@
 import path from 'path';
 import { expect, Page, test } from 'playwright/test';
-
+import { login } from './helpers/login.helper';
 import { seedOxlcCusipReverseSplitData } from './helpers/seed-oxlc-cusip-reverse-split.helper';
 import { initializePrismaClient } from './helpers/shared-prisma-client.helper';
-import { login } from './helpers/login.helper';
 
 const FIXTURES_DIR = path.resolve(__dirname, '..', 'fixtures');
 
@@ -14,17 +13,26 @@ async function navigateToUniverse(page: Page): Promise<void> {
 
 async function openImportDialog(page: Page): Promise<void> {
   const importButton = page.locator(
-    '[data-testid="import-transactions-button"]'
+    '[data-testid="import-transactions-button"]',
   );
   await expect(importButton).toBeVisible({ timeout: 10000 });
   await importButton.click();
   await expect(
-    page.getByRole('heading', { name: 'Import Fidelity Transactions' })
+    page.getByRole('heading', { name: 'Import Fidelity Transactions' }),
   ).toBeVisible({ timeout: 5000 });
 }
 
 async function uploadFile(page: Page, filename: string): Promise<void> {
-  const filePath = path.join(FIXTURES_DIR, filename);
+  // Resolve the fixture path relative to the workspace root. The compiled spec
+  // files are emitted into a `dist` folder, so using __dirname would point at
+  // that location and miss the source fixtures directory.
+  const filePath = path.resolve(
+    process.cwd(),
+    'apps',
+    'dms-material-e2e',
+    'fixtures',
+    filename,
+  );
   const fileInput = page.locator('input[type="file"]');
   await fileInput.setInputFiles(filePath);
 }
@@ -96,7 +104,7 @@ test.describe('OXLC CUSIP-Stored Lots Reverse Split E2E', () => {
 
     // Dialog closes automatically on success
     await expect(
-      page.getByRole('heading', { name: 'Import Fidelity Transactions' })
+      page.getByRole('heading', { name: 'Import Fidelity Transactions' }),
     ).not.toBeVisible({ timeout: 10000 });
 
     // Query open lots under the CUSIP universe (where the pre-split lots live).
@@ -113,7 +121,9 @@ test.describe('OXLC CUSIP-Stored Lots Reverse Split E2E', () => {
       // Currently FAILS: the split adjustment does not find CUSIP-stored lots.
       // After Story 61.2 fix: adjustLotsForSplit will also look up CUSIP-mapped lots.
       expect(openLots.map((lot) => lot.quantity)).toEqual([60, 30, 100, 116]);
-      expect(openLots.map((lot) => lot.buy)).toEqual([22.5, 22.45, 20.3, 17.2]);
+      expect(
+        openLots.map((lot) => Math.round(lot.buy * 10000) / 10000),
+      ).toEqual([22.5, 22.45, 20.3, 17.2]);
     } finally {
       await prisma.$disconnect();
     }

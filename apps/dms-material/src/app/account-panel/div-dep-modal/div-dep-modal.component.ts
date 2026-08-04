@@ -34,7 +34,6 @@ import { MatSelectModule } from '@angular/material/select';
 import { SymbolAutocompleteComponent } from '../../shared/components/symbol-autocomplete/symbol-autocomplete.component';
 import { SymbolOption } from '../../shared/components/symbol-autocomplete/symbol-option.interface';
 import { selectDivDepositTypes } from '../../store/div-deposit-types/selectors/select-div-deposit-types.function';
-import { DivDeposit } from '../../store/div-deposits/div-deposit.interface';
 import { selectUniverses } from '../../store/universe/selectors/select-universes.function';
 import { DivDepModalData } from './div-dep-modal-data.interface';
 
@@ -238,7 +237,7 @@ export class DivDepModalComponent implements OnInit, AfterViewInit {
       amount: parseFloat(String(this.form.value.amount)),
       divDepositTypeId: this.form.value.divDepositTypeId!,
       universeId: this.selectedUniverseId,
-    } as Partial<DivDeposit>);
+    });
   }
 
   onSymbolBlur(): void {

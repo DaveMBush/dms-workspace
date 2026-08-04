@@ -1,10 +1,10 @@
 import { inject, Injectable } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { RowProxyDelete, SmartArray } from '@smarttools/smart-signals';
+import { RowProxyDelete } from '@smarttools/smart-signals';
 
 import { ConfirmDialogService } from '../shared/services/confirm-dialog.service';
 import { Account as AccountInterface } from '../store/accounts/account.interface';
-import { Top } from '../store/top/top.interface';
+
 import { AccountComponent } from './account';
 
 @Injectable()
@@ -21,7 +21,8 @@ export class AccountComponentService {
   addAccount(): void {
     this.component.addingNode = 'new';
     this.component.editingContent = 'New Account';
-    this.component.accounts$().addToStore!(
+    const accounts = this.component.accounts$() as unknown as { addToStore(data: unknown, top: unknown): void };
+    accounts.addToStore(
       {
         name: 'New Account',
         id: 'new',
@@ -30,7 +31,7 @@ export class AccountComponentService {
         divDeposits: [],
         months: [],
       },
-      this.component.top['1']!
+      this.component.top
     );
   }
 
@@ -44,8 +45,8 @@ export class AccountComponentService {
 
   cancelEdit(item: AccountInterface): void {
     if (this.component.addingNode.length > 0) {
-      (this.component.accounts$() as SmartArray<Top, AccountInterface>)
-        .removeFromStore!(item, this.component.top['1']!);
+      const accounts = this.component.accounts$() as unknown as { removeFromStore(item: unknown, top: unknown): void };
+      accounts.removeFromStore(item, this.component.top['1']!);
     }
     this.component.addingNode = '';
     this.component.editingNode = '';

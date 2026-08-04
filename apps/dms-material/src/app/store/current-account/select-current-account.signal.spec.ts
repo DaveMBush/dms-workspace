@@ -1,7 +1,5 @@
 import { computed, signal } from '@angular/core';
 
-import { Account } from '../accounts/account.interface';
-
 // Mock transitive dependencies that trigger SmartSignals initialization
 vi.mock(
   '../trades/selectors/select-account-children.function',
@@ -46,24 +44,6 @@ describe('selectCurrentAccountSignal', () => {
       }),
     } as unknown as CurrentAccountStore;
   }
-
-  const mockAccount: Account = {
-    id: 'account-1',
-    name: 'Test Account',
-    openTrades: [],
-    soldTrades: [],
-    divDeposits: [],
-    months: [{ month: 1, year: 2024 }],
-  };
-
-  const emptyAccount: Account = {
-    id: '',
-    name: '',
-    openTrades: [],
-    soldTrades: [],
-    divDeposits: [],
-    months: [],
-  };
 
   describe('when account exists', () => {
     it('should return the account matching the current account id', () => {

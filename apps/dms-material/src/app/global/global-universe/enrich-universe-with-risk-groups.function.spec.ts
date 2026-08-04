@@ -84,7 +84,7 @@ describe('enrichUniverseWithRiskGroups', () => {
   });
 
   it('should handle null risk groups', () => {
-    const result = enrichUniverseWithRiskGroups(mockUniverses, null as any);
+    const result = enrichUniverseWithRiskGroups(mockUniverses, null as unknown as RiskGroup[]);
 
     expect(result).toHaveLength(2);
     expect(result[0].risk_group).toBe('rg1');

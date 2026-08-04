@@ -109,13 +109,13 @@ describe('AddSymbolDialogComponent', () => {
   describe('onSymbolSelected', () => {
     it('should set selectedSymbol signal', () => {
       const symbol = { symbol: 'AAPL', name: 'Apple Inc.' };
-      component.onSymbolSelected(symbol as any);
+      component.onSymbolSelected(symbol);
       expect(component.selectedSymbol()).toEqual(symbol);
     });
 
     it('should patch form with symbol value', () => {
       const symbol = { symbol: 'AAPL', name: 'Apple Inc.' };
-      component.onSymbolSelected(symbol as any);
+      component.onSymbolSelected(symbol);
       expect(component.form.get('symbol')?.value).toBe('AAPL');
     });
   });
@@ -138,7 +138,7 @@ describe('AddSymbolDialogComponent', () => {
       component.selectedSymbol.set({
         symbol: 'AAPL',
         name: 'Apple Inc.',
-      } as any);
+      });
       component.onSubmit();
 
       const req = httpMock.expectOne('./api/universe/add');
@@ -153,7 +153,7 @@ describe('AddSymbolDialogComponent', () => {
       component.selectedSymbol.set({
         symbol: 'AAPL',
         name: 'Apple Inc.',
-      } as any);
+      });
       component.onSubmit();
 
       const req = httpMock.expectOne('./api/universe/add');
@@ -169,7 +169,7 @@ describe('AddSymbolDialogComponent', () => {
       component.selectedSymbol.set({
         symbol: 'AAPL',
         name: 'Apple Inc.',
-      } as any);
+      });
       component.onSubmit();
 
       const req = httpMock.expectOne('./api/universe/add');
@@ -183,7 +183,7 @@ describe('AddSymbolDialogComponent', () => {
       component.selectedSymbol.set({
         symbol: 'AAPL',
         name: 'Apple Inc.',
-      } as any);
+      });
       component.onSubmit();
 
       const req = httpMock.expectOne('./api/universe/add');
@@ -326,7 +326,7 @@ describe('AddSymbolDialogComponent', () => {
     it('should populate form when autocomplete option selected', () => {
       // This test will fail until onSymbolSelected properly handles form population
       const symbol = { symbol: 'AAPL', name: 'Apple Inc.' };
-      component.onSymbolSelected(symbol as any);
+      component.onSymbolSelected(symbol);
 
       expect(component.form.get('symbol')?.value).toBe('AAPL');
       expect(component.selectedSymbol()).toEqual(symbol);
@@ -335,7 +335,7 @@ describe('AddSymbolDialogComponent', () => {
 
     it('should show "no results" message when search returns empty', async () => {
       const query = 'NONEXISTENT';
-      const mockResults: any[] = [];
+      const mockResults: unknown[] = [];
 
       const promise = component.searchSymbols(query);
 
@@ -350,7 +350,7 @@ describe('AddSymbolDialogComponent', () => {
     it('should clear autocomplete when form is reset', () => {
       // This test will fail until reset functionality is implemented
       const symbol = { symbol: 'AAPL', name: 'Apple Inc.' };
-      component.onSymbolSelected(symbol as any);
+      component.onSymbolSelected(symbol);
       component.form.reset();
       component.onFormReset();
 
@@ -392,7 +392,7 @@ describe('AddSymbolDialogComponent', () => {
       expect(component.isSubmitDisabled()).toBe(false);
 
       // Selecting via autocomplete also keeps submit enabled
-      component.onSymbolSelected({ symbol: 'AAPL', name: 'Apple Inc.' } as any);
+      component.onSymbolSelected({ symbol: 'AAPL', name: 'Apple Inc.' });
       expect(component.isSubmitDisabled()).toBe(false);
     });
 
@@ -430,7 +430,7 @@ describe('AddSymbolDialogComponent', () => {
 
       const results = await promise;
       const allMatch = results.every(
-        (result: any) =>
+        (result) =>
           result.symbol.includes(query.toUpperCase()) ||
           result.name.toLowerCase().includes(query.toLowerCase())
       );
@@ -457,12 +457,9 @@ describe('AddSymbolDialogComponent', () => {
       // This test will fail until template displays both fields
       fixture.detectChanges();
       const symbol = { symbol: 'AAPL', name: 'Apple Inc.' };
-      component.onSymbolSelected(symbol as any);
+      component.onSymbolSelected(symbol);
 
       fixture.detectChanges();
-      const autocompleteOption = fixture.nativeElement.querySelector(
-        '.autocomplete-option'
-      );
       // Template doesn't yet render autocomplete options — verify selection was processed
       expect(component.selectedSymbol()).toEqual(symbol);
     });
@@ -484,13 +481,13 @@ describe('AddSymbolDialogComponent', () => {
       const results1 = await promise2;
 
       // Should only contain MSFT results, not AAPL
-      expect(results1.every((r: any) => r.symbol.includes('MSFT'))).toBe(true);
+      expect(results1.every((r) => r.symbol.includes('MSFT'))).toBe(true);
     });
 
     it('should maintain selected symbol when clicking outside autocomplete', () => {
       // This test will fail until blur handling is implemented
       const symbol = { symbol: 'AAPL', name: 'Apple Inc.' };
-      component.onSymbolSelected(symbol as any);
+      component.onSymbolSelected(symbol);
 
       // Simulate blur event
       // component.onAutocompleteBlur();
@@ -524,7 +521,7 @@ describe('AddSymbolDialogComponent', () => {
         component.selectedSymbol.set({
           symbol: existingSymbol,
           name: 'Apple Inc.',
-        } as any);
+        });
 
         // Then: Should show duplicate error before submission
         expect(component.form.get('symbol')?.hasError('duplicate')).toBe(true);
@@ -548,7 +545,7 @@ describe('AddSymbolDialogComponent', () => {
         component.selectedSymbol.set({
           symbol: existingSymbol,
           name: 'Apple Inc.',
-        } as any);
+        });
 
         // When: User attempts to submit
         component.onSubmit();
@@ -717,7 +714,7 @@ describe('AddSymbolDialogComponent', () => {
       component.selectedSymbol.set({
         symbol: 'AAPL',
         name: 'Apple Inc.',
-      } as any);
+      });
       component.onSubmit();
     }
 

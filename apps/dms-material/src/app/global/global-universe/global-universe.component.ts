@@ -50,8 +50,8 @@ import { enrichUniverseWithRiskGroups } from './enrich-universe-with-risk-groups
 import { filterUniverses } from './filter-universes.function';
 import { findAndDeleteUniverseRow } from './find-and-delete-universe-row.function';
 import { formatPosition } from './format-position.function';
-import { UNIVERSE_COLUMNS } from './global-universe.columns';
-import { EXPIRED_OPTIONS } from './global-universe.expired-options';
+import { universeColumns } from './global-universe.columns';
+import { expiredOptions } from './global-universe.expired-options';
 import { handleCellEdit } from './handle-cell-edit.function';
 import { parseYieldValue } from './parse-yield-value.function';
 import { restoreUniverseFilters } from './restore-universe-filters.function';
@@ -154,9 +154,9 @@ export class GlobalUniverseComponent implements OnDestroy {
 
   // Expose screener service loading and error signals
   readonly screenerError$ = this.screenerService.error;
-  readonly columns: ColumnDef[] = UNIVERSE_COLUMNS;
+  readonly columns: ColumnDef[] = universeColumns;
 
-  readonly expiredOptions = EXPIRED_OPTIONS;
+  readonly expiredOptions = expiredOptions;
 
   readonly calculateYield = calculateYieldPercent;
   readonly formatPosition = formatPosition;

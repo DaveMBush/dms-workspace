@@ -8,7 +8,7 @@ describe('StatePersistenceService', () => {
   let mockSetItem: ReturnType<typeof vi.fn>;
   let mockRemoveItem: ReturnType<typeof vi.fn>;
 
-  const STORAGE_KEY = 'dms-ui-state';
+  const storageKey = 'dms-ui-state';
 
   beforeEach(() => {
     mockGetItem = vi.fn();
@@ -51,7 +51,7 @@ describe('StatePersistenceService', () => {
       service.saveState('test-key', 'test-value');
 
       expect(mockSetItem).toHaveBeenCalledWith(
-        STORAGE_KEY,
+        storageKey,
         JSON.stringify({ 'test-key': 'test-value' })
       );
     });
@@ -64,7 +64,7 @@ describe('StatePersistenceService', () => {
       service.saveState('new-key', 'new-value');
 
       expect(mockSetItem).toHaveBeenCalledWith(
-        STORAGE_KEY,
+        storageKey,
         JSON.stringify({
           'existing-key': 'existing-value',
           'new-key': 'new-value',
@@ -78,7 +78,7 @@ describe('StatePersistenceService', () => {
       service.saveState('test-key', 'new-value');
 
       expect(mockSetItem).toHaveBeenCalledWith(
-        STORAGE_KEY,
+        storageKey,
         JSON.stringify({ 'test-key': 'new-value' })
       );
     });
@@ -90,7 +90,7 @@ describe('StatePersistenceService', () => {
       service.saveState('complex-key', complexValue);
 
       expect(mockSetItem).toHaveBeenCalledWith(
-        STORAGE_KEY,
+        storageKey,
         JSON.stringify({ 'complex-key': complexValue })
       );
     });
@@ -101,7 +101,7 @@ describe('StatePersistenceService', () => {
       service.saveState('test-key', 'test-value');
 
       expect(mockSetItem).toHaveBeenCalledWith(
-        STORAGE_KEY,
+        storageKey,
         JSON.stringify({ 'test-key': 'test-value' })
       );
     });
@@ -214,7 +214,7 @@ describe('StatePersistenceService', () => {
       service.clearState('key-a');
 
       expect(mockSetItem).toHaveBeenCalledWith(
-        STORAGE_KEY,
+        storageKey,
         JSON.stringify({ 'key-b': 'value-b' })
       );
     });
@@ -222,7 +222,7 @@ describe('StatePersistenceService', () => {
     it('should remove all state when no key is provided', () => {
       service.clearState();
 
-      expect(mockRemoveItem).toHaveBeenCalledWith(STORAGE_KEY);
+      expect(mockRemoveItem).toHaveBeenCalledWith(storageKey);
     });
 
     it('should handle clearing a key that does not exist', () => {
@@ -231,7 +231,7 @@ describe('StatePersistenceService', () => {
       service.clearState('non-existent-key');
 
       expect(mockSetItem).toHaveBeenCalledWith(
-        STORAGE_KEY,
+        storageKey,
         JSON.stringify({ 'existing-key': 'value' })
       );
     });

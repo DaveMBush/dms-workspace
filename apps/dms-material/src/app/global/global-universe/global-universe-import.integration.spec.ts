@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { signal } from '@angular/core';
 import { provideSmartNgRX } from '@smarttools/smart-signals';
 import { of } from 'rxjs';
@@ -239,7 +239,7 @@ describe('GlobalUniverseComponent - Import Integration', () => {
         close: vi.fn(),
       };
       mockDialog.open.mockReturnValue(
-        cancelDialogRef as unknown as MatDialogRef<unknown>
+        cancelDialogRef
       );
 
       const compiled = fixture.nativeElement as HTMLElement;
@@ -261,7 +261,7 @@ describe('GlobalUniverseComponent - Import Integration', () => {
         close: vi.fn(),
       };
       mockDialog.open.mockReturnValue(
-        successDialogRef as unknown as MatDialogRef<unknown>
+        successDialogRef
       );
 
       const compiled = fixture.nativeElement as HTMLElement;

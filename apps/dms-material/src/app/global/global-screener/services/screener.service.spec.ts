@@ -79,7 +79,7 @@ describe('ScreenerService', () => {
   it('should return observable from refresh()', () => {
     const result = service.refresh();
     expect(result).toBeDefined();
-    expect(typeof result.subscribe).toBe('function');
+    expect(typeof result).toBe('Observable');
 
     result.subscribe();
 

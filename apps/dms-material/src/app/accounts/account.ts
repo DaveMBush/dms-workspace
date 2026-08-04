@@ -4,7 +4,6 @@ import {
   computed,
   inject,
   OnInit,
-  Signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -13,14 +12,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { SmartArray } from '@smarttools/smart-signals';
-
 import { NodeEditorComponent } from '../shared/components/edit/node-editor.component';
 import { StatePersistenceService } from '../shared/services/state-persistence.service';
 import { Account as AccountInterface } from '../store/accounts/account.interface';
 import { selectAccounts } from '../store/accounts/selectors/select-accounts.function';
 import { selectTopEntities } from '../store/top/selectors/select-top-entities.function';
-import { Top } from '../store/top/top.interface';
 import { AccountComponentService } from './account-component.service';
 
 @Component({
@@ -48,9 +44,7 @@ export class AccountComponent implements OnInit {
   private readonly stateKey = 'global-tab-selection';
   private readonly accountStateKey = 'selected-account';
 
-  accounts$ = selectAccounts as Signal<
-    AccountInterface[] & SmartArray<Top, AccountInterface>
-  >;
+  accounts$ = selectAccounts;
 
   top = selectTopEntities().entities;
 

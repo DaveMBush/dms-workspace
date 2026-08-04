@@ -157,7 +157,7 @@ describe('TokenRefreshService', () => {
 
     it('should handle concurrent refresh requests', async () => {
       mockFetchAuthSession.mockImplementation(
-        () =>
+        async () =>
           new Promise((resolve) =>
             setTimeout(() => resolve(createMockSession()), 100)
           )
@@ -184,7 +184,7 @@ describe('TokenRefreshService', () => {
 
     it('should return true during refresh', async () => {
       mockFetchAuthSession.mockImplementation(
-        () =>
+        async () =>
           new Promise((resolve) =>
             setTimeout(() => resolve(createMockSession()), 50)
           )
@@ -295,7 +295,7 @@ function createMockJWT(payload: Record<string, unknown>): string {
 /**
  * Create a mock auth session response
  */
-function createMockSession() {
+function createMockSession(): { tokens: { accessToken: { toString(): string; payload: { exp: number; }; }; idToken: { toString(): string; }; refreshToken: { toString(): string; }; }; } {
   const expiration = Math.floor((Date.now() + 60 * 60 * 1000) / 1000);
 
   return {

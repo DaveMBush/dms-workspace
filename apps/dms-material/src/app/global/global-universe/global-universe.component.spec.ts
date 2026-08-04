@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal, Signal } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Sort } from '@angular/material/sort';
 import { provideSmartNgRX } from '@smarttools/smart-signals';
 import { of, throwError } from 'rxjs';
@@ -231,10 +231,10 @@ describe('GlobalUniverseComponent', () => {
     it('should open the AddSymbolDialogComponent', () => {
       const mockDialogRef = {
         afterClosed: vi.fn().mockReturnValue(of(null)),
-      };
+      } as unknown as MatDialogRef<unknown, unknown>;
       const dialogSpy = vi
         .spyOn(TestBed.inject(MatDialog), 'open')
-        .mockReturnValue(mockDialogRef as any);
+        .mockReturnValue(mockDialogRef);
 
       component.showAddSymbolDialog();
 
@@ -485,7 +485,7 @@ describe('GlobalUniverseComponent - Refresh Button', () => {
   });
 
   it('should handle refresh errors gracefully', () => {
-    (screenerService.error as any).set('Failed to refresh');
+    (screenerService.error as unknown as { set(msg: string): void }).set('Failed to refresh');
     fixture.detectChanges();
 
     const errorEl = fixture.nativeElement.querySelector(
@@ -496,7 +496,7 @@ describe('GlobalUniverseComponent - Refresh Button', () => {
 
   it('should display error message when refresh fails', () => {
     const errorMessage = 'Network error occurred';
-    (screenerService.error as any).set(errorMessage);
+    (screenerService.error as unknown as { set(msg: string): void }).set(errorMessage);
     fixture.detectChanges();
 
     const errorEl = fixture.nativeElement.querySelector(
@@ -509,7 +509,6 @@ describe('GlobalUniverseComponent - Refresh Button', () => {
 // STORY AK.1: TDD - Universe Update Button Integration Tests
 // STORY AK.2: Tests enabled - implementation complete
 describe('GlobalUniverseComponent - Universe Update Button Integration (TDD - Story AK.1)', () => {
-  let component: GlobalUniverseComponent;
   let fixture: ComponentFixture<GlobalUniverseComponent>;
   let mockSyncService: {
     syncFromScreener: ReturnType<typeof vi.fn>;
@@ -547,7 +546,6 @@ describe('GlobalUniverseComponent - Universe Update Button Integration (TDD - St
     }).compileComponents();
 
     fixture = TestBed.createComponent(GlobalUniverseComponent);
-    component = fixture.componentInstance;
   });
 
   it('should call UniverseSyncService.syncFromScreener when update button is clicked', () => {
@@ -653,7 +651,7 @@ describe('GlobalUniverseComponent - Loading and Error Handling', () => {
     const errorSignal = signal<string | null>(null);
     const refreshMock = vi.fn(() => {
       // Simulate ScreenerService behavior: clear error on refresh
-      (errorSignal as any).set(null);
+      (errorSignal as unknown as { set(msg: string): void }).set(null);
       return of({});
     });
 
@@ -694,7 +692,7 @@ describe('GlobalUniverseComponent - Loading and Error Handling', () => {
   });
 
   it('should display error message when error occurs', () => {
-    (screenerService.error as any).set('Network error');
+    (screenerService.error as unknown as { set(msg: string): void }).set('Network error');
     fixture.detectChanges();
 
     const errorEl = fixture.nativeElement.querySelector(
@@ -714,7 +712,7 @@ describe('GlobalUniverseComponent - Loading and Error Handling', () => {
   });
 
   it('should enable retry on error', () => {
-    (screenerService.error as any).set('Failed');
+    (screenerService.error as unknown as { set(msg: string): void }).set('Failed');
     fixture.detectChanges();
 
     const retryButton = fixture.nativeElement.querySelector(
@@ -724,7 +722,7 @@ describe('GlobalUniverseComponent - Loading and Error Handling', () => {
   });
 
   it('should clear error when retrying', () => {
-    (screenerService.error as any).set('Error');
+    (screenerService.error as unknown as { set(msg: string): void }).set('Error');
     component.onRefresh();
 
     expect(screenerService.error()).toBe(null);
@@ -734,7 +732,6 @@ describe('GlobalUniverseComponent - Loading and Error Handling', () => {
 // STORY AK.3: TDD - Universe Sync Notifications Tests
 // These tests are now ENABLED (GREEN phase) - Story AK.4
 describe('GlobalUniverseComponent - Universe Sync Notifications (TDD - Story AK.3)', () => {
-  let component: GlobalUniverseComponent;
   let fixture: ComponentFixture<GlobalUniverseComponent>;
   let mockSyncService: {
     syncFromScreener: ReturnType<typeof vi.fn>;
@@ -770,7 +767,6 @@ describe('GlobalUniverseComponent - Universe Sync Notifications (TDD - Story AK.
     }).compileComponents();
 
     fixture = TestBed.createComponent(GlobalUniverseComponent);
-    component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
@@ -1124,9 +1120,8 @@ describe('GlobalUniverseComponent - SmartNgRX Integration', () => {
     const { selectUniverses } = await import(
       '../../store/universe/selectors/select-universes.function'
     );
-    selectUniversesMock = selectUniverses as unknown as ReturnType<
-      typeof vi.fn
-    >;
+     
+    selectUniversesMock = selectUniverses as unknown as typeof selectUniversesMock;
 
     mockSyncService = {
       syncFromScreener: vi.fn().mockReturnValue(
@@ -1403,9 +1398,8 @@ describe('Universe Selectors', () => {
     const { selectUniverses } = await import(
       '../../store/universe/selectors/select-universes.function'
     );
-    selectUniversesMock = selectUniverses as unknown as ReturnType<
-      typeof vi.fn
-    >;
+     
+    selectUniversesMock = selectUniverses as unknown as typeof selectUniversesMock;
 
     mockSyncService = {
       syncFromScreener: vi.fn().mockReturnValue(

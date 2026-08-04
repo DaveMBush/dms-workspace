@@ -1,5 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/angular';
-
+import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { EditableCellComponent } from './editable-cell.component';
 
 const meta: Meta<EditableCellComponent> = {

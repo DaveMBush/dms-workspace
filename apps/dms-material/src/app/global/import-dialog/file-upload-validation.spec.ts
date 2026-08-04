@@ -175,7 +175,7 @@ describe('ImportDialogComponent - File Upload Validation (TDD RED)', () => {
     });
 
     it('should use FileReader to read file content for preview', () => {
-      const fileReaderSpy = vi.spyOn(window, 'FileReader' as never);
+      const fileReaderSpy = vi.spyOn(window, 'FileReader');
       const csvContent = 'Date,Action,Symbol\n01/15/2025,YOU BOUGHT,SPY';
       const file = new File([csvContent], 'test.csv', { type: 'text/csv' });
       selectFile(fixture, file);

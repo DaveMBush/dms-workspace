@@ -1,10 +1,15 @@
 import path from 'path';
 import { expect, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 import { seedImportData } from './helpers/seed-import-data.helper';
 
-const FIXTURES_DIR = path.resolve(__dirname, '..', 'fixtures');
+// Resolve the fixtures directory relative to the workspace root.
+const FIXTURES_DIR = path.resolve(
+  process.cwd(),
+  'apps',
+  'dms-material-e2e',
+  'fixtures',
+);
 
 /**
  * CSV Import Regression Tests — Epic 69
@@ -22,7 +27,7 @@ test.describe('CSV Import Regression (Epic 69)', () => {
     });
     if (!accountResponse.ok()) {
       throw new Error(
-        `Failed to create test account: ${accountResponse.status()}`
+        `Failed to create test account: ${accountResponse.status()}`,
       );
     }
     const accounts = (await accountResponse.json()) as Array<{ id: string }>;
@@ -65,12 +70,12 @@ test.describe('CSV Import Regression (Epic 69)', () => {
 
     // Open import dialog
     const importButton = page.locator(
-      '[data-testid="import-transactions-button"]'
+      '[data-testid="import-transactions-button"]',
     );
     await expect(importButton).toBeVisible({ timeout: 10000 });
     await importButton.click();
     await expect(
-      page.getByRole('heading', { name: 'Import Fidelity Transactions' })
+      page.getByRole('heading', { name: 'Import Fidelity Transactions' }),
     ).toBeVisible({ timeout: 5000 });
 
     // Upload fixture CSV
@@ -107,12 +112,12 @@ test.describe('CSV Import Regression (Epic 69)', () => {
     });
 
     const importButton = page.locator(
-      '[data-testid="import-transactions-button"]'
+      '[data-testid="import-transactions-button"]',
     );
     await expect(importButton).toBeVisible({ timeout: 10000 });
     await importButton.click();
     await expect(
-      page.getByRole('heading', { name: 'Import Fidelity Transactions' })
+      page.getByRole('heading', { name: 'Import Fidelity Transactions' }),
     ).toBeVisible({ timeout: 5000 });
 
     const filePath = path.join(FIXTURES_DIR, 'fidelity-regression-69.csv');
@@ -145,7 +150,7 @@ test.describe('CSV Import Regression (Epic 69)', () => {
     await expect(importButton).toBeVisible({ timeout: 10000 });
     await importButton.click();
     await expect(
-      page.getByRole('heading', { name: 'Import Fidelity Transactions' })
+      page.getByRole('heading', { name: 'Import Fidelity Transactions' }),
     ).toBeVisible({ timeout: 5000 });
 
     const fileInput2 = page.locator('input[type="file"]');
@@ -175,12 +180,12 @@ test.describe('CSV Import Regression (Epic 69)', () => {
     });
 
     const importButton = page.locator(
-      '[data-testid="import-transactions-button"]'
+      '[data-testid="import-transactions-button"]',
     );
     await expect(importButton).toBeVisible({ timeout: 10000 });
     await importButton.click();
     await expect(
-      page.getByRole('heading', { name: 'Import Fidelity Transactions' })
+      page.getByRole('heading', { name: 'Import Fidelity Transactions' }),
     ).toBeVisible({ timeout: 5000 });
 
     const filePath = path.join(FIXTURES_DIR, 'fidelity-empty-69.csv');

@@ -82,7 +82,9 @@ describe('ProfileService', () => {
       ).resolves.not.toThrow();
 
       expect(updatePassword).toHaveBeenCalledWith({
+        // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- not a password
         oldPassword: 'oldpass',
+        // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- not a password
         newPassword: 'newpass',
       });
       expect(service.loading()).toBe(false);
@@ -215,6 +217,7 @@ describe('ProfileService', () => {
       expect(confirmResetPassword).toHaveBeenCalledWith({
         username: 'test@example.com',
         confirmationCode: '123456',
+        // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- not a real password
         newPassword: 'newpassword',
       });
     });
@@ -240,7 +243,7 @@ describe('ProfileService', () => {
       const profileService = TestBed.inject(ProfileService);
 
       // Access private method for testing
-      const getErrorMessage = (profileService as any).getErrorMessage.bind(
+      const getErrorMessage = (profileService as unknown as { getErrorMessage(error: unknown): string }).getErrorMessage.bind(
         profileService
       );
 

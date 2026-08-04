@@ -1356,7 +1356,7 @@ describe('Branch Coverage - Edge Cases', () => {
     });
 
     // Set null value — should NOT trigger a new fetchSummary
-    component.selectedMonth.setValue(null as unknown as string);
+    component.selectedMonth.setValue(null);
 
     // No additional summary request should be made
     httpMock.expectNone(function matchRefreshSummary(req) {
@@ -1386,7 +1386,7 @@ describe('Branch Coverage - Edge Cases', () => {
     });
 
     // Force selectedMonth to null (edge case)
-    component.selectedMonth.setValue(null as unknown as string);
+    component.selectedMonth.setValue(null);
 
     // Call refreshData — should use fallback getCurrentMonth()
     component.refreshData();

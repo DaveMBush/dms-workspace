@@ -203,8 +203,6 @@ describe('SessionManagerService', () => {
     });
 
     it('should configure extended timeout for remember me sessions', () => {
-      const initialConfig = service.getConfiguration();
-
       service.startSession(mockUserProfile, true);
 
       // Configuration should be updated for remember me
@@ -264,14 +262,14 @@ describe('SessionManagerService', () => {
     it('should emit session extended event', async () => {
       mockTokenRefreshService.refreshToken.mockResolvedValue(true);
 
-      const events: any[] = [];
+      const events: unknown[] = [];
       service.sessionEvents.subscribe((event) => events.push(event));
 
       await service.extendSession();
 
       const extendedEvent = events.find(
         (e) => e.type === SessionEventType.SessionExtended
-      );
+      ) as SessionEventType.SessionExtended;
       expect(extendedEvent).toBeTruthy();
       expect(extendedEvent.data).toMatchObject({
         extensionTime: expect.any(Date),
@@ -306,7 +304,7 @@ describe('SessionManagerService', () => {
     });
 
     it('should emit session expired event', () => {
-      const events: any[] = [];
+      const events: unknown[] = [];
       service.sessionEvents.subscribe((event) => events.push(event));
 
       service.expireSession(true);
@@ -395,7 +393,7 @@ describe('SessionManagerService', () => {
     });
 
     it('should emit warning event', () => {
-      const events: any[] = [];
+      const events: unknown[] = [];
       service.sessionEvents.subscribe((event) => events.push(event));
 
       service.startSession(mockUserProfile, false);
@@ -408,7 +406,7 @@ describe('SessionManagerService', () => {
 
       const warningEvent = events.find(
         (e) => e.type === SessionEventType.SessionWarning
-      );
+      ) as SessionEventType.SessionWarning;
       expect(warningEvent).toBeTruthy();
     });
   });
@@ -435,7 +433,7 @@ describe('SessionManagerService', () => {
       // Mock the service to be in warning state
       service.startSession(mockUserProfile, false);
       // Manually set status to warning for test
-      (service as any).sessionStatus.set(SessionStatus.Warning);
+      (service as unknown as { sessionStatus: { set(status: SessionStatus): void } }).sessionStatus.set(SessionStatus.Warning);
       mockTokenRefreshService.refreshToken.mockResolvedValue(true);
 
       const activityCallback =
@@ -593,7 +591,7 @@ describe('SessionManagerService', () => {
       service.startSession(mockUserProfile, false);
 
       // Mock token refresh to resolve successfully
-      mockTokenRefreshService.refreshToken.mockImplementation(() =>
+      mockTokenRefreshService.refreshToken.mockImplementation(async () =>
         Promise.resolve(true)
       );
 
@@ -628,7 +626,7 @@ describe('SessionManagerService', () => {
 
   describe('event emissions', () => {
     it('should emit activity detected events', () => {
-      const events: any[] = [];
+      const events: unknown[] = [];
       service.sessionEvents.subscribe((event) => events.push(event));
 
       service.startSession(mockUserProfile, false);

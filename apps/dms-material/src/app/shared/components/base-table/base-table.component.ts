@@ -265,7 +265,7 @@ export class BaseTableComponent<T extends { id: string }>
           }
         }
         return 0;
-      } as (a: T, b: T) => number);
+      });
     }
   );
 

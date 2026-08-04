@@ -15,7 +15,7 @@ import { AuthMetricsService } from '../services/auth-metrics.service';
 import { TokenRefreshService } from '../services/token-refresh.service';
 
 // Auth endpoints path prefix
-const AUTH_LOGIN_PATH = '/auth/login';
+const authLoginPath = '/auth/login';
 
 /**
  * No-operation function for ignoring promise rejections
@@ -373,7 +373,7 @@ function performSignOut(
   // Clear tokens and user state
   authService.signOut().catch(noop);
   // Navigate to login page
-  router.navigate([AUTH_LOGIN_PATH]).catch(noop);
+  router.navigate([authLoginPath]).catch(noop);
   return EMPTY;
 }
 

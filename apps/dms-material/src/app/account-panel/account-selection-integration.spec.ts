@@ -152,7 +152,7 @@ function createAccount(id: string, name: string): Account {
     name,
     openTrades: [] as Trade[],
     soldTrades: [] as Trade[],
-    divDeposits: [] as unknown as Account['divDeposits'],
+    divDeposits: [],
     months: [],
   };
 }
@@ -220,7 +220,7 @@ describe('Account Selection Integration', () => {
         openTrades: [createTrade({ id: 't-1', accountId: 'account-1' })],
         divDeposits: [
           createDivDeposit({ id: 'd-1', accountId: 'account-1' }),
-        ] as unknown as Account['divDeposits'],
+        ],
       },
       'account-2': {
         ...createAccount('account-2', 'Retirement'),
@@ -233,7 +233,7 @@ describe('Account Selection Integration', () => {
             accountId: 'account-2',
             amount: 75,
           }),
-        ] as unknown as Account['divDeposits'],
+        ],
       },
     });
 
@@ -611,7 +611,7 @@ describe('Account Selection Integration', () => {
           name: 'No Trades',
           openTrades: undefined as unknown as Trade[],
           soldTrades: undefined as unknown as Trade[],
-          divDeposits: [] as unknown as Account['divDeposits'],
+          divDeposits: [],
           months: [],
         },
       });

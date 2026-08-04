@@ -112,7 +112,7 @@ describe('Cognito Configuration', () => {
 
     it('should throw error for unknown environment', () => {
       expect(() => {
-        getCognitoConfig('unknown' as any);
+        getCognitoConfig('unknown' as 'dev' | 'prod' | 'staging');
       }).toThrow('Unknown environment: unknown');
     });
   });

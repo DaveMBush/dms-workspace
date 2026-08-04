@@ -110,6 +110,7 @@ describe('AuthService', () => {
   describe('Sign In', () => {
     const validCredentials: SignInRequest = {
       username: 'testuser@example.com',
+      // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- not real
       password: 'ValidPassword123!',
     };
 
@@ -186,7 +187,7 @@ describe('AuthService', () => {
     it('should set loading state during sign in process', async () => {
       // Arrange
       let loadingDuringSignIn = false;
-      mockSignIn.mockImplementation(() => {
+      mockSignIn.mockImplementation(async () => {
         loadingDuringSignIn = service.isLoading();
         return Promise.resolve({ isSignedIn: true });
       });
@@ -210,6 +211,7 @@ describe('AuthService', () => {
       mockFetchAuthSession.mockResolvedValue(mockSession);
       await service.signIn({
         username: 'test@example.com',
+        // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- not real
         password: 'password',
       });
     });
@@ -250,6 +252,7 @@ describe('AuthService', () => {
       mockFetchAuthSession.mockResolvedValue(mockSession);
       await service.signIn({
         username: 'test@example.com',
+        // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- not real
         password: 'password',
       });
     });
@@ -327,6 +330,7 @@ describe('AuthService', () => {
       mockSignIn.mockRejectedValue(authError);
 
       // Act
+      // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- not real
       service.signIn({ username: 'test', password: 'test' }).catch(() => {
         // Expected to fail
       });
@@ -355,6 +359,7 @@ describe('AuthService', () => {
 
       await service.signIn({
         username: 'test@example.com',
+        // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- not real
         password: 'password',
       });
 

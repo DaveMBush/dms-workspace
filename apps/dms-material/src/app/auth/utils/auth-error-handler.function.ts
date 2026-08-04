@@ -14,8 +14,10 @@ export function getAuthErrorMessage(error: AuthError): string {
     [AuthErrorCode.TOO_MANY_REQUESTS]:
       'Too many login attempts. Please wait a few minutes before trying again.',
     [AuthErrorCode.INVALID_PASSWORD]:
+      // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- not a password
       'Password does not meet the required criteria.',
     [AuthErrorCode.PASSWORD_RESET_REQUIRED]:
+      // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- not a password
       'Password reset is required. Please check your email.',
     [AuthErrorCode.NETWORK_ERROR]:
       'Network connection error. Please check your internet connection.',

@@ -68,8 +68,14 @@ describe('AccountComponentService', () => {
     ];
 
     // Create mock component with necessary properties
-    const createMockAccountsSignal = () => {
-      const arr = [...mockAccounts] as any;
+    const createMockAccountsSignal = (): AccountInterface[] & {
+      addToStore: typeof mockAddToStore;
+      removeFromStore: typeof mockRemoveFromStore;
+    } => {
+      const arr = [...mockAccounts] as unknown as AccountInterface[] & {
+        addToStore: typeof mockAddToStore;
+        removeFromStore: typeof mockRemoveFromStore;
+      };
       arr.addToStore = mockAddToStore;
       arr.removeFromStore = mockRemoveFromStore;
       return arr;
@@ -83,7 +89,7 @@ describe('AccountComponentService', () => {
       top: {
         '1': { id: '1', name: 'Top 1' } as Partial<Top>,
       },
-    } as any;
+    } as unknown as AccountComponent;
   });
 
   describe('initialization', () => {
@@ -150,7 +156,7 @@ describe('AccountComponentService', () => {
       mockComponent.addingNode = 'new';
       mockComponent.editingContent = 'Test Account';
 
-      service.cancelEdit({ id: 'new', name: 'New Account' } as any);
+      service.cancelEdit({ id: 'new', name: 'New Account' } as AccountInterface);
 
       expect(mockComponent.addingNode).toBe('');
     });
@@ -159,7 +165,7 @@ describe('AccountComponentService', () => {
       mockComponent.addingNode = 'new';
       mockComponent.editingContent = 'Test Account';
 
-      service.cancelEdit({ id: 'new', name: 'New Account' } as any);
+      service.cancelEdit({ id: 'new', name: 'New Account' } as AccountInterface);
 
       expect(mockComponent.editingContent).toBe('');
     });
@@ -192,7 +198,7 @@ describe('AccountComponentService', () => {
       mockComponent.addingNode = ''; // Not adding new
       mockComponent.editingContent = 'Updated Name';
 
-      service.cancelEdit({ id: '1', name: 'Account 1' } as any);
+      service.cancelEdit({ id: '1', name: 'Account 1' } as AccountInterface);
 
       expect(mockComponent.addingNode).toBe('');
       expect(mockComponent.editingContent).toBe('');
@@ -208,7 +214,7 @@ describe('AccountComponentService', () => {
     it('should update account name', () => {
       const testAccount = mockAccounts[0];
       mockComponent.editingContent = 'Updated Account Name';
-      mockComponent.accountsArray$ = signal([...mockAccounts]) as any;
+      mockComponent.accountsArray$ = signal([...mockAccounts]);
 
       service.saveEdit(testAccount);
 
@@ -224,9 +230,9 @@ describe('AccountComponentService', () => {
       mockComponent.accountsArray$ = signal([
         ...mockAccounts,
         { id: 'new', name: 'New Account' } as AccountInterface,
-      ]) as any;
+      ]);
 
-      service.saveEdit({ id: 'new', name: 'New Account' } as any);
+      service.saveEdit({ id: 'new', name: 'New Account' } as AccountInterface);
 
       expect(mockComponent.addingNode).toBe('');
     });
@@ -234,7 +240,7 @@ describe('AccountComponentService', () => {
     it('should clear editingContent after save', () => {
       const testAccount = mockAccounts[0];
       mockComponent.editingContent = 'Updated Name';
-      mockComponent.accountsArray$ = signal([...mockAccounts]) as any;
+      mockComponent.accountsArray$ = signal([...mockAccounts]);
 
       service.saveEdit(testAccount);
 
@@ -246,7 +252,7 @@ describe('AccountComponentService', () => {
       const originalName = testAccount.name;
       mockComponent.editingContent = '';
       mockComponent.addingNode = 'new';
-      mockComponent.accountsArray$ = signal([...mockAccounts]) as any;
+      mockComponent.accountsArray$ = signal([...mockAccounts]);
 
       service.saveEdit(testAccount);
 
@@ -259,7 +265,7 @@ describe('AccountComponentService', () => {
       const testAccount = mockAccounts[0];
       mockComponent.addingNode = 'new';
       mockComponent.editingContent = '';
-      mockComponent.accountsArray$ = signal([...mockAccounts]) as any;
+      mockComponent.accountsArray$ = signal([...mockAccounts]);
 
       service.saveEdit(testAccount);
 
@@ -269,10 +275,10 @@ describe('AccountComponentService', () => {
 
     it('should handle account not found gracefully', () => {
       mockComponent.editingContent = 'New Name';
-      mockComponent.accountsArray$ = signal([...mockAccounts]) as any;
+      mockComponent.accountsArray$ = signal([...mockAccounts]);
 
       // Try to save account that doesn't exist
-      service.saveEdit({ id: 'non-existent', name: 'Test' } as any);
+      service.saveEdit({ id: 'non-existent', name: 'Test' } as AccountInterface);
 
       // Should still clear editing state
       expect(mockComponent.addingNode).toBe('');
@@ -282,7 +288,7 @@ describe('AccountComponentService', () => {
     it('should save account with trimmed whitespace', () => {
       const testAccount = mockAccounts[0];
       mockComponent.editingContent = '  Updated Name  ';
-      mockComponent.accountsArray$ = signal([...mockAccounts]) as any;
+      mockComponent.accountsArray$ = signal([...mockAccounts]);
 
       service.saveEdit(testAccount);
 
@@ -313,7 +319,7 @@ describe('AccountComponentService', () => {
       service.addAccount();
       expect(mockComponent.addingNode).toBe('new');
 
-      service.cancelEdit({ id: 'new', name: 'New Account' } as any);
+      service.cancelEdit({ id: 'new', name: 'New Account' });
       expect(mockComponent.addingNode).toBe('');
       expect(mockRemoveFromStore).toHaveBeenCalled();
     });
@@ -323,10 +329,10 @@ describe('AccountComponentService', () => {
       mockComponent.editingContent = 'My Custom Account';
       mockComponent.accountsArray$ = signal([
         ...mockAccounts,
-        { id: 'new', name: 'New Account' } as AccountInterface,
-      ]) as any;
+        { id: 'new', name: 'New Account' },
+      ]);
 
-      service.saveEdit({ id: 'new', name: 'New Account' } as any);
+      service.saveEdit({ id: 'new', name: 'New Account' });
 
       expect(mockComponent.addingNode).toBe('');
       expect(mockComponent.editingContent).toBe('');

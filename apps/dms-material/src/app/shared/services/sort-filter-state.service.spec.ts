@@ -13,7 +13,7 @@ describe('SortFilterStateService', () => {
     'localStorage'
   );
 
-  const STORAGE_KEY = 'dms-sort-filter-state';
+  const storageKey = 'dms-sort-filter-state';
 
   beforeEach(() => {
     mockGetItem = vi.fn();
@@ -72,7 +72,7 @@ describe('SortFilterStateService', () => {
       });
 
       expect(mockSetItem).toHaveBeenCalledWith(
-        STORAGE_KEY,
+        storageKey,
         expect.stringContaining('"universes"')
       );
     });
@@ -146,7 +146,7 @@ describe('SortFilterStateService', () => {
       const result = service.loadSortState('universes');
 
       expect(result).toEqual({ field: 'name', order: 'asc' });
-      expect(mockGetItem).toHaveBeenCalledWith(STORAGE_KEY);
+      expect(mockGetItem).toHaveBeenCalledWith(storageKey);
     });
 
     it('should return default state when no saved state exists', () => {
@@ -212,7 +212,7 @@ describe('SortFilterStateService', () => {
 
       service.clearSortState('universes');
 
-      expect(mockRemoveItem).toHaveBeenCalledWith(STORAGE_KEY);
+      expect(mockRemoveItem).toHaveBeenCalledWith(storageKey);
     });
 
     it('should save state unchanged when table has no entry', () => {
@@ -275,7 +275,7 @@ describe('SortFilterStateService', () => {
 
       service.clearSortState('universes');
 
-      expect(mockRemoveItem).toHaveBeenCalledWith(STORAGE_KEY);
+      expect(mockRemoveItem).toHaveBeenCalledWith(storageKey);
     });
 
     it('should keep table entry when sort cleared but sortColumns remain', () => {
@@ -373,7 +373,7 @@ describe('SortFilterStateService', () => {
 
       service.clearSortColumnsState('universes');
 
-      expect(mockRemoveItem).toHaveBeenCalledWith(STORAGE_KEY);
+      expect(mockRemoveItem).toHaveBeenCalledWith(storageKey);
     });
 
     it('should preserve filters when clearing sort columns', () => {
@@ -465,7 +465,7 @@ describe('SortFilterStateService', () => {
 
       service.clearFilterState('universes');
 
-      expect(mockRemoveItem).toHaveBeenCalledWith(STORAGE_KEY);
+      expect(mockRemoveItem).toHaveBeenCalledWith(storageKey);
     });
 
     it('should save state unchanged when clearing filter for table with no entry', () => {
@@ -531,7 +531,7 @@ describe('SortFilterStateService', () => {
 
       service.clearFilterState('universes');
 
-      expect(mockRemoveItem).toHaveBeenCalledWith(STORAGE_KEY);
+      expect(mockRemoveItem).toHaveBeenCalledWith(storageKey);
     });
 
     it('should keep table entry when filter cleared but sortColumns remain', () => {
