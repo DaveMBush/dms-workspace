@@ -111,7 +111,7 @@ function handleGetUniversesRoute(fastify: FastifyInstance): void {
         },
       });
       return universes.map(function mapUniverse(u) {
-        return mapUniverseToResponse(u as UniverseWithTrades);
+        return mapUniverseToResponse(u);
       });
     }
   );

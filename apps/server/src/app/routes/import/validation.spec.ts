@@ -561,7 +561,7 @@ describe('Transaction Validation', function () {
         extraField: 'ignored',
       };
 
-      const errors = mod.validateRow(row as any, 1);
+      const errors = mod.validateRow(row, 1);
 
       expect(errors).toHaveLength(0);
     });

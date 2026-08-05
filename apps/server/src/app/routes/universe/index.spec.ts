@@ -75,7 +75,7 @@ function makeUniverseRow(
     }>;
     risk_group: { name: string };
   }> = {}
-) {
+): Record<string, unknown> {
   return {
     id: 'u1',
     distribution: 0.1,

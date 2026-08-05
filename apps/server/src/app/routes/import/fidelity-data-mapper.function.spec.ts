@@ -53,12 +53,12 @@ vi.mock('../common/cef-classification.function', function () {
   };
 });
 
-const mockPrisma = prisma as any;
-const mockGetDistributions = getDistributions as any;
-const mockGetLastPrice = getLastPrice as any;
-const mockAdjustLotsForSplit = adjustLotsForSplit as any;
-const mockLookupCefConnectSymbol = lookupCefConnectSymbol as any;
-const mockClassifySymbolRiskGroupId = classifySymbolRiskGroupId as any;
+const mockPrisma = vi.mocked(prisma);
+const mockGetDistributions = vi.mocked(getDistributions);
+const mockGetLastPrice = vi.mocked(getLastPrice);
+const mockAdjustLotsForSplit = vi.mocked(adjustLotsForSplit);
+const mockLookupCefConnectSymbol = vi.mocked(lookupCefConnectSymbol);
+const mockClassifySymbolRiskGroupId = vi.mocked(classifySymbolRiskGroupId);
 
 const DEFAULT_RISK_GROUPS = [
   { id: 'equities-rg', name: 'Equities' },
@@ -870,7 +870,7 @@ describe('mapFidelityTransactions', function () {
         new Error('Network timeout')
       );
       const { logger } = await import('../../../utils/structured-logger');
-      const mockLogger = logger as any;
+      const mockLogger = vi.mocked(logger);
 
       const result = await mapFidelityTransactions(rows);
 

@@ -96,7 +96,7 @@ describe('CSRFMiddleware', () => {
 
       // Mock the token store (this would need to be implemented properly)
       // For now, we'll test the basic validation logic
-      const result = await validateCSRFToken(
+      await validateCSRFToken(
         mockRequest as FastifyRequest,
         mockReply as FastifyReply
       );

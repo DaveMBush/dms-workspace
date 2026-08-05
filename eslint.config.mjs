@@ -69,6 +69,9 @@ const eslintConfig = async () => {
         '**/postcss.config.js',
         '**/proxy.playwright.conf.js',
         '**/tailwind.config.js',
+        '**/vitest.config.ts',
+        '**/vitest.teardown.ts',
+        '**/coverage/**',
       ],
       rules: {
         '@nx/enforce-module-boundaries': [
@@ -678,6 +681,7 @@ const eslintConfig = async () => {
     ...nxEslintPlugin.configs['flat/angular-template'].map((config) => ({
       ...config,
       files: ['**/*.html'],
+      ignores: ['**/coverage/**'],
       rules: {
         ...config.rules,
         '@angular-eslint/template/alt-text': 'error',

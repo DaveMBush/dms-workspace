@@ -54,5 +54,5 @@ export async function fetchAndUpdatePriceData(
     data: buildUpdateData(lastPrice, distributionData),
   });
 
-  return { record: updatedRecord as UniverseRecord, fetchFailed: false };
+  return { record: updatedRecord, fetchFailed: false };
 }

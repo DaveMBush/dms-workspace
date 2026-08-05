@@ -102,23 +102,21 @@ describe('Prisma Client - PostgreSQL', () => {
           log: [],
         });
 
-        let retries = 0;
-        while (retries < maxRetries) {
-          try {
-            await invalidClient.$connect();
-            console.log('Database connected successfully');
-            return;
-          } catch (error) {
-            retries++;
-            if (retries >= maxRetries) {
-              throw new Error(
-                `Failed to connect to database after ${maxRetries} attempts: ${error}`
-              );
-            }
+        for (let retries = 0; retries < maxRetries; retries++) {
+          if (retries > 0) {
             const delay = baseDelay * Math.pow(2, retries - 1);
             await new Promise((resolve) => setTimeout(resolve, delay));
           }
+          try {
+            await invalidClient.$connect();
+            return;
+          } catch {
+            // continue to next retry
+          }
         }
+        throw new Error(
+          `Failed to connect to database after ${maxRetries} attempts`
+        );
       };
 
       await expect(connectWithRetryTest(2, 100)).rejects.toThrow();
@@ -134,7 +132,7 @@ describe('Prisma Client - PostgreSQL', () => {
 
       try {
         await connectWithRetry(2, 200);
-      } catch (error) {
+      } catch {
         const elapsed = Date.now() - startTime;
 
         // Should have tried 2 times with delays:

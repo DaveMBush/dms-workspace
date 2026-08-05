@@ -1,4 +1,4 @@
-/* eslint-disable @smarttools/one-exported-item-per-file, @typescript-eslint/strict-boolean-expressions -- Infrastructure monitoring code with specific requirements */
+/* eslint-disable @smarttools/one-exported-item-per-file -- Infrastructure monitoring code with specific requirements */
 
 import { FastifyRequest } from 'fastify';
 

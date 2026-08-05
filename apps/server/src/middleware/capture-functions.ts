@@ -1,4 +1,4 @@
-/* eslint-disable @smarttools/one-exported-item-per-file, @smarttools/no-anonymous-functions, @typescript-eslint/strict-boolean-expressions -- Infrastructure monitoring code with specific requirements */
+/* eslint-disable @smarttools/one-exported-item-per-file, @smarttools/no-anonymous-functions -- Infrastructure monitoring code with specific requirements */
 
 import { logger } from '../utils/structured-logger';
 import { XRaySegment } from './mock-xray-segment';

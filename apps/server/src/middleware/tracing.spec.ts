@@ -127,13 +127,13 @@ describe('Tracing Middleware', () => {
     it('should handle requests without id, ip, or user-agent', async () => {
       const testRemoteAddress = ['10', '0', '0', '1'].join('.');
       mockRequest = {
-        id: undefined as unknown as string,
+        id: undefined,
         method: 'POST',
         url: '/api/data',
         headers: {
           'x-amzn-trace-id': 'Root=1-test',
         },
-        ip: undefined as unknown as string,
+        ip: undefined,
         socket: { remoteAddress: testRemoteAddress } as never,
       };
 

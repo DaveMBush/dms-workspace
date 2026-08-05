@@ -5,7 +5,7 @@ import { vi, beforeEach, afterEach, describe, it, expect } from 'vitest';
 // Mock AWS SDK with factory functions to avoid hoisting issues
 const { mockSend, mockSSMClient, mockGetParametersCommand } = vi.hoisted(() => {
   const mockSend = vi.fn();
-  const mockSSMClient = vi.fn().mockImplementation(function (this: any) {
+  const mockSSMClient = vi.fn().mockImplementation(function (this: Record<string, unknown>) {
     this.send = mockSend;
   });
   const mockGetParametersCommand = vi.fn();
@@ -327,10 +327,11 @@ describe('AWS Configuration', () => {
 
       try {
         await awsConfig.getCognitoConfig();
-      } catch (error: any) {
-        expect(error.message).not.toContain('secret');
-        expect(error.message).not.toContain('password');
-        expect(error.message).not.toContain('token');
+      } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : String(error);
+        expect(message).not.toContain('secret');
+        expect(message).not.toContain('password');
+        expect(message).not.toContain('token');
       }
 
       consoleSpy.mockRestore();

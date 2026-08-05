@@ -185,8 +185,8 @@ export default function registerGetAllUniverses(
 
       const sorted = [...universes].sort(function sortItems(a, b) {
         return compareUniverseItems(
-          a as SortableUniverse,
-          b as SortableUniverse,
+          a,
+          b,
           effectiveSortBy,
           effectiveSortOrder
         );

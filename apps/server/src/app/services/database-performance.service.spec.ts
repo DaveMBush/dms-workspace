@@ -146,13 +146,13 @@ describe('DatabasePerformanceService', () => {
         // Mock client where pg_stat_activity query succeeds
         let callCount = 0;
         const pgMockClient = {
-          $queryRaw: vi.fn().mockImplementation(() => {
+          $queryRaw: vi.fn().mockImplementation(async () => {
             callCount++;
             // First call is SELECT 1 connectivity check, second is pg_stat_activity
             if (callCount === 1) {
-              return Promise.resolve([{ '1': 1 }]);
+              return { '1': 1 };
             }
-            return Promise.resolve([{ count: BigInt(5) }]);
+            return { count: BigInt(5) };
           }),
         } as unknown as PrismaClient;
 
@@ -216,7 +216,7 @@ describe('DatabasePerformanceService', () => {
       const slowQuery = vi
         .fn()
         .mockImplementation(
-          () =>
+          async () =>
             new Promise((resolve) =>
               setTimeout(() => resolve({ slow: 'data' }), 100)
             )
@@ -401,15 +401,15 @@ describe('DatabasePerformanceService', () => {
     beforeEach(async () => {
       // Generate some query data
       await databasePerformanceService.measureQueryPerformance(
-        () => testClient.accounts.findMany({ take: 1 }),
+        async () => testClient.accounts.findMany({ take: 1 }),
         'test-query-1'
       );
       await databasePerformanceService.measureQueryPerformance(
-        () => testClient.accounts.findMany({ take: 1 }),
+        async () => testClient.accounts.findMany({ take: 1 }),
         'test-query-1'
       );
       await databasePerformanceService.measureQueryPerformance(
-        () => testClient.accounts.findMany({ take: 2 }),
+        async () => testClient.accounts.findMany({ take: 2 }),
         'test-query-2'
       );
     });
@@ -443,7 +443,7 @@ describe('DatabasePerformanceService', () => {
     it('should clear all performance metrics', async () => {
       // Generate some metrics
       await databasePerformanceService.measureQueryPerformance(
-        () => Promise.resolve('test'),
+        async () => 'test',
         'test-clear'
       );
 

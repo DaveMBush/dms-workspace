@@ -23,7 +23,7 @@ describe('Health Check Endpoints', () => {
         timestamp: new Date().toISOString(),
       };
     });
-    app.get('/live', async (request, reply) => {
+    app.get('/live', async (_, __) => {
       return {
         alive: true,
         timestamp: new Date().toISOString(),

@@ -220,7 +220,7 @@ function isSellAction(action: string): boolean {
 }
 
 function createUnknownTransaction(row: FidelityCsvRow): UnknownTransaction {
-  return row as UnknownTransaction;
+  return row;
 }
 
 async function handleBuyRow(

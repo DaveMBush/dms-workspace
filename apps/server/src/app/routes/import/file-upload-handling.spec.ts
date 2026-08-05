@@ -13,7 +13,7 @@ import fastify from 'fastify';
 import multipart from '@fastify/multipart';
 import registerImportRoutes from './index';
 
-function buildApp() {
+function buildApp(): fastify.FastifyInstance {
   const app = fastify({ bodyLimit: 15 * 1024 * 1024 });
   app.register(multipart, {
     limits: { fileSize: 15 * 1024 * 1024 },

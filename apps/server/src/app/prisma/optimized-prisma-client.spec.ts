@@ -32,7 +32,7 @@ describe.skip('OptimizedPrismaClient', () => {
     await setupTestData(testClient);
   });
 
-  async function setupTestData(client: PrismaClient) {
+  async function setupTestData(client: PrismaClient): Promise<void> {
     try {
       // Create test tables
       await client.$executeRaw`
@@ -111,8 +111,8 @@ describe.skip('OptimizedPrismaClient', () => {
         ('opt-div-2', '2024-01-21', 75.0, 'opt-account-2', 'type-1'),
         ('opt-div-3', '2024-01-22', 30.0, 'opt-account-3', 'type-2');
       `;
-    } catch (error) {
-      console.warn('Test data setup warning:', error);
+    } catch {
+      // Test data setup may fail if tables already exist - ignore
     }
   }
 
@@ -236,7 +236,7 @@ describe.skip('OptimizedPrismaClient', () => {
       expect(result).toBeInstanceOf(Array);
       expect(result.length).toBe(3);
 
-      result.forEach((account, index) => {
+      result.forEach((account) => {
         expect(account).toHaveProperty('id');
         expect(account).toHaveProperty('name');
         expect(account).toHaveProperty('trades');
@@ -262,7 +262,7 @@ describe.skip('OptimizedPrismaClient', () => {
         'non-existent-account',
         'opt-account-2',
       ];
-      const { result, metrics } = await optimizedBatchAccountLoad(accountIds);
+      const { result } = await optimizedBatchAccountLoad(accountIds);
 
       expect(result).toBeInstanceOf(Array);
       expect(result.length).toBe(2); // Only existing accounts
@@ -342,8 +342,6 @@ describe.skip('OptimizedPrismaClient', () => {
       expect(userLookup.metrics.duration).toBeLessThan(100);
       expect(sessionData.metrics.duration).toBeLessThan(200);
       expect(health.connectionTime).toBeLessThan(100);
-
-      console.log(`Authentication flow completed in ${totalTime.toFixed(2)}ms`);
     });
 
     it('should handle concurrent operations efficiently', async () => {
@@ -370,10 +368,6 @@ describe.skip('OptimizedPrismaClient', () => {
 
       // Concurrent operations should complete efficiently
       expect(totalTime).toBeLessThan(1000); // Under 1 second
-
-      console.log(
-        `Concurrent operations completed in ${totalTime.toFixed(2)}ms`
-      );
     });
 
     it('should maintain performance under repeated load', async () => {
@@ -406,19 +400,13 @@ describe.skip('OptimizedPrismaClient', () => {
 
       // Second half shouldn't be more than 50% slower than first half
       expect(secondHalfAvg).toBeLessThan(firstHalfAvg * 1.5);
-
-      console.log(
-        `Repeated load test - Average: ${averageTime.toFixed(
-          2
-        )}ms, Min: ${minTime.toFixed(2)}ms, Max: ${maxTime.toFixed(2)}ms`
-      );
     });
   });
 
   describe('Connection Management', () => {
     it('should handle connection pool efficiently', async () => {
       // Test multiple concurrent operations to stress connection pool
-      const operations = Array.from({ length: 5 }, (_, i) =>
+      const operations = Array.from({ length: 5 }, async (_, i) =>
         optimizedSessionDataLoad(`opt-account-${(i % 3) + 1}`)
       );
 

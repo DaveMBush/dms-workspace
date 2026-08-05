@@ -212,10 +212,10 @@ describe('importFidelityTransactions', function () {
       ];
       mapFidelityTransactions.mockResolvedValue(mapped);
       prisma.trades.findMany.mockResolvedValue([]);
-      (prisma as any).accounts.findUnique.mockResolvedValue({
+      prisma.accounts.findUnique.mockResolvedValue({
         name: 'Test Account',
       });
-      (prisma as any).universe.findUnique.mockResolvedValue({ symbol: 'SPY' });
+      prisma.universe.findUnique.mockResolvedValue({ symbol: 'SPY' });
 
       const result = await importFidelityTransactions('csv content');
 
@@ -583,10 +583,10 @@ describe('importFidelityTransactions', function () {
       ];
       mapFidelityTransactions.mockResolvedValue(mapped);
       prisma.trades.findMany.mockResolvedValue([]);
-      (prisma as any).accounts.findUnique.mockResolvedValue({
+      prisma.accounts.findUnique.mockResolvedValue({
         name: 'My Account',
       });
-      (prisma as any).universe.findUnique.mockResolvedValue({ symbol: 'AAPL' });
+      prisma.universe.findUnique.mockResolvedValue({ symbol: 'AAPL' });
 
       const result = await importFidelityTransactions('csv content');
 
@@ -998,10 +998,10 @@ describe('importFidelityTransactions', function () {
         },
       ]);
       prisma.trades.update.mockResolvedValue({ id: 't1' });
-      (prisma as any).accounts.findUnique.mockResolvedValue({
+      prisma.accounts.findUnique.mockResolvedValue({
         name: 'Regression 74 Test Account',
       });
-      (prisma as any).universe.findUnique.mockResolvedValue({
+      prisma.universe.findUnique.mockResolvedValue({
         symbol: 'REGT74',
       });
 

@@ -59,7 +59,7 @@ const mockLogger = {
 };
 
 vi.mock('../../../../utils/logger', () => ({
-  SyncLogger: vi.fn().mockImplementation(function (this: any) {
+  SyncLogger: vi.fn().mockImplementation(function (this: Record<string, unknown>) {
     Object.assign(this, mockLogger);
   }),
 }));
@@ -163,8 +163,9 @@ describe('sync-from-screener route', () => {
 
     // Set up default transaction mock that handles the new structure
     h.client.$transaction.mockImplementation(
-      async <T>(fn: (client: unknown) => Promise<T>) => {
-        return fn(h.client);
+      (fn: (client: unknown) => Promise<unknown>) => {
+        void fn(h.client);
+        return undefined as unknown;
       }
     );
   });

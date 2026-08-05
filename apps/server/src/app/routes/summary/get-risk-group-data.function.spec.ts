@@ -204,8 +204,8 @@ describe.skipIf(process.env.CI)('getRiskGroupData', () => {
       if (existsSync(testDbPath)) {
         unlinkSync(testDbPath);
       }
-    } catch (error) {
-      console.warn('Could not clean up test database:', error);
+    } catch {
+      // ignore cleanup errors
     }
   });
 
@@ -303,7 +303,9 @@ describe.skipIf(process.env.CI)('getRiskGroupData', () => {
       // Account C - should show all three
       const resultC = await getRiskGroupData(2025, 1, accountCId, prisma);
       expect(resultC).toHaveLength(3);
-      const resultCNames = resultC.map((r) => r.riskGroupName).sort();
+      const resultCNames = resultC
+        .map((r) => r.riskGroupName)
+        .sort((a, b) => a.localeCompare(b));
       expect(resultCNames).toEqual(['Equities', 'Income', 'Tax Free Income']);
     });
 

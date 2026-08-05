@@ -126,7 +126,7 @@ function makeClosedTrade(
   };
 }
 
-function makeOpenTradesSeedData() {
+function makeOpenTradesSeedData(): HydratedTradeRow[] {
   return [
     {
       ...makeOpenTrade({
@@ -191,7 +191,7 @@ function makeOpenTradesSeedData() {
   ];
 }
 
-function makeClosedTradesSeedData() {
+function makeClosedTradesSeedData(): HydratedTradeRow[] {
   return [
     {
       ...makeClosedTrade({

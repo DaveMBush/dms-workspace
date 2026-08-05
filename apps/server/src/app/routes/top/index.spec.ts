@@ -211,7 +211,7 @@ describe('Top Route Handler', () => {
 
     it('should handle network timeout during risk group check', async () => {
       mockEnsureRiskGroupsExist.mockImplementationOnce(
-        () =>
+        async () =>
           new Promise((_, reject) =>
             setTimeout(() => reject(new Error('Timeout')), 100)
           )

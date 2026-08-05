@@ -45,7 +45,7 @@ interface UniverseRowOverrides {
   risk_group?: { name: string };
 }
 
-function makeUniverseRow(overrides: UniverseRowOverrides = {}) {
+function makeUniverseRow(overrides: UniverseRowOverrides = {}): ReturnType<typeof makeUniverseRow> {
   return {
     id: 'u1',
     distribution: 0.1,
@@ -62,7 +62,7 @@ function makeUniverseRow(overrides: UniverseRowOverrides = {}) {
   };
 }
 
-function makeSeedData() {
+function makeSeedData(): Array<ReturnType<typeof makeUniverseRow>> {
   return [
     makeUniverseRow({
       id: 'u1',

@@ -52,9 +52,9 @@ vi.mock('../../../../utils/structured-logger', function () {
   };
 });
 
-const mockPrisma = prisma as any;
-const mockGetDistributions = getDistributions as any;
-const mockGetLastPrice = getLastPrice as any;
+const mockPrisma = prisma as unknown as ReturnType<typeof vi.fn>;
+const mockGetDistributions = getDistributions as unknown as ReturnType<typeof vi.fn>;
+const mockGetLastPrice = getLastPrice as unknown as ReturnType<typeof vi.fn>;
 const mockLookupCefConnectSymbol = lookupCefConnectSymbol as ReturnType<
   typeof vi.fn
 >;
@@ -63,7 +63,7 @@ const mockClassifySymbolRiskGroupId = classifySymbolRiskGroupId as ReturnType<
 >;
 const mockRecalculateUniverseVolatility =
   recalculateUniverseVolatility as ReturnType<typeof vi.fn>;
-const mockLogger = logger as any;
+const mockLogger = logger as unknown as ReturnType<typeof vi.fn>;
 
 const mockRiskGroups = [
   { id: 'eq-id', name: 'Equities' },
@@ -114,7 +114,7 @@ describe('addSymbol', function () {
       symbol: 'ETW',
       risk_group_id: 'eq-id',
       is_closed_end_fund: true,
-    } as any);
+    });
     mockGetLastPrice.mockResolvedValue(undefined);
     mockGetDistributions.mockResolvedValue({ result: undefined, history: [] });
 
@@ -140,7 +140,7 @@ describe('addSymbol', function () {
       name: 'Equities',
     });
     mockLookupCefConnectSymbol.mockResolvedValue(null);
-    mockPrisma.universe.create.mockResolvedValue(mockDefaultRecord as any);
+    mockPrisma.universe.create.mockResolvedValue(mockDefaultRecord);
     mockGetLastPrice.mockResolvedValue(undefined);
     mockGetDistributions.mockResolvedValue({ result: undefined, history: [] });
 
@@ -166,7 +166,7 @@ describe('addSymbol', function () {
       name: 'Equities',
     });
     mockLookupCefConnectSymbol.mockRejectedValue(new Error('Network error'));
-    mockPrisma.universe.create.mockResolvedValue(mockDefaultRecord as any);
+    mockPrisma.universe.create.mockResolvedValue(mockDefaultRecord);
     mockGetLastPrice.mockResolvedValue(undefined);
     mockGetDistributions.mockResolvedValue({ result: undefined, history: [] });
 
@@ -210,13 +210,13 @@ describe('addSymbol', function () {
       id: 'test-risk-group-id',
       name: 'Conservative',
     });
-    mockPrisma.universe.create.mockResolvedValue(mockDefaultRecord as any);
+    mockPrisma.universe.create.mockResolvedValue(mockDefaultRecord);
     mockGetLastPrice.mockResolvedValue(150.25);
     mockGetDistributions.mockResolvedValue({
       result: mockDistributionData,
       history: [],
     });
-    mockPrisma.universe.update.mockResolvedValue(mockUpdatedRecord as any);
+    mockPrisma.universe.update.mockResolvedValue(mockUpdatedRecord);
 
     const result = await addSymbol(request);
 
@@ -282,7 +282,7 @@ describe('addSymbol', function () {
       id: 'test-risk-group-id',
       name: 'Conservative',
     });
-    mockPrisma.universe.create.mockResolvedValue(mockCreatedRecord as any);
+    mockPrisma.universe.create.mockResolvedValue(mockCreatedRecord);
     mockGetLastPrice.mockResolvedValue(undefined);
     mockGetDistributions.mockResolvedValue({ result: undefined, history: [] });
 
@@ -318,7 +318,7 @@ describe('addSymbol', function () {
 
     mockPrisma.universe.findFirst.mockResolvedValue({
       id: 'existing-id',
-    } as any);
+    });
 
     await expect(addSymbol(request)).rejects.toThrow(
       'Symbol SPY already exists in universe'
@@ -352,7 +352,7 @@ describe('addSymbol', function () {
     });
     mockGetLastPrice.mockResolvedValue(undefined);
     mockGetDistributions.mockResolvedValue({ result: undefined, history: [] });
-    mockPrisma.universe.create.mockResolvedValue(mockDefaultRecord as any);
+    mockPrisma.universe.create.mockResolvedValue(mockDefaultRecord);
 
     const result = await addSymbol(request);
 
@@ -374,7 +374,7 @@ describe('addSymbol', function () {
       id: 'test-risk-group-id',
       name: 'Conservative',
     });
-    mockPrisma.universe.create.mockResolvedValue(mockDefaultRecord as any);
+    mockPrisma.universe.create.mockResolvedValue(mockDefaultRecord);
     mockGetLastPrice.mockRejectedValue(new Error('Network error'));
 
     const result = await addSymbol(request);
@@ -393,7 +393,7 @@ describe('addSymbol', function () {
       id: 'test-risk-group-id',
       name: 'Conservative',
     });
-    mockPrisma.universe.create.mockResolvedValue(mockDefaultRecord as any);
+    mockPrisma.universe.create.mockResolvedValue(mockDefaultRecord);
     mockGetLastPrice.mockRejectedValue('not an Error object');
 
     const result = await addSymbol(request);
@@ -414,7 +414,7 @@ describe('addSymbol', function () {
       id: 'fallback-id',
       name: 'Conservative',
     });
-    mockPrisma.universe.create.mockResolvedValue(mockDefaultRecord as any);
+    mockPrisma.universe.create.mockResolvedValue(mockDefaultRecord);
     mockGetLastPrice.mockResolvedValue(undefined);
     mockGetDistributions.mockResolvedValue({ result: undefined, history: [] });
 
@@ -447,7 +447,7 @@ describe('addSymbol', function () {
       symbol: 'ETW',
       risk_group_id: 'test-risk-group-id',
       is_closed_end_fund: true,
-    } as any);
+    });
     mockGetLastPrice.mockResolvedValue(undefined);
     mockGetDistributions.mockResolvedValue({ result: undefined, history: [] });
 
@@ -473,7 +473,7 @@ describe('addSymbol', function () {
       name: 'Conservative',
     });
     mockLookupCefConnectSymbol.mockRejectedValue('non-error string thrown');
-    mockPrisma.universe.create.mockResolvedValue(mockDefaultRecord as any);
+    mockPrisma.universe.create.mockResolvedValue(mockDefaultRecord);
     mockGetLastPrice.mockResolvedValue(undefined);
     mockGetDistributions.mockResolvedValue({ result: undefined, history: [] });
 
@@ -507,7 +507,7 @@ describe('addSymbol', function () {
     });
     mockGetLastPrice.mockResolvedValue(undefined);
     mockGetDistributions.mockResolvedValue({ result: undefined, history: [] });
-    mockPrisma.universe.create.mockResolvedValue(mockCreatedRecord as any);
+    mockPrisma.universe.create.mockResolvedValue(mockCreatedRecord);
 
     await addSymbol(request);
 
@@ -533,7 +533,7 @@ describe('addSymbol', function () {
       id: 'test-risk-group-id',
       name: 'Conservative',
     });
-    mockPrisma.universe.create.mockResolvedValue(mockDefaultRecord as any);
+    mockPrisma.universe.create.mockResolvedValue(mockDefaultRecord);
     mockGetLastPrice.mockResolvedValue(undefined);
     mockGetDistributions.mockResolvedValue({ result: undefined, history: [] });
 
@@ -565,7 +565,7 @@ describe('addSymbol', function () {
       id: 'test-risk-group-id',
       name: 'Conservative',
     });
-    mockPrisma.universe.create.mockResolvedValue(mockDefaultRecord as any);
+    mockPrisma.universe.create.mockResolvedValue(mockDefaultRecord);
     mockGetLastPrice.mockResolvedValue(undefined);
     mockGetDistributions.mockResolvedValue({
       result: {
@@ -607,7 +607,7 @@ describe('addSymbol', function () {
       risk_group_id: 'eq-id',
       expired: true,
       is_closed_end_fund: true,
-    } as any);
+    });
     mockGetLastPrice.mockResolvedValue(undefined);
     mockGetDistributions.mockResolvedValue({ result: undefined, history: [] });
 
@@ -632,7 +632,7 @@ describe('addSymbol', function () {
       id: 'test-risk-group-id',
       name: 'Conservative',
     });
-    mockPrisma.universe.create.mockResolvedValue(mockDefaultRecord as any);
+    mockPrisma.universe.create.mockResolvedValue(mockDefaultRecord);
     mockGetLastPrice.mockResolvedValue(undefined);
     mockGetDistributions.mockRejectedValue(new Error('fetch failed'));
     mockRecalculateUniverseVolatility.mockRejectedValue('volatility error');
@@ -665,7 +665,7 @@ describe('addSymbol', function () {
       id: 'test-risk-group-id',
       name: 'Conservative',
     });
-    mockPrisma.universe.create.mockResolvedValue(mockDefaultRecord as any);
+    mockPrisma.universe.create.mockResolvedValue(mockDefaultRecord);
     mockGetLastPrice.mockResolvedValue(undefined);
     mockGetDistributions.mockRejectedValue('fetch failed');
     mockRecalculateUniverseVolatility.mockRejectedValue(

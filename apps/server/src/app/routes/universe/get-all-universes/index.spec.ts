@@ -40,7 +40,7 @@ interface RowOverrides {
   risk_group?: { name: string };
 }
 
-function makeUniverseRow(overrides: RowOverrides) {
+function makeUniverseRow(overrides: RowOverrides): Record<string, unknown> {
   const result: Record<string, unknown> = {
     id: overrides.id ?? `id-${overrides.symbol}`,
     distribution: 0.1,

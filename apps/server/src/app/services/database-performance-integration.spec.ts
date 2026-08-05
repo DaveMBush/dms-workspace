@@ -334,7 +334,7 @@ describe('Database Performance Integration Tests', () => {
     it('should handle multiple concurrent connections efficiently', async () => {
       const concurrentOperations = Array.from(
         { length: 5 },
-        function createOperation(_, i) {
+        async function createOperation(_, i) {
           return authDatabaseOptimizerService.optimizedUserLookup(
             testClient,
             `test-user-${(i % 3) + 1}`
@@ -430,13 +430,10 @@ describe('Database Performance Integration Tests', () => {
     // TODO(E82): blocked — optimizer service doesn't call monitor for metrics tracking
     it.skip('should maintain connection pool efficiency during load', async () => {
       // Skip - performance metrics tracking has integration issues in test environment
-      const initialMetrics =
-        await authDatabaseMonitorService.getAuthDatabaseMetrics(testClient);
-
       // Generate load
       const loadOperations = Array.from(
         { length: 20 },
-        function createLoadOperation(_, i) {
+        async function createLoadOperation(_, i) {
           return authDatabaseOptimizerService.optimizedUserLookup(
             testClient,
             `test-user-${(i % 3) + 1}`

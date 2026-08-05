@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/naming-convention, @smarttools/no-anonymous-functions, @typescript-eslint/require-await, @typescript-eslint/strict-boolean-expressions, @smarttools/one-exported-item-per-file -- Infrastructure monitoring code with specific requirements */
+/* eslint-disable @typescript-eslint/naming-convention, @smarttools/no-anonymous-functions, @typescript-eslint/require-await, @smarttools/one-exported-item-per-file -- Infrastructure monitoring code with specific requirements */
 // X-Ray Distributed Tracing Middleware for Fastify
 // Provides request tracing and performance monitoring
 

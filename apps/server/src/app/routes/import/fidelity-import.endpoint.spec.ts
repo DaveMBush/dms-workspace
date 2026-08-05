@@ -12,7 +12,7 @@ import fastify from 'fastify';
 import type { Mock } from 'vitest';
 import registerImportRoutes from './index';
 
-function buildApp() {
+function buildApp(): fastify.FastifyInstance {
   const app = fastify();
   app.register(
     function registerRoutes(instance, _, done) {
