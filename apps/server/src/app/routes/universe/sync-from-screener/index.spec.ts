@@ -1,6 +1,5 @@
 import type { FastifyInstance } from 'fastify';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-
 import { recalculateUniverseVolatility } from '../../../volatility/recalculate-universe-volatility.function';
 
 // Hoisted mocks
@@ -59,7 +58,9 @@ const mockLogger = {
 };
 
 vi.mock('../../../../utils/logger', () => ({
-  SyncLogger: vi.fn().mockImplementation(function (this: Record<string, unknown>) {
+  SyncLogger: vi.fn().mockImplementation(function (
+    this: Record<string, unknown>,
+  ) {
     Object.assign(this, mockLogger);
   }),
 }));
@@ -79,7 +80,7 @@ function createFastify(): FastifyInstance {
     string,
     (
       req: unknown,
-      reply: { status(code: number): unknown; send(data: unknown): void }
+      reply: { status(code: number): unknown; send(data: unknown): void },
     ) => Promise<void>
   >();
   return {
@@ -87,8 +88,8 @@ function createFastify(): FastifyInstance {
       path: string,
       handler: (
         req: unknown,
-        reply: { status(code: number): unknown; send(data: unknown): void }
-      ) => Promise<void>
+        reply: { status(code: number): unknown; send(data: unknown): void },
+      ) => Promise<void>,
     ) {
       routes.set(path, handler);
     },
@@ -166,7 +167,7 @@ describe('sync-from-screener route', () => {
       (fn: (client: unknown) => Promise<unknown>) => {
         void fn(h.client);
         return undefined as unknown;
-      }
+      },
     );
   });
 
@@ -222,12 +223,12 @@ describe('sync-from-screener route', () => {
     expect(mockRecalculateUniverseVolatility).toHaveBeenNthCalledWith(
       1,
       'new-id-1',
-      []
+      [],
     );
     expect(mockRecalculateUniverseVolatility).toHaveBeenNthCalledWith(
       2,
       'new-id-2',
-      []
+      [],
     );
   });
 
@@ -278,7 +279,7 @@ describe('sync-from-screener route', () => {
     });
     expect(mockRecalculateUniverseVolatility).toHaveBeenCalledWith(
       EXISTING_ID,
-      []
+      [],
     );
   });
 
@@ -371,7 +372,7 @@ describe('sync-from-screener route', () => {
       'Sync from screener operation started',
       {
         timestamp: expect.any(String) as string,
-      }
+      },
     );
 
     expect(mockLogger.info).toHaveBeenCalledWith(
@@ -379,7 +380,7 @@ describe('sync-from-screener route', () => {
       {
         selectedCount: 1,
         symbols: ['TEST'],
-      }
+      },
     );
 
     expect(mockLogger.info).toHaveBeenCalledWith(
@@ -387,7 +388,7 @@ describe('sync-from-screener route', () => {
       {
         expiredCount: 1,
         totalSymbols: 1,
-      }
+      },
     );
 
     expect(mockLogger.info).toHaveBeenCalledWith(
@@ -395,7 +396,7 @@ describe('sync-from-screener route', () => {
       {
         preservedEtfCount: 0,
         etfSymbols: [],
-      }
+      },
     );
 
     expect(mockLogger.info).toHaveBeenCalledWith(
@@ -404,7 +405,7 @@ describe('sync-from-screener route', () => {
         cefSymbolsExpired: 1,
         etfSymbolsPreserved: 0,
         correlationId: 'test-correlation-id',
-      }
+      },
     );
 
     expect(mockLogger.info).toHaveBeenCalledWith(
@@ -424,13 +425,13 @@ describe('sync-from-screener route', () => {
           cefSymbolsExpired: 1,
         },
         correlationId: 'test-correlation-id',
-      }
+      },
     );
   });
 
   test('handles transaction failure in sync operation', async () => {
     h.client.screener.findMany.mockRejectedValueOnce(
-      new Error('Transaction failed')
+      new Error('Transaction failed'),
     );
 
     const f = createFastify();
@@ -447,7 +448,7 @@ describe('sync-from-screener route', () => {
         error: 'Transaction failed',
         duration: expect.any(Number) as number,
         correlationId: 'test-correlation-id',
-      }
+      },
     );
   });
 
@@ -562,7 +563,7 @@ describe('sync-from-screener route', () => {
     h.client.universe.findFirst.mockResolvedValue(null);
     h.client.universe.create.mockResolvedValue({});
     h.client.universe.updateMany.mockRejectedValueOnce(
-      new Error('Database connection lost')
+      new Error('Database connection lost'),
     );
 
     const f = createFastify();
@@ -579,7 +580,7 @@ describe('sync-from-screener route', () => {
         error: 'Database connection lost',
         duration: expect.any(Number) as number,
         correlationId: 'test-correlation-id',
-      }
+      },
     );
   });
 
@@ -643,7 +644,7 @@ describe('sync-from-screener route', () => {
 
     expect(mockRecalculateUniverseVolatility).toHaveBeenCalledWith(
       'hist-id',
-      historyFixture
+      historyFixture,
     );
   });
 
@@ -671,11 +672,11 @@ describe('sync-from-screener route', () => {
 
     expect(mockStructuredLogger.warn).toHaveBeenCalledWith(
       'Empty dividend history; volatility set to insufficient-history',
-      { symbol: 'NOHIST' }
+      { symbol: 'NOHIST' },
     );
     expect(mockRecalculateUniverseVolatility).toHaveBeenCalledWith(
       'nohist-id',
-      []
+      [],
     );
   });
 
@@ -713,11 +714,11 @@ describe('sync-from-screener route', () => {
 
     expect(mockStructuredLogger.warn).toHaveBeenCalledWith(
       'Empty dividend history; volatility set to insufficient-history',
-      { symbol: 'NOHIST' }
+      { symbol: 'NOHIST' },
     );
     expect(mockRecalculateUniverseVolatility).toHaveBeenCalledWith(
       'nohist-update-id',
-      []
+      [],
     );
   });
 });

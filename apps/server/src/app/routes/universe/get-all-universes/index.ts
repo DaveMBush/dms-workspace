@@ -1,5 +1,4 @@
 import { FastifyInstance } from 'fastify';
-
 import { prisma } from '../../../prisma/prisma-client';
 import universeHelpers from '../universe-helpers';
 
@@ -46,7 +45,7 @@ function isValidSortField(field: string): field is SortField {
 
 function getTextSortValue(
   item: SortableUniverse,
-  sortBy: TextSortField
+  sortBy: TextSortField,
 ): string {
   switch (sortBy) {
     case 'name':
@@ -76,7 +75,7 @@ function compareUniverseItems(
   a: SortableUniverse,
   b: SortableUniverse,
   sortBy: SortField,
-  sortOrder: 'asc' | 'desc'
+  sortOrder: 'asc' | 'desc',
 ): number {
   let diff: number;
   if (sortBy === 'marketCap') {
@@ -91,7 +90,7 @@ function compareUniverseItems(
 
 function buildPrismaOrderBy(
   sortBy: SortField,
-  sortOrder: 'asc' | 'desc'
+  sortOrder: 'asc' | 'desc',
 ): Record<string, unknown> {
   switch (sortBy) {
     case 'name':
@@ -137,13 +136,13 @@ function mapUniverseToResponse(u: unknown): Record<string, unknown> {
       universeHelpers.calculateAvgPurchaseYieldPercent(
         openTrades,
         uw.distribution,
-        uw.distributions_per_year
+        uw.distributions_per_year,
       ),
   };
 }
 
 export default function registerGetAllUniverses(
-  fastify: FastifyInstance
+  fastify: FastifyInstance,
 ): void {
   fastify.get<{ Querystring: SortQuerystring }>(
     '/',
@@ -153,7 +152,7 @@ export default function registerGetAllUniverses(
       if (sortBy !== undefined && !isValidSortField(sortBy)) {
         reply.status(400).send({
           error: `Invalid sort field: ${sortBy}. Valid fields: ${VALID_SORT_FIELDS.join(
-            ', '
+            ', ',
           )}`,
         });
         return;
@@ -184,15 +183,10 @@ export default function registerGetAllUniverses(
       });
 
       const sorted = [...universes].sort(function sortItems(a, b) {
-        return compareUniverseItems(
-          a,
-          b,
-          effectiveSortBy,
-          effectiveSortOrder
-        );
+        return compareUniverseItems(a, b, effectiveSortBy, effectiveSortOrder);
       });
 
       reply.status(200).send(sorted.map(mapUniverseToResponse));
-    }
+    },
   );
 }

@@ -1,6 +1,7 @@
-import { describe, it, expect, beforeEach, vi, Mock } from 'vitest';
-import { FastifyRequest, FastifyReply } from 'fastify';
-import { tracingMiddleware, captureDBQuery, captureHTTPCall } from './tracing';
+import { FastifyReply, FastifyRequest } from 'fastify';
+import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
+import { logger } from '../utils/structured-logger';
+import { captureDBQuery, captureHTTPCall, tracingMiddleware } from './tracing';
 
 // Mock the structured logger
 vi.mock('../utils/structured-logger', () => ({
@@ -13,8 +14,6 @@ vi.mock('../utils/structured-logger', () => ({
     performance: vi.fn(),
   },
 }));
-
-import { logger } from '../utils/structured-logger';
 
 describe('Tracing Middleware', () => {
   let mockRequest: Partial<FastifyRequest>;
@@ -64,7 +63,7 @@ describe('Tracing Middleware', () => {
     it('should create tracing context and log request start', async () => {
       await tracingMiddleware(
         mockRequest as FastifyRequest,
-        mockReply as FastifyReply
+        mockReply as FastifyReply,
       );
 
       expect(loggerSpy.setContextAsync).toHaveBeenCalledTimes(1);
@@ -75,7 +74,7 @@ describe('Tracing Middleware', () => {
           url: '/api/test',
           userAgent: 'test-agent',
           ipAddress: '127.0.0.1',
-        })
+        }),
       );
 
       // Check that context was set with correct values
@@ -93,7 +92,7 @@ describe('Tracing Middleware', () => {
 
       await tracingMiddleware(
         mockRequest as FastifyRequest,
-        mockReply as FastifyReply
+        mockReply as FastifyReply,
       );
 
       const contextCall = loggerSpy.setContextAsync.mock.calls[0][0];
@@ -105,7 +104,7 @@ describe('Tracing Middleware', () => {
 
       await tracingMiddleware(
         mockRequest as FastifyRequest,
-        mockReply as FastifyReply
+        mockReply as FastifyReply,
       );
 
       const contextCall = loggerSpy.setContextAsync.mock.calls[0][0];
@@ -117,7 +116,7 @@ describe('Tracing Middleware', () => {
 
       await tracingMiddleware(
         mockRequest as FastifyRequest,
-        mockReply as FastifyReply
+        mockReply as FastifyReply,
       );
 
       const contextCall = loggerSpy.setContextAsync.mock.calls[0][0];
@@ -139,7 +138,7 @@ describe('Tracing Middleware', () => {
 
       await tracingMiddleware(
         mockRequest as FastifyRequest,
-        mockReply as FastifyReply
+        mockReply as FastifyReply,
       );
 
       const contextCall = loggerSpy.setContextAsync.mock.calls[0][0];
@@ -153,7 +152,7 @@ describe('Tracing Middleware', () => {
 
       await tracingMiddleware(
         mockRequest as FastifyRequest,
-        mockReply as FastifyReply
+        mockReply as FastifyReply,
       );
 
       const contextCall = loggerSpy.setContextAsync.mock.calls[0][0];
@@ -180,7 +179,7 @@ describe('Tracing Middleware', () => {
           queryType: 'SELECT',
           hasParams: true,
           queryLength: expect.any(Number),
-        })
+        }),
       );
 
       // Mock process.hrtime for performance testing
@@ -195,7 +194,7 @@ describe('Tracing Middleware', () => {
         expect.objectContaining({
           queryType: 'SELECT',
           rowCount: 5,
-        })
+        }),
       );
 
       process.hrtime = originalHrtime;
@@ -216,7 +215,7 @@ describe('Tracing Middleware', () => {
         testError,
         expect.objectContaining({
           queryType: 'INSERT',
-        })
+        }),
       );
     });
 
@@ -231,7 +230,7 @@ describe('Tracing Middleware', () => {
         expect.any(Array),
         expect.objectContaining({
           queryType: 'SELECT',
-        })
+        }),
       );
     });
   });
@@ -267,7 +266,7 @@ describe('Tracing Middleware', () => {
           url: 'https://api.example.com/users',
           method: 'GET',
           statusCode: 200,
-        })
+        }),
       );
 
       process.hrtime = originalHrtime;
@@ -287,7 +286,7 @@ describe('Tracing Middleware', () => {
         expect.objectContaining({
           url: 'https://api.example.com/users',
           method: 'POST',
-        })
+        }),
       );
     });
 
@@ -316,7 +315,7 @@ describe('Tracing Middleware', () => {
           url: 'https://api.example.com',
           method: 'GET',
           statusCode: 200,
-        })
+        }),
       );
     });
   });
@@ -327,7 +326,7 @@ describe('Tracing Middleware', () => {
 
       await tracingMiddleware(
         mockRequest as FastifyRequest,
-        mockReply as FastifyReply
+        mockReply as FastifyReply,
       );
 
       const contextCall = loggerSpy.setContextAsync.mock.calls[0][0];
@@ -339,7 +338,7 @@ describe('Tracing Middleware', () => {
 
       await tracingMiddleware(
         mockRequest as FastifyRequest,
-        mockReply as FastifyReply
+        mockReply as FastifyReply,
       );
 
       const contextCall = loggerSpy.setContextAsync.mock.calls[0][0];
@@ -352,7 +351,7 @@ describe('Tracing Middleware', () => {
 
       await tracingMiddleware(
         mockRequest as FastifyRequest,
-        mockReply as FastifyReply
+        mockReply as FastifyReply,
       );
 
       const contextCall = loggerSpy.setContextAsync.mock.calls[0][0];

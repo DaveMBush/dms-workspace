@@ -1,6 +1,5 @@
 import path from 'path';
 import { expect, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 
 /**
@@ -44,7 +43,7 @@ function parseRgba(raw: string): [number, number, number, number] {
  */
 function composite(
   fg: [number, number, number, number],
-  bg: [number, number, number, number]
+  bg: [number, number, number, number],
 ): [number, number, number] {
   const [fr, fg2, fb, fa] = fg;
   const [br, bg2, bb] = bg;
@@ -57,7 +56,7 @@ function composite(
 
 /** WCAG 2.1 relative luminance (IEC 61966-2-1 gamma). */
 function relativeLuminance([r, g, b]: [number, number, number]): number {
-  const lin = (c: number) => {
+  const lin = (c: number): number => {
     const s = c / 255;
     return s <= 0.04045 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
   };
@@ -67,7 +66,7 @@ function relativeLuminance([r, g, b]: [number, number, number]): number {
 /** WCAG 2.1 contrast ratio between two opaque colours. */
 function contrastRatio(
   fg: [number, number, number],
-  bg: [number, number, number]
+  bg: [number, number, number],
 ): number {
   const l1 = relativeLuminance(fg);
   const l2 = relativeLuminance(bg);
@@ -97,20 +96,20 @@ test.describe('Import dialog filename visibility in dark mode', () => {
     await page.goto('/global/universe', { waitUntil: 'domcontentloaded' });
 
     const importButton = page.locator(
-      '[data-testid="import-transactions-button"]'
+      '[data-testid="import-transactions-button"]',
     );
     await expect(importButton).toBeVisible({ timeout: 15000 });
 
     // ── 4. Open the import dialog ─────────────────────────────────────────
     await importButton.click();
     await expect(
-      page.getByRole('heading', { name: 'Import Fidelity Transactions' })
+      page.getByRole('heading', { name: 'Import Fidelity Transactions' }),
     ).toBeVisible({ timeout: 10000 });
 
     // ── 5. Select a CSV file to trigger the filename display ──────────────
     const fileInput = page.locator('input[type="file"]');
     await fileInput.setInputFiles(
-      path.join(FIXTURES_DIR, 'fidelity-valid.csv')
+      path.join(FIXTURES_DIR, 'fidelity-valid.csv'),
     );
 
     const fileNameSpan = page.locator('span.selected-file-name');
@@ -155,7 +154,7 @@ test.describe('Import dialog filename visibility in dark mode', () => {
     console.log(`  --mat-sys-on-surface-variant  : "${cssVar}"`);
     console.log(`  computed text color (raw)     : ${textColorRaw}`);
     console.log(
-      `  composited text color (rgb)   : rgb(${compositedText.join(', ')})`
+      `  composited text color (rgb)   : rgb(${compositedText.join(', ')})`,
     );
     console.log(`  dialog surface background     : ${bgColorRaw}`);
     console.log(`  contrast ratio                : ${ratio.toFixed(2)}:1`);

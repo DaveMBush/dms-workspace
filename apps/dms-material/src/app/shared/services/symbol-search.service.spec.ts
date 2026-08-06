@@ -1,13 +1,12 @@
-import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
 import {
   HttpTestingController,
   provideHttpClientTesting,
 } from '@angular/common/http/testing';
-import { provideHttpClient } from '@angular/common/http';
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-
-import { SymbolSearchService } from './symbol-search.service';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { SymbolOption } from '../../components/symbol-autocomplete/symbol-option.interface';
+import { SymbolSearchService } from './symbol-search.service';
 
 describe('SymbolSearchService', () => {
   let service: SymbolSearchService;
@@ -46,8 +45,8 @@ describe('SymbolSearchService', () => {
 
       const req = httpMock.expectOne(
         (request) =>
-          (Boolean(request.url.includes('/api/symbol/search'))) &&
-          request.params.get('query') === query
+          Boolean(request.url.includes('/api/symbol/search')) &&
+          request.params.get('query') === query,
       );
       expect(req.request.method).toBe('GET');
       req.flush(mockResponse);
@@ -71,7 +70,7 @@ describe('SymbolSearchService', () => {
       });
 
       const req = httpMock.expectOne((request) =>
-        request.url.includes('/api/symbol/search')
+        request.url.includes('/api/symbol/search'),
       );
       req.flush(mockResponse);
 
@@ -93,7 +92,7 @@ describe('SymbolSearchService', () => {
       });
 
       const req = httpMock.expectOne((request) =>
-        request.url.includes('/api/symbol/search')
+        request.url.includes('/api/symbol/search'),
       );
       req.flush(mockResponse);
 
@@ -115,7 +114,7 @@ describe('SymbolSearchService', () => {
       });
 
       const req = httpMock.expectOne((request) =>
-        request.url.includes('/api/symbol/search')
+        request.url.includes('/api/symbol/search'),
       );
       req.flush('API Error', { status: 500, statusText: 'Server Error' });
 
@@ -137,7 +136,7 @@ describe('SymbolSearchService', () => {
       });
 
       const req = httpMock.expectOne((request) =>
-        request.url.includes('/api/symbol/search')
+        request.url.includes('/api/symbol/search'),
       );
       req.error(new ProgressEvent('Network error'));
 
@@ -146,7 +145,7 @@ describe('SymbolSearchService', () => {
       });
       await expect(errorPromise).rejects.toSatisfy(
         (error: unknown) =>
-          (error as { error: unknown }).error instanceof ProgressEvent
+          (error as { error: unknown }).error instanceof ProgressEvent,
       );
     });
 
@@ -165,7 +164,7 @@ describe('SymbolSearchService', () => {
       });
 
       const req = httpMock.expectOne((request) =>
-        request.url.includes('/api/symbol/search')
+        request.url.includes('/api/symbol/search'),
       );
       req.flush(mockResponse);
 
@@ -181,7 +180,7 @@ describe('SymbolSearchService', () => {
         (_, i) => ({
           symbol: `A${i}`,
           name: `Company ${i}`,
-        })
+        }),
       );
 
       const resultPromise = new Promise<SymbolOption[]>((resolve) => {
@@ -191,7 +190,7 @@ describe('SymbolSearchService', () => {
       });
 
       const req = httpMock.expectOne((request) =>
-        request.url.includes('/api/symbol/search')
+        request.url.includes('/api/symbol/search'),
       );
       req.flush(mockResponse);
 
@@ -221,7 +220,7 @@ describe('SymbolSearchService', () => {
 
       // Only the last request should be made
       const requests = httpMock.match((request) =>
-        request.url.includes('/api/symbol/search')
+        request.url.includes('/api/symbol/search'),
       );
       expect(requests.length).toBe(1);
       expect(requests[0].request.params.get('query')).toBe(query3);
@@ -242,7 +241,7 @@ describe('SymbolSearchService', () => {
 
       // Flush first request
       const req1 = httpMock.expectOne((request) =>
-        request.url.includes('/api/symbol/search')
+        request.url.includes('/api/symbol/search'),
       );
       req1.flush(mockResponse);
 
@@ -252,7 +251,7 @@ describe('SymbolSearchService', () => {
 
       // Both requests should have been made
       const req2 = httpMock.expectOne((request) =>
-        request.url.includes('/api/symbol/search')
+        request.url.includes('/api/symbol/search'),
       );
       req2.flush(mockResponse);
 
@@ -279,7 +278,7 @@ describe('SymbolSearchService', () => {
       });
 
       const req = httpMock.expectOne((request) =>
-        request.url.includes('/api/symbol/search')
+        request.url.includes('/api/symbol/search'),
       );
       req.flush(apiResponse);
 
@@ -303,7 +302,7 @@ describe('SymbolSearchService', () => {
       });
 
       const req = httpMock.expectOne((request) =>
-        request.url.includes('/api/symbol/search')
+        request.url.includes('/api/symbol/search'),
       );
       req.flush(apiResponse);
 
@@ -329,7 +328,7 @@ describe('SymbolSearchService', () => {
       });
 
       const req1 = httpMock.expectOne((request) =>
-        request.url.includes('/api/symbol/search')
+        request.url.includes('/api/symbol/search'),
       );
       req1.flush(mockResponse);
       await promise1;
@@ -343,7 +342,7 @@ describe('SymbolSearchService', () => {
 
       // Should not make another HTTP request
       httpMock.expectNone((request) =>
-        request.url.includes('/api/symbol/search')
+        request.url.includes('/api/symbol/search'),
       );
 
       const results2 = await promise2;
@@ -365,7 +364,7 @@ describe('SymbolSearchService', () => {
         service.searchSymbols(query).subscribe(() => resolve());
       });
       const req1 = httpMock.expectOne((request) =>
-        request.url.includes('/api/symbol/search')
+        request.url.includes('/api/symbol/search'),
       );
       req1.flush(mockResponse);
       await promise1;
@@ -378,7 +377,7 @@ describe('SymbolSearchService', () => {
         service.searchSymbols(query).subscribe(() => resolve());
       });
       const req2 = httpMock.expectOne((request) =>
-        request.url.includes('/api/symbol/search')
+        request.url.includes('/api/symbol/search'),
       );
       req2.flush(mockResponse);
       await promise2;

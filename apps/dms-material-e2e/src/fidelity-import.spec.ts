@@ -4,7 +4,7 @@ import { login } from './helpers/login.helper';
 import { seedImportData } from './helpers/seed-import-data.helper';
 
 // Resolve the fixtures directory relative to the workspace root.
-const FIXTURES_DIR = path.resolve(
+const _FIXTURES_DIR = path.resolve(
   process.cwd(),
   'apps',
   'dms-material-e2e',
@@ -14,6 +14,7 @@ const FIXTURES_DIR = path.resolve(
 /**
  * Navigate to the global universe page and wait for it to load
  */
+
 async function navigateToUniverse(page: Page): Promise<void> {
   await page.goto('/global/universe');
   await page.waitForLoadState('networkidle');

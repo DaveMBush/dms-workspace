@@ -1,5 +1,4 @@
 import type { PrismaClient } from '@prisma/client';
-
 import { buildMonthlyDates } from './build-monthly-dates.helper';
 import { generateUniqueId } from './generate-unique-id.helper';
 import { getOrCreateDivDepositTypeId } from './get-or-create-div-deposit-type-id.helper';
@@ -25,6 +24,7 @@ import { initializePrismaClient } from './shared-prisma-client.helper';
  * This verifies the rendering half of the fix; Story 88.3 tests the wiring.
  */
 
+/* eslint-disable @typescript-eslint/naming-convention -- E2E test constants use UPPER_CASE for readability */
 const DISTRIBUTIONS_PER_YEAR = 12;
 const LAST_PRICE = 10.0;
 const MONTHS_TO_SEED = 12;
@@ -53,7 +53,7 @@ function suppressError(): undefined {
 async function seedHeldSymbol(
   ctx: SeedContext,
   symbol: string,
-  universeIds: string[]
+  universeIds: string[],
 ): Promise<void> {
   const { prisma, riskGroupId, accountId, divDepositTypeId } = ctx;
   const universe = await prisma.universe.create({
@@ -104,7 +104,7 @@ async function seedHeldSymbol(
 async function seedUnheldSymbol(
   ctx: SeedContext,
   symbol: string,
-  universeIds: string[]
+  universeIds: string[],
 ): Promise<void> {
   const { prisma, riskGroupId } = ctx;
   const universe = await prisma.universe.create({
@@ -130,7 +130,7 @@ async function seedUnheldSymbol(
 function buildCleanup(
   prisma: PrismaClient,
   universeIds: string[],
-  accountName: string
+  accountName: string,
 ): () => Promise<void> {
   return async function cleanupHeldAndUnheldData(): Promise<void> {
     try {

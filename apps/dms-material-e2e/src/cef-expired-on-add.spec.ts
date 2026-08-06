@@ -5,8 +5,8 @@
  * is persisted with expired: true and is_closed_end_fund: true in the universe API
  * response — ensuring the add path correctly flags CEF symbols as expired.
  */
-import { expect, Page, test } from 'playwright/test';
 
+import { expect, Page, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 import { initializePrismaClient } from './helpers/shared-prisma-client.helper';
 import { createRiskGroups } from './helpers/shared-risk-groups.helper';
@@ -45,7 +45,7 @@ async function navigateToUniverse(page: Page): Promise<void> {
 
 async function typeSymbolAndSelectAutocomplete(
   page: Page,
-  symbol: string
+  symbol: string,
 ): Promise<void> {
   await page.route('**/api/symbol/search**', async (route) => {
     await route.fulfill({
@@ -68,13 +68,13 @@ async function typeSymbolAndSelectAutocomplete(
 
 async function selectRiskGroupInDialog(
   page: Page,
-  groupName: string
+  groupName: string,
 ): Promise<void> {
   await page.locator('mat-select[formcontrolname="riskGroupId"]').click();
   await page.waitForTimeout(300);
   const option = page
     .locator(
-      '.cdk-overlay-container .mat-option, .cdk-overlay-container .mat-mdc-option'
+      '.cdk-overlay-container .mat-option, .cdk-overlay-container .mat-mdc-option',
     )
     .filter({ hasText: groupName })
     .first();
@@ -106,7 +106,7 @@ test.describe('CEF Symbol Added is Flagged Expired', () => {
     // Open the add symbol dialog
     await page.locator('[data-testid="add-symbol-button"]').click();
     await expect(page.locator('[data-testid="add-symbol-dialog"]')).toBeVisible(
-      { timeout: 5000 }
+      { timeout: 5000 },
     );
 
     // Type CEF symbol and select from autocomplete
@@ -118,12 +118,12 @@ test.describe('CEF Symbol Added is Flagged Expired', () => {
       (response) =>
         response.url().includes('/api/universe/add') &&
         response.status() === 200,
-      { timeout: 30000 }
+      { timeout: 30000 },
     );
 
     await page.locator('[data-testid="submit-button"]').click();
     await expect(
-      page.locator('[data-testid="add-symbol-dialog"]')
+      page.locator('[data-testid="add-symbol-dialog"]'),
     ).not.toBeVisible({ timeout: 30000 });
 
     // Assert the add-symbol API response contains expired: true and is_closed_end_fund: true

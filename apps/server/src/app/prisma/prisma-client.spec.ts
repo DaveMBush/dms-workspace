@@ -3,14 +3,14 @@
  * Tests for PostgreSQL Prisma client functionality
  */
 
-import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
+import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
+import { PrismaClient } from '@prisma/client';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import {
   checkDatabaseHealth,
   checkDatabaseHealthWithClient,
   connectWithRetry,
 } from './prisma-client';
-import { PrismaClient } from '@prisma/client';
-import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 
 // Mock console methods to avoid cluttering test output
 const mockConsole = {
@@ -92,7 +92,7 @@ describe('Prisma Client - PostgreSQL', () => {
       // Create a mock connectWithRetry function that uses an invalid client
       const connectWithRetryTest = async (
         maxRetries: number = 5,
-        baseDelay: number = 1000
+        baseDelay: number = 1000,
       ): Promise<void> => {
         const adapter = new PrismaBetterSqlite3({
           url: 'file:./invalid-retry-test.db',
@@ -115,7 +115,7 @@ describe('Prisma Client - PostgreSQL', () => {
           }
         }
         throw new Error(
-          `Failed to connect to database after ${maxRetries} attempts`
+          `Failed to connect to database after ${maxRetries} attempts`,
         );
       };
 

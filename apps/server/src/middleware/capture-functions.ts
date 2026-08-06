@@ -33,7 +33,7 @@ export function captureDBQuery(query: string, params?: unknown[]): QueryTracer {
 function createTracedDBQuery(
   segment: XRaySegment,
   query: string,
-  params?: unknown[]
+  params?: unknown[],
 ): QueryTracer {
   const subsegment = segment.addNewSubsegment('database_query');
   const queryType = query.trim().split(' ')[0].toUpperCase();
@@ -84,7 +84,7 @@ function setupDBSubsegment(
   subsegment: XRaySubsegment,
   queryType: string,
   query: string,
-  params?: unknown[]
+  params?: unknown[],
 ): void {
   subsegment.addAnnotation('query_type', queryType);
   subsegment.addAnnotation('has_params', Boolean(params));

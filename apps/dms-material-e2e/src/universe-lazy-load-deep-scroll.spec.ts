@@ -85,7 +85,6 @@
  */
 
 import { expect, Locator, Page, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 import { seedDeepScrollUniverseData } from './helpers/seed-deep-scroll-universe-data.helper';
 
@@ -111,7 +110,7 @@ const ROW_HEIGHT_PX = 52;
  */
 async function assertVisibleSymbolsNonEmpty(
   page: Page,
-  failureMessage: string
+  failureMessage: string,
 ): Promise<void> {
   // Wait for at least one row to be visible first
   await expect(page.locator(ROW_SELECTOR).first()).toBeVisible({
@@ -138,7 +137,7 @@ async function assertVisibleSymbolsNonEmpty(
           return text === '';
         }).length;
       },
-      { message: failureMessage, timeout: 20000 }
+      { message: failureMessage, timeout: 20000 },
     )
     .toBe(0);
 }
@@ -149,16 +148,15 @@ async function assertVisibleSymbolsNonEmpty(
  */
 async function scrollViewportTo(
   viewport: Locator,
-  scrollTopPx: number
+  scrollTopPx: number,
 ): Promise<number> {
   return viewport.evaluate(function setScrollTop(
     node: Element,
-    top: number
+    top: number,
   ): number {
     node.scrollTop = top;
     return node.scrollTop;
-  },
-  scrollTopPx);
+  }, scrollTopPx);
 }
 
 /**
@@ -189,10 +187,10 @@ async function scrollViewportToTop(viewport: Locator): Promise<void> {
  */
 async function assertViewportCrossedPage1(
   viewport: Locator,
-  failureMessage: string
+  failureMessage: string,
 ): Promise<void> {
   const top = await viewport.evaluate(function readScrollTop(
-    node: Element
+    node: Element,
   ): number {
     return node.scrollTop;
   });
@@ -290,7 +288,7 @@ test.describe('Universe Lazy-Load Deep Scroll — empty symbols after crossing p
       'Visible rows have empty symbol cells after incremental deep scroll ' +
         'across three lazy-load page boundaries. ' +
         'Story 65.2 regression: filterUniverses() placeholder guard may have been removed, ' +
-        'causing CDK data source to cap at ~50 rows and preventing pages 2-3 from loading.'
+        'causing CDK data source to cap at ~50 rows and preventing pages 2-3 from loading.',
     );
   });
 
@@ -326,13 +324,13 @@ test.describe('Universe Lazy-Load Deep Scroll — empty symbols after crossing p
 
     await assertViewportCrossedPage1(
       viewport,
-      'Fast scroll to bottom did not cross page-1 boundary; CDK viewport height may be capped at 50 rows (Story 65.2 regression).'
+      'Fast scroll to bottom did not cross page-1 boundary; CDK viewport height may be capped at 50 rows (Story 65.2 regression).',
     );
     await assertVisibleSymbolsNonEmpty(
       page,
       'Visible rows have empty symbol cells after fast scroll to bottom. ' +
         'Story 65.2 regression: filterUniverses() placeholder guard may be missing, ' +
-        'capping CDK viewport at 50 rows and leaving pages 2-3 unreachable.'
+        'capping CDK viewport at 50 rows and leaving pages 2-3 unreachable.',
     );
   });
 
@@ -394,13 +392,13 @@ test.describe('Universe Lazy-Load Deep Scroll — empty symbols after crossing p
 
     await assertViewportCrossedPage1(
       viewport,
-      'Sort + deep scroll did not cross page-1 boundary; CDK viewport height may be capped at 50 rows after sort-triggered reload (Story 65.2 regression).'
+      'Sort + deep scroll did not cross page-1 boundary; CDK viewport height may be capped at 50 rows after sort-triggered reload (Story 65.2 regression).',
     );
     await assertVisibleSymbolsNonEmpty(
       page,
       'Visible rows have empty symbol cells after sort change + deep scroll. ' +
         'Story 65.2 regression: after sort-triggered reload, filterUniverses() ' +
-        'may be stripping placeholder rows from CDK, capping visibleRange at 50 rows.'
+        'may be stripping placeholder rows from CDK, capping visibleRange at 50 rows.',
     );
   });
 
@@ -466,13 +464,13 @@ test.describe('Universe Lazy-Load Deep Scroll — empty symbols after crossing p
 
     await assertViewportCrossedPage1(
       viewport,
-      'Bidirectional scroll did not cross page-1 boundary; CDK viewport height may be capped at 50 rows (Story 65.2 regression).'
+      'Bidirectional scroll did not cross page-1 boundary; CDK viewport height may be capped at 50 rows (Story 65.2 regression).',
     );
     await assertVisibleSymbolsNonEmpty(
       page,
       'Visible rows have empty symbol cells after bidirectional deep scroll. ' +
         'Story 65.2 regression: scroll page1→page2→page3→top→bottom must keep ' +
-        'all rows populated. filterUniverses() placeholder guard may be missing.'
+        'all rows populated. filterUniverses() placeholder guard may be missing.',
     );
   });
 
@@ -532,14 +530,14 @@ test.describe('Universe Lazy-Load Deep Scroll — empty symbols after crossing p
 
     await assertViewportCrossedPage1(
       viewport,
-      'Filter + scroll to bottom did not cross page-1 boundary; CDK viewport height may be capped at 50 rows when symbol filter is active (Story 65.2 regression).'
+      'Filter + scroll to bottom did not cross page-1 boundary; CDK viewport height may be capped at 50 rows when symbol filter is active (Story 65.2 regression).',
     );
     await assertVisibleSymbolsNonEmpty(
       page,
       'Visible rows have empty symbol cells after UDSCRL filter + scroll to bottom. ' +
         "Story 65.2 regression: filterUniverses() placeholder guard must allow symbol='' " +
         'rows through even when symbol text filter is active. All 150 seeded rows (prefix ' +
-        'UDSCRL) should be visible and fully loaded after deep scroll.'
+        'UDSCRL) should be visible and fully loaded after deep scroll.',
     );
   });
 });

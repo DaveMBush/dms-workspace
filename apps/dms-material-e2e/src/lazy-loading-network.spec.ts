@@ -1,5 +1,4 @@
 import { expect, Page, Request, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 import { seedLazyLoadingE2eData } from './helpers/seed-lazy-loading-e2e-data.helper';
 
@@ -28,6 +27,7 @@ interface CapturedIndexesRequest {
 /**
  * Capture POST /api/top responses and extract the universes partial array.
  */
+
 function captureTopResponses(page: Page): PartialArray[] {
   const captured: PartialArray[] = [];
 
@@ -62,7 +62,7 @@ function captureTopResponses(page: Page): PartialArray[] {
  */
 function captureIndexesRequests(
   page: Page,
-  urlPattern: string
+  urlPattern: string,
 ): CapturedIndexesRequest[] {
   const captured: CapturedIndexesRequest[] = [];
 
@@ -99,7 +99,7 @@ function captureIndexesRequests(
       return;
     }
     const entry = captured.find(function matchRequest(
-      e: CapturedIndexesRequest
+      e: CapturedIndexesRequest,
     ): boolean {
       return e.request === response.request();
     });
@@ -189,7 +189,7 @@ test.describe('Lazy Loading Network Traffic', () => {
       for (let i = 0; i < 5; i++) {
         await page.evaluate(function scrollDown(step: number): void {
           const viewport = document.querySelector(
-            'cdk-virtual-scroll-viewport'
+            'cdk-virtual-scroll-viewport',
           );
           if (viewport !== null) {
             (viewport as HTMLElement).scrollTop = (step + 1) * 1500;
@@ -208,7 +208,7 @@ test.describe('Lazy Loading Network Traffic', () => {
       const scrollRequests = indexesRequests.filter(
         function filterScrollRequests(entry: CapturedIndexesRequest): boolean {
           return entry.body.startIndex > 0;
-        }
+        },
       );
       expect(scrollRequests.length).toBeGreaterThanOrEqual(1);
 
@@ -227,13 +227,13 @@ test.describe('Lazy Loading Network Traffic', () => {
     }) => {
       const indexesRequests = captureIndexesRequests(
         page,
-        '/api/accounts/indexes'
+        '/api/accounts/indexes',
       );
 
       await login(page);
       await page.goto(`/account/${accountId}/open`);
       await expect(
-        page.locator('[data-testid="open-positions-table"]')
+        page.locator('[data-testid="open-positions-table"]'),
       ).toBeVisible({ timeout: 15000 });
       await page.waitForSelector('.dms-body-row[role="row"]', {
         timeout: 15000,
@@ -246,7 +246,7 @@ test.describe('Lazy Loading Network Traffic', () => {
       const openTradeRequests = indexesRequests.filter(
         function filterOpenTrades(entry: CapturedIndexesRequest): boolean {
           return entry.body.childField === 'openTrades';
-        }
+        },
       );
       expect(openTradeRequests.length).toBeGreaterThanOrEqual(1);
 
@@ -258,7 +258,7 @@ test.describe('Lazy Loading Network Traffic', () => {
 
       // The indexes returned should be ≤ page size
       expect(firstEntry.response.indexes.length).toBeLessThanOrEqual(
-        MAX_PAGE_SIZE
+        MAX_PAGE_SIZE,
       );
     });
   });

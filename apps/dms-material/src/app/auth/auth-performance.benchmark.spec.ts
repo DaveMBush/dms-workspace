@@ -1,13 +1,12 @@
-import { TestBed } from '@angular/core/testing';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
-import { AuthService } from './auth.service';
-import { TokenCacheService } from './services/token-cache.service';
-import { SessionManagerService } from './services/session-manager.service';
-import { TokenRefreshService } from './services/token-refresh.service';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 import { fetchAuthSession } from '@aws-amplify/auth';
-
-import { vi, MockedFunction } from 'vitest';
+import { MockedFunction, vi } from 'vitest';
+import { AuthService } from './auth.service';
+import { SessionManagerService } from './services/session-manager.service';
+import { TokenCacheService } from './services/token-cache.service';
+import { TokenRefreshService } from './services/token-refresh.service';
 
 // Mock AWS Amplify
 vi.mock('@aws-amplify/auth', () => ({
@@ -89,7 +88,7 @@ describe('AuthService Performance Benchmarks', () => {
         async () =>
           new Promise((resolve) => {
             setTimeout(() => resolve(mockSessionData), awsDelay);
-          })
+          }),
       );
 
       // Benchmark without cache (first call)
@@ -143,7 +142,7 @@ describe('AuthService Performance Benchmarks', () => {
       // Measure concurrent cache hits (simulating account operations)
       const startTime = performance.now();
       const promises = Array.from({ length: concurrentRequests }, async () =>
-        authService.getAccessToken()
+        authService.getAccessToken(),
       );
 
       await Promise.all(promises);
@@ -213,7 +212,7 @@ describe('AuthService Performance Benchmarks', () => {
 
       // Make concurrent requests (these should all be cache hits)
       const promises = Array.from({ length: concurrentRequests }, async () =>
-        authService.getAccessToken()
+        authService.getAccessToken(),
       );
 
       await Promise.all(promises);

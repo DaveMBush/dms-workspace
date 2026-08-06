@@ -1,4 +1,4 @@
-import { describe, expect, test, vi, beforeEach, type Mock } from 'vitest';
+import { beforeEach, describe, expect, test, vi, type Mock } from 'vitest';
 
 vi.mock('../../prisma/prisma-client', function () {
   return {
@@ -427,7 +427,7 @@ describe('Transaction Validation', function () {
       const error = mod.formatValidationError(
         5,
         'account',
-        'Account not found'
+        'Account not found',
       );
 
       expect(error.row).toBe(5);
@@ -438,7 +438,7 @@ describe('Transaction Validation', function () {
       const error = mod.formatValidationError(
         5,
         'account',
-        'Account not found'
+        'Account not found',
       );
 
       expect(error.field).toBe('account');
@@ -449,7 +449,7 @@ describe('Transaction Validation', function () {
       const error = mod.formatValidationError(
         5,
         'account',
-        "Account 'Roth 401k' not found"
+        "Account 'Roth 401k' not found",
       );
 
       expect(error.message).toBe("Account 'Roth 401k' not found");

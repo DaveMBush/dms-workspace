@@ -32,7 +32,6 @@
  */
 
 import { expect, Page, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 import { seedRowHeightE2eData } from './helpers/seed-row-height-e2e-data.helper';
 
@@ -54,12 +53,12 @@ async function waitForSeededRows(page: Page, symbols: string[]): Promise<void> {
             return seededSymbols.some(function matchesSymbol(symbol: string) {
               return text.includes(symbol);
             });
-          }
+          },
         ).length > 1
       );
     },
     [ROW_SELECTOR, symbols],
-    { timeout: 10000 }
+    { timeout: 10000 },
   );
 }
 
@@ -115,7 +114,7 @@ test.describe('Universe Row Height Consistency — Epic 67 / Story 67.1', () => 
     page,
   }) => {
     const rowHeights = await page.evaluate(function measureSeededRowHeights(
-      symbols: string[]
+      symbols: string[],
     ): number[] {
       return Array.from(document.querySelectorAll('.dms-body-row[role="row"]'))
         .filter(function rowContainsSymbol(row: Element): boolean {
@@ -127,8 +126,7 @@ test.describe('Universe Row Height Consistency — Epic 67 / Story 67.1', () => 
         .map(function getHeight(row: Element): number {
           return (row as HTMLElement).offsetHeight;
         });
-    },
-    seededSymbols);
+    }, seededSymbols);
 
     // All six seeded rows must be visible for the measurement to be meaningful.
     expect(rowHeights.length).toBeGreaterThan(1);
@@ -141,7 +139,7 @@ test.describe('Universe Row Height Consistency — Epic 67 / Story 67.1', () => 
       uniqueHeights.size,
       `Expected all seeded rows to share one height but found ${
         uniqueHeights.size
-      } distinct values: ${JSON.stringify([...uniqueHeights])}`
+      } distinct values: ${JSON.stringify([...uniqueHeights])}`,
     ).toBe(1);
   });
 });

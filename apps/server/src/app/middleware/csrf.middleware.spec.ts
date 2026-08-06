@@ -1,6 +1,5 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { generateCSRFTokenHandler } from './csrf.middleware';
 import { validateCSRFToken } from './validate-csrf-token.function';
 
@@ -39,7 +38,7 @@ describe('CSRFMiddleware', () => {
 
       const result = await validateCSRFToken(
         mockRequest as FastifyRequest,
-        mockReply as FastifyReply
+        mockReply as FastifyReply,
       );
 
       expect(result).toBe(true);
@@ -50,7 +49,7 @@ describe('CSRFMiddleware', () => {
 
       const result = await validateCSRFToken(
         mockRequest as FastifyRequest,
-        mockReply as FastifyReply
+        mockReply as FastifyReply,
       );
 
       expect(result).toBe(true);
@@ -59,7 +58,7 @@ describe('CSRFMiddleware', () => {
     it('should reject POST request without CSRF header', async () => {
       const result = await validateCSRFToken(
         mockRequest as FastifyRequest,
-        mockReply as FastifyReply
+        mockReply as FastifyReply,
       );
 
       expect(result).toBe(false);
@@ -77,7 +76,7 @@ describe('CSRFMiddleware', () => {
 
       const result = await validateCSRFToken(
         mockRequest as FastifyRequest,
-        mockReply as FastifyReply
+        mockReply as FastifyReply,
       );
 
       expect(result).toBe(false);
@@ -98,7 +97,7 @@ describe('CSRFMiddleware', () => {
       // For now, we'll test the basic validation logic
       await validateCSRFToken(
         mockRequest as FastifyRequest,
-        mockReply as FastifyReply
+        mockReply as FastifyReply,
       );
 
       // This might fail without proper token storage, but validates the flow
@@ -111,7 +110,7 @@ describe('CSRFMiddleware', () => {
 
       const result = await validateCSRFToken(
         mockRequest as FastifyRequest,
-        mockReply as FastifyReply
+        mockReply as FastifyReply,
       );
 
       expect(result).toBe(true);
@@ -122,7 +121,7 @@ describe('CSRFMiddleware', () => {
     it('should generate and set CSRF token', async () => {
       await generateCSRFTokenHandler(
         mockRequest as FastifyRequest,
-        mockReply as FastifyReply
+        mockReply as FastifyReply,
       );
 
       expect(mockReply.setCookie).toHaveBeenCalledWith(
@@ -132,7 +131,7 @@ describe('CSRFMiddleware', () => {
           httpOnly: true,
           sameSite: 'strict',
           path: '/',
-        })
+        }),
       );
 
       expect(mockReply.send).toHaveBeenCalledWith({
@@ -146,7 +145,7 @@ describe('CSRFMiddleware', () => {
 
       await generateCSRFTokenHandler(
         mockRequest as FastifyRequest,
-        mockReply as FastifyReply
+        mockReply as FastifyReply,
       );
 
       expect(mockReply.setCookie).toHaveBeenCalledWith(
@@ -154,7 +153,7 @@ describe('CSRFMiddleware', () => {
         expect.any(String),
         expect.objectContaining({
           secure: true,
-        })
+        }),
       );
     });
 
@@ -163,7 +162,7 @@ describe('CSRFMiddleware', () => {
 
       await generateCSRFTokenHandler(
         mockRequest as FastifyRequest,
-        mockReply as FastifyReply
+        mockReply as FastifyReply,
       );
 
       expect(mockReply.setCookie).toHaveBeenCalledWith(
@@ -171,7 +170,7 @@ describe('CSRFMiddleware', () => {
         expect.any(String),
         expect.objectContaining({
           secure: false,
-        })
+        }),
       );
     });
   });

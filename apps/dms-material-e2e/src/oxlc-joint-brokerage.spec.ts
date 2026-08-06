@@ -1,8 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-
 import { expect, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 import { seedOxlcJointBrokerageData } from './helpers/seed-oxlc-joint-brokerage.helper';
 import { initializePrismaClient } from './helpers/shared-prisma-client.helper';
@@ -27,7 +25,7 @@ test.describe('OXLC Joint Brokerage Positions and Dividends', () => {
     //    service will auto-create.
     const csvPath = path.join(
       FIXTURES_DIR,
-      'fidelity-oxlc-joint-brokerage.csv'
+      'fidelity-oxlc-joint-brokerage.csv',
     );
     const csvContent = fs.readFileSync(csvPath, 'utf-8');
 
@@ -38,7 +36,7 @@ test.describe('OXLC Joint Brokerage Positions and Dividends', () => {
 
     if (!response.ok()) {
       throw new Error(
-        `CSV import failed: ${response.status()} ${await response.text()}`
+        `CSV import failed: ${response.status()} ${await response.text()}`,
       );
     }
 

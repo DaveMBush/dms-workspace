@@ -1,5 +1,4 @@
 import type { PrismaClient } from '@prisma/client';
-
 import { buildMonthlyDates } from './build-monthly-dates.helper';
 import { generateUniqueId } from './generate-unique-id.helper';
 import { getOrCreateDivDepositTypeId } from './get-or-create-div-deposit-type-id.helper';
@@ -47,7 +46,7 @@ interface SeedContext {
 async function seedOnePlan(
   ctx: SeedContext,
   plan: SeedPlan,
-  universeIds: string[]
+  universeIds: string[],
 ): Promise<void> {
   const currentDist = plan.amounts[plan.amounts.length - 1];
   const universe = await ctx.prisma.universe.create({
@@ -109,7 +108,7 @@ async function cleanupOnError(
   prisma: PrismaClient,
   universeIds: string[],
   symbols: string[],
-  accountName: string
+  accountName: string,
 ): Promise<void> {
   if (universeIds.length > 0) {
     await prisma.divDeposits
@@ -128,7 +127,7 @@ function buildCleanup(
   prisma: PrismaClient,
   universeIds: string[],
   symbols: string[],
-  accountName: string
+  accountName: string,
 ): () => Promise<void> {
   return async function cleanupStoredVolatilityData(): Promise<void> {
     try {
@@ -146,7 +145,7 @@ function buildCleanup(
 async function seedAllPlans(
   ctx: SeedContext,
   plans: SeedPlan[],
-  universeIds: string[]
+  universeIds: string[],
 ): Promise<void> {
   for (const plan of plans) {
     await seedOnePlan(ctx, plan, universeIds);
@@ -157,6 +156,7 @@ async function seedAllPlans(
  * Seeds three universe symbols each with 12 months of div-deposit history
  * and a pre-stored volatility_long value (steady / increasing / volatile).
  */
+
 export async function seedStoredVolatilityData(): Promise<StoredVolatilitySeederResult> {
   const prisma = await initializePrismaClient();
   const uniqueId = generateUniqueId();
@@ -174,7 +174,7 @@ export async function seedStoredVolatilityData(): Promise<StoredVolatilitySeeder
     await seedAllPlans(
       { prisma, riskGroupId, accountId: acct.id, divDepositTypeId },
       plans,
-      universeIds
+      universeIds,
     );
   } catch (error) {
     await cleanupOnError(prisma, universeIds, symbols, accountName);

@@ -1,5 +1,4 @@
-import { describe, expect, test, vi, beforeEach, type Mock } from 'vitest';
-
+import { beforeEach, describe, expect, test, vi, type Mock } from 'vitest';
 import type { MappedTransactionResult } from './mapped-transaction-result.interface';
 
 vi.mock('../../prisma/prisma-client', function () {
@@ -427,7 +426,7 @@ describe('importFidelityTransactions', function () {
     test('should report error when account is not found', async function () {
       parseFidelityCsv.mockReturnValue([{}]);
       mapFidelityTransactions.mockRejectedValue(
-        new Error('Account "Missing" not found')
+        new Error('Account "Missing" not found'),
       );
 
       const result = await importFidelityTransactions('csv content');
@@ -466,7 +465,7 @@ describe('importFidelityTransactions', function () {
     test('should report error for invalid symbol', async function () {
       parseFidelityCsv.mockReturnValue([{}]);
       mapFidelityTransactions.mockRejectedValue(
-        new Error('Symbol "INVALID" not found in universe')
+        new Error('Symbol "INVALID" not found in universe'),
       );
 
       const result = await importFidelityTransactions('csv content');
@@ -496,7 +495,7 @@ describe('importFidelityTransactions', function () {
 
       expect(result.warnings).toHaveLength(1);
       expect(result.warnings[0]).toContain(
-        'Unknown transaction type "TRANSFER"'
+        'Unknown transaction type "TRANSFER"',
       );
     });
   });
@@ -720,7 +719,7 @@ describe('importFidelityTransactions', function () {
       await importFidelityTransactions('csv content');
 
       expect(callOrder.indexOf('processTrades')).toBeLessThan(
-        callOrder.indexOf('adjustLotsForSplit')
+        callOrder.indexOf('adjustLotsForSplit'),
       );
     });
 
@@ -904,7 +903,7 @@ describe('importFidelityTransactions', function () {
 
       // Sales must be queried before the split ratio is calculated
       expect(callOrder.indexOf('processSales.findMany')).toBeLessThan(
-        callOrder.indexOf('calculateSplitRatio')
+        callOrder.indexOf('calculateSplitRatio'),
       );
       expect(calculateSplitRatio).toHaveBeenCalledWith('OXLC', 306, 'a-joint');
       expect(adjustLotsForSplit).toHaveBeenCalledWith('OXLC', 5, 'a-joint');
@@ -1011,7 +1010,7 @@ describe('importFidelityTransactions', function () {
       expect(result.success).toBe(false);
       expect(result.errors.length).toBeGreaterThan(0);
       expect(result.errors[0]).toContain(
-        'No matching open trade found for sale'
+        'No matching open trade found for sale',
       );
     });
   });

@@ -1,6 +1,5 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import fastify, { FastifyInstance } from 'fastify';
-
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import registerGetAllUniverses from './index';
 
 // Hoisted mocks
@@ -149,7 +148,7 @@ describe('GET /api/universe - expired-no-open filter (Story 109.3)', function fi
               ],
             },
           },
-        })
+        }),
       );
     });
 
@@ -370,7 +369,7 @@ describe('GET /api/universe - expired-no-open filter (Story 109.3)', function fi
       expect(
         rows.map(function getSymbol(row) {
           return row.symbol;
-        })
+        }),
       ).toEqual(['SECTOR_A', 'SECTOR_B']);
     });
 
@@ -402,7 +401,7 @@ describe('GET /api/universe - expired-no-open filter (Story 109.3)', function fi
       expect(
         rows.map(function getSymbol(row) {
           return row.symbol;
-        })
+        }),
       ).toEqual(['MARKET_CAP_HIGH', 'MARKET_CAP_LOW']);
     });
 

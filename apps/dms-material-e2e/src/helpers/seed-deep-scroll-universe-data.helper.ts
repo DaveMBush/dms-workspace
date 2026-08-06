@@ -13,7 +13,7 @@ const DEEP_SCROLL_ROW_COUNT = 150;
 function buildDeepScrollRecords(
   symbols: string[],
   riskGroupId: string,
-  exDate: Date
+  exDate: Date,
 ): UniverseRecord[] {
   return symbols.map(function mapDeepScrollRecord(symbol): UniverseRecord {
     return {
@@ -37,6 +37,7 @@ function buildDeepScrollRecords(
  * Symbol prefix UDSCRL avoids collision and sorts non-alphabetically
  * so placeholders do not cluster at beginning of the sorted list.
  */
+
 export async function seedDeepScrollUniverseData(): Promise<SeederResult> {
   const prisma = await initializePrismaClient();
 
@@ -45,7 +46,7 @@ export async function seedDeepScrollUniverseData(): Promise<SeederResult> {
     { length: DEEP_SCROLL_ROW_COUNT },
     function generateSymbol(_: unknown, i: number): string {
       return `UDSCRL${String(i).padStart(3, '0')}-${uniqueId}`;
-    }
+    },
   );
 
   const futureDate = new Date();
@@ -56,7 +57,7 @@ export async function seedDeepScrollUniverseData(): Promise<SeederResult> {
     const records = buildDeepScrollRecords(
       symbols,
       riskGroups.equitiesRiskGroup.id,
-      futureDate
+      futureDate,
     );
     await prisma.universe.createMany({ data: records });
   } catch (error) {

@@ -3,14 +3,13 @@
  * These paths are not exercised by the plain-array tests in the main spec file.
  */
 import { describe, expect, it } from 'vitest';
-
 import { RiskGroup } from '../../store/risk-group/risk-group.interface';
 import { Universe } from '../../store/universe/universe.interface';
 import { enrichUniverseWithRiskGroups } from './enrich-universe-with-risk-groups.function';
 
 function makeProxy(
   items: (Universe | undefined)[],
-  getIdAtIndex: (i: number) => string | undefined
+  getIdAtIndex: (i: number) => string | undefined,
 ): Universe[] {
   return Object.assign(items as Universe[], { getIdAtIndex });
 }
@@ -43,7 +42,7 @@ describe('enrichUniverseWithRiskGroups – proxy paths', () => {
   it('should return placeholder entries for unloaded proxy items (getIdAtIndex returns index-N)', () => {
     // Simulate SmartNgRX ArrayProxy where item 1 is not yet loaded
     const proxyArr = makeProxy([loadedUniverse, undefined], (i) =>
-      i === 0 ? 'u1' : 'index-1'
+      i === 0 ? 'u1' : 'index-1',
     );
 
     const result = enrichUniverseWithRiskGroups(proxyArr, mockRiskGroups);
@@ -93,7 +92,7 @@ describe('enrichUniverseWithRiskGroups – proxy paths', () => {
     const result = enrichUniverseWithRiskGroups(
       [loadedUniverse],
       mockRiskGroups,
-      { start: 0, end: 10 }
+      { start: 0, end: 10 },
     );
 
     // Plain array with visibleRange: triggerProxyLoad is skipped because isProxy=false

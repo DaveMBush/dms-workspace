@@ -5,9 +5,8 @@ import {
 } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-
-import { ImportDialogComponent } from './import-dialog.component';
 import { ImportDialogData } from './import-dialog-data.interface';
+import { ImportDialogComponent } from './import-dialog.component';
 
 /**
  * TDD RED Phase tests for file upload validation.
@@ -20,7 +19,7 @@ import { ImportDialogData } from './import-dialog-data.interface';
 
 function selectFile(
   fixture: ComponentFixture<ImportDialogComponent>,
-  file: File
+  file: File,
 ): void {
   const compiled = fixture.nativeElement as HTMLElement;
   const fileInput =
@@ -125,7 +124,7 @@ describe('ImportDialogComponent - File Upload Validation (TDD RED)', () => {
 
       const compiled = fixture.nativeElement as HTMLElement;
       const uploadButton = compiled.querySelector<HTMLButtonElement>(
-        '[data-testid="upload-button"]'
+        '[data-testid="upload-button"]',
       )!;
       expect(uploadButton.disabled).toBe(true);
     });
@@ -166,7 +165,7 @@ describe('ImportDialogComponent - File Upload Validation (TDD RED)', () => {
 
       const compiled = fixture.nativeElement as HTMLElement;
       const preview = compiled.querySelector<HTMLElement>(
-        '[data-testid="file-preview"]'
+        '[data-testid="file-preview"]',
       )!;
       // Should show header + first 5 data rows (6 total), not the 7th row
       expect(preview.textContent).toContain('SPY');
@@ -206,7 +205,7 @@ describe('ImportDialogComponent - File Upload Validation (TDD RED)', () => {
 
       const compiled = fixture.nativeElement as HTMLElement;
       const uploadButton = compiled.querySelector<HTMLButtonElement>(
-        '[data-testid="upload-button"]'
+        '[data-testid="upload-button"]',
       )!;
       uploadButton.click();
       fixture.detectChanges();
@@ -224,7 +223,7 @@ describe('ImportDialogComponent - File Upload Validation (TDD RED)', () => {
 
       const compiled = fixture.nativeElement as HTMLElement;
       const uploadButton = compiled.querySelector<HTMLButtonElement>(
-        '[data-testid="upload-button"]'
+        '[data-testid="upload-button"]',
       )!;
       uploadButton.click();
       fixture.detectChanges();
@@ -243,7 +242,7 @@ describe('ImportDialogComponent - File Upload Validation (TDD RED)', () => {
 
       const compiled = fixture.nativeElement as HTMLElement;
       const uploadButton = compiled.querySelector<HTMLButtonElement>(
-        '[data-testid="upload-button"]'
+        '[data-testid="upload-button"]',
       )!;
       uploadButton.click();
       fixture.detectChanges();
@@ -267,7 +266,7 @@ describe('ImportDialogComponent - File Upload Validation (TDD RED)', () => {
 
       const compiled = fixture.nativeElement as HTMLElement;
       const uploadButton = compiled.querySelector<HTMLButtonElement>(
-        '[data-testid="upload-button"]'
+        '[data-testid="upload-button"]',
       )!;
       uploadButton.click();
       fixture.detectChanges();
@@ -284,13 +283,13 @@ describe('ImportDialogComponent - File Upload Validation (TDD RED)', () => {
 
       const compiled = fixture.nativeElement as HTMLElement;
       const uploadButton = compiled.querySelector<HTMLButtonElement>(
-        '[data-testid="upload-button"]'
+        '[data-testid="upload-button"]',
       )!;
       uploadButton.click();
       fixture.detectChanges();
 
       const progressElement = compiled.querySelector(
-        '[data-testid="upload-progress"]'
+        '[data-testid="upload-progress"]',
       );
       expect(progressElement).toBeTruthy();
     });
@@ -303,7 +302,7 @@ describe('ImportDialogComponent - File Upload Validation (TDD RED)', () => {
 
       const compiled = fixture.nativeElement as HTMLElement;
       const uploadButton = compiled.querySelector<HTMLButtonElement>(
-        '[data-testid="upload-button"]'
+        '[data-testid="upload-button"]',
       )!;
       uploadButton.click();
       fixture.detectChanges();
@@ -324,13 +323,13 @@ describe('ImportDialogComponent - File Upload Validation (TDD RED)', () => {
 
       const compiled = fixture.nativeElement as HTMLElement;
       const uploadButton = compiled.querySelector<HTMLButtonElement>(
-        '[data-testid="upload-button"]'
+        '[data-testid="upload-button"]',
       )!;
       uploadButton.click();
       fixture.detectChanges();
 
       const cancelUploadButton = compiled.querySelector(
-        '[data-testid="cancel-upload-button"]'
+        '[data-testid="cancel-upload-button"]',
       );
       expect(cancelUploadButton).toBeTruthy();
     });
@@ -343,14 +342,14 @@ describe('ImportDialogComponent - File Upload Validation (TDD RED)', () => {
 
       const compiled = fixture.nativeElement as HTMLElement;
       const uploadButton = compiled.querySelector<HTMLButtonElement>(
-        '[data-testid="upload-button"]'
+        '[data-testid="upload-button"]',
       )!;
       uploadButton.click();
       fixture.detectChanges();
       await flushFileReading();
 
       const cancelUploadButton = compiled.querySelector<HTMLButtonElement>(
-        '[data-testid="cancel-upload-button"]'
+        '[data-testid="cancel-upload-button"]',
       )!;
       cancelUploadButton.click();
       fixture.detectChanges();
@@ -368,14 +367,14 @@ describe('ImportDialogComponent - File Upload Validation (TDD RED)', () => {
 
       const compiled = fixture.nativeElement as HTMLElement;
       const uploadButton = compiled.querySelector<HTMLButtonElement>(
-        '[data-testid="upload-button"]'
+        '[data-testid="upload-button"]',
       )!;
       uploadButton.click();
       fixture.detectChanges();
       await flushFileReading();
 
       const cancelUploadButton = compiled.querySelector<HTMLButtonElement>(
-        '[data-testid="cancel-upload-button"]'
+        '[data-testid="cancel-upload-button"]',
       )!;
       cancelUploadButton.click();
       fixture.detectChanges();
@@ -470,7 +469,7 @@ describe('ImportDialogComponent - File Upload Validation (TDD RED)', () => {
 
       const compiled = fixture.nativeElement as HTMLElement;
       const uploadButton = compiled.querySelector<HTMLButtonElement>(
-        '[data-testid="upload-button"]'
+        '[data-testid="upload-button"]',
       )!;
       uploadButton.click();
       fixture.detectChanges();
@@ -491,7 +490,7 @@ describe('ImportDialogComponent - File Upload Validation (TDD RED)', () => {
 
       const compiled = fixture.nativeElement as HTMLElement;
       const uploadButton = compiled.querySelector<HTMLButtonElement>(
-        '[data-testid="upload-button"]'
+        '[data-testid="upload-button"]',
       )!;
       uploadButton.click();
       fixture.detectChanges();
@@ -514,7 +513,7 @@ describe('ImportDialogComponent - File Upload Validation (TDD RED)', () => {
 
       const compiled = fixture.nativeElement as HTMLElement;
       const uploadButton = compiled.querySelector<HTMLButtonElement>(
-        '[data-testid="upload-button"]'
+        '[data-testid="upload-button"]',
       )!;
       uploadButton.click();
       fixture.detectChanges();
@@ -529,13 +528,13 @@ describe('ImportDialogComponent - File Upload Validation (TDD RED)', () => {
       const file = new File(
         [new Uint8Array([0x00, 0x01, 0x02, 0xff, 0xfe])],
         'corrupted.csv',
-        { type: 'text/csv' }
+        { type: 'text/csv' },
       );
       selectFile(fixture, file);
 
       const compiled = fixture.nativeElement as HTMLElement;
       const uploadButton = compiled.querySelector<HTMLButtonElement>(
-        '[data-testid="upload-button"]'
+        '[data-testid="upload-button"]',
       )!;
 
       if (!uploadButton.disabled) {

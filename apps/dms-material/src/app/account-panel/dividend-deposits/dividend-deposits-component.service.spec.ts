@@ -1,10 +1,9 @@
-import { TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
 import { vi } from 'vitest';
-
-import { DivDeposit } from '../../store/div-deposits/div-deposit.interface';
-import { selectCurrentAccountSignal } from '../../store/current-account/select-current-account.signal';
 import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
+import { selectCurrentAccountSignal } from '../../store/current-account/select-current-account.signal';
+import { DivDeposit } from '../../store/div-deposits/div-deposit.interface';
 import { DividendDepositsComponentService } from './dividend-deposits-component.service';
 
 // Mock SmartNgRX dependencies to prevent store initialization
@@ -21,7 +20,7 @@ vi.mock(
       { id: 'type-1', name: 'Regular' },
       { id: 'type-2', name: 'Special' },
     ]),
-  })
+  }),
 );
 
 vi.mock('../../store/current-account/current-account.signal-store', () => ({
@@ -45,7 +44,7 @@ vi.mock(
   '../../store/accounts/selectors/select-accounts-entity.function',
   () => ({
     selectAccountsEntity: vi.fn().mockReturnValue([]),
-  })
+  }),
 );
 
 // Mock selectAccounts to avoid SmartNgRX initialization
@@ -81,7 +80,7 @@ function createMockDivDepositsArray(count: number): DivDeposit[] {
         divDepositTypeId: i % 2 === 0 ? 'type-1' : 'type-2',
         universeId: `universe-${(i % 3) + 1}`,
         symbol: testSymbols[i % 3],
-      })
+      }),
     );
   }
   return items;
@@ -110,7 +109,7 @@ describe('DividendDepositsComponentService - Virtual Data Access (AX.3)', () => 
 
     // Set the selectCurrentAccountSignal mock to return our mock account
     const selectCurrentAccountSignalMock = vi.mocked(
-      selectCurrentAccountSignal
+      selectCurrentAccountSignal,
     );
     selectCurrentAccountSignalMock.mockReturnValue(mockCurrentAccount);
 

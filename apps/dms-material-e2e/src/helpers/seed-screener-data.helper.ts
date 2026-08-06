@@ -1,5 +1,4 @@
 import { PrismaClient } from '@prisma/client';
-
 import { generateUniqueId } from './generate-unique-id.helper';
 import type { RiskGroups } from './risk-groups.types';
 import { createRiskGroups } from './shared-risk-groups.helper';
@@ -29,7 +28,7 @@ function createTestDataArray(
   symbols: string[],
   equitiesId: string,
   incomeId: string,
-  taxFreeId: string
+  taxFreeId: string,
 ): ScreenerRecord[] {
   const b = { distribution: 0.0, distributions_per_year: 0, last_price: 0.0 };
   return [
@@ -66,7 +65,7 @@ function createTestDataArray(
  */
 function buildScreenerRecords(
   symbols: string[],
-  riskGroups: RiskGroups
+  riskGroups: RiskGroups,
 ): ScreenerRecord[] {
   const { equitiesRiskGroup, incomeRiskGroup, taxFreeIncomeRiskGroup } =
     riskGroups;
@@ -74,7 +73,7 @@ function buildScreenerRecords(
     symbols,
     equitiesRiskGroup.id,
     incomeRiskGroup.id,
-    taxFreeIncomeRiskGroup.id
+    taxFreeIncomeRiskGroup.id,
   );
 }
 
@@ -84,13 +83,13 @@ function buildScreenerRecords(
 async function createScreenerRecords(
   prisma: PrismaClientType,
   symbols: string[],
-  riskGroups: RiskGroups
+  riskGroups: RiskGroups,
 ): Promise<void> {
   const records = buildScreenerRecords(symbols, riskGroups);
   await Promise.all(
     records.map(async function createRecord(data) {
       return prisma.screener.create({ data });
-    })
+    }),
   );
 }
 
@@ -104,15 +103,14 @@ export async function seedScreenerData(): Promise<SeederResult> {
   // Import Prisma and adapter dynamically to avoid bundling issues
   const prismaClientImport = (await import('@prisma/client/index'))
     .PrismaClient;
-  const { PrismaBetterSqlite3 } = await import(
-    '@prisma/adapter-better-sqlite3'
-  );
+  const { PrismaBetterSqlite3: prismaBetterSqlite3 } =
+    await import('@prisma/adapter-better-sqlite3');
 
   // Connect to the same database that the E2E backend server uses
   // The test database is always at: file:./test-database.db (relative to workspace root)
   // This matches apps/server/project.json e2e-server configuration
   const testDbUrl = 'file:./test-database.db';
-  const adapter = new PrismaBetterSqlite3({ url: testDbUrl });
+  const adapter = new prismaBetterSqlite3({ url: testDbUrl });
   const prisma = new prismaClientImport({ adapter });
 
   // Generate unique symbols for this test run

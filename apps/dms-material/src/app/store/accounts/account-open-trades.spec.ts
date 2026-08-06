@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
-
-import { accountsDefinition } from './accounts-definition.const';
 import { Account } from './account.interface';
+import { accountsDefinition } from './accounts-definition.const';
 
 describe('Account openTrades PartialArrayDefinition (Story 40.3)', () => {
   it('should accept PartialArrayDefinition shape for openTrades', () => {

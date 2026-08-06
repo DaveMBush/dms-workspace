@@ -1,5 +1,4 @@
-import { test, expect } from 'playwright/test';
-
+import { expect, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 
 /**
@@ -21,7 +20,7 @@ import { login } from './helpers/login.helper';
  * Helper to create mock UpdateFieldsResponse
  * Matches the actual API response format
  */
-function createMockUpdateResponse(updated: number) {
+function createMockUpdateResponse(updated: number): { updated: number } {
   return {
     updated,
     correlationId: 'test-correlation-id',
@@ -153,7 +152,7 @@ test.describe('Update Fields Flow', () => {
       const snackbar = page.locator('mat-snack-bar-container');
       await expect(snackbar).toBeVisible({ timeout: 10000 });
       await expect(snackbar).toContainText(
-        'Universe fields updated: 25 entries updated'
+        'Universe fields updated: 25 entries updated',
       );
     });
   });

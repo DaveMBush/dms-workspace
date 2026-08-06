@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { vi } from 'vitest';
 import { of } from 'rxjs';
-import { ProfileActionsService } from './profile-actions.service';
-import { AuthService } from '../auth.service';
-import { ProfileService } from './profile.service';
+import { vi } from 'vitest';
 import { ConfirmDialogService } from '../../shared/services/confirm-dialog.service';
 import { NotificationService } from '../../shared/services/notification.service';
+import { AuthService } from '../auth.service';
+import { ProfileActionsService } from './profile-actions.service';
+import { ProfileService } from './profile.service';
 
 describe('ProfileActionsService', () => {
   let service: ProfileActionsService;
@@ -53,13 +53,13 @@ describe('ProfileActionsService', () => {
 
     service = TestBed.inject(ProfileActionsService);
     profileService = TestBed.inject(
-      ProfileService
+      ProfileService,
     ) as jest.Mocked<ProfileService>;
     confirmDialogService = TestBed.inject(
-      ConfirmDialogService
+      ConfirmDialogService,
     ) as jest.Mocked<ConfirmDialogService>;
     notificationService = TestBed.inject(
-      NotificationService
+      NotificationService,
     ) as jest.Mocked<NotificationService>;
   });
 
@@ -73,23 +73,23 @@ describe('ProfileActionsService', () => {
 
       expect(profileService.changeUserPassword).toHaveBeenCalledWith(
         'oldpass',
-        'newpass'
+        'newpass',
       );
       expect(notificationService.success).toHaveBeenCalledWith(
-        'Password changed successfully'
+        'Password changed successfully',
       );
       expect(result).toBe(true);
     });
 
     it('should handle password change error', async () => {
       profileService.changeUserPassword.mockRejectedValue(
-        new Error('Change failed')
+        new Error('Change failed'),
       );
 
       const result = await service.changePassword('oldpass', 'newpass');
 
       expect(notificationService.error).toHaveBeenCalledWith(
-        'Password change failed. Please try again.'
+        'Password change failed. Please try again.',
       );
       expect(result).toBe(false);
     });
@@ -100,10 +100,10 @@ describe('ProfileActionsService', () => {
       const result = await service.updateEmail('new@example.com');
 
       expect(profileService.updateEmail).toHaveBeenCalledWith(
-        'new@example.com'
+        'new@example.com',
       );
       expect(notificationService.info).toHaveBeenCalledWith(
-        'Please check your email for the verification code'
+        'Please check your email for the verification code',
       );
       expect(result).toBe(true);
     });
@@ -114,7 +114,7 @@ describe('ProfileActionsService', () => {
       const result = await service.updateEmail('new@example.com');
 
       expect(notificationService.error).toHaveBeenCalledWith(
-        'Email change failed. Please try again.'
+        'Email change failed. Please try again.',
       );
       expect(result).toBe(false);
     });
@@ -126,7 +126,7 @@ describe('ProfileActionsService', () => {
 
       expect(profileService.verifyEmailChange).toHaveBeenCalledWith('123456');
       expect(notificationService.success).toHaveBeenCalledWith(
-        'Email address updated successfully'
+        'Email address updated successfully',
       );
       expect(result).toBe(true);
     });
@@ -136,20 +136,20 @@ describe('ProfileActionsService', () => {
 
       expect(profileService.verifyEmailChange).not.toHaveBeenCalled();
       expect(notificationService.warn).toHaveBeenCalledWith(
-        'Please enter the verification code'
+        'Please enter the verification code',
       );
       expect(result).toBe(false);
     });
 
     it('should handle verification error', async () => {
       profileService.verifyEmailChange.mockRejectedValue(
-        new Error('Verification failed')
+        new Error('Verification failed'),
       );
 
       const result = await service.verifyEmailChange('123456');
 
       expect(notificationService.error).toHaveBeenCalledWith(
-        'Email verification failed. Please check the code.'
+        'Email verification failed. Please check the code.',
       );
       expect(result).toBe(false);
     });

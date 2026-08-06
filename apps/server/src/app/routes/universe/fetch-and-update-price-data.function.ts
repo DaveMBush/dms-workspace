@@ -7,7 +7,7 @@ import type { UniverseRecord } from './universe-record.interface';
 
 function buildUpdateData(
   lastPrice: number | undefined,
-  distributionData: Awaited<ReturnType<typeof getDistributions>>['result']
+  distributionData: Awaited<ReturnType<typeof getDistributions>>['result'],
 ): {
   last_price: number;
   distribution: number;
@@ -31,7 +31,7 @@ export async function fetchAndUpdatePriceData(
   universeId: string,
   symbol: string,
   fallbackRecord: UniverseRecord,
-  options: FetchAndUpdatePriceOptions = {}
+  options: FetchAndUpdatePriceOptions = {},
 ): Promise<FetchResult> {
   const { logContext = 'symbol add', prefetchedDistributionOutcome } = options;
   const [lastPrice, distributionOutcome] = await Promise.all([

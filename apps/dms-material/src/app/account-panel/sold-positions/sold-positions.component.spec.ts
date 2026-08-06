@@ -1,13 +1,12 @@
+import { computed, signal, Signal, WritableSignal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { signal, computed, Signal, WritableSignal } from '@angular/core';
 import { vi } from 'vitest';
-
-import { SoldPositionsComponent } from './sold-positions.component';
-import { SoldPositionsComponentService } from './sold-positions-component.service';
 import { SortFilterStateService } from '../../shared/services/sort-filter-state.service';
-import { ClosedPosition } from '../../store/trades/closed-position.interface';
 import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
+import { ClosedPosition } from '../../store/trades/closed-position.interface';
 import { Trade } from '../../store/trades/trade.interface';
+import { SoldPositionsComponentService } from './sold-positions-component.service';
+import { SoldPositionsComponent } from './sold-positions.component';
 
 // Mock SmartNgRX selectors to avoid initialization errors
 vi.mock('../../store/top/selectors/select-top-entities.function', () => ({
@@ -22,21 +21,21 @@ vi.mock(
   '../../store/trades/selectors/select-open-trade-entity.function',
   () => ({
     selectOpenTradeEntity: vi.fn().mockReturnValue([]),
-  })
+  }),
 );
 
 vi.mock(
   '../../store/trades/selectors/select-sold-trade-entity.function',
   () => ({
     selectSoldTradeEntity: vi.fn().mockReturnValue([]),
-  })
+  }),
 );
 
 vi.mock(
   '../../store/accounts/selectors/select-accounts-entity.function',
   () => ({
     selectAccountsEntity: vi.fn().mockReturnValue([]),
-  })
+  }),
 );
 
 vi.mock('../../store/accounts/selectors/select-accounts.function', () => ({
@@ -127,7 +126,7 @@ describe('SoldPositionsComponent', () => {
 
   it('should have capitalGainPercentage column', () => {
     const col = component.columns.find(
-      (c) => c.field === 'capitalGainPercentage'
+      (c) => c.field === 'capitalGainPercentage',
     );
     expect(col).toBeTruthy();
   });
@@ -166,10 +165,10 @@ describe('SoldPositionsComponent', () => {
           tradesSignal()
             .filter(
               // eslint-disable-next-line @typescript-eslint/naming-convention -- Trade interface uses snake_case
-              (t): t is Trade & { sell_date: string } => t.sell_date !== null
+              (t): t is Trade & { sell_date: string } => t.sell_date !== null,
             )
             .filter((t) => t.accountId === selectedAccountIdSignal())
-            .map(toSoldPosition)
+            .map(toSoldPosition),
         ),
         toSoldPosition,
       };
@@ -372,14 +371,14 @@ describe('SoldPositionsComponent', () => {
       mockSoldPositionsService.selectedAccountId.set('acc-1');
       expect(mockSoldPositionsService.selectSoldPositions().length).toBe(1);
       expect(mockSoldPositionsService.selectSoldPositions()[0].accountId).toBe(
-        'acc-1'
+        'acc-1',
       );
 
       // Switch to acc-2, should reactively update
       mockSoldPositionsService.selectedAccountId.set('acc-2');
       expect(mockSoldPositionsService.selectSoldPositions().length).toBe(1);
       expect(mockSoldPositionsService.selectSoldPositions()[0].accountId).toBe(
-        'acc-2'
+        'acc-2',
       );
     });
   });
@@ -463,7 +462,7 @@ describe('SoldPositionsComponent - Account Selection Integration', () => {
       fixture.detectChanges();
 
       expect(mockCurrentAccountStore.selectCurrentAccountId()).toBe(
-        'acc-initial'
+        'acc-initial',
       );
     });
   });
@@ -489,7 +488,7 @@ describe('SoldPositionsComponent - Account Selection Integration', () => {
 
       mockCurrentAccountStore.selectCurrentAccountId.set('acc-1');
       mockSoldPositionsComponentService.selectSoldPositions.set(
-        account1Positions
+        account1Positions,
       );
       fixture.detectChanges();
 
@@ -546,7 +545,7 @@ describe('SoldPositionsComponent - Account Selection Integration', () => {
       // First account
       mockCurrentAccountStore.selectCurrentAccountId.set('acc-1');
       mockSoldPositionsComponentService.selectSoldPositions.set(
-        account1Positions
+        account1Positions,
       );
       fixture.detectChanges();
 
@@ -555,7 +554,7 @@ describe('SoldPositionsComponent - Account Selection Integration', () => {
       // Switch to second account
       mockCurrentAccountStore.selectCurrentAccountId.set('acc-2');
       mockSoldPositionsComponentService.selectSoldPositions.set(
-        account2Positions
+        account2Positions,
       );
       fixture.detectChanges();
 
@@ -692,7 +691,7 @@ describe('SoldPositionsComponent - Account Selection Integration', () => {
 
       mockCurrentAccountStore.selectCurrentAccountId.set('acc-nvda');
       mockSoldPositionsComponentService.selectSoldPositions.set(
-        accountPositions
+        accountPositions,
       );
       fixture.detectChanges();
 
@@ -713,7 +712,7 @@ describe('SoldPositionsComponent - Account Selection Integration', () => {
       expect(component.columns.length).toBeGreaterThan(0);
       expect(component.columns.find((c) => c.field === 'symbol')).toBeTruthy();
       expect(
-        component.columns.find((c) => c.field === 'capitalGain')
+        component.columns.find((c) => c.field === 'capitalGain'),
       ).toBeTruthy();
     });
 
@@ -848,10 +847,10 @@ describe('SoldPositionsComponent - Client-Side Sorting Removal', () => {
   describe('Verify no client-side sorting', () => {
     it('should not have sortData method', () => {
       expect(
-        (component as Record<string, unknown>)['sortData']
+        (component as Record<string, unknown>)['sortData'],
       ).toBeUndefined();
       expect(
-        typeof (component as Record<string, unknown>)['sortData']
+        typeof (component as Record<string, unknown>)['sortData'],
       ).not.toBe('function');
     });
 
@@ -865,7 +864,7 @@ describe('SoldPositionsComponent - Client-Side Sorting Removal', () => {
 
       const displayed = component.displayedPositions();
       const displayedSymbols = displayed.map(function getSymbol(
-        p: ClosedPosition
+        p: ClosedPosition,
       ) {
         return p.symbol;
       });
@@ -888,10 +887,10 @@ describe('SoldPositionsComponent - Client-Side Sorting Removal', () => {
 
       // Component should NOT have any local sort logic
       expect(
-        (component as Record<string, unknown>)['sortData']
+        (component as Record<string, unknown>)['sortData'],
       ).toBeUndefined();
       expect(
-        (component as Record<string, unknown>)['compareFunction']
+        (component as Record<string, unknown>)['compareFunction'],
       ).toBeUndefined();
     });
 
@@ -947,11 +946,11 @@ describe('SoldPositionsComponent - Client-Side Sorting Removal', () => {
 
       component.displayedPositions();
 
-      const dataSortCalls = sortSpy.mock.calls.filter(function isDataSort(
-        call
-      ) {
-        return call.length > 0;
-      });
+      const dataSortCalls = sortSpy.mock.calls.filter(
+        function isDataSort(call) {
+          return call.length > 0;
+        },
+      );
       expect(dataSortCalls.length).toBe(0);
 
       sortSpy.mockRestore();

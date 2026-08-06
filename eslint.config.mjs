@@ -52,7 +52,18 @@ const eslintConfig = async () => {
         //deprecation,
       },
     },
-    { languageOptions: { parser: typescriptEslintParser } },
+    {
+      languageOptions: {
+        parser: typescriptEslintParser,
+        parserOptions: {
+          projectService: true,
+          projectServiceOptions: {
+            allowDefaultProject: ['**/*.config.*', '*.config.*'],
+          },
+          tsconfigRootDir: import.meta.dirname,
+        },
+      },
+    },
     {
       files: ['vitest.config.ts', 'vitest.config.mts'],
       rules: {
@@ -125,7 +136,7 @@ const eslintConfig = async () => {
       ...config,
       files: ['**/*.ts', '**/*.tsx', '**/*.cts', '**/*.mts'],
       rules: {
-        ...(config.rules ?? {})
+        ...(config.rules ?? {}),
       },
     })),
     { files: ['**/*.ts'], processor: angular.processInlineTemplates },
@@ -731,7 +742,12 @@ const eslintConfig = async () => {
       // Test utilities use Angular testing types (MatInputHarness, etc.) and
       // Vitest mocks (vi.fn()) that the TypeScript parser cannot resolve in
       // tsconfig.app.json, causing false-positive no-unsafe-* errors.
-      files: ['**/test-utils/**/*.ts', '**/*.spec.ts', '**/playwright.config.ts', '**/test-setup.ts'],
+      files: [
+        '**/test-utils/**/*.ts',
+        '**/*.spec.ts',
+        '**/playwright.config.ts',
+        '**/test-setup.ts',
+      ],
       rules: {
         'max-classes-per-file': 'off',
         '@typescript-eslint/unbound-method': 'off',

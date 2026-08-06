@@ -1,16 +1,15 @@
+import { signal, WritableSignal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { signal, WritableSignal } from '@angular/core';
 import { of } from 'rxjs';
 import { vi } from 'vitest';
-
-import { OpenPositionsComponent } from './open-positions.component';
-import { OpenPositionsComponentService } from './open-positions-component.service';
 import { SortFilterStateService } from '../../shared/services/sort-filter-state.service';
 import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
+import { OpenPosition } from '../../store/trades/open-position.interface';
 import { tradeEffectsServiceToken } from '../../store/trades/trade-effect-service-token';
 import { Trade } from '../../store/trades/trade.interface';
-import { OpenPosition } from '../../store/trades/open-position.interface';
+import { OpenPositionsComponentService } from './open-positions-component.service';
+import { OpenPositionsComponent } from './open-positions.component';
 
 // Mock the entire selectOpenTrades module to avoid SmartNgRX initialization
 const { mockSelectTradesFunc, _mockTradesAddFunc } = vi.hoisted(() => {
@@ -34,7 +33,7 @@ vi.mock(
   '../../store/trades/selectors/select-open-trade-entity.function',
   () => ({
     selectOpenTradeEntity: vi.fn().mockReturnValue([]),
-  })
+  }),
 );
 
 // Mock selectSoldTradeEntity to avoid SmartNgRX initialization
@@ -42,7 +41,7 @@ vi.mock(
   '../../store/trades/selectors/select-sold-trade-entity.function',
   () => ({
     selectSoldTradeEntity: vi.fn().mockReturnValue([]),
-  })
+  }),
 );
 
 // Mock selectUniverses to avoid SmartNgRX initialization from AddPositionDialogComponent
@@ -60,7 +59,7 @@ vi.mock(
   '../../store/accounts/selectors/select-accounts-entity.function',
   () => ({
     selectAccountsEntity: vi.fn().mockReturnValue([]),
-  })
+  }),
 );
 
 // Mock selectAccounts to avoid SmartNgRX initialization
@@ -335,7 +334,7 @@ describe('OpenPositionsComponent', () => {
 
       // AO.2: Component should add calculated 'value' or 'currentValue' field
       expect(position.value || position.currentValue).toBeCloseTo(
-        expectedValue
+        expectedValue,
       );
       expect(expectedValue).toBe(15000); // 100 * 150
     });
@@ -611,7 +610,7 @@ describe('OpenPositionsComponent', () => {
         component.onDeletePosition(mockPosition);
 
         expect(
-          mockOpenPositionsService.deleteOpenPosition
+          mockOpenPositionsService.deleteOpenPosition,
         ).toHaveBeenCalledWith(mockPosition);
       });
 
@@ -622,7 +621,7 @@ describe('OpenPositionsComponent', () => {
         component.onDeletePosition(mockPosition);
 
         expect(
-          mockOpenPositionsService.deleteOpenPosition
+          mockOpenPositionsService.deleteOpenPosition,
         ).not.toHaveBeenCalled();
       });
     });
@@ -690,7 +689,7 @@ describe('OpenPositionsComponent', () => {
     it('should have sell and sellDate columns in table', () => {
       const sellColumn = component.columns.find((c) => c.field === 'sell');
       const sellDateColumn = component.columns.find(
-        (c) => c.field === 'sellDate'
+        (c) => c.field === 'sellDate',
       );
 
       expect(sellColumn).toBeDefined();
@@ -760,7 +759,7 @@ describe('OpenPositionsComponent', () => {
       // Days held calculation: roughly 152 days (Jan 1 to Jun 1)
       const msPerDay = 1000 * 60 * 60 * 24;
       const daysHeld = Math.floor(
-        (sellDate.getTime() - buyDate.getTime()) / msPerDay
+        (sellDate.getTime() - buyDate.getTime()) / msPerDay,
       );
       expect(daysHeld).toBeGreaterThan(150);
       expect(daysHeld).toBeLessThan(155);
@@ -791,7 +790,7 @@ describe('OpenPositionsComponent', () => {
       component.onSellChange(mockPosition, 175);
 
       expect(mockOpenPositionsService.deleteOpenPosition).toHaveBeenCalledWith(
-        mockPosition
+        mockPosition,
       );
     });
 
@@ -801,7 +800,7 @@ describe('OpenPositionsComponent', () => {
       component.onSellChange(mockPosition, 175);
 
       expect(
-        mockOpenPositionsService.deleteOpenPosition
+        mockOpenPositionsService.deleteOpenPosition,
       ).not.toHaveBeenCalled();
     });
 
@@ -811,7 +810,7 @@ describe('OpenPositionsComponent', () => {
       component.onSellChange(mockPosition, 0);
 
       expect(
-        mockOpenPositionsService.deleteOpenPosition
+        mockOpenPositionsService.deleteOpenPosition,
       ).not.toHaveBeenCalled();
     });
 
@@ -823,7 +822,7 @@ describe('OpenPositionsComponent', () => {
       component.onSellDateChange(mockPosition, sellDate);
 
       expect(mockOpenPositionsService.deleteOpenPosition).toHaveBeenCalledWith(
-        mockPosition
+        mockPosition,
       );
     });
 
@@ -834,7 +833,7 @@ describe('OpenPositionsComponent', () => {
       component.onSellDateChange(mockPosition, new Date(2024, 5, 1));
 
       expect(
-        mockOpenPositionsService.deleteOpenPosition
+        mockOpenPositionsService.deleteOpenPosition,
       ).not.toHaveBeenCalled();
     });
 
@@ -845,7 +844,7 @@ describe('OpenPositionsComponent', () => {
       component.onSellDateChange(mockPosition, null);
 
       expect(
-        mockOpenPositionsService.deleteOpenPosition
+        mockOpenPositionsService.deleteOpenPosition,
       ).not.toHaveBeenCalled();
     });
   });
@@ -940,7 +939,7 @@ describe('OpenPositionsComponent - Account Selection Integration', () => {
       fixture.detectChanges();
 
       expect(mockCurrentAccountStore.selectCurrentAccountId()).toBe(
-        'acc-initial'
+        'acc-initial',
       );
     });
   });
@@ -1172,7 +1171,7 @@ describe('OpenPositionsComponent - Account Selection Integration', () => {
       expect(component.columns.length).toBeGreaterThan(0);
       expect(component.columns.find((c) => c.field === 'symbol')).toBeTruthy();
       expect(
-        component.columns.find((c) => c.field === 'quantity')
+        component.columns.find((c) => c.field === 'quantity'),
       ).toBeTruthy();
     });
 
@@ -1410,10 +1409,10 @@ describe('OpenPositionsComponent - Client-Side Sorting Removal', () => {
   describe('Verify no client-side sorting', () => {
     it('should not have sortData method', () => {
       expect(
-        (component as Record<string, unknown>)['sortData']
+        (component as Record<string, unknown>)['sortData'],
       ).toBeUndefined();
       expect(
-        typeof (component as Record<string, unknown>)['sortData']
+        typeof (component as Record<string, unknown>)['sortData'],
       ).not.toBe('function');
     });
 
@@ -1427,7 +1426,7 @@ describe('OpenPositionsComponent - Client-Side Sorting Removal', () => {
 
       const displayed = component.selectOpenPositions$();
       const displayedSymbols = displayed.map(function getSymbol(
-        p: OpenPosition
+        p: OpenPosition,
       ) {
         return p.symbol;
       });
@@ -1450,10 +1449,10 @@ describe('OpenPositionsComponent - Client-Side Sorting Removal', () => {
 
       // Component should NOT have any local sort logic
       expect(
-        (component as Record<string, unknown>)['sortData']
+        (component as Record<string, unknown>)['sortData'],
       ).toBeUndefined();
       expect(
-        (component as Record<string, unknown>)['compareFunction']
+        (component as Record<string, unknown>)['compareFunction'],
       ).toBeUndefined();
     });
 
@@ -1484,11 +1483,11 @@ describe('OpenPositionsComponent - Client-Side Sorting Removal', () => {
 
       component.selectOpenPositions$();
 
-      const dataSortCalls = sortSpy.mock.calls.filter(function isDataSort(
-        call
-      ) {
-        return call.length > 0;
-      });
+      const dataSortCalls = sortSpy.mock.calls.filter(
+        function isDataSort(call) {
+          return call.length > 0;
+        },
+      );
       expect(dataSortCalls.length).toBe(0);
 
       sortSpy.mockRestore();

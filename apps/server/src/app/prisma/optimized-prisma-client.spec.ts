@@ -1,9 +1,8 @@
 /* eslint-disable vitest/no-disabled-tests, vitest/no-conditional-expect -- Pre-existing: test suite blocked on E3, conditional assertions match runtime structure */
-import { PrismaClient } from '@prisma/client';
 import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
-
-import { optimizedBatchAccountLoad } from './optimized-batch-account-load.function';
+import { PrismaClient } from '@prisma/client';
 import { closeOptimizedDatabaseConnection } from './close-optimized-database-connection.function';
+import { optimizedBatchAccountLoad } from './optimized-batch-account-load.function';
 import { optimizedHealthCheck } from './optimized-health-check.function';
 import { optimizedSessionDataLoad } from './optimized-session-data-load.function';
 import { optimizedUserLookup } from './optimized-user-lookup.function';
@@ -159,9 +158,8 @@ describe.skip('OptimizedPrismaClient', () => {
   describe('optimizedSessionDataLoad', () => {
     it('should load session data efficiently with proper data structure', async () => {
       const startTime = performance.now();
-      const { result, metrics } = await optimizedSessionDataLoad(
-        'opt-account-1'
-      );
+      const { result, metrics } =
+        await optimizedSessionDataLoad('opt-account-1');
       const endTime = performance.now();
 
       expect(result).toBeDefined();
@@ -198,7 +196,7 @@ describe.skip('OptimizedPrismaClient', () => {
 
     it('should handle non-existent account gracefully', async () => {
       const { result, metrics } = await optimizedSessionDataLoad(
-        'non-existent-account'
+        'non-existent-account',
       );
 
       expect(result).toBeNull();
@@ -213,7 +211,7 @@ describe.skip('OptimizedPrismaClient', () => {
         const trade1Date = new Date(result.trades[0].buy_date);
         const trade2Date = new Date(result.trades[1].buy_date);
         expect(trade1Date.getTime()).toBeGreaterThanOrEqual(
-          trade2Date.getTime()
+          trade2Date.getTime(),
         );
       }
 
@@ -407,7 +405,7 @@ describe.skip('OptimizedPrismaClient', () => {
     it('should handle connection pool efficiently', async () => {
       // Test multiple concurrent operations to stress connection pool
       const operations = Array.from({ length: 5 }, async (_, i) =>
-        optimizedSessionDataLoad(`opt-account-${(i % 3) + 1}`)
+        optimizedSessionDataLoad(`opt-account-${(i % 3) + 1}`),
       );
 
       const startTime = performance.now();

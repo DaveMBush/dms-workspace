@@ -1,5 +1,4 @@
 import type { PrismaClient } from '@prisma/client';
-
 import { createTestDates } from './create-test-dates.helper';
 import { generateUniqueId } from './generate-unique-id.helper';
 import type { RiskGroups } from './risk-groups.types';
@@ -17,7 +16,7 @@ interface SeederResult {
 function createExpiredEquity(
   symbol: string,
   riskGroupId: string,
-  pastDate: Date
+  pastDate: Date,
 ): UniverseRecord {
   return {
     symbol,
@@ -39,7 +38,7 @@ function createExpiredEquity(
 function createIncomeRecords(
   symbols: string[],
   riskGroupId: string,
-  futureDate: Date
+  futureDate: Date,
 ): UniverseRecord[] {
   return [
     {
@@ -76,7 +75,7 @@ function createTestDataArray(
   symbols: string[],
   equitiesId: string,
   incomeId: string,
-  taxFreeId: string
+  taxFreeId: string,
 ): UniverseRecord[] {
   const { futureDate, pastDate } = createTestDates();
 
@@ -84,7 +83,7 @@ function createTestDataArray(
   const incomeRecords = createIncomeRecords(
     [symbols[1], symbols[4]],
     incomeId,
-    futureDate
+    futureDate,
   );
 
   return [
@@ -123,12 +122,11 @@ function createTestDataArray(
 async function initializePrismaClient(): Promise<PrismaClient> {
   const prismaClientImport = (await import('@prisma/client/index'))
     .PrismaClient;
-  const { PrismaBetterSqlite3 } = await import(
-    '@prisma/adapter-better-sqlite3'
-  );
+  const { PrismaBetterSqlite3: prismaBetterSqlite3 } =
+    await import('@prisma/adapter-better-sqlite3');
 
   const testDbUrl = 'file:./test-database.db';
-  const adapter = new PrismaBetterSqlite3({ url: testDbUrl });
+  const adapter = new prismaBetterSqlite3({ url: testDbUrl });
   return new prismaClientImport({ adapter });
 }
 
@@ -152,13 +150,13 @@ function generateTestSymbols(): string[] {
 async function insertUniverseData(
   prisma: PrismaClient,
   symbols: string[],
-  riskGroups: RiskGroups
+  riskGroups: RiskGroups,
 ): Promise<void> {
   const testData = createTestDataArray(
     symbols,
     riskGroups.equitiesRiskGroup.id,
     riskGroups.incomeRiskGroup.id,
-    riskGroups.taxFreeIncomeRiskGroup.id
+    riskGroups.taxFreeIncomeRiskGroup.id,
   );
 
   await prisma.universe.createMany({
@@ -171,7 +169,7 @@ async function insertUniverseData(
  */
 async function cleanupUniverseData(
   prisma: PrismaClient,
-  symbols: string[]
+  symbols: string[],
 ): Promise<void> {
   try {
     await prisma.universe.deleteMany({

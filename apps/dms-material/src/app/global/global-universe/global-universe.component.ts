@@ -97,7 +97,7 @@ export class GlobalUniverseComponent implements OnDestroy {
   readonly cellEdit = output<CellEditEvent>();
   readonly today = new Date();
   private readonly rf = restoreUniverseFilters(
-    this.sortFilterStateService.loadFilterState('universes')
+    this.sortFilterStateService.loadFilterState('universes'),
   );
 
   readonly symbolFilter$ = signal<string>(this.rf.symbol);
@@ -106,13 +106,13 @@ export class GlobalUniverseComponent implements OnDestroy {
   readonly selectedAccountId$ = signal<string>(this.rf.accountId);
   readonly minYieldFilter$ = signal<number | null>(this.rf.minYield);
   readonly sortColumns$ = signal<SortColumn[]>(
-    this.sortFilterStateService.loadSortColumnsState('universes') ?? []
+    this.sortFilterStateService.loadSortColumnsState('universes') ?? [],
   );
 
   readonly visibleRange = signal({ start: 0, end: 50 });
   private readonly cellEditVersion$ = signal(0);
   private readonly pendingEdits$ = signal<Map<string, Record<string, unknown>>>(
-    new Map()
+    new Map(),
   );
 
   private readonly localSyncInProgress$ = signal<boolean>(false);
@@ -137,7 +137,7 @@ export class GlobalUniverseComponent implements OnDestroy {
     () =>
       `${this.selectedAccountId$()}|${this.riskGroupFilter$() ?? ''}|` +
       `${String(this.expiredFilter$())}|${String(this.minYieldFilter$())}|` +
-      `${this.symbolFilter$()}`
+      `${this.symbolFilter$()}`,
   );
 
   ngOnDestroy(): void {
@@ -147,7 +147,7 @@ export class GlobalUniverseComponent implements OnDestroy {
   readonly isSyncingUniverse$ = computed(
     function computeIsUniverseSyncing(this: GlobalUniverseComponent) {
       return this.syncService.isSyncing() || this.localSyncInProgress$();
-    }.bind(this)
+    }.bind(this),
   );
 
   readonly isUpdatingFields$ = this.updateFieldsService.isUpdating;
@@ -163,12 +163,12 @@ export class GlobalUniverseComponent implements OnDestroy {
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
   readonly accountOptions$ = computed(() =>
-    buildAccountOptions(selectAccounts())
+    buildAccountOptions(selectAccounts()),
   );
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- computed signal
   readonly riskGroupOptions$ = computed(() =>
-    buildRiskGroupOptions(selectRiskGroup())
+    buildRiskGroupOptions(selectRiskGroup()),
   );
 
   // Server handles symbol/risk_group filtering; expired and yield % need client-side filtering.
@@ -249,7 +249,7 @@ export class GlobalUniverseComponent implements OnDestroy {
         context.globalLoading.hide();
         context.notification.showPersistent(
           `Universe fields updated: ${summary.updated} entries updated.`,
-          'success'
+          'success',
         );
       },
       error: function onUpdateError(error: unknown) {
@@ -278,11 +278,11 @@ export class GlobalUniverseComponent implements OnDestroy {
     const context = this;
     dialogRef.afterClosed().subscribe({
       next: function onImportDialogClosed(
-        result: ImportDialogResult | undefined
+        result: ImportDialogResult | undefined,
       ) {
         if (result?.success === true) {
           context.notification.success(
-            `Successfully imported ${result.imported} transactions`
+            `Successfully imported ${result.imported} transactions`,
           );
         }
       },

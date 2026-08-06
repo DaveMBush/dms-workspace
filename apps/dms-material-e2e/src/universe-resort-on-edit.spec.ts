@@ -1,5 +1,4 @@
 import { expect, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 import { seedUniverseData } from './helpers/seed-universe-data.helper';
 
@@ -29,7 +28,7 @@ test.describe('Universe Re-sort After Cell Edit', () => {
   }) {
     // Sort by Ex-Date ascending
     const exDateHeader = page.locator(
-      '.dms-header-cell[data-column="ex_date"]'
+      '.dms-header-cell[data-column="ex_date"]',
     );
     await exDateHeader.click();
     await page.waitForTimeout(500);
@@ -40,7 +39,7 @@ test.describe('Universe Re-sort After Cell Edit', () => {
 
     // Record the first row's symbol before editing
     const firstRowSymbol = page.locator(
-      `.dms-body-row[role="row"]:first-child .dms-body-cell:nth-child(${UNIVERSE_COLUMN_INDEX.symbol})`
+      `.dms-body-row[role="row"]:first-child .dms-body-cell:nth-child(${UNIVERSE_COLUMN_INDEX.symbol})`,
     );
     const originalSymbol = await firstRowSymbol.textContent();
 
@@ -70,7 +69,7 @@ test.describe('Universe Re-sort After Cell Edit', () => {
           const symbol = await firstRowSymbol.textContent();
           return symbol?.trim();
         },
-        { timeout: 5000 }
+        { timeout: 5000 },
       )
       .not.toBe(originalSymbol?.trim());
   });

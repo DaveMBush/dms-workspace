@@ -1,14 +1,14 @@
+import fastify, { FastifyInstance } from 'fastify';
 import {
-  describe,
-  it,
-  expect,
-  beforeEach,
-  vi,
+  afterAll,
   afterEach,
   beforeAll,
-  afterAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
 } from 'vitest';
-import fastify, { FastifyInstance } from 'fastify';
 import registerTopRoutes from './index';
 
 // Hoisted mocks
@@ -142,7 +142,7 @@ describe('Top Route Handler', () => {
 
     it('should handle ensureRiskGroupsExist failure gracefully', async () => {
       mockEnsureRiskGroupsExist.mockRejectedValueOnce(
-        new Error('Database connection failed')
+        new Error('Database connection failed'),
       );
 
       const response = await app.inject({
@@ -213,8 +213,8 @@ describe('Top Route Handler', () => {
       mockEnsureRiskGroupsExist.mockImplementationOnce(
         async () =>
           new Promise((_, reject) =>
-            setTimeout(() => reject(new Error('Timeout')), 100)
-          )
+            setTimeout(() => reject(new Error('Timeout')), 100),
+          ),
       );
 
       const response = await app.inject({

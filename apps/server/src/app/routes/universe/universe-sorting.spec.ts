@@ -1,6 +1,5 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import fastify, { FastifyInstance } from 'fastify';
-
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import registerUniverseRoutes from './index';
 
 // Hoisted mocks
@@ -45,7 +44,9 @@ interface UniverseRowOverrides {
   risk_group?: { name: string };
 }
 
-function makeUniverseRow(overrides: UniverseRowOverrides = {}): ReturnType<typeof makeUniverseRow> {
+function makeUniverseRow(
+  overrides: UniverseRowOverrides = {},
+): ReturnType<typeof makeUniverseRow> {
   return {
     id: 'u1',
     distribution: 0.1,

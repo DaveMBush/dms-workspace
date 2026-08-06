@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { LoginComponent } from './login';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth.service';
+import { LoginComponent } from './login';
 
 describe('LoginComponent', () => {
   let component: LoginComponent;
@@ -30,7 +30,7 @@ describe('LoginComponent', () => {
       fixture.detectChanges();
       const compiled = fixture.nativeElement as HTMLElement;
       const emailInput = compiled.querySelector(
-        'input[formControlName="email"]'
+        'input[formControlName="email"]',
       );
       expect(emailInput).toBeTruthy();
     });
@@ -39,7 +39,7 @@ describe('LoginComponent', () => {
       fixture.detectChanges();
       const compiled = fixture.nativeElement as HTMLElement;
       const passwordInput = compiled.querySelector(
-        'input[formControlName="password"]'
+        'input[formControlName="password"]',
       );
       expect(passwordInput).toBeTruthy();
     });
@@ -115,11 +115,11 @@ describe('LoginComponent', () => {
 
     it('should show error on failed login', async () => {
       mockAuthService.signIn.mockRejectedValue(
-        new Error('Invalid credentials')
+        new Error('Invalid credentials'),
       );
       component.loginForm.patchValue({
         email: 'test@test.com',
-        // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- not real  
+        // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- not real
         password: 'password123',
       });
       await component.onSubmit();

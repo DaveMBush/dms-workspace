@@ -1,7 +1,7 @@
-import { PrismaClient } from '@prisma/client';
-import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 import { existsSync, unlinkSync } from 'fs';
 import { join } from 'path';
+import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
+import { PrismaClient } from '@prisma/client';
 import {
   afterAll,
   beforeAll,
@@ -10,7 +10,6 @@ import {
   expect,
   test,
 } from 'vitest';
-
 import { getRiskGroupData } from './get-risk-group-data.function';
 
 /**
@@ -232,7 +231,7 @@ describe.skipIf(process.env.CI)('getRiskGroupData', () => {
       // Should only have Equities, not Income or Tax Free from other accounts
       const incomeRisk = result.find((r) => r.riskGroupName === 'Income');
       const taxFreeRisk = result.find(
-        (r) => r.riskGroupName === 'Tax Free Income'
+        (r) => r.riskGroupName === 'Tax Free Income',
       );
 
       expect(incomeRisk).toBeUndefined();
@@ -275,7 +274,7 @@ describe.skipIf(process.env.CI)('getRiskGroupData', () => {
 
       const totalCostBasis = result.reduce(
         (sum, r) => sum + r.totalCostBasis,
-        0
+        0,
       );
       const totalTrades = result.reduce((sum, r) => sum + r.tradeCount, 0);
 
@@ -315,7 +314,7 @@ describe.skipIf(process.env.CI)('getRiskGroupData', () => {
       // Account A has no Income or Tax Free
       const hasIncome = resultA.some((r) => r.riskGroupName === 'Income');
       const hasTaxFree = resultA.some(
-        (r) => r.riskGroupName === 'Tax Free Income'
+        (r) => r.riskGroupName === 'Tax Free Income',
       );
 
       expect(hasIncome).toBe(false);

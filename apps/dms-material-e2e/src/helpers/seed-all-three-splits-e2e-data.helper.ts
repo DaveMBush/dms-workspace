@@ -1,5 +1,4 @@
 import type { PrismaClient } from '@prisma/client';
-
 import { initializePrismaClient } from './shared-prisma-client.helper';
 import { createRiskGroups } from './shared-risk-groups.helper';
 
@@ -32,7 +31,7 @@ interface ThreeUniverseRefs extends ThreeUniverseIds {
 
 async function cleanupSymbolData(
   prisma: PrismaClient,
-  symbol: string
+  symbol: string,
 ): Promise<void> {
   const existingUniverse = await prisma.universe.findFirst({
     where: { symbol },
@@ -54,7 +53,7 @@ async function cleanupAllThreeSymbols(prisma: PrismaClient): Promise<void> {
 
 async function createThreeUniverses(
   prisma: PrismaClient,
-  riskGroupId: string
+  riskGroupId: string,
 ): Promise<ThreeUniverseRefs> {
   const commonData = {
     risk_group_id: riskGroupId,
@@ -86,7 +85,7 @@ async function createThreeUniverses(
 async function createAllThreeLots(
   prisma: PrismaClient,
   accountId: string,
-  universeIds: ThreeUniverseIds
+  universeIds: ThreeUniverseIds,
 ): Promise<void> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Prisma createMany requires untyped batch data
   const lotData: any[] = [
@@ -122,14 +121,14 @@ async function createAllThreeLots(
 }
 
 async function createAllThreeSeedData(
-  prisma: PrismaClient
+  prisma: PrismaClient,
 ): Promise<AllThreeSplitsSeederResult> {
   const riskGroups = await createRiskGroups(prisma);
   await cleanupAllThreeSymbols(prisma);
 
   const universes = await createThreeUniverses(
     prisma,
-    riskGroups.equitiesRiskGroup.id
+    riskGroups.equitiesRiskGroup.id,
   );
 
   const account = await prisma.accounts.create({
@@ -182,6 +181,7 @@ async function createAllThreeSeedData(
  *   - ULTY: 1000 shares @ $3.00 (1-for-10 → 100 @ $30.00)
  *   - OXLC: 1530 shares @ $1.00 (1-for-5 → 306 @ $5.00)
  */
+
 export async function seedAllThreeSplitsE2eData(): Promise<AllThreeSplitsSeederResult> {
   const prisma = await initializePrismaClient();
   try {

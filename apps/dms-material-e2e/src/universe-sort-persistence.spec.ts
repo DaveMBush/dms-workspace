@@ -1,7 +1,6 @@
 import { expect, Page, test } from 'playwright/test';
-
-import { login } from './helpers/login.helper';
 import { createDeletableUniverseSymbol } from './helpers/create-deletable-universe-symbol.helper';
+import { login } from './helpers/login.helper';
 import { seedUniverseE2eData } from './helpers/seed-universe-e2e-data.helper';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -9,6 +8,7 @@ import { seedUniverseE2eData } from './helpers/seed-universe-e2e-data.helper';
 /**
  * Clear sort-filter state from localStorage so each test starts clean.
  */
+
 async function clearSortFilterState(page: Page): Promise<void> {
   await page.evaluate(function removeSortFilterState(): void {
     localStorage.removeItem('dms-sort-filter-state');
@@ -28,10 +28,10 @@ async function waitForTableRows(page: Page): Promise<void> {
  */
 async function getSortColumnsState(
   page: Page,
-  table: string
+  table: string,
 ): Promise<{ column: string; direction: string }[] | null> {
   return page.evaluate(function readSortColumnsState(
-    t: string
+    t: string,
   ): { column: string; direction: string }[] | null {
     const raw = localStorage.getItem('dms-sort-filter-state');
     if (raw === null) {
@@ -42,8 +42,7 @@ async function getSortColumnsState(
       { sortColumns?: { column: string; direction: string }[] }
     >;
     return state[t]?.sortColumns ?? null;
-  },
-  table);
+  }, table);
 }
 
 /**
@@ -62,7 +61,7 @@ async function applyMultiColumnSort(page: Page): Promise<void> {
   });
 
   const yieldHeader = page.locator(
-    '.dms-header-cell[data-column="yield_percent"]'
+    '.dms-header-cell[data-column="yield_percent"]',
   );
   // First Shift+click: add Yield% as secondary sort ascending
   await yieldHeader.click({ modifiers: ['Shift'] });
@@ -218,7 +217,7 @@ test.describe('Universe Sort State Persistence (Story 113.3)', () => {
     // Open the add-symbol dialog
     await page.locator('button[mattooltip="Add Symbol"]').click();
     await expect(
-      page.locator('[data-testid="add-symbol-dialog"]')
+      page.locator('[data-testid="add-symbol-dialog"]'),
     ).toBeVisible();
 
     // Wait for existing-symbols GET to complete (isLoading → false)
@@ -238,7 +237,7 @@ test.describe('Universe Sort State Persistence (Story 113.3)', () => {
 
     // Select a risk group
     const riskGroupSelect = page.locator(
-      'mat-dialog-container mat-form-field mat-select'
+      'mat-dialog-container mat-form-field mat-select',
     );
     await riskGroupSelect.click();
     await page.locator('.cdk-overlay-container mat-option').first().click();
@@ -248,7 +247,7 @@ test.describe('Universe Sort State Persistence (Story 113.3)', () => {
     await expect(submitButton).toBeEnabled({ timeout: 5000 });
     await submitButton.click();
     await expect(
-      page.locator('[data-testid="add-symbol-dialog"]')
+      page.locator('[data-testid="add-symbol-dialog"]'),
     ).not.toBeVisible({ timeout: 10000 });
 
     await assertSortSurvived(page);
@@ -305,7 +304,7 @@ test.describe('Universe Sort State Persistence (Story 113.3)', () => {
         (response) =>
           response.url().includes('/api/universe/') &&
           response.request().method() === 'DELETE',
-        { timeout: 15000 }
+        { timeout: 15000 },
       );
 
       await deleteButton.click();

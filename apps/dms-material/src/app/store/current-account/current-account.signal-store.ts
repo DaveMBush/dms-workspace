@@ -6,7 +6,6 @@ import {
   withMethods,
   withState,
 } from '@ngrx/signals';
-
 import { selectAccounts } from '../accounts/selectors/select-accounts.function';
 
 export const currentAccountSignalStore = signalStore(
@@ -37,8 +36,8 @@ export const currentAccountSignalStore = signalStore(
             return accounts[0].id;
           }
           return '';
-        }
+        },
       ),
     };
-  })
+  }),
 );

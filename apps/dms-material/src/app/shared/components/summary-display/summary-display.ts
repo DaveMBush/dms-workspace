@@ -91,7 +91,7 @@ export class SummaryDisplayComponent {
 
   private deepMerge(
     target: ChartConfiguration['options'],
-    source: ChartConfiguration['options']
+    source: ChartConfiguration['options'],
   ): ChartConfiguration['options'] {
     if (source === null || source === undefined) {
       return target;
@@ -112,7 +112,7 @@ export class SummaryDisplayComponent {
       ) {
         (result as Record<string, unknown>)[key] = this.deepMerge(
           targetValue as ChartConfiguration['options'],
-          sourceValue as ChartConfiguration['options']
+          sourceValue as ChartConfiguration['options'],
         );
       } else if (sourceValue !== undefined) {
         (result as Record<string, unknown>)[key] = sourceValue;

@@ -1,13 +1,12 @@
-import { TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
 import { of } from 'rxjs';
-
-import { AccountComponentService } from './account-component.service';
-import { AccountComponent } from './account';
+import { ConfirmDialogService } from '../shared/services/confirm-dialog.service';
 import { Account as AccountInterface } from '../store/accounts/account.interface';
 import { Top } from '../store/top/top.interface';
-import { ConfirmDialogService } from '../shared/services/confirm-dialog.service';
+import { AccountComponent } from './account';
+import { AccountComponentService } from './account-component.service';
 
 describe('AccountComponentService', () => {
   let service: AccountComponentService;
@@ -130,7 +129,7 @@ describe('AccountComponentService', () => {
           divDeposits: [],
           months: [],
         },
-        mockComponent.top['1']
+        mockComponent.top['1'],
       );
     });
 
@@ -156,7 +155,10 @@ describe('AccountComponentService', () => {
       mockComponent.addingNode = 'new';
       mockComponent.editingContent = 'Test Account';
 
-      service.cancelEdit({ id: 'new', name: 'New Account' } as AccountInterface);
+      service.cancelEdit({
+        id: 'new',
+        name: 'New Account',
+      } as AccountInterface);
 
       expect(mockComponent.addingNode).toBe('');
     });
@@ -165,7 +167,10 @@ describe('AccountComponentService', () => {
       mockComponent.addingNode = 'new';
       mockComponent.editingContent = 'Test Account';
 
-      service.cancelEdit({ id: 'new', name: 'New Account' } as AccountInterface);
+      service.cancelEdit({
+        id: 'new',
+        name: 'New Account',
+      } as AccountInterface);
 
       expect(mockComponent.editingContent).toBe('');
     });
@@ -181,7 +186,7 @@ describe('AccountComponentService', () => {
 
       expect(mockRemoveFromStore).toHaveBeenCalledWith(
         testAccount,
-        mockComponent.top['1']
+        mockComponent.top['1'],
       );
     });
 
@@ -278,7 +283,10 @@ describe('AccountComponentService', () => {
       mockComponent.accountsArray$ = signal([...mockAccounts]);
 
       // Try to save account that doesn't exist
-      service.saveEdit({ id: 'non-existent', name: 'Test' } as AccountInterface);
+      service.saveEdit({
+        id: 'non-existent',
+        name: 'Test',
+      } as AccountInterface);
 
       // Should still clear editing state
       expect(mockComponent.addingNode).toBe('');

@@ -28,7 +28,7 @@ import { initializePrismaClient } from './helpers/shared-prisma-client.helper';
 // Once Story 63.2 defers split processing until after processTrades, this
 // test will turn green without modification.
 
-const FIXTURES_DIR = path.resolve(__dirname, '..', 'fixtures');
+const _FIXTURES_DIR = path.resolve(__dirname, '..', 'fixtures');
 const TSTX_SYMBOL = 'TSTX';
 
 async function navigateToUniverse(page: Page): Promise<void> {
@@ -105,6 +105,7 @@ test.describe('No Open Lots Split Ordering Bug (Story 63.1)', () => {
    * This test FAILS against the buggy implementation (total = 1000, expected 200).
    * It will turn GREEN once Story 63.2 defers split processing.
    */
+
   test('should apply reverse split when split row precedes buy rows in CSV (reverse-date order)', async ({
     page,
   }) => {

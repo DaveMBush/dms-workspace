@@ -11,9 +11,10 @@ const STORYBOOK_BASE_URL =
  * which applies the correct CSS class via `withThemeByClassName` configured
  * in Storybook's preview.ts.
  */
+
 export async function captureStoryInBothThemes(
   page: Page,
-  storyId: string
+  storyId: string,
 ): Promise<void> {
   const baseUrl = `${STORYBOOK_BASE_URL}${storyId}`;
 

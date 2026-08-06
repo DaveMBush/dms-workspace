@@ -1,12 +1,11 @@
-import { TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
 import {
   HttpTestingController,
   provideHttpClientTesting,
 } from '@angular/common/http/testing';
-import { provideHttpClient } from '@angular/common/http';
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { TestBed } from '@angular/core/testing';
 import { provideSmartNgRX } from '@smarttools/smart-signals';
-
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 // Import the actual service implementation
 import { ScreenerService } from './screener.service';
 
@@ -70,7 +69,7 @@ describe('ScreenerService', () => {
     const req = httpMock.expectOne('/api/screener');
     req.flush(
       { message: 'Scraper failed' },
-      { status: 500, statusText: 'Server Error' }
+      { status: 500, statusText: 'Server Error' },
     );
 
     expect(service.error()).toContain('failed');

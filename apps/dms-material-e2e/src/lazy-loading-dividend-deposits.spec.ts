@@ -1,5 +1,4 @@
 import { expect, Page, Request, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 import { seedScrollDivDepositsData } from './helpers/seed-scroll-div-deposits-data.helper';
 
@@ -25,9 +24,10 @@ interface CapturedIndexesRequest {
 /**
  * Capture POST requests to /api/accounts/indexes and their responses.
  */
+
 function captureIndexesRequests(
   page: Page,
-  urlPattern: string
+  urlPattern: string,
 ): CapturedIndexesRequest[] {
   const captured: CapturedIndexesRequest[] = [];
 
@@ -64,7 +64,7 @@ function captureIndexesRequests(
       return;
     }
     const entry = captured.find(function matchRequest(
-      e: CapturedIndexesRequest
+      e: CapturedIndexesRequest,
     ): boolean {
       return e.request === response.request();
     });
@@ -88,16 +88,16 @@ function captureIndexesRequests(
  * Await all captured response JSON promises to ensure no race conditions.
  */
 async function waitForCapturedResponses(
-  entries: CapturedIndexesRequest[]
+  entries: CapturedIndexesRequest[],
 ): Promise<void> {
   await Promise.all(
     entries
       .map(function toPromise(
-        e: CapturedIndexesRequest
+        e: CapturedIndexesRequest,
       ): Promise<void> | undefined {
         return e.responseReady;
       })
-      .filter((p): p is Promise<void> => p !== undefined)
+      .filter((p): p is Promise<void> => p !== undefined),
   );
 }
 
@@ -132,7 +132,7 @@ test.describe('Lazy Loading Network Traffic - Dividend Deposits', () => {
   }) => {
     const indexesRequests = captureIndexesRequests(
       page,
-      '/api/accounts/indexes'
+      '/api/accounts/indexes',
     );
 
     await login(page);
@@ -149,7 +149,7 @@ test.describe('Lazy Loading Network Traffic - Dividend Deposits', () => {
     const divDepositRequests = indexesRequests.filter(
       function filterDivDeposits(entry: CapturedIndexesRequest): boolean {
         return entry.body.childField === 'divDeposits';
-      }
+      },
     );
     expect(divDepositRequests.length).toBeGreaterThanOrEqual(1);
 
@@ -160,13 +160,13 @@ test.describe('Lazy Loading Network Traffic - Dividend Deposits', () => {
 
     // The indexes returned for a single request must be ≤ MAX_PAGE_SIZE
     expect(firstEntry.response.indexes.length).toBeLessThanOrEqual(
-      MAX_PAGE_SIZE
+      MAX_PAGE_SIZE,
     );
     expect(firstEntry.response.indexes.length).toBeGreaterThan(0);
 
     // No single request should load all rows at once
     expect(firstEntry.response.indexes.length).toBeLessThan(
-      firstEntry.response.length
+      firstEntry.response.length,
     );
   });
 
@@ -175,7 +175,7 @@ test.describe('Lazy Loading Network Traffic - Dividend Deposits', () => {
   }) => {
     const indexesRequests = captureIndexesRequests(
       page,
-      '/api/accounts/indexes'
+      '/api/accounts/indexes',
     );
 
     await login(page);
@@ -203,7 +203,7 @@ test.describe('Lazy Loading Network Traffic - Dividend Deposits', () => {
     const divDepositRequests = indexesRequests.filter(
       function filterDivDeposits(entry: CapturedIndexesRequest): boolean {
         return entry.body.childField === 'divDeposits';
-      }
+      },
     );
     expect(divDepositRequests.length).toBeGreaterThanOrEqual(1);
 
@@ -217,7 +217,7 @@ test.describe('Lazy Loading Network Traffic - Dividend Deposits', () => {
     const scrollRequests = divDepositRequests.filter(
       function filterScrollRequests(entry: CapturedIndexesRequest): boolean {
         return entry.body.startIndex > 0;
-      }
+      },
     );
     // After scrolling past the first page, at least one offset request appears
     expect(scrollRequests.length).toBeGreaterThanOrEqual(1);

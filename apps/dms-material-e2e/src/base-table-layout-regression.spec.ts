@@ -28,8 +28,7 @@
  * BROWSERS: Chromium + Firefox (no .skip / .only annotations per AC6).
  */
 
-import { expect, type Page, test } from 'playwright/test';
-
+import { expect, test, type Page } from 'playwright/test';
 import { login } from './helpers/login.helper';
 import { seedScrollUniverseData } from './helpers/seed-scroll-universe-data.helper';
 
@@ -77,7 +76,7 @@ const BODY_CELL_SEL = '.dms-body-cell[role="cell"]';
  * previously captured baseline.  Passed to `page.evaluate()` — must be a
  * self-contained, serialisable function (no outer-scope closures).
  */
-function checkOuterScrollerDrift(arg: {
+function _checkOuterScrollerDrift(arg: {
   outerSel: string;
   baselineRight: number;
 }): {
@@ -134,7 +133,7 @@ interface HeaderViewportGeometryResult {
  * real horizontal scrolling.
  */
 function checkHeaderViewportAndOuterGeometry(
-  arg: HeaderViewportGeometryArgs
+  arg: HeaderViewportGeometryArgs,
 ): HeaderViewportGeometryResult {
   function createMissingHeaderViewportGeometryResult(): HeaderViewportGeometryResult {
     return {
@@ -156,7 +155,7 @@ function checkHeaderViewportAndOuterGeometry(
   }
 
   function isStableHeaderViewportGeometry(
-    result: Omit<HeaderViewportGeometryResult, 'ok'>
+    result: Omit<HeaderViewportGeometryResult, 'ok'>,
   ): boolean {
     return (
       result.outerRightDrift <= 2 &&
@@ -169,11 +168,10 @@ function checkHeaderViewportAndOuterGeometry(
   }
 
   function measureHeaderViewportGeometry():
-    | Omit<HeaderViewportGeometryResult, 'ok'>
-    | undefined {
+    Omit<HeaderViewportGeometryResult, 'ok'> | undefined {
     const outer = document.querySelector<HTMLElement>(arg.outerSel);
     const headerViewport = document.querySelector<HTMLElement>(
-      arg.headerViewportSel
+      arg.headerViewportSel,
     );
     const body = document.querySelector<HTMLElement>(arg.bodySel);
     const headerCell = document.querySelector<HTMLElement>(arg.headerCellSel);
@@ -271,7 +269,7 @@ test.describe('Base Table Layout Regression — AC1: scrollbar right-edge on nar
       throw new Error(
         'Precondition failed: .dms-table-body is not horizontally ' +
           'scrollable at 800px viewport. Universe column total should exceed ' +
-          '800px; check column definitions and seeder.'
+          '800px; check column definitions and seeder.',
       );
     }
 
@@ -300,10 +298,10 @@ test.describe('Base Table Layout Regression — AC1: scrollbar right-edge on nar
       } {
         const outer = document.querySelector<HTMLElement>(arg.outerSel);
         const headerViewport = document.querySelector<HTMLElement>(
-          arg.headerViewportSel
+          arg.headerViewportSel,
         );
         const headerCell = document.querySelector<HTMLElement>(
-          arg.headerCellSel
+          arg.headerCellSel,
         );
         const body = document.querySelector<HTMLElement>(arg.bodySel);
         const bodyRow = document.querySelector<HTMLElement>(arg.bodyRowSel);
@@ -343,12 +341,12 @@ test.describe('Base Table Layout Regression — AC1: scrollbar right-edge on nar
         bodySel: SCROLL_CONTAINER_SEL,
         bodyRowSel: BODY_ROW_SEL,
         bodyCellSel: BODY_CELL_SEL,
-      }
+      },
     );
 
     if (!baseline.ok) {
       throw new Error(
-        'Precondition failed: outer scroller or detached header viewport not found in DOM'
+        'Precondition failed: outer scroller or detached header viewport not found in DOM',
       );
     }
 
@@ -364,7 +362,7 @@ test.describe('Base Table Layout Regression — AC1: scrollbar right-edge on nar
           el.scrollLeft = (el.scrollWidth - el.clientWidth) * percent;
         }
       },
-      { containerSel: SCROLL_CONTAINER_SEL, percent: 0.5 }
+      { containerSel: SCROLL_CONTAINER_SEL, percent: 0.5 },
     );
 
     // Allow one frame for the layout to settle.
@@ -388,20 +386,20 @@ test.describe('Base Table Layout Regression — AC1: scrollbar right-edge on nar
     expect(
       result50.ok,
       `At 50% horizontal scroll: outer right drift=${result50.outerRightDrift.toFixed(
-        2
+        2,
       )}px, header top drift=${result50.headerTopDrift.toFixed(
-        2
+        2,
       )}px, header right drift=${result50.headerRightDrift.toFixed(
-        2
+        2,
       )}px, body scroll delta=${result50.scrollDelta.toFixed(
-        2
+        2,
       )}px, header/body scroll diff=${result50.scrollMirrorDiff.toFixed(
-        2
+        2,
       )}px, header/body cell shift diff=${result50.cellShiftDiff.toFixed(
-        2
+        2,
       )}px. ` +
         'Detached header viewport must stay visually fixed while horizontal ' +
-        'scroll advances and header/body content stay aligned.'
+        'scroll advances and header/body content stay aligned.',
     ).toBe(true);
 
     // ── Scroll to 100% ────────────────────────────────────────────────────
@@ -432,20 +430,20 @@ test.describe('Base Table Layout Regression — AC1: scrollbar right-edge on nar
     expect(
       result100.ok,
       `At 100% horizontal scroll: outer right drift=${result100.outerRightDrift.toFixed(
-        2
+        2,
       )}px, header top drift=${result100.headerTopDrift.toFixed(
-        2
+        2,
       )}px, header right drift=${result100.headerRightDrift.toFixed(
-        2
+        2,
       )}px, body scroll delta=${result100.scrollDelta.toFixed(
-        2
+        2,
       )}px, header/body scroll diff=${result100.scrollMirrorDiff.toFixed(
-        2
+        2,
       )}px, header/body cell shift diff=${result100.cellShiftDiff.toFixed(
-        2
+        2,
       )}px. ` +
         'Detached header viewport and far-right scrollbar edge must remain stable ' +
-        'while header/body content stay aligned at max horizontal scroll.'
+        'while header/body content stay aligned at max horizontal scroll.',
     ).toBe(true);
   });
 
@@ -463,7 +461,7 @@ test.describe('Base Table Layout Regression — AC1: scrollbar right-edge on nar
       throw new Error(
         'Precondition failed: .dms-table-body is not horizontally ' +
           'scrollable at 800px viewport. Universe column total should exceed ' +
-          '800px; check column definitions and seeder.'
+          '800px; check column definitions and seeder.',
       );
     }
 
@@ -477,7 +475,7 @@ test.describe('Base Table Layout Regression — AC1: scrollbar right-edge on nar
 
         if (!header || !body) {
           throw new Error(
-            'Precondition failed: detached header or body viewport not found'
+            'Precondition failed: detached header or body viewport not found',
           );
         }
 
@@ -487,7 +485,7 @@ test.describe('Base Table Layout Regression — AC1: scrollbar right-edge on nar
           bodyScrollLeft: body.scrollLeft,
         };
       },
-      { headerSel: HEADER_VIEWPORT_SEL, bodySel: SCROLL_CONTAINER_SEL }
+      { headerSel: HEADER_VIEWPORT_SEL, bodySel: SCROLL_CONTAINER_SEL },
     );
 
     await page.locator(HEADER_VIEWPORT_SEL).hover();
@@ -515,7 +513,7 @@ test.describe('Base Table Layout Regression — AC1: scrollbar right-edge on nar
         bodySel: SCROLL_CONTAINER_SEL,
         previousBodyScrollLeft: before.bodyScrollLeft,
       },
-      { timeout: 2000 }
+      { timeout: 2000 },
     );
 
     const after = await page.evaluate(
@@ -528,7 +526,7 @@ test.describe('Base Table Layout Regression — AC1: scrollbar right-edge on nar
 
         if (!header || !body) {
           throw new Error(
-            'Precondition failed: detached header or body viewport not found'
+            'Precondition failed: detached header or body viewport not found',
           );
         }
 
@@ -537,21 +535,21 @@ test.describe('Base Table Layout Regression — AC1: scrollbar right-edge on nar
           bodyScrollLeft: body.scrollLeft,
         };
       },
-      { headerSel: HEADER_VIEWPORT_SEL, bodySel: SCROLL_CONTAINER_SEL }
+      { headerSel: HEADER_VIEWPORT_SEL, bodySel: SCROLL_CONTAINER_SEL },
     );
 
     expect(
       after.bodyScrollLeft,
       `Header wheel input should move the body viewport horizontally. ` +
         `Observed body scrollLeft before=${before.bodyScrollLeft.toFixed(2)} ` +
-        `after=${after.bodyScrollLeft.toFixed(2)}.`
+        `after=${after.bodyScrollLeft.toFixed(2)}.`,
     ).toBeGreaterThan(before.bodyScrollLeft + 1);
 
     expect(
       Math.abs(after.headerScrollLeft - after.bodyScrollLeft),
       `Header and body scrollLeft must stay synchronized after wheel forwarding. ` +
         `Observed header=${after.headerScrollLeft.toFixed(2)} ` +
-        `body=${after.bodyScrollLeft.toFixed(2)}.`
+        `body=${after.bodyScrollLeft.toFixed(2)}.`,
     ).toBeLessThanOrEqual(1);
   });
 });
@@ -568,7 +566,7 @@ test.describe('Base Table Layout Regression — AC2: outer container width on wi
     page,
   }) => {
     const result = await page.evaluate(function checkOuterScrollerFillsParent(
-      outerSel: string
+      outerSel: string,
     ): {
       ok: boolean;
       outerClientWidth: number;
@@ -598,7 +596,7 @@ test.describe('Base Table Layout Regression — AC2: outer container width on wi
         `diff=${result.diff.toFixed(2)}px (must be ≤2px). ` +
         'At 1800px viewport the scrollable outer container must span its full ' +
         'flex parent — it must NOT be truncated to the table content width ' +
-        '(R2 regression guard, ~1475px for Universe columns).'
+        '(R2 regression guard, ~1475px for Universe columns).',
     ).toBe(true);
   });
 
@@ -625,10 +623,10 @@ test.describe('Base Table Layout Regression — AC2: outer container width on wi
       } {
         const outer = document.querySelector<HTMLElement>(arg.outerSel);
         const headerViewport = document.querySelector<HTMLElement>(
-          arg.headerViewportSel
+          arg.headerViewportSel,
         );
         const headerRegion = document.querySelector<HTMLElement>(
-          arg.headerRegionSel
+          arg.headerRegionSel,
         );
         const body = document.querySelector<HTMLElement>(arg.bodySel);
         const bodyRow = document.querySelector<HTMLElement>(arg.bodyRowSel);
@@ -668,17 +666,17 @@ test.describe('Base Table Layout Regression — AC2: outer container width on wi
         const bodyRowRect = bodyRow.getBoundingClientRect();
 
         const outerParentDiff = Math.abs(
-          outer.clientWidth - outerParent.clientWidth
+          outer.clientWidth - outerParent.clientWidth,
         );
         const outerRightDiff = Math.abs(
-          outerRect.right - outerParentRect.right
+          outerRect.right - outerParentRect.right,
         );
         const viewportWidthDiff = Math.abs(
-          headerViewportRect.width - body.clientWidth
+          headerViewportRect.width - body.clientWidth,
         );
         const rowWidthDiff = Math.max(
           Math.abs(headerRegionRect.width - headerViewportRect.width),
-          Math.abs(bodyRowRect.width - bodyRect.width)
+          Math.abs(bodyRowRect.width - bodyRect.width),
         );
 
         const checks = [
@@ -705,21 +703,21 @@ test.describe('Base Table Layout Regression — AC2: outer container width on wi
         headerRegionSel: HEADER_REGION_SEL,
         bodySel: SCROLL_CONTAINER_SEL,
         bodyRowSel: BODY_ROW_SEL,
-      }
+      },
     );
 
     expect(
       result.ok,
       result.message ||
         `Wide viewport layout mismatch: outerParentDiff=${result.outerParentDiff.toFixed(
-          2
+          2,
         )}px, outerRightDiff=${result.outerRightDiff.toFixed(
-          2
+          2,
         )}px, viewportWidthDiff=${result.viewportWidthDiff.toFixed(
-          2
+          2,
         )}px, rowWidthDiff=${result.rowWidthDiff.toFixed(2)}px. ` +
           'Outer scroller must fill available width, scrollbar edge must stay at far right, ' +
-          'and detached header/body regions must keep width-fill alignment.'
+          'and detached header/body regions must keep width-fill alignment.',
     ).toBe(true);
   });
 });
@@ -754,7 +752,7 @@ test.describe('Base Table Layout Regression — AC3: column fill on wide viewpor
         const { containerSel, headerCellsSel, spacerSel } = arg;
         const container = document.querySelector<HTMLElement>(containerSel);
         const headerCells = Array.from(
-          document.querySelectorAll<HTMLElement>(headerCellsSel)
+          document.querySelectorAll<HTMLElement>(headerCellsSel),
         );
         const spacer = document.querySelector<HTMLElement>(spacerSel);
 
@@ -778,11 +776,10 @@ test.describe('Base Table Layout Regression — AC3: column fill on wide viewpor
 
         const sumCols = headerCells.reduce(function sumWidths(
           acc: number,
-          el: HTMLElement
+          el: HTMLElement,
         ): number {
           return acc + el.getBoundingClientRect().width;
-        },
-        0);
+        }, 0);
         const spacerWidth = spacer.getBoundingClientRect().width;
         const totalWidth = sumCols + spacerWidth;
         const containerClientWidth = container.clientWidth;
@@ -802,7 +799,7 @@ test.describe('Base Table Layout Regression — AC3: column fill on wide viewpor
         containerSel: SCROLL_CONTAINER_SEL,
         headerCellsSel: COLUMN_HEADER_CELLS_SEL,
         spacerSel: COL_SPACER_IN_HEADER_SEL,
-      }
+      },
     );
 
     expect(
@@ -811,13 +808,13 @@ test.describe('Base Table Layout Regression — AC3: column fill on wide viewpor
         `Column fill assertion failed: ` +
           `sumCols+spacer=${result.totalWidth.toFixed(2)}px ` +
           `(${result.colCount} cols + spacer=${result.spacerWidth.toFixed(
-            2
+            2,
           )}px) ` +
           `container.clientWidth=${result.containerClientWidth}px ` +
           `diff=${result.diff.toFixed(2)}px (must be ≤2px). ` +
           'At 2200px viewport the content area exceeds Universe column total, ' +
           'so .dms-col-spacer (flex:1 0 auto) must absorb all spare horizontal ' +
-          'width so the row spans the full container (R3 regression guard).'
+          'width so the row spans the full container (R3 regression guard).',
     ).toBe(true);
   });
 });
@@ -873,7 +870,7 @@ test.describe('Base Table Layout Regression — AC4: beyond-table background mat
           rowBg,
         };
       },
-      { bodyRowSel: BODY_ROW_SEL, bodyCellSel: BODY_CELL_SEL }
+      { bodyRowSel: BODY_ROW_SEL, bodyCellSel: BODY_CELL_SEL },
     );
 
     expect(
@@ -885,7 +882,7 @@ test.describe('Base Table Layout Regression — AC4: beyond-table background mat
           'Both must resolve to the same surface color (var(--dms-surface)). ' +
           '.dms-body-row has background-color:var(--dms-surface) so the area ' +
           'beyond the last column (covered by .dms-col-spacer) matches cell ' +
-          'background (R4 regression guard).'
+          'background (R4 regression guard).',
     ).toBe(true);
   });
 });

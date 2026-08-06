@@ -1,6 +1,5 @@
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom } from 'rxjs';
-
 import {
   PerformanceLoggingService,
   PerformanceMetric,
@@ -37,7 +36,7 @@ describe('PerformanceLoggingService', () => {
         expect.objectContaining({
           ...metric,
           timestamp: expect.any(Number),
-        })
+        }),
       );
     });
 

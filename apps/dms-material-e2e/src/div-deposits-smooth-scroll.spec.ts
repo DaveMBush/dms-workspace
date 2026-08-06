@@ -1,5 +1,4 @@
 import { expect, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 import { seedScrollDivDepositsData } from './helpers/seed-scroll-div-deposits-data.helper';
 import { verifyMonotonicScroll } from './helpers/verify-smooth-scroll';

@@ -53,8 +53,8 @@ export class TokenHandlerService {
       await firstValueFrom<unknown>(
         this.secureCookieService.setSecureToken(
           tokenData.accessToken,
-          expirationDate
-        )
+          expirationDate,
+        ),
       );
     } catch {
       // Fallback to localStorage if secure cookie fails

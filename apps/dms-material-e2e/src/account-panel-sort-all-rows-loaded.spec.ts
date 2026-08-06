@@ -16,8 +16,8 @@
  * buildUniverseMap has their IDs loaded and every trade gets a full position
  * (not a partialOpenPosition with symbol='').
  */
-import { expect, test } from 'playwright/test';
 
+import { expect, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 import { seedScrollDivDepositsWithSymbolsData } from './helpers/seed-scroll-div-deposits-with-symbols-data.helper';
 import { seedScrollOpenPositionsData } from './helpers/seed-scroll-open-positions-data.helper';
@@ -32,7 +32,7 @@ const VIEWPORT_SELECTOR = 'cdk-virtual-scroll-viewport';
  * table that does not use the outer-scroller pattern.
  */
 async function scrollToBottom(
-  page: import('playwright/test').Page
+  page: import('playwright/test').Page,
 ): Promise<void> {
   await page.evaluate(function doScroll(): void {
     const outer = document.querySelector('.dms-outer-scroller');
@@ -53,7 +53,7 @@ async function scrollToBottom(
  * architecture) needs extra time on first render with a fresh server.
  */
 async function waitForTable(
-  page: import('playwright/test').Page
+  page: import('playwright/test').Page,
 ): Promise<void> {
   await expect(page.locator('dms-base-table')).toBeVisible({ timeout: 15000 });
   await page.waitForSelector('.dms-body-row[role="row"]', { timeout: 30000 });
@@ -65,7 +65,7 @@ async function waitForTable(
  * Use the class selector instead of the td tag selector.
  */
 async function getFirstColumnTexts(
-  page: import('playwright/test').Page
+  page: import('playwright/test').Page,
 ): Promise<string[]> {
   return page
     .locator('.dms-body-row[role="row"] .dms-body-cell:first-child')
@@ -79,7 +79,7 @@ async function getFirstColumnTexts(
  * universe entity hasn't arrived yet) are retried automatically.
  */
 async function assertNoEmptyCellsAfterSortScroll(
-  page: import('playwright/test').Page
+  page: import('playwright/test').Page,
 ): Promise<void> {
   const viewport = page.locator(VIEWPORT_SELECTOR);
   await expect(viewport).toBeVisible({ timeout: 10000 });
@@ -113,7 +113,7 @@ async function assertNoEmptyCellsAfterSortScroll(
           return t.trim() === '';
         }).length;
       },
-      { timeout: 15000, message: 'Expected all rows to have symbols' }
+      { timeout: 15000, message: 'Expected all rows to have symbols' },
     )
     .toBe(0);
 
@@ -205,12 +205,12 @@ test.describe('Sold Positions: sort+scroll shows all real data', () => {
             return t.trim() !== '';
           }).length;
         },
-        { timeout: 15000, message: 'Expected rows to load before filter test' }
+        { timeout: 15000, message: 'Expected rows to load before filter test' },
       )
       .toBeGreaterThan(0);
 
     const initialHeight = await viewport.evaluate(function getHeight(
-      el: Element
+      el: Element,
     ): number {
       return (el as HTMLElement).scrollHeight;
     });
@@ -229,7 +229,7 @@ test.describe('Sold Positions: sort+scroll shows all real data', () => {
     await page.waitForTimeout(600);
 
     const filteredHeight = await viewport.evaluate(function getHeight(
-      el: Element
+      el: Element,
     ): number {
       return (el as HTMLElement).scrollHeight;
     });
@@ -244,7 +244,7 @@ test.describe('Sold Positions: sort+scroll shows all real data', () => {
     await page.waitForTimeout(600);
 
     const clearedHeight = await viewport.evaluate(function getHeight(
-      el: Element
+      el: Element,
     ): number {
       return (el as HTMLElement).scrollHeight;
     });

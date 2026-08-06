@@ -2,7 +2,6 @@ import { ChildProcess, spawn } from 'child_process';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-
 import betterSqlite3 from 'better-sqlite3';
 import { expect, test } from 'playwright/test';
 
@@ -11,7 +10,7 @@ import { expect, test } from 'playwright/test';
 // for those platforms are available (Story 98.4).
 test.skip(
   process.platform !== 'linux',
-  'Story 98.4 smoke test is Linux-only until macOS/Windows build environments are available'
+  'Story 98.4 smoke test is Linux-only until macOS/Windows build environments are available',
 );
 
 // ─── Constants ───────────────────────────────────────────────────────────────
@@ -27,7 +26,7 @@ function findAppImage(): string {
   if (!fs.existsSync(DIST_DIR)) {
     throw new Error(
       `AppImage directory not found: ${DIST_DIR}\n` +
-        'Run `nx run electron:build:linux` before executing this smoke test.'
+        'Run `nx run electron:build:linux` before executing this smoke test.',
     );
   }
   const entries = fs.readdirSync(DIST_DIR);
@@ -37,7 +36,7 @@ function findAppImage(): string {
   if (appImages.length === 0) {
     throw new Error(
       `No *.AppImage found in ${DIST_DIR}\n` +
-        'Run `nx run electron:build:linux` before executing this smoke test.'
+        'Run `nx run electron:build:linux` before executing this smoke test.',
     );
   }
   return appImages[0];
@@ -52,13 +51,12 @@ function getExpectedMigrationNames(): string[] {
     .filter(
       (entry) =>
         entry.isDirectory() &&
-        fs.existsSync(path.join(MIGRATIONS_DIR, entry.name, 'migration.sql'))
+        fs.existsSync(path.join(MIGRATIONS_DIR, entry.name, 'migration.sql')),
     )
     .map((entry) => entry.name)
-    .sort();
+    .sort((a, b) => a.localeCompare(b));
 }
 
-/* eslint-disable @typescript-eslint/naming-convention -- _prisma_migrations column names are snake_case by Prisma convention */
 interface MigrationRow {
   id: string;
   checksum: string;
@@ -69,14 +67,13 @@ interface MigrationRow {
   started_at: string;
   applied_steps_count: number;
 }
-/* eslint-enable @typescript-eslint/naming-convention -- end of _prisma_migrations column name block */
 
 function readMigrationsTable(dbPath: string): MigrationRow[] {
   const db = new betterSqlite3(dbPath, { readonly: true });
   try {
     const rows = db
       .prepare(
-        'SELECT id, checksum, finished_at, migration_name, logs, rolled_back_at, started_at, applied_steps_count FROM _prisma_migrations ORDER BY started_at'
+        'SELECT id, checksum, finished_at, migration_name, logs, rolled_back_at, started_at, applied_steps_count FROM _prisma_migrations ORDER BY started_at',
       )
       .all() as MigrationRow[];
     return rows;
@@ -103,7 +100,7 @@ function launchAppImage(appImagePath: string, tmpHome: string): ChildProcess {
       {
         env,
         stdio: 'pipe',
-      }
+      },
     );
   } else {
     child = spawn(appImagePath, args, { env, stdio: 'pipe' });
@@ -131,7 +128,7 @@ async function waitForHealth(timeoutMs = 90_000): Promise<void> {
           return 0;
         }
       },
-      { timeout: timeoutMs, intervals: [500, 1000, 2000] }
+      { timeout: timeoutMs, intervals: [500, 1000, 2000] },
     )
     .toBe(200);
 }
@@ -197,11 +194,11 @@ test.describe('Packaged Electron App – launch smoke test', () => {
     const dbPath = path.join(tmpHome, '.dms', 'dms.db');
     expect(
       fs.existsSync(dbPath),
-      `Expected ${dbPath} to exist after first launch`
+      `Expected ${dbPath} to exist after first launch`,
     ).toBe(true);
 
     const appliedMigrations = readMigrationsTable(dbPath).map(
-      (r) => r.migration_name
+      (r) => r.migration_name,
     );
     const expectedMigrations = getExpectedMigrationNames();
 
@@ -210,12 +207,12 @@ test.describe('Packaged Electron App – launch smoke test', () => {
       `Migration mismatch.\nExpected (from prisma/migrations/): ${JSON.stringify(
         expectedMigrations,
         null,
-        2
+        2,
       )}\nActual (from _prisma_migrations): ${JSON.stringify(
         appliedMigrations,
         null,
-        2
-      )}`
+        2,
+      )}`,
     ).toEqual(expectedMigrations);
   });
 
@@ -241,8 +238,8 @@ test.describe('Packaged Electron App – launch smoke test', () => {
       `_prisma_migrations changed after second launch (idempotency violation).\nBefore: ${JSON.stringify(
         rowsBefore,
         null,
-        2
-      )}\nAfter:  ${JSON.stringify(rowsAfter, null, 2)}`
+        2,
+      )}\nAfter:  ${JSON.stringify(rowsAfter, null, 2)}`,
     ).toEqual(rowsBefore);
   });
 });

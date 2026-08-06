@@ -1,15 +1,14 @@
-import { TestBed } from '@angular/core/testing';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import {
+  fetchAuthSession,
+  getCurrentUser,
   signIn,
   signOut,
-  getCurrentUser,
-  fetchAuthSession,
 } from '@aws-amplify/auth';
-import { describe, it, expect, beforeEach, vi, Mock } from 'vitest';
-
+import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 import { AuthService } from './auth.service';
 import { AuthErrorCode, SignInRequest } from './auth.types';
 
@@ -149,7 +148,7 @@ describe('AuthService', () => {
       await expect(service.signIn(validCredentials)).rejects.toThrow();
       expect(service.isAuthenticated()).toBe(false);
       expect(service.error()).toBe(
-        'Incorrect email or password. Please try again.'
+        'Incorrect email or password. Please try again.',
       );
       expect(service.isLoading()).toBe(false);
     });
@@ -165,7 +164,7 @@ describe('AuthService', () => {
       // Act & Assert
       await expect(service.signIn(validCredentials)).rejects.toThrow();
       expect(service.error()).toBe(
-        'Please check your email and confirm your account before signing in.'
+        'Please check your email and confirm your account before signing in.',
       );
     });
 
@@ -180,7 +179,7 @@ describe('AuthService', () => {
       // Act & Assert
       await expect(service.signIn(validCredentials)).rejects.toThrow();
       expect(service.error()).toBe(
-        'Too many login attempts. Please wait a few minutes before trying again.'
+        'Too many login attempts. Please wait a few minutes before trying again.',
       );
     });
 

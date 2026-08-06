@@ -1,5 +1,4 @@
 import type { PrismaClient } from '@prisma/client';
-
 import type { RiskGroups } from './risk-groups.types';
 import { createRiskGroups } from './shared-risk-groups.helper';
 
@@ -25,12 +24,11 @@ function getWorkspaceRoot(): string {
 async function initializePrismaClient(): Promise<PrismaClient> {
   const prismaClientImport = (await import('@prisma/client/index'))
     .PrismaClient;
-  const { PrismaBetterSqlite3 } = await import(
-    '@prisma/adapter-better-sqlite3'
-  );
+  const { PrismaBetterSqlite3: prismaBetterSqlite3 } =
+    await import('@prisma/adapter-better-sqlite3');
 
   const testDbUrl = `file:${getWorkspaceRoot()}/test-database.db`;
-  const adapter = new PrismaBetterSqlite3({ url: testDbUrl });
+  const adapter = new prismaBetterSqlite3({ url: testDbUrl });
   return new prismaClientImport({ adapter });
 }
 
@@ -40,7 +38,7 @@ async function initializePrismaClient(): Promise<PrismaClient> {
 async function createTestUniverseEntry(
   prisma: PrismaClient,
   symbol: string,
-  riskGroupId: string
+  riskGroupId: string,
 ): Promise<{ id: string }> {
   return prisma.universe.create({
     data: {
@@ -80,7 +78,7 @@ async function ensureDividendType(prisma: PrismaClient): Promise<void> {
  */
 async function cleanupImportData(
   prisma: PrismaClient,
-  universeId: string
+  universeId: string,
 ): Promise<void> {
   try {
     await prisma.trades.deleteMany({
@@ -102,7 +100,7 @@ async function cleanupImportData(
  */
 async function cleanupExistingUniverse(
   prisma: PrismaClient,
-  symbol: string
+  symbol: string,
 ): Promise<void> {
   const existingUniverse = await prisma.universe.findFirst({
     where: { symbol },
@@ -125,7 +123,7 @@ async function cleanupExistingUniverse(
  */
 async function createSeedData(
   prisma: PrismaClient,
-  symbol: string
+  symbol: string,
 ): Promise<ImportSeederResult> {
   const riskGroups: RiskGroups = await createRiskGroups(prisma);
   await ensureDividendType(prisma);
@@ -134,7 +132,7 @@ async function createSeedData(
   const universe = await createTestUniverseEntry(
     prisma,
     symbol,
-    riskGroups.equitiesRiskGroup.id
+    riskGroups.equitiesRiskGroup.id,
   );
 
   return {
@@ -151,7 +149,7 @@ async function createSeedData(
  * Account creation should be done via the API (request.post).
  */
 export async function seedImportData(
-  customSymbol?: string
+  customSymbol?: string,
 ): Promise<ImportSeederResult> {
   const prisma = await initializePrismaClient();
   const symbol = customSymbol ?? 'IMPORTTEST1';

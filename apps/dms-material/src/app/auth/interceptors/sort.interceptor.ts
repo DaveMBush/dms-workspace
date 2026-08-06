@@ -6,7 +6,6 @@ import {
 } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Observable } from 'rxjs';
-
 import { SortFilterStateService } from '../../shared/services/sort-filter-state.service';
 import { TableState } from '../../shared/services/table-state.interface';
 import { migrateTableState } from '../../shared/utils/migrate-table-state.function';
@@ -33,7 +32,7 @@ function mapSortField(tableName: string, frontendField: string): string {
 
 function buildMappedEntry(
   table: string,
-  tableState: TableState
+  tableState: TableState,
 ): TableState | null {
   const migrated = migrateTableState(tableState);
   const entry: TableState = {};
@@ -59,7 +58,7 @@ function buildMappedEntry(
 }
 
 function buildMappedState(
-  allState: Record<string, TableState>
+  allState: Record<string, TableState>,
 ): Record<string, TableState> {
   const mapped: Record<string, TableState> = {};
   for (const [table, tableState] of Object.entries(allState)) {
@@ -73,7 +72,7 @@ function buildMappedState(
 
 export const sortInterceptor: HttpInterceptorFn = function sortInterceptorImpl(
   req: HttpRequest<unknown>,
-  next: HttpHandlerFn
+  next: HttpHandlerFn,
 ): Observable<HttpEvent<unknown>> {
   const sortFilterStateService = inject(SortFilterStateService);
   const allState = sortFilterStateService.loadAllSortFilterState();

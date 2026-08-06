@@ -1,8 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-
 import { expect, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 
 const TEST_LOG_FILENAME = 'test-e2e-error.log';
@@ -27,7 +25,7 @@ test.describe('Error Logs Navigation', () => {
 
     await expect(page).toHaveURL(/\/global\/error-logs$/);
     await expect(
-      page.locator('mat-toolbar', { hasText: 'Error Logs' })
+      page.locator('mat-toolbar', { hasText: 'Error Logs' }),
     ).toBeVisible();
   });
 });

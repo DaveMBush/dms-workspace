@@ -1,5 +1,4 @@
 import { expect, Page, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 import { seedVolatilityHeldAndUnheldData } from './helpers/seed-volatility-held-and-unheld.helper';
 
@@ -23,7 +22,10 @@ const VOL_CATEGORY_REGEX =
 const SVOL_CATEGORY_REGEX =
   /^Short-Term Volatility: (steady|increasing|decreasing|volatile|flat|up-then-down|down-then-up|insufficient history)$/;
 
-async function searchForSymbol(page: Page, symbol: string) {
+async function searchForSymbol(
+  page: Page,
+  symbol: string,
+): Promise<import('playwright').Locator> {
   const searchInput = page.locator('input[placeholder="Search Symbol"]');
   const row = page.locator('.dms-body-row[role="row"]').filter({
     has: page.locator('.dms-body-cell[data-column="symbol"]', {
@@ -41,7 +43,7 @@ async function expectVolIconForSymbol(
   page: Page,
   symbol: string,
   column: 'svol' | 'vol',
-  ariaLabelRegex: RegExp
+  ariaLabelRegex: RegExp,
 ): Promise<void> {
   const row = await searchForSymbol(page, symbol);
   const cell = row.locator(`.dms-body-cell[data-column="${column}"]`);
@@ -56,7 +58,7 @@ async function expectVolIconForSymbol(
       {
         timeout: 10_000,
         message: `Expected ${column} icon for ${symbol} to have a valid aria-label`,
-      }
+      },
     )
     .toMatch(ariaLabelRegex);
 }
@@ -105,7 +107,7 @@ test.describe('Story 88.4 — Volatility for held and unheld universe symbols', 
       page,
       unheldSymbol,
       'svol',
-      SVOL_CATEGORY_REGEX
+      SVOL_CATEGORY_REGEX,
     );
   });
 });

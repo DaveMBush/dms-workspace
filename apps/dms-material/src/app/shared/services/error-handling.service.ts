@@ -23,7 +23,7 @@ export class ErrorHandlingService {
   handleOperationError(
     error: unknown,
     operationName: string,
-    options: ErrorHandlingOptions = {}
+    options: ErrorHandlingOptions = {},
   ): void {
     const { hideLoading = true, persistent = true } = options;
 

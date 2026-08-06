@@ -28,7 +28,7 @@ export class SecureCookieService {
             'X-CSRF-Token': csrfToken,
           },
           withCredentials: true,
-        }
+        },
       );
     }
 
@@ -59,7 +59,7 @@ export class SecureCookieService {
             'X-CSRF-Token': csrfToken,
           },
           withCredentials: true,
-        }
+        },
       );
     }
 
@@ -70,7 +70,7 @@ export class SecureCookieService {
 
     return this.getCSRFToken().pipe(
       switchMap(makeClearCookiesRequest),
-      catchError(handleClearCookiesError)
+      catchError(handleClearCookiesError),
     );
   }
 

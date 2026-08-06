@@ -1,5 +1,4 @@
 import { TestBed } from '@angular/core/testing';
-
 import { StatePersistenceService } from './state-persistence.service';
 
 describe('StatePersistenceService', () => {
@@ -52,13 +51,13 @@ describe('StatePersistenceService', () => {
 
       expect(mockSetItem).toHaveBeenCalledWith(
         storageKey,
-        JSON.stringify({ 'test-key': 'test-value' })
+        JSON.stringify({ 'test-key': 'test-value' }),
       );
     });
 
     it('should merge with existing state when saving', () => {
       mockGetItem.mockReturnValue(
-        JSON.stringify({ 'existing-key': 'existing-value' })
+        JSON.stringify({ 'existing-key': 'existing-value' }),
       );
 
       service.saveState('new-key', 'new-value');
@@ -68,7 +67,7 @@ describe('StatePersistenceService', () => {
         JSON.stringify({
           'existing-key': 'existing-value',
           'new-key': 'new-value',
-        })
+        }),
       );
     });
 
@@ -79,7 +78,7 @@ describe('StatePersistenceService', () => {
 
       expect(mockSetItem).toHaveBeenCalledWith(
         storageKey,
-        JSON.stringify({ 'test-key': 'new-value' })
+        JSON.stringify({ 'test-key': 'new-value' }),
       );
     });
 
@@ -91,7 +90,7 @@ describe('StatePersistenceService', () => {
 
       expect(mockSetItem).toHaveBeenCalledWith(
         storageKey,
-        JSON.stringify({ 'complex-key': complexValue })
+        JSON.stringify({ 'complex-key': complexValue }),
       );
     });
 
@@ -102,7 +101,7 @@ describe('StatePersistenceService', () => {
 
       expect(mockSetItem).toHaveBeenCalledWith(
         storageKey,
-        JSON.stringify({ 'test-key': 'test-value' })
+        JSON.stringify({ 'test-key': 'test-value' }),
       );
     });
 
@@ -125,7 +124,7 @@ describe('StatePersistenceService', () => {
 
     it('should load state from localStorage', () => {
       mockGetItem.mockReturnValue(
-        JSON.stringify({ 'test-key': 'saved-value' })
+        JSON.stringify({ 'test-key': 'saved-value' }),
       );
 
       const result = service.loadState('test-key', 'default');
@@ -152,7 +151,7 @@ describe('StatePersistenceService', () => {
     it('should deserialize complex objects from JSON', () => {
       const complexValue = { nested: { data: [1, 2, 3] }, flag: true };
       mockGetItem.mockReturnValue(
-        JSON.stringify({ 'complex-key': complexValue })
+        JSON.stringify({ 'complex-key': complexValue }),
       );
 
       const result = service.loadState('complex-key', {});
@@ -208,14 +207,14 @@ describe('StatePersistenceService', () => {
 
     it('should remove specific key from localStorage state', () => {
       mockGetItem.mockReturnValue(
-        JSON.stringify({ 'key-a': 'value-a', 'key-b': 'value-b' })
+        JSON.stringify({ 'key-a': 'value-a', 'key-b': 'value-b' }),
       );
 
       service.clearState('key-a');
 
       expect(mockSetItem).toHaveBeenCalledWith(
         storageKey,
-        JSON.stringify({ 'key-b': 'value-b' })
+        JSON.stringify({ 'key-b': 'value-b' }),
       );
     });
 
@@ -232,7 +231,7 @@ describe('StatePersistenceService', () => {
 
       expect(mockSetItem).toHaveBeenCalledWith(
         storageKey,
-        JSON.stringify({ 'existing-key': 'value' })
+        JSON.stringify({ 'existing-key': 'value' }),
       );
     });
 

@@ -6,6 +6,7 @@
  * Add Symbol dialog, via both the + button flow and the CSV import flow.
  * Also verifies that a plain equity (AAPL) retains the "Equities" Risk Group.
  */
+
 import path from 'path';
 import { expect, Page, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
@@ -15,7 +16,7 @@ import { createRiskGroups } from './helpers/shared-risk-groups.helper';
 // Resolve the fixtures directory relative to the workspace root. The
 // compiled test files are emitted into a `dist` folder, so using
 // __dirname would point at that location and miss the source fixtures.
-const FIXTURES_DIR = path.resolve(
+const _FIXTURES_DIR = path.resolve(
   process.cwd(),
   'apps',
   'dms-material-e2e',
@@ -33,17 +34,29 @@ async function navigateToUniverse(page: Page): Promise<void> {
   await expect(page.locator('dms-base-table')).toBeVisible({ timeout: 15000 });
 }
 
+async function deleteSymbol(
+  symbol: string,
+  prisma: {
+    universe: {
+      findFirst(q: { where: { symbol: string } }): Promise<{ id: string }>;
+    };
+    delete(q: { where: { id: string } }): Promise<void>;
+    trades: { deleteMany(q: { where: { universeId: string } }): Promise<void> };
+  },
+): Promise<void> {
+  const existing = await prisma.universe.findFirst({ where: { symbol } });
+  if (!existing) {
+    return;
+  }
+  await prisma.trades.deleteMany({ where: { universeId: existing.id } });
+  await prisma.universe.delete({ where: { id: existing.id } });
+}
+
 async function cleanupTestData(): Promise<void> {
   const prisma = await initializePrismaClient();
   try {
     for (const symbol of TEST_SYMBOLS) {
-      const existing = await prisma.universe.findFirst({
-        where: { symbol },
-      });
-      if (existing) {
-        await prisma.trades.deleteMany({ where: { universeId: existing.id } });
-        await prisma.universe.delete({ where: { id: existing.id } });
-      }
+      await deleteSymbol(symbol, prisma);
     }
     await prisma.accounts.deleteMany({ where: { name: CEF_IMPORT_ACCOUNT } });
   } finally {

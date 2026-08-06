@@ -37,7 +37,7 @@ export class CusipCacheAddDialogComponent {
   private readonly fb = inject(FormBuilder);
 
   private readonly dialogRef = inject(
-    MatDialogRef<CusipCacheAddDialogComponent>
+    MatDialogRef<CusipCacheAddDialogComponent>,
   );
 
   readonly data: CusipCacheEntry | null =

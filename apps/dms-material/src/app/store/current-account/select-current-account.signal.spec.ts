@@ -20,7 +20,7 @@ vi.mock(
         };
       }),
     };
-  }
+  },
 );
 
 type SelectCurrentAccountSignalModule =

@@ -1,14 +1,14 @@
-import { addSymbol } from './add-symbol.function';
+import { vi } from 'vitest';
+import { logger } from '../../../../utils/structured-logger';
 import { prisma } from '../../../prisma/prisma-client';
+import { recalculateUniverseVolatility } from '../../../volatility/recalculate-universe-volatility.function';
 import {
-  lookupCefConnectSymbol,
   classifySymbolRiskGroupId,
+  lookupCefConnectSymbol,
 } from '../../common/cef-classification.function';
 import { getDistributions } from '../../settings/common/get-distributions.function';
 import { getLastPrice } from '../../settings/common/get-last-price.function';
-import { recalculateUniverseVolatility } from '../../../volatility/recalculate-universe-volatility.function';
-import { vi } from 'vitest';
-import { logger } from '../../../../utils/structured-logger';
+import { addSymbol } from './add-symbol.function';
 
 vi.mock('../../../prisma/prisma-client', function () {
   return {
@@ -41,7 +41,7 @@ vi.mock(
     return {
       recalculateUniverseVolatility: vi.fn(),
     };
-  }
+  },
 );
 vi.mock('../../../../utils/structured-logger', function () {
   return {
@@ -53,7 +53,9 @@ vi.mock('../../../../utils/structured-logger', function () {
 });
 
 const mockPrisma = prisma as unknown as ReturnType<typeof vi.fn>;
-const mockGetDistributions = getDistributions as unknown as ReturnType<typeof vi.fn>;
+const mockGetDistributions = getDistributions as unknown as ReturnType<
+  typeof vi.fn
+>;
 const mockGetLastPrice = getLastPrice as unknown as ReturnType<typeof vi.fn>;
 const mockLookupCefConnectSymbol = lookupCefConnectSymbol as ReturnType<
   typeof vi.fn
@@ -174,7 +176,7 @@ describe('addSymbol', function () {
 
     expect(mockLogger.warn).toHaveBeenCalledWith(
       'CEF classification lookup failed; using request risk_group_id',
-      expect.objectContaining({ symbol: 'SPY' })
+      expect.objectContaining({ symbol: 'SPY' }),
     );
     expect(mockPrisma.universe.create).toHaveBeenCalledWith({
       data: expect.objectContaining({
@@ -252,7 +254,7 @@ describe('addSymbol', function () {
 
     expect(mockRecalculateUniverseVolatility).toHaveBeenCalledWith(
       'test-universe-id',
-      []
+      [],
     );
 
     expect(mockPrisma.universe.update).toHaveBeenCalledWith({
@@ -304,7 +306,7 @@ describe('addSymbol', function () {
 
     expect(mockRecalculateUniverseVolatility).toHaveBeenCalledWith(
       'test-universe-id',
-      []
+      [],
     );
 
     expect(mockPrisma.universe.update).not.toHaveBeenCalled();
@@ -321,7 +323,7 @@ describe('addSymbol', function () {
     });
 
     await expect(addSymbol(request)).rejects.toThrow(
-      'Symbol SPY already exists in universe'
+      'Symbol SPY already exists in universe',
     );
   });
 
@@ -335,7 +337,7 @@ describe('addSymbol', function () {
     mockPrisma.risk_group.findUnique.mockResolvedValue(null);
 
     await expect(addSymbol(request)).rejects.toThrow(
-      'Risk group with ID non-existent-id not found'
+      'Risk group with ID non-existent-id not found',
     );
   });
 
@@ -484,7 +486,7 @@ describe('addSymbol', function () {
       expect.objectContaining({
         symbol: 'SPY',
         error: 'non-error string thrown',
-      })
+      }),
     );
     expect(result.fetchFailed).toBe(true);
   });
@@ -541,11 +543,11 @@ describe('addSymbol', function () {
 
     expect(mockLogger.warn).toHaveBeenCalledWith(
       'Empty dividend history for add-symbol; volatility set to insufficient-history',
-      { symbol: 'SPY' }
+      { symbol: 'SPY' },
     );
     expect(mockRecalculateUniverseVolatility).toHaveBeenCalledWith(
       'test-universe-id',
-      []
+      [],
     );
     expect(result.fetchFailed).toBe(true);
   });
@@ -582,7 +584,7 @@ describe('addSymbol', function () {
     expect(mockGetDistributions).toHaveBeenCalledWith('SPY');
     expect(mockRecalculateUniverseVolatility).toHaveBeenCalledWith(
       'test-universe-id',
-      historyFixture
+      historyFixture,
     );
   });
 
@@ -642,15 +644,15 @@ describe('addSymbol', function () {
     expect(result.fetchFailed).toBe(true);
     expect(mockLogger.warn).toHaveBeenCalledWith(
       'Dividend history fetch failed during add-symbol; continuing with insufficient-history',
-      expect.objectContaining({ symbol: 'SPY', error: 'fetch failed' })
+      expect.objectContaining({ symbol: 'SPY', error: 'fetch failed' }),
     );
     expect(mockRecalculateUniverseVolatility).toHaveBeenCalledWith(
       mockDefaultRecord.id,
-      []
+      [],
     );
     expect(mockLogger.warn).toHaveBeenCalledWith(
       'Volatility recalculation failed during add-symbol',
-      expect.objectContaining({ symbol: 'SPY', error: 'volatility error' })
+      expect.objectContaining({ symbol: 'SPY', error: 'volatility error' }),
     );
   });
 
@@ -669,7 +671,7 @@ describe('addSymbol', function () {
     mockGetLastPrice.mockResolvedValue(undefined);
     mockGetDistributions.mockRejectedValue('fetch failed');
     mockRecalculateUniverseVolatility.mockRejectedValue(
-      new Error('volatility error')
+      new Error('volatility error'),
     );
 
     const result = await addSymbol(request);
@@ -677,11 +679,11 @@ describe('addSymbol', function () {
     expect(result.fetchFailed).toBe(true);
     expect(mockLogger.warn).toHaveBeenCalledWith(
       'Dividend history fetch failed during add-symbol; continuing with insufficient-history',
-      expect.objectContaining({ symbol: 'SPY', error: 'fetch failed' })
+      expect.objectContaining({ symbol: 'SPY', error: 'fetch failed' }),
     );
     expect(mockLogger.warn).toHaveBeenCalledWith(
       'Volatility recalculation failed during add-symbol',
-      expect.objectContaining({ symbol: 'SPY', error: 'volatility error' })
+      expect.objectContaining({ symbol: 'SPY', error: 'volatility error' }),
     );
   });
 });

@@ -1,4 +1,4 @@
-import { test, expect } from 'playwright/test';
+import { expect, test } from 'playwright/test';
 
 test.describe('Login', () => {
   test.beforeEach(async ({ page }) => {
@@ -7,10 +7,10 @@ test.describe('Login', () => {
 
   test('should display login form with all fields', async ({ page }) => {
     await expect(page.locator('mat-card-title')).toContainText(
-      'Welcome to Dividend Management System'
+      'Welcome to Dividend Management System',
     );
     await expect(page.locator('mat-card-subtitle')).toContainText(
-      'Sign in to continue'
+      'Sign in to continue',
     );
     await expect(page.locator('input[type="email"]')).toBeVisible();
     await expect(page.locator('input[type="password"]')).toBeVisible();
@@ -30,7 +30,7 @@ test.describe('Login', () => {
     await page.locator('input[type="password"]').click(); // Blur email field
 
     await expect(page.locator('mat-error')).toContainText(
-      'Please enter a valid email'
+      'Please enter a valid email',
     );
   });
 
@@ -40,7 +40,7 @@ test.describe('Login', () => {
     await page.locator('input[type="email"]').click(); // Blur password field
 
     await expect(page.locator('mat-error')).toContainText(
-      'Password must be at least 8 characters'
+      'Password must be at least 8 characters',
     );
   });
 
@@ -50,13 +50,13 @@ test.describe('Login', () => {
 
     await expect(passwordInput).toHaveAttribute('type', 'password');
     await expect(
-      page.locator('mat-icon', { hasText: 'visibility_off' })
+      page.locator('mat-icon', { hasText: 'visibility_off' }),
     ).toBeVisible();
 
     await toggleButton.click();
     await expect(passwordInput).toHaveAttribute('type', 'text');
     await expect(
-      page.locator('mat-icon', { hasText: 'visibility' })
+      page.locator('mat-icon', { hasText: 'visibility' }),
     ).toBeVisible();
 
     await toggleButton.click();
@@ -85,7 +85,7 @@ test.describe('Login', () => {
     const submitPromise = page.locator('button[type="submit"]').click();
 
     // Check for spinner (might be brief)
-    const spinner = page.locator('mat-spinner');
+    const _spinner = page.locator('mat-spinner');
     // Don't await this check as it might be too fast
 
     await submitPromise;
@@ -108,7 +108,7 @@ test.describe('Login', () => {
 
     // Verify localStorage value persists
     const rememberMe = await newPage.evaluate(() =>
-      localStorage.getItem('dms_remember_me')
+      localStorage.getItem('dms_remember_me'),
     );
     expect(rememberMe).toBe('true');
   });
@@ -145,7 +145,7 @@ test.describe('Login', () => {
     await page.locator('input[type="email"]').fill('invalid-email');
     await page.locator('input[type="password"]').click();
     await expect(page.locator('mat-error')).toContainText(
-      'Please enter a valid email'
+      'Please enter a valid email',
     );
 
     // Correct the email
@@ -155,7 +155,7 @@ test.describe('Login', () => {
 
     // Error should disappear
     await expect(
-      page.locator('mat-error', { hasText: 'Please enter a valid email' })
+      page.locator('mat-error', { hasText: 'Please enter a valid email' }),
     ).not.toBeVisible();
   });
 
@@ -216,7 +216,7 @@ test.describe('Login', () => {
     await expect(
       page.locator('mat-error', {
         hasText: 'Password must be at least 8 characters',
-      })
+      }),
     ).not.toBeVisible();
     await expect(submitButton).toBeEnabled();
   });

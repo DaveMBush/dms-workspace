@@ -1,6 +1,5 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import fastify, { FastifyInstance } from 'fastify';
-
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import registerGraphRoutes from './index';
 
 // Hoisted mocks
@@ -79,7 +78,7 @@ describe('GET /api/summary/graph - January baseline (regression: AS.9 Bug #4)', 
           return makeAccountData(3000);
         }
         return makeAccountData(0);
-      }
+      },
     );
 
     const response = await app.inject({
@@ -141,7 +140,7 @@ describe('GET /api/summary/graph - January baseline (regression: AS.9 Bug #4)', 
         return Promise.resolve([
           { id: 'account-1', divDeposits: [], trades: [] },
         ]);
-      }
+      },
     );
 
     const response = await app.inject({

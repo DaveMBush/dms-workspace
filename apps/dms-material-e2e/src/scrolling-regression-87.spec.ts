@@ -64,7 +64,6 @@
  */
 
 import { expect, Locator, Page, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 import { seedScrollDivDepositsWithSymbolsData } from './helpers/seed-scroll-div-deposits-with-symbols-data.helper';
 import { seedScrollOpenPositionsData } from './helpers/seed-scroll-open-positions-data.helper';
@@ -87,7 +86,7 @@ const SYMBOL_CELL_SELECTOR =
 async function assertVisibleSymbolsNonEmpty(
   page: Page,
   failureMessage: string,
-  timeout = 10000
+  timeout = 10000,
 ): Promise<void> {
   // Wait for at least one row to be visible first
   await expect(page.locator(ROW_SELECTOR).first()).toBeVisible({ timeout });
@@ -100,7 +99,7 @@ async function assertVisibleSymbolsNonEmpty(
         // Read the currently rendered symbol cells in one DOM snapshot so CDK
         // row recycling cannot race a count()+nth() loop mid-poll.
         const texts = await symbolCells.evaluateAll(function readTexts(
-          cells: Element[]
+          cells: Element[],
         ) {
           return cells.map(function readText(cell) {
             return (cell.textContent ?? '').trim();
@@ -113,7 +112,7 @@ async function assertVisibleSymbolsNonEmpty(
           return text === '';
         }).length;
       },
-      { message: failureMessage, timeout }
+      { message: failureMessage, timeout },
     )
     .toBe(0);
 }
@@ -184,7 +183,7 @@ test.describe('Open Positions Scrolling Regression — blank rows on fast scroll
       'Open Positions: visible rows have empty symbol cells after fast scroll to bottom. ' +
         "Story 87.1 regression: account-panel placeholder uses symbol: '' (empty string). " +
         'SmartNgRX lazy-load in-flight rows are visible as blank cells. ' +
-        'See open-positions-component.service.ts placeholderOpenPosition.'
+        'See open-positions-component.service.ts placeholderOpenPosition.',
     );
   });
 
@@ -204,7 +203,7 @@ test.describe('Open Positions Scrolling Regression — blank rows on fast scroll
       page,
       'Open Positions: visible rows have empty symbol cells after bottom→top scroll. ' +
         'Story 87.1 regression: re-entering previously evicted rows triggers another ' +
-        'isLoading window, producing more blank cells at the top.'
+        'isLoading window, producing more blank cells at the top.',
     );
   });
 });
@@ -252,7 +251,7 @@ test.describe('Sold Positions Scrolling Regression — blank rows on fast scroll
       page,
       'Sold Positions: visible rows have empty symbol cells after fast scroll to bottom. ' +
         "Story 87.1 regression: account-panel placeholder uses symbol: '' (empty string). " +
-        'See sold-positions-component.service.ts placeholderClosedPosition.'
+        'See sold-positions-component.service.ts placeholderClosedPosition.',
     );
   });
 
@@ -269,7 +268,7 @@ test.describe('Sold Positions Scrolling Regression — blank rows on fast scroll
     await assertVisibleSymbolsNonEmpty(
       page,
       'Sold Positions: visible rows have empty symbol cells after bottom→top scroll. ' +
-        "Story 87.1 regression: same placeholder symbol: '' issue on re-entry."
+        "Story 87.1 regression: same placeholder symbol: '' issue on re-entry.",
     );
   });
 });
@@ -320,7 +319,7 @@ test.describe('Dividend Deposits Scrolling Regression — blank rows on fast scr
       page,
       'Dividend Deposits: visible rows have empty symbol cells after fast scroll to bottom. ' +
         "Story 87.1 regression: account-panel placeholder uses symbol: '' (empty string). " +
-        'See dividend-deposits-component.service.ts buildPlaceholderDividendRow.'
+        'See dividend-deposits-component.service.ts buildPlaceholderDividendRow.',
     );
   });
 
@@ -337,7 +336,7 @@ test.describe('Dividend Deposits Scrolling Regression — blank rows on fast scr
     await assertVisibleSymbolsNonEmpty(
       page,
       'Dividend Deposits: visible rows have empty symbol cells after bottom→top scroll. ' +
-        "Story 87.1 regression: placeholder symbol: '' on re-entry of evicted rows."
+        "Story 87.1 regression: placeholder symbol: '' on re-entry of evicted rows.",
     );
   });
 });

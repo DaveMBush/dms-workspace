@@ -72,7 +72,7 @@ export class DivDepModalComponent implements OnInit, AfterViewInit {
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- arrow fn for stable this binding
   readonly symbolSearchFnBound = async (
-    query: string
+    query: string,
   ): Promise<SymbolOption[]> => {
     const universes = selectUniverses();
     const lowerQuery = query.toLowerCase();
@@ -287,7 +287,7 @@ export class DivDepModalComponent implements OnInit, AfterViewInit {
   // Uses an index-based loop because SmartNgRX returns an array-like object
   // that does not have built-in Array methods such as .find() or .filter().
   private symbolExistsValidator(
-    control: AbstractControl
+    control: AbstractControl,
   ): ValidationErrors | null {
     const value: unknown = control.value;
     if (typeof value !== 'string' || value.length === 0) {
@@ -324,7 +324,7 @@ export class DivDepModalComponent implements OnInit, AfterViewInit {
   // Resolves a symbol string to its universe entry (exact case-insensitive).
   // Returns null when no match is found.
   private resolveSymbol(
-    symbol: string
+    symbol: string,
   ): { symbolId: string; universeId: string } | null {
     const symbolLower = symbol.toLowerCase();
     const universes = selectUniverses();

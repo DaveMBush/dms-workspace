@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention -- E2E test constants use UPPER_CASE for readability */
 import { buildMonthlyDates } from './build-monthly-dates.helper';
 import { buildUniverseCreateData } from './build-universe-create-data.helper';
 import { cleanupUniverseOnError } from './cleanup-universe-on-error.helper';
@@ -18,7 +19,7 @@ interface VolatilityColumnSeederResult extends SeederResultBase {
 function buildDepositData(
   accountId: string,
   divDepositTypeId: string,
-  universeId: string
+  universeId: string,
 ): Array<{
   date: Date;
   amount: number;
@@ -27,7 +28,7 @@ function buildDepositData(
   universeId: string;
 }> {
   return buildMonthlyDates(MONTHS_TO_SEED).map(function buildDepositRecord(
-    date: Date
+    date: Date,
   ) {
     return {
       date,
@@ -41,7 +42,7 @@ function buildDepositData(
 
 export async function seedVolatilityColumnE2eData(
   symbolPrefix: string,
-  accountPrefix: string
+  accountPrefix: string,
 ): Promise<VolatilityColumnSeederResult> {
   const prisma = await initializePrismaClient();
   const uniqueId = generateUniqueId();

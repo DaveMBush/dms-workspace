@@ -1,5 +1,4 @@
 import type { PrismaClient } from '@prisma/client';
-
 import { initializePrismaClient } from './shared-prisma-client.helper';
 import { createRiskGroups } from './shared-risk-groups.helper';
 
@@ -15,7 +14,7 @@ const ACCOUNT_NAME = 'OXLC Split Test Account';
 async function createPresplitLots(
   prisma: PrismaClient,
   universeId: string,
-  accountId: string
+  accountId: string,
 ): Promise<void> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Prisma createMany requires untyped batch data
   const lotData: any[] = [
@@ -64,7 +63,7 @@ async function cleanupExistingOxlcData(prisma: PrismaClient): Promise<void> {
 }
 
 async function createOxlcSeedData(
-  prisma: PrismaClient
+  prisma: PrismaClient,
 ): Promise<SplitImportSeederResult> {
   const riskGroups = await createRiskGroups(prisma);
   await cleanupExistingOxlcData(prisma);
@@ -118,6 +117,7 @@ async function createOxlcSeedData(
  * - Lot 2 → 100 shares @ $19.00
  * - Lot 3 → 106 shares @ $18.00 (306 total, 0 fractional remainder)
  */
+
 export async function seedSplitImportE2eData(): Promise<SplitImportSeederResult> {
   const prisma = await initializePrismaClient();
   try {

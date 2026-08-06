@@ -56,9 +56,9 @@ import { ColumnDef } from './column-def.interface';
   styleUrl: './base-table.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BaseTableComponent<T extends { id: string }>
-  implements AfterViewInit
-{
+export class BaseTableComponent<
+  T extends { id: string },
+> implements AfterViewInit {
   private static readonly superscripts = [
     '',
     '\u00B9',
@@ -102,7 +102,7 @@ export class BaseTableComponent<T extends { id: string }>
   viewport = viewChild<CdkVirtualScrollViewport>('viewport');
 
   headerScrollViewport = viewChild<ElementRef<HTMLElement>>(
-    'headerScrollViewport'
+    'headerScrollViewport',
   );
 
   outerScroller = viewChild<ElementRef<HTMLElement>>('outerScroller');
@@ -147,7 +147,7 @@ export class BaseTableComponent<T extends { id: string }>
       // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for effect
       () => {
         this.dataSource();
-      }
+      },
     );
 
     effect(
@@ -162,7 +162,7 @@ export class BaseTableComponent<T extends { id: string }>
         } else {
           this.sortState.set(null);
         }
-      }
+      },
     );
 
     effect(
@@ -174,7 +174,7 @@ export class BaseTableComponent<T extends { id: string }>
         if (prev !== null && key !== null) {
           untracked(this.scrollToTop.bind(this));
         }
-      }
+      },
     );
   }
 
@@ -192,7 +192,7 @@ export class BaseTableComponent<T extends { id: string }>
         .subscribe(
           function emitRange(this: BaseTableComponent<T>, range: ListRange) {
             this.renderedRangeChange.emit(range);
-          }.bind(this)
+          }.bind(this),
         );
     }
 
@@ -201,7 +201,7 @@ export class BaseTableComponent<T extends { id: string }>
         this.destroyRef,
         headerScrollViewportValue,
         bodyHorizontalScrollerValue,
-        outerScrollerValue
+        outerScrollerValue,
       );
     }
   }
@@ -250,7 +250,7 @@ export class BaseTableComponent<T extends { id: string }>
       }
       return rows.sort(function compareBySortColumns(
         a: Record<string, unknown>,
-        b: Record<string, unknown>
+        b: Record<string, unknown>,
       ): number {
         const aLoading = a['isLoading'] === true;
         const bLoading = b['isLoading'] === true;
@@ -266,7 +266,7 @@ export class BaseTableComponent<T extends { id: string }>
         }
         return 0;
       });
-    }
+    },
   );
 
   displayedColumns = computed(
@@ -279,7 +279,7 @@ export class BaseTableComponent<T extends { id: string }>
         return ['select', ...cols];
       }
       return cols;
-    }
+    },
   );
 
   filterColumns = computed(
@@ -292,7 +292,7 @@ export class BaseTableComponent<T extends { id: string }>
         return ['selectFilter', ...cols];
       }
       return cols;
-    }
+    },
   );
 
   @ContentChild('cellTemplate') cellTemplate?: TemplateRef<unknown>;

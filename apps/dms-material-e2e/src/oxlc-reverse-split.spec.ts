@@ -4,7 +4,7 @@ import { login } from './helpers/login.helper';
 import { seedOxlcCusipReverseSplitData } from './helpers/seed-oxlc-cusip-reverse-split.helper';
 import { initializePrismaClient } from './helpers/shared-prisma-client.helper';
 
-const FIXTURES_DIR = path.resolve(__dirname, '..', 'fixtures');
+const _FIXTURES_DIR = path.resolve(__dirname, '..', 'fixtures');
 
 async function navigateToUniverse(page: Page): Promise<void> {
   await page.goto('/global/universe');
@@ -83,6 +83,7 @@ test.describe('OXLC CUSIP-Stored Lots Reverse Split E2E', () => {
    *   500 shares @ $4.06 → 100 shares @ $20.30
    *   580 shares @ $3.44 → 116 shares @ $17.20
    */
+
   test('should adjust CUSIP-stored lots for a 1-for-5 OXLC reverse split', async ({
     page,
   }) => {

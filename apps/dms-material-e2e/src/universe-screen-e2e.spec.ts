@@ -1,5 +1,4 @@
 import { expect, Page, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 import { seedUniverseE2eData } from './helpers/seed-universe-e2e-data.helper';
 
@@ -7,9 +6,10 @@ import { seedUniverseE2eData } from './helpers/seed-universe-e2e-data.helper';
  * Helper: read sort state from the sort-filter localStorage key.
  * Supports both legacy `sort` format and multi-column `sortColumns` format.
  */
+
 async function getSortState(
   page: Page,
-  table: string
+  table: string,
 ): Promise<{ field: string; order: string } | null> {
   return page.evaluate(function readSortFilterState(t: string) {
     const raw = localStorage.getItem('dms-sort-filter-state');
@@ -52,7 +52,7 @@ async function waitForTableRows(page: Page): Promise<void> {
  */
 async function getColumnTexts(page: Page, colIndex: number): Promise<string[]> {
   const cells = page.locator(
-    `.dms-body-row[role="row"] .dms-body-cell:nth-child(${colIndex})`
+    `.dms-body-row[role="row"] .dms-body-cell:nth-child(${colIndex})`,
   );
   const count = await cells.count();
   const texts: string[] = [];
@@ -128,13 +128,13 @@ test.describe('Universe Screen E2E', () => {
           );
         },
         { sel: colSelector, sym: symbols[0] },
-        { timeout: 10000 }
+        { timeout: 10000 },
       );
 
       // The table should show only the matching symbol
       const symbolCells = await getColumnTexts(
         page,
-        UNIVERSE_COLUMN_INDEX.symbol
+        UNIVERSE_COLUMN_INDEX.symbol,
       );
       expect(symbolCells.length).toBeGreaterThan(0);
       for (const cell of symbolCells) {
@@ -158,7 +158,7 @@ test.describe('Universe Screen E2E', () => {
       // All visible rows should show "Income" in the Risk Group column
       const riskGroupCells = await getColumnTexts(
         page,
-        UNIVERSE_COLUMN_INDEX.riskGroup
+        UNIVERSE_COLUMN_INDEX.riskGroup,
       );
       expect(riskGroupCells.length).toBeGreaterThan(0);
       for (const cell of riskGroupCells) {
@@ -175,7 +175,7 @@ test.describe('Universe Screen E2E', () => {
       // All visible rows should have yield >= 5%
       const yieldCells = await getColumnTexts(
         page,
-        UNIVERSE_COLUMN_INDEX.yieldPercent
+        UNIVERSE_COLUMN_INDEX.yieldPercent,
       );
       for (const cell of yieldCells) {
         const value = parseFloat(cell);
@@ -327,23 +327,23 @@ test.describe('Universe Screen E2E', () => {
       // Capture row data with "All Accounts" (default)
       const allAccountsYield = await getColumnTexts(
         page,
-        UNIVERSE_COLUMN_INDEX.avgPurchaseYieldPercent
+        UNIVERSE_COLUMN_INDEX.avgPurchaseYieldPercent,
       );
       const allAccountsPosition = await getColumnTexts(
         page,
-        UNIVERSE_COLUMN_INDEX.position
+        UNIVERSE_COLUMN_INDEX.position,
       );
       const allAccountsSellPrice = await getColumnTexts(
         page,
-        UNIVERSE_COLUMN_INDEX.mostRecentSellPrice
+        UNIVERSE_COLUMN_INDEX.mostRecentSellPrice,
       );
       const allAccountsSellDate = await getColumnTexts(
         page,
-        UNIVERSE_COLUMN_INDEX.mostRecentSellDate
+        UNIVERSE_COLUMN_INDEX.mostRecentSellDate,
       );
       const allAccountsLastPrice = await getColumnTexts(
         page,
-        UNIVERSE_COLUMN_INDEX.lastPrice
+        UNIVERSE_COLUMN_INDEX.lastPrice,
       );
 
       // All values should be visible
@@ -353,7 +353,7 @@ test.describe('Universe Screen E2E', () => {
 
       // Select account 1
       const accountSelect = page.locator(
-        '.universe-toolbar mat-form-field mat-select'
+        '.universe-toolbar mat-form-field mat-select',
       );
       await accountSelect.click();
       await page.waitForTimeout(300);
@@ -373,23 +373,23 @@ test.describe('Universe Screen E2E', () => {
 
         const acct1Yield = await getColumnTexts(
           page,
-          UNIVERSE_COLUMN_INDEX.avgPurchaseYieldPercent
+          UNIVERSE_COLUMN_INDEX.avgPurchaseYieldPercent,
         );
         const acct1Position = await getColumnTexts(
           page,
-          UNIVERSE_COLUMN_INDEX.position
+          UNIVERSE_COLUMN_INDEX.position,
         );
         const acct1SellPrice = await getColumnTexts(
           page,
-          UNIVERSE_COLUMN_INDEX.mostRecentSellPrice
+          UNIVERSE_COLUMN_INDEX.mostRecentSellPrice,
         );
         const acct1SellDate = await getColumnTexts(
           page,
-          UNIVERSE_COLUMN_INDEX.mostRecentSellDate
+          UNIVERSE_COLUMN_INDEX.mostRecentSellDate,
         );
         const acct1LastPrice = await getColumnTexts(
           page,
-          UNIVERSE_COLUMN_INDEX.lastPrice
+          UNIVERSE_COLUMN_INDEX.lastPrice,
         );
 
         // Last Price should remain the same (it's a universe field, not computed from trades)
@@ -408,7 +408,10 @@ test.describe('Universe Screen E2E', () => {
           JSON.stringify(acct1SellDate) !== JSON.stringify(allAccountsSellDate);
 
         expect(
-          yieldChanged || positionChanged || sellPriceChanged || sellDateChanged
+          yieldChanged ||
+            positionChanged ||
+            sellPriceChanged ||
+            sellDateChanged,
         ).toBe(true);
       }
     });
@@ -423,12 +426,12 @@ test.describe('Universe Screen E2E', () => {
       // Get all-accounts yield
       const allYield = await getColumnTexts(
         page,
-        UNIVERSE_COLUMN_INDEX.avgPurchaseYieldPercent
+        UNIVERSE_COLUMN_INDEX.avgPurchaseYieldPercent,
       );
 
       // Select first account
       const accountSelect = page.locator(
-        '.universe-toolbar mat-form-field mat-select'
+        '.universe-toolbar mat-form-field mat-select',
       );
       await accountSelect.click();
       await page.waitForTimeout(300);
@@ -446,7 +449,7 @@ test.describe('Universe Screen E2E', () => {
 
         const acct1Yield = await getColumnTexts(
           page,
-          UNIVERSE_COLUMN_INDEX.avgPurchaseYieldPercent
+          UNIVERSE_COLUMN_INDEX.avgPurchaseYieldPercent,
         );
         // Avg Purch Yield % column should display a numeric value
         expect(acct1Yield.length).toBeGreaterThan(0);
@@ -465,13 +468,13 @@ test.describe('Universe Screen E2E', () => {
 
       const allPosition = await getColumnTexts(
         page,
-        UNIVERSE_COLUMN_INDEX.position
+        UNIVERSE_COLUMN_INDEX.position,
       );
       expect(allPosition.length).toBeGreaterThan(0);
 
       // Select second account
       const accountSelect = page.locator(
-        '.universe-toolbar mat-form-field mat-select'
+        '.universe-toolbar mat-form-field mat-select',
       );
       await accountSelect.click();
       await page.waitForTimeout(300);
@@ -489,7 +492,7 @@ test.describe('Universe Screen E2E', () => {
 
         const acct2Position = await getColumnTexts(
           page,
-          UNIVERSE_COLUMN_INDEX.position
+          UNIVERSE_COLUMN_INDEX.position,
         );
         expect(acct2Position.length).toBeGreaterThan(0);
         // Position should be a numeric value
@@ -506,11 +509,11 @@ test.describe('Universe Screen E2E', () => {
 
       const allSellDate = await getColumnTexts(
         page,
-        UNIVERSE_COLUMN_INDEX.mostRecentSellDate
+        UNIVERSE_COLUMN_INDEX.mostRecentSellDate,
       );
 
       const accountSelect = page.locator(
-        '.universe-toolbar mat-form-field mat-select'
+        '.universe-toolbar mat-form-field mat-select',
       );
       await accountSelect.click();
       await page.waitForTimeout(300);
@@ -528,7 +531,7 @@ test.describe('Universe Screen E2E', () => {
 
         const acct1SellDate = await getColumnTexts(
           page,
-          UNIVERSE_COLUMN_INDEX.mostRecentSellDate
+          UNIVERSE_COLUMN_INDEX.mostRecentSellDate,
         );
         expect(acct1SellDate.length).toBeGreaterThan(0);
         // Sell date should be displayed
@@ -547,11 +550,11 @@ test.describe('Universe Screen E2E', () => {
 
       const allSellPrice = await getColumnTexts(
         page,
-        UNIVERSE_COLUMN_INDEX.mostRecentSellPrice
+        UNIVERSE_COLUMN_INDEX.mostRecentSellPrice,
       );
 
       const accountSelect = page.locator(
-        '.universe-toolbar mat-form-field mat-select'
+        '.universe-toolbar mat-form-field mat-select',
       );
       await accountSelect.click();
       await page.waitForTimeout(300);
@@ -569,7 +572,7 @@ test.describe('Universe Screen E2E', () => {
 
         const acct1SellPrice = await getColumnTexts(
           page,
-          UNIVERSE_COLUMN_INDEX.mostRecentSellPrice
+          UNIVERSE_COLUMN_INDEX.mostRecentSellPrice,
         );
         expect(acct1SellPrice.length).toBeGreaterThan(0);
         // Sell price should be displayed
@@ -588,12 +591,12 @@ test.describe('Universe Screen E2E', () => {
 
       const allLastPrice = await getColumnTexts(
         page,
-        UNIVERSE_COLUMN_INDEX.lastPrice
+        UNIVERSE_COLUMN_INDEX.lastPrice,
       );
       expect(allLastPrice.length).toBeGreaterThan(0);
 
       const accountSelect = page.locator(
-        '.universe-toolbar mat-form-field mat-select'
+        '.universe-toolbar mat-form-field mat-select',
       );
       await accountSelect.click();
       await page.waitForTimeout(300);
@@ -611,7 +614,7 @@ test.describe('Universe Screen E2E', () => {
 
         const acct1LastPrice = await getColumnTexts(
           page,
-          UNIVERSE_COLUMN_INDEX.lastPrice
+          UNIVERSE_COLUMN_INDEX.lastPrice,
         );
         // Last Price is a universe field, not computed from trades — should be identical
         expect(acct1LastPrice).toEqual(allLastPrice);

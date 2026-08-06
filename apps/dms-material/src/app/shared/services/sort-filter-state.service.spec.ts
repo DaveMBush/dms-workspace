@@ -1,6 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { SortFilterStateService } from './sort-filter-state.service';
 
 describe('SortFilterStateService', () => {
@@ -10,7 +9,7 @@ describe('SortFilterStateService', () => {
   let mockRemoveItem: ReturnType<typeof vi.fn>;
   const originalLocalStorageDescriptor = Object.getOwnPropertyDescriptor(
     globalThis,
-    'localStorage'
+    'localStorage',
   );
 
   const storageKey = 'dms-sort-filter-state';
@@ -43,7 +42,7 @@ describe('SortFilterStateService', () => {
       Object.defineProperty(
         globalThis,
         'localStorage',
-        originalLocalStorageDescriptor
+        originalLocalStorageDescriptor,
       );
     } else {
       Reflect.deleteProperty(globalThis, 'localStorage');
@@ -58,7 +57,7 @@ describe('SortFilterStateService', () => {
         service.saveSortState('universes', {
           field: 'name',
           order: 'asc',
-        })
+        }),
       ).not.toThrow();
       expect(mockSetItem).toHaveBeenCalled();
     });
@@ -73,7 +72,7 @@ describe('SortFilterStateService', () => {
 
       expect(mockSetItem).toHaveBeenCalledWith(
         storageKey,
-        expect.stringContaining('"universes"')
+        expect.stringContaining('"universes"'),
       );
     });
 
@@ -96,7 +95,7 @@ describe('SortFilterStateService', () => {
       mockGetItem.mockReturnValue(
         JSON.stringify({
           'trades-open': { sort: { field: 'date', order: 'desc' } },
-        })
+        }),
       );
 
       service.saveSortState('universes', {
@@ -119,7 +118,7 @@ describe('SortFilterStateService', () => {
       mockGetItem.mockReturnValue(
         JSON.stringify({
           universes: { sort: { field: 'name', order: 'asc' } },
-        })
+        }),
       );
 
       service.saveSortState('universes', {
@@ -140,7 +139,7 @@ describe('SortFilterStateService', () => {
       mockGetItem.mockReturnValue(
         JSON.stringify({
           universes: { sort: { field: 'name', order: 'asc' } },
-        })
+        }),
       );
 
       const result = service.loadSortState('universes');
@@ -161,7 +160,7 @@ describe('SortFilterStateService', () => {
       mockGetItem.mockReturnValue(
         JSON.stringify({
           'trades-open': { sort: { field: 'date', order: 'desc' } },
-        })
+        }),
       );
 
       const result = service.loadSortState('universes');
@@ -190,7 +189,7 @@ describe('SortFilterStateService', () => {
         JSON.stringify({
           universes: { sort: { field: 'name', order: 'asc' } },
           'trades-open': { sort: { field: 'date', order: 'desc' } },
-        })
+        }),
       );
 
       service.clearSortState('universes');
@@ -207,7 +206,7 @@ describe('SortFilterStateService', () => {
       mockGetItem.mockReturnValue(
         JSON.stringify({
           universes: { sort: { field: 'name', order: 'asc' } },
-        })
+        }),
       );
 
       service.clearSortState('universes');
@@ -219,7 +218,7 @@ describe('SortFilterStateService', () => {
       mockGetItem.mockReturnValue(
         JSON.stringify({
           other: { sort: { field: 'date', order: 'desc' } },
-        })
+        }),
       );
 
       service.clearSortState('nonexistent');
@@ -236,7 +235,7 @@ describe('SortFilterStateService', () => {
             sort: { field: 'name', order: 'asc' },
             filters: { symbol: 'AAPL' },
           },
-        })
+        }),
       );
 
       service.clearSortState('universes');
@@ -254,7 +253,7 @@ describe('SortFilterStateService', () => {
             sortColumns: [{ column: 'symbol', direction: 'asc' }],
             filters: { symbol: 'AAPL' },
           },
-        })
+        }),
       );
 
       service.clearSortState('universes');
@@ -270,7 +269,7 @@ describe('SortFilterStateService', () => {
       mockGetItem.mockReturnValue(
         JSON.stringify({
           universes: { sort: { field: 'name', order: 'asc' } },
-        })
+        }),
       );
 
       service.clearSortState('universes');
@@ -285,7 +284,7 @@ describe('SortFilterStateService', () => {
             sort: { field: 'name', order: 'asc' },
             sortColumns: [{ column: 'price', direction: 'desc' }],
           },
-        })
+        }),
       );
 
       service.clearSortState('universes');
@@ -303,7 +302,7 @@ describe('SortFilterStateService', () => {
       mockGetItem.mockReturnValue(
         JSON.stringify({
           universes: { sort: { field: 'symbol', order: 'asc' } },
-        })
+        }),
       );
 
       service.saveSortColumnsState('universes', [
@@ -338,7 +337,7 @@ describe('SortFilterStateService', () => {
           universes: {
             sortColumns: [{ column: 'symbol', direction: 'asc' }],
           },
-        })
+        }),
       );
 
       const result = service.loadSortColumnsState('universes');
@@ -368,7 +367,7 @@ describe('SortFilterStateService', () => {
             sortColumns: [{ column: 'symbol', direction: 'asc' }],
             sort: { field: 'symbol', order: 'asc' },
           },
-        })
+        }),
       );
 
       service.clearSortColumnsState('universes');
@@ -383,7 +382,7 @@ describe('SortFilterStateService', () => {
             sortColumns: [{ column: 'symbol', direction: 'asc' }],
             filters: { symbol: 'AAPL' },
           },
-        })
+        }),
       );
 
       service.clearSortColumnsState('universes');
@@ -396,7 +395,7 @@ describe('SortFilterStateService', () => {
 
     it('should save state unchanged when table has no entry', () => {
       mockGetItem.mockReturnValue(
-        JSON.stringify({ other: { sort: { field: 'a', order: 'asc' } } })
+        JSON.stringify({ other: { sort: { field: 'a', order: 'asc' } } }),
       );
 
       service.clearSortColumnsState('nonexistent');
@@ -420,7 +419,7 @@ describe('SortFilterStateService', () => {
       mockGetItem.mockReturnValue(
         JSON.stringify({
           universes: { filters: { symbol: 'AAPL' } },
-        })
+        }),
       );
 
       const result = service.loadFilterState('universes');
@@ -443,7 +442,7 @@ describe('SortFilterStateService', () => {
             sort: { field: 'name', order: 'asc' },
             filters: { symbol: 'AAPL' },
           },
-        })
+        }),
       );
 
       service.clearFilterState('universes');
@@ -460,7 +459,7 @@ describe('SortFilterStateService', () => {
       mockGetItem.mockReturnValue(
         JSON.stringify({
           universes: { filters: { symbol: 'AAPL' } },
-        })
+        }),
       );
 
       service.clearFilterState('universes');
@@ -472,7 +471,7 @@ describe('SortFilterStateService', () => {
       mockGetItem.mockReturnValue(
         JSON.stringify({
           other: { filters: { symbol: 'GOOG' } },
-        })
+        }),
       );
 
       service.clearFilterState('nonexistent');
@@ -486,7 +485,7 @@ describe('SortFilterStateService', () => {
       mockGetItem.mockReturnValue(
         JSON.stringify({
           universes: { filters: { symbol: 'AAPL' } },
-        })
+        }),
       );
 
       service.saveSortState('universes', { field: 'name', order: 'asc' });
@@ -509,7 +508,7 @@ describe('SortFilterStateService', () => {
             ],
             filters: { symbol: 'AAPL' },
           },
-        })
+        }),
       );
 
       service.clearFilterState('universes');
@@ -526,7 +525,7 @@ describe('SortFilterStateService', () => {
       mockGetItem.mockReturnValue(
         JSON.stringify({
           universes: { filters: { symbol: 'AAPL' } },
-        })
+        }),
       );
 
       service.clearFilterState('universes');
@@ -541,7 +540,7 @@ describe('SortFilterStateService', () => {
             sortColumns: [{ column: 'symbol', direction: 'asc' }],
             filters: { symbol: 'AAPL' },
           },
-        })
+        }),
       );
 
       service.clearFilterState('universes');
@@ -563,7 +562,7 @@ describe('SortFilterStateService', () => {
             filters: { symbol: 'AAPL' },
           },
           'trades-open': { sort: { field: 'date', order: 'desc' } },
-        })
+        }),
       );
 
       const result = service.loadAllSortFilterState();
@@ -626,7 +625,7 @@ describe('SortFilterStateService', () => {
       mockGetItem.mockReturnValueOnce(null).mockReturnValueOnce(
         JSON.stringify({
           universes: { sort: { field: 'name', order: 'asc' } },
-        })
+        }),
       );
 
       service.saveSortState('universes', {

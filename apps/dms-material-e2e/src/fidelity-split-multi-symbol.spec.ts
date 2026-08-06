@@ -22,7 +22,7 @@ import { initializePrismaClient } from './helpers/shared-prisma-client.helper';
 // Resolve the fixtures directory relative to the workspace root. The
 // compiled test files live in a `dist` folder; using __dirname would point
 // at that compiled location and miss the source fixtures.
-const FIXTURES_DIR = path.resolve(
+const _FIXTURES_DIR = path.resolve(
   process.cwd(),
   'apps',
   'dms-material-e2e',
@@ -100,6 +100,7 @@ test.describe('Multi-Symbol Split Import (Story 63.3)', () => {
    *   - TSTX: 1 open lot of 100 shares (500 ÷ 5 reverse split)
    *   - ABCD: 1 open lot of 100 shares (unchanged — no split applied)
    */
+
   test('should only adjust lots for the symbol with a split row', async ({
     page,
   }) => {

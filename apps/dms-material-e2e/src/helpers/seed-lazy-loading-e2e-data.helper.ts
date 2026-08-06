@@ -1,5 +1,5 @@
+/* eslint-disable @typescript-eslint/naming-convention -- E2E test constants use UPPER_CASE for readability */
 import type { PrismaClient } from '@prisma/client';
-
 import { generateUniqueId } from './generate-unique-id.helper';
 import { initializePrismaClient } from './shared-prisma-client.helper';
 import { createRiskGroups } from './shared-risk-groups.helper';
@@ -17,7 +17,7 @@ interface LazyLoadingSeederResult {
 
 function createBulkUniverseRecords(
   symbols: string[],
-  riskGroupId: string
+  riskGroupId: string,
 ): UniverseRecord[] {
   const futureDate = new Date();
   futureDate.setFullYear(futureDate.getFullYear() + 1);
@@ -41,11 +41,11 @@ function createBulkUniverseRecords(
 async function createOpenPositionTrades(
   prisma: PrismaClient,
   accountId: string,
-  universeIds: string[]
+  universeIds: string[],
 ): Promise<void> {
   const data = universeIds.map(function buildTrade(
     universeId: string,
-    index: number
+    index: number,
   ): Record<string, unknown> {
     return {
       universeId,
@@ -64,7 +64,7 @@ async function seedRecordsIntoDb(
   prisma: PrismaClient,
   universeSymbols: string[],
   openPositionSymbols: string[],
-  accountName: string
+  accountName: string,
 ): Promise<string> {
   const riskGroups = await createRiskGroups(prisma);
   const riskGroupId = riskGroups.equitiesRiskGroup.id;
@@ -88,7 +88,7 @@ async function seedRecordsIntoDb(
     symbolToId.set(entry.symbol, entry.id);
   }
   const opUniverseIds = openPositionSymbols.map(function findId(
-    sym: string
+    sym: string,
   ): string {
     const id = symbolToId.get(sym);
     if (id === undefined) {
@@ -104,20 +104,20 @@ async function seedRecordsIntoDb(
 function generateSymbols(
   prefix: string,
   count: number,
-  uniqueId: string
+  uniqueId: string,
 ): string[] {
   return Array.from(
     { length: count },
     function generateSymbol(_: unknown, i: number): string {
       return `${prefix}${String(i).padStart(3, '0')}-${uniqueId}`;
-    }
+    },
   );
 }
 
 async function cleanupPartialSeed(
   prisma: PrismaClient,
   accountName: string,
-  allSymbols: string[]
+  allSymbols: string[],
 ): Promise<void> {
   const seededAccount = await prisma.accounts.findFirst({
     where: { name: accountName },
@@ -144,7 +144,7 @@ export async function seedLazyLoadingE2eData(): Promise<LazyLoadingSeederResult>
   const openPositionSymbols = generateSymbols(
     'OLZY',
     OPEN_POSITIONS_COUNT,
-    uniqueId
+    uniqueId,
   );
   const accountName = `E2E-Lazy-Acct-${uniqueId}`;
   const allSymbols = [...universeSymbols, ...openPositionSymbols];
@@ -155,13 +155,13 @@ export async function seedLazyLoadingE2eData(): Promise<LazyLoadingSeederResult>
       prisma,
       universeSymbols,
       openPositionSymbols,
-      accountName
+      accountName,
     );
   } catch (error) {
     await cleanupPartialSeed(prisma, accountName, allSymbols).finally(
       async function disconnect(): Promise<void> {
         await prisma.$disconnect();
-      }
+      },
     );
     throw error;
   }

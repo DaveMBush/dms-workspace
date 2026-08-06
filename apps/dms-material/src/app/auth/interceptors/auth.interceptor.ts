@@ -9,7 +9,6 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { EMPTY, from, Observable, throwError } from 'rxjs';
 import { catchError, switchMap, tap } from 'rxjs/operators';
-
 import { AuthService } from '../auth.service';
 import { AuthMetricsService } from '../services/auth-metrics.service';
 import { TokenRefreshService } from '../services/token-refresh.service';
@@ -30,7 +29,7 @@ function noop(): void {
  */
 export const authInterceptor: HttpInterceptorFn = function authInterceptorImpl(
   req: HttpRequest<unknown>,
-  next: HttpHandlerFn
+  next: HttpHandlerFn,
 ): Observable<HttpEvent<unknown>> {
   return processAuthenticatedRequest(req, next);
 };
@@ -49,7 +48,7 @@ function getErrorType(error: unknown, defaultType = 'unknown-error'): string {
  */
 function processAuthenticatedRequest(
   req: HttpRequest<unknown>,
-  next: HttpHandlerFn
+  next: HttpHandlerFn,
 ): Observable<HttpEvent<unknown>> {
   // Skip authentication for public and auth endpoints
   if (isPublicEndpoint(req.url) || isAuthEndpoint(req.url)) {
@@ -83,16 +82,16 @@ function injectAuthServices(): {
 function executeAuthenticatedRequest(
   req: HttpRequest<unknown>,
   next: HttpHandlerFn,
-  services: ReturnType<typeof injectAuthServices>
+  services: ReturnType<typeof injectAuthServices>,
 ): Observable<HttpEvent<unknown>> {
   const requestId = req.headers.get('X-Request-ID');
   const endTiming = services.authMetrics.startOperation(
     'interceptor',
-    requestId === null ? undefined : requestId
+    requestId === null ? undefined : requestId,
   );
 
   return from(
-    getTokenWithRefresh(services.authService, services.tokenRefreshService)
+    getTokenWithRefresh(services.authService, services.tokenRefreshService),
   ).pipe(
     switchMap(function handleToken(token) {
       const authReq = createAuthenticatedRequest(req, token);
@@ -103,7 +102,7 @@ function executeAuthenticatedRequest(
           authService: services.authService,
           tokenRefreshService: services.tokenRefreshService,
         },
-        services.router
+        services.router,
       );
     }),
     tap(createTapHandlers(endTiming, services.authService)),
@@ -119,7 +118,7 @@ function executeAuthenticatedRequest(
       const errorType = getErrorType(error, 'token-error');
       endTiming(false, errorType);
       return next(req);
-    })
+    }),
   );
 }
 
@@ -128,7 +127,7 @@ function executeAuthenticatedRequest(
  */
 function createTapHandlers(
   endTiming: (success: boolean, errorType?: string, cacheHit?: boolean) => void,
-  authService: AuthService
+  authService: AuthService,
 ): {
   next(): void;
   error(error: unknown): void;
@@ -149,7 +148,7 @@ function createTapHandlers(
  */
 function createAuthenticatedRequest(
   req: HttpRequest<unknown>,
-  token: string | null
+  token: string | null,
 ): HttpRequest<unknown> {
   if (token !== null && token.length > 0) {
     return req.clone({
@@ -172,7 +171,7 @@ function handleRequestExecution(
     authService: AuthService;
     tokenRefreshService: TokenRefreshService;
   },
-  router: Router
+  router: Router,
 ): Observable<HttpEvent<unknown>> {
   return next(authReq).pipe(
     catchError(function handleHttpError(error: unknown) {
@@ -186,7 +185,7 @@ function handleRequestExecution(
       return throwError(function returnError() {
         return error;
       });
-    })
+    }),
   );
 }
 
@@ -195,7 +194,7 @@ function handleRequestExecution(
  */
 function handleForbiddenError(
   authService: AuthService,
-  router: Router
+  router: Router,
 ): Observable<HttpEvent<unknown>> {
   // Forbidden - user doesn't have permission
   return performSignOut(authService, router);
@@ -242,7 +241,7 @@ function isAuthEndpoint(url: string): boolean {
  */
 async function getTokenWithRefresh(
   authService: AuthService,
-  tokenRefreshService: TokenRefreshService
+  tokenRefreshService: TokenRefreshService,
 ): Promise<string | null> {
   // Fast path: check cache first without triggering expensive AWS calls
   const cachedToken = authService.getCachedAccessToken();
@@ -279,7 +278,7 @@ function handleUnauthorizedError(
     authService: AuthService;
     tokenRefreshService: TokenRefreshService;
   },
-  router: Router
+  router: Router,
 ): Observable<HttpEvent<unknown>> {
   // 401 error encountered, attempting token refresh
 
@@ -301,7 +300,7 @@ function attemptTokenRefreshAndRetry(
     authService: AuthService;
     tokenRefreshService: TokenRefreshService;
   },
-  router: Router
+  router: Router,
 ): Observable<HttpEvent<unknown>> {
   return from(services.tokenRefreshService.refreshToken()).pipe(
     switchMap(function handleRefreshResult(refreshSuccess) {
@@ -310,7 +309,7 @@ function attemptTokenRefreshAndRetry(
           request,
           next,
           services.authService,
-          router
+          router,
         );
       }
       // Refresh failed, sign out user
@@ -319,7 +318,7 @@ function attemptTokenRefreshAndRetry(
     catchError(function handleRefreshError(_: unknown) {
       // Error during token refresh retry
       return signOutAndRedirect(services.authService, router);
-    })
+    }),
   );
 }
 
@@ -330,7 +329,7 @@ function retryRequestWithNewToken(
   request: HttpRequest<unknown>,
   next: HttpHandlerFn,
   authService: AuthService,
-  router: Router
+  router: Router,
 ): Observable<HttpEvent<unknown>> {
   return from(authService.getAccessToken()).pipe(
     switchMap(function retryWithNewToken(newToken) {
@@ -348,7 +347,7 @@ function retryRequestWithNewToken(
       }
       // No token after refresh, sign out
       return signOutAndRedirect(authService, router);
-    })
+    }),
   );
 }
 
@@ -357,7 +356,7 @@ function retryRequestWithNewToken(
  */
 function signOutAndRedirect(
   authService: AuthService,
-  router: Router
+  router: Router,
 ): Observable<HttpEvent<unknown>> {
   // Delegate to sign out handler
   return performSignOut(authService, router);
@@ -368,7 +367,7 @@ function signOutAndRedirect(
  */
 function performSignOut(
   authService: AuthService,
-  router: Router
+  router: Router,
 ): Observable<HttpEvent<unknown>> {
   // Clear tokens and user state
   authService.signOut().catch(noop);

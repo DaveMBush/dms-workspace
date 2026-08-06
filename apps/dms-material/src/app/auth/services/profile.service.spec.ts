@@ -1,6 +1,5 @@
 import { TestBed } from '@angular/core/testing';
 import { vi } from 'vitest';
-
 import { ProfileService } from './profile.service';
 
 // Mock AWS Amplify Auth
@@ -44,9 +43,8 @@ describe('ProfileService', () => {
         },
       };
 
-      const { getCurrentUser, fetchAuthSession } = await import(
-        '@aws-amplify/auth'
-      );
+      const { getCurrentUser, fetchAuthSession } =
+        await import('@aws-amplify/auth');
       vi.mocked(getCurrentUser).mockResolvedValue(mockUser);
       vi.mocked(fetchAuthSession).mockResolvedValue(mockSession);
 
@@ -78,7 +76,7 @@ describe('ProfileService', () => {
       vi.mocked(updatePassword).mockResolvedValue(undefined);
 
       await expect(
-        service.changeUserPassword('oldpass', 'newpass')
+        service.changeUserPassword('oldpass', 'newpass'),
       ).resolves.not.toThrow();
 
       expect(updatePassword).toHaveBeenCalledWith({
@@ -101,7 +99,7 @@ describe('ProfileService', () => {
       vi.mocked(updatePassword).mockRejectedValue(error);
 
       await expect(
-        service.changeUserPassword('oldpass', 'newpass')
+        service.changeUserPassword('oldpass', 'newpass'),
       ).rejects.toThrow();
 
       expect(service.loading()).toBe(false);
@@ -117,7 +115,7 @@ describe('ProfileService', () => {
       });
 
       await expect(
-        service.updateEmail('new@example.com')
+        service.updateEmail('new@example.com'),
       ).resolves.not.toThrow();
 
       expect(updateUserAttributes).toHaveBeenCalledWith({
@@ -178,7 +176,7 @@ describe('ProfileService', () => {
       vi.mocked(resetPassword).mockResolvedValue({ isPasswordReset: false });
 
       await expect(
-        service.initiatePasswordReset('test@example.com')
+        service.initiatePasswordReset('test@example.com'),
       ).resolves.not.toThrow();
 
       expect(resetPassword).toHaveBeenCalledWith({
@@ -196,7 +194,7 @@ describe('ProfileService', () => {
       vi.mocked(resetPassword).mockRejectedValue(error);
 
       await expect(
-        service.initiatePasswordReset('nonexistent@example.com')
+        service.initiatePasswordReset('nonexistent@example.com'),
       ).rejects.toThrow();
     });
   });
@@ -210,8 +208,8 @@ describe('ProfileService', () => {
         service.confirmPasswordReset(
           'test@example.com',
           '123456',
-          'newpassword'
-        )
+          'newpassword',
+        ),
       ).resolves.not.toThrow();
 
       expect(confirmResetPassword).toHaveBeenCalledWith({
@@ -232,8 +230,8 @@ describe('ProfileService', () => {
         service.confirmPasswordReset(
           'test@example.com',
           'expired',
-          'newpassword'
-        )
+          'newpassword',
+        ),
       ).rejects.toThrow();
     });
   });
@@ -243,21 +241,21 @@ describe('ProfileService', () => {
       const profileService = TestBed.inject(ProfileService);
 
       // Access private method for testing
-      const getErrorMessage = (profileService as unknown as { getErrorMessage(error: unknown): string }).getErrorMessage.bind(
-        profileService
-      );
+      const getErrorMessage = (
+        profileService as unknown as { getErrorMessage(error: unknown): string }
+      ).getErrorMessage.bind(profileService);
 
       expect(getErrorMessage({ name: 'NotAuthorizedException' })).toBe(
-        'Current password is incorrect'
+        'Current password is incorrect',
       );
       expect(getErrorMessage({ name: 'InvalidPasswordException' })).toBe(
-        'New password does not meet requirements'
+        'New password does not meet requirements',
       );
       expect(getErrorMessage({ name: 'LimitExceededException' })).toBe(
-        'Too many attempts. Please try again later'
+        'Too many attempts. Please try again later',
       );
       expect(
-        getErrorMessage({ name: 'UnknownError', message: 'Custom message' })
+        getErrorMessage({ name: 'UnknownError', message: 'Custom message' }),
       ).toBe('Custom message');
       expect(getErrorMessage({})).toBe('Operation failed. Please try again');
     });

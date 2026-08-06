@@ -52,14 +52,14 @@ export class AccountComponent implements OnInit {
     this.accountService.init(this);
     const savedTab = this.statePersistence.loadState<string | null>(
       this.stateKey,
-      null
+      null,
     );
     if (savedTab !== null) {
       this.navigateToGlobal(savedTab);
     }
     const savedAccount = this.statePersistence.loadState<string | null>(
       this.accountStateKey,
-      null
+      null,
     );
     if (savedAccount !== null) {
       const context = this;

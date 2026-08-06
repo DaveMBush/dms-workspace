@@ -1,5 +1,4 @@
-import { test, expect } from 'playwright/test';
-
+import { expect, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 
 test.describe('Global Summary Component', () => {
@@ -12,14 +11,14 @@ test.describe('Global Summary Component', () => {
   test.describe('Core Functionality', () => {
     test('should display global summary page', async ({ page }) => {
       const summaryCard = page.locator(
-        '[data-testid="global-summary-container"]'
+        '[data-testid="global-summary-container"]',
       );
       await expect(summaryCard).toBeVisible();
     });
 
     test('should display page title', async ({ page }) => {
       await expect(
-        page.getByRole('heading', { name: 'Global Summary' })
+        page.getByRole('heading', { name: 'Global Summary' }),
       ).toBeVisible();
     });
 
@@ -36,7 +35,7 @@ test.describe('Global Summary Component', () => {
 
     test('performance line chart displays over time', async ({ page }) => {
       const performanceChart = page.locator(
-        '[data-testid="performance-chart"]'
+        '[data-testid="performance-chart"]',
       );
       await expect(performanceChart).toBeVisible();
       // Verify the chart container is present (canvas may take time to render)
@@ -165,7 +164,7 @@ test.describe('Global Summary Component', () => {
         await page.waitForLoadState('networkidle');
         // Verify performance chart is still visible after year change
         const performanceChart = page.locator(
-          '[data-testid="performance-chart"]'
+          '[data-testid="performance-chart"]',
         );
         await expect(performanceChart).toBeVisible();
       } else {
@@ -183,40 +182,47 @@ test.describe('Global Summary Component', () => {
       // avoid browser timeout issues on held requests.
       let intercepting = true;
       const pendingRoutes: Array<() => Promise<void>> = [];
-      await page.route(/\/api\/summary/, function holdSummaryRoutes(route) {
-        const url = route.request().url();
-        if (!intercepting || url.includes('/graph') || url.includes('/years')) {
-          return route.continue();
-        }
-        return new Promise<void>(function deferRoute(resolve) {
-          pendingRoutes.push(async function releasePendingRoute() {
-            if (url.includes('/months')) {
-              await route.fulfill({
-                status: 200,
-                contentType: 'application/json',
-                body: JSON.stringify([
-                  { month: '2025-03', label: 'March 2025' },
-                  { month: '2025-02', label: 'February 2025' },
-                ]),
-              });
-            } else {
-              await route.fulfill({
-                status: 200,
-                contentType: 'application/json',
-                body: JSON.stringify({
-                  deposits: 100000,
-                  dividends: 2500,
-                  capitalGains: 5000,
-                  equities: 50000,
-                  income: 30000,
-                  tax_free_income: 20000,
-                }),
-              });
-            }
-            resolve();
+      await page.route(
+        /\/api\/summary/,
+        async function holdSummaryRoutes(route) {
+          const url = route.request().url();
+          if (
+            !intercepting ||
+            url.includes('/graph') ||
+            url.includes('/years')
+          ) {
+            return route.continue();
+          }
+          return new Promise<void>(function deferRoute(resolve) {
+            pendingRoutes.push(async function releasePendingRoute() {
+              if (url.includes('/months')) {
+                await route.fulfill({
+                  status: 200,
+                  contentType: 'application/json',
+                  body: JSON.stringify([
+                    { month: '2025-03', label: 'March 2025' },
+                    { month: '2025-02', label: 'February 2025' },
+                  ]),
+                });
+              } else {
+                await route.fulfill({
+                  status: 200,
+                  contentType: 'application/json',
+                  body: JSON.stringify({
+                    deposits: 100000,
+                    dividends: 2500,
+                    capitalGains: 5000,
+                    equities: 50000,
+                    income: 30000,
+                    tax_free_income: 20000,
+                  }),
+                });
+              }
+              resolve();
+            });
           });
-        });
-      });
+        },
+      );
 
       const spinner = page.locator('[data-testid="loading-spinner"]');
 
@@ -230,7 +236,7 @@ test.describe('Global Summary Component', () => {
             document.querySelector('[data-testid="loading-spinner"]') !== null
           );
         },
-        { timeout: 10000 }
+        { timeout: 10000 },
       );
 
       // Spinner confirmed in DOM; assert it is visible
@@ -241,9 +247,9 @@ test.describe('Global Summary Component', () => {
 
       // Release all held routes with fulfilled mock data and await fulfillment
       await Promise.all(
-        pendingRoutes.map(function invokeRelease(release) {
+        pendingRoutes.map(async function invokeRelease(release) {
           return release();
-        })
+        }),
       );
 
       // After data loads, spinner should be gone (wait up to 15s for Angular to update)
@@ -259,7 +265,7 @@ test.describe('Global Summary Component', () => {
       await expect(allocationChart).toBeVisible();
 
       const performanceChart = page.locator(
-        '[data-testid="performance-chart"]'
+        '[data-testid="performance-chart"]',
       );
       await expect(performanceChart).toBeVisible();
     });
@@ -270,8 +276,8 @@ test.describe('Global Summary Component', () => {
       page,
     }) => {
       // Intercept summary API calls to simulate a 500 server error
-      await page.route('**/api/summary*', (route) => {
-        route.fulfill({
+      await page.route('**/api/summary*', async (route) => {
+        await route.fulfill({
           status: 500,
           contentType: 'application/json',
           body: JSON.stringify({ message: 'Internal Server Error' }),

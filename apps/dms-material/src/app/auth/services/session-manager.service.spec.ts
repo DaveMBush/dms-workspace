@@ -1,6 +1,5 @@
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom, Subject } from 'rxjs';
-
 import { ActivityTrackingService } from './activity-tracking.service';
 import {
   SessionConfig,
@@ -155,7 +154,7 @@ describe('SessionManagerService', () => {
     it('should set up activity callback without starting tracking on initialization', () => {
       // Only onActivity should be called during construction, not startActivityTracking
       expect(
-        mockActivityTrackingService.startActivityTracking
+        mockActivityTrackingService.startActivityTracking,
       ).toHaveBeenCalledTimes(0);
       expect(mockActivityTrackingService.onActivity).toHaveBeenCalledTimes(1);
     });
@@ -170,11 +169,11 @@ describe('SessionManagerService', () => {
       expect(service.startTime()).toBeInstanceOf(Date);
       expect(mockUserStateService.createSession).toHaveBeenCalledWith(
         mockUserProfile,
-        false
+        false,
       );
       expect(mockTokenRefreshService.startTokenRefreshTimer).toHaveBeenCalled();
       expect(
-        mockActivityTrackingService.startActivityTracking
+        mockActivityTrackingService.startActivityTracking,
       ).toHaveBeenCalled();
     });
 
@@ -185,7 +184,7 @@ describe('SessionManagerService', () => {
       expect(service.isRememberMeSession()).toBe(false); // Mock returns null
       expect(mockUserStateService.createSession).toHaveBeenCalledWith(
         mockUserProfile,
-        true
+        true,
       );
     });
 
@@ -238,7 +237,7 @@ describe('SessionManagerService', () => {
 
     it('should handle token refresh errors', async () => {
       mockTokenRefreshService.refreshToken.mockRejectedValue(
-        new Error('Network error')
+        new Error('Network error'),
       );
 
       const result = await service.extendSession();
@@ -268,7 +267,7 @@ describe('SessionManagerService', () => {
       await service.extendSession();
 
       const extendedEvent = events.find(
-        (e) => e.type === SessionEventType.SessionExtended
+        (e) => e.type === SessionEventType.SessionExtended,
       ) as SessionEventType.SessionExtended;
       expect(extendedEvent).toBeTruthy();
       expect(extendedEvent.data).toMatchObject({
@@ -291,7 +290,7 @@ describe('SessionManagerService', () => {
       expect(mockTokenRefreshService.stopTokenRefreshTimer).toHaveBeenCalled();
       expect(mockUserStateService.clearState).toHaveBeenCalled();
       expect(
-        mockActivityTrackingService.stopActivityTracking
+        mockActivityTrackingService.stopActivityTracking,
       ).toHaveBeenCalled();
     });
 
@@ -310,7 +309,7 @@ describe('SessionManagerService', () => {
       service.expireSession(true);
 
       const expiredEvent = events.find(
-        (e) => e.type === SessionEventType.SessionExpired
+        (e) => e.type === SessionEventType.SessionExpired,
       );
       expect(expiredEvent).toBeTruthy();
       expect(expiredEvent.data).toMatchObject({
@@ -405,7 +404,7 @@ describe('SessionManagerService', () => {
       });
 
       const warningEvent = events.find(
-        (e) => e.type === SessionEventType.SessionWarning
+        (e) => e.type === SessionEventType.SessionWarning,
       ) as SessionEventType.SessionWarning;
       expect(warningEvent).toBeTruthy();
     });
@@ -425,7 +424,7 @@ describe('SessionManagerService', () => {
       activityCallback(activityTime);
 
       expect(mockUserStateService.updateActivity).toHaveBeenCalledWith(
-        activityTime
+        activityTime,
       );
     });
 
@@ -433,7 +432,11 @@ describe('SessionManagerService', () => {
       // Mock the service to be in warning state
       service.startSession(mockUserProfile, false);
       // Manually set status to warning for test
-      (service as unknown as { sessionStatus: { set(status: SessionStatus): void } }).sessionStatus.set(SessionStatus.Warning);
+      (
+        service as unknown as {
+          sessionStatus: { set(status: SessionStatus): void };
+        }
+      ).sessionStatus.set(SessionStatus.Warning);
       mockTokenRefreshService.refreshToken.mockResolvedValue(true);
 
       const activityCallback =
@@ -592,7 +595,7 @@ describe('SessionManagerService', () => {
 
       // Mock token refresh to resolve successfully
       mockTokenRefreshService.refreshToken.mockImplementation(async () =>
-        Promise.resolve(true)
+        Promise.resolve(true),
       );
 
       // Start multiple concurrent extensions - the service should prevent concurrent extensions
@@ -637,7 +640,7 @@ describe('SessionManagerService', () => {
       activityCallback(activityTime);
 
       const activityEvent = events.find(
-        (e) => e.type === SessionEventType.ActivityDetected
+        (e) => e.type === SessionEventType.ActivityDetected,
       );
       expect(activityEvent).toBeTruthy();
       expect(activityEvent.data).toMatchObject({

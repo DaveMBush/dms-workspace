@@ -1,5 +1,5 @@
+/* eslint-disable @typescript-eslint/naming-convention -- E2E test constants use UPPER_CASE for readability */
 import type { Prisma, PrismaClient } from '@prisma/client';
-
 import { generateUniqueId } from './generate-unique-id.helper';
 import type { SeederResultBase } from './seeder-result-base.types';
 import { initializePrismaClient } from './shared-prisma-client.helper';
@@ -46,7 +46,7 @@ async function getOrCreateRiskGroupId(prisma: PrismaClient): Promise<string> {
 }
 
 async function getOrCreateDivDepositTypeId(
-  prisma: PrismaClient
+  prisma: PrismaClient,
 ): Promise<string> {
   const existing = await prisma.divDepositType.findFirst({
     where: { name: 'Dividend' },
@@ -79,7 +79,7 @@ function buildUniverseCreateData(
   symbol: string,
   riskGroupId: string,
   currentDistribution: number,
-  volatilityLong: string
+  volatilityLong: string,
 ): Prisma.universeUncheckedCreateInput {
   return {
     symbol,
@@ -135,14 +135,14 @@ function createSeedRuntimeData(): SeedRuntimeData {
 
 async function seedUniverseCategory(
   context: SeedCategoryContext,
-  plan: SeedCategoryPlan
+  plan: SeedCategoryPlan,
 ): Promise<void> {
   const universe = await context.prisma.universe.create({
     data: buildUniverseCreateData(
       plan.symbol,
       context.riskGroupId,
       plan.amounts[plan.amounts.length - 1],
-      plan.volatilityLong
+      plan.volatilityLong,
     ),
   });
 
@@ -165,7 +165,7 @@ async function seedUniverseCategory(
 async function createSeedCategoryContext(
   prisma: PrismaClient,
   accountName: string,
-  universeIds: string[]
+  universeIds: string[],
 ): Promise<SeedCategoryContext> {
   const riskGroupId = await getOrCreateRiskGroupId(prisma);
   const divDepositTypeId = await getOrCreateDivDepositTypeId(prisma);
@@ -184,7 +184,7 @@ async function createSeedCategoryContext(
 
 async function seedAllCategories(
   context: SeedCategoryContext,
-  seedPlans: SeedCategoryPlan[]
+  seedPlans: SeedCategoryPlan[],
 ): Promise<void> {
   for (const plan of seedPlans) {
     await seedUniverseCategory(context, plan);
@@ -195,7 +195,7 @@ async function cleanupOnError(
   prisma: PrismaClient,
   universeIds: string[],
   symbols: string[],
-  accountName: string
+  accountName: string,
 ): Promise<void> {
   function suppressError(): undefined {
     return undefined;
@@ -222,7 +222,7 @@ function buildCleanup(
   prisma: PrismaClient,
   universeIds: string[],
   symbols: string[],
-  accountName: string
+  accountName: string,
 ): () => Promise<void> {
   return async function cleanupVolatilityNewCategoriesData(): Promise<void> {
     try {
@@ -252,7 +252,7 @@ export async function seedVolatilityNewCategoriesData(): Promise<VolatilityNewCa
     const context = await createSeedCategoryContext(
       prisma,
       runtimeData.accountName,
-      runtimeData.universeIds
+      runtimeData.universeIds,
     );
     await seedAllCategories(context, runtimeData.seedPlans);
   } catch (error) {
@@ -260,7 +260,7 @@ export async function seedVolatilityNewCategoriesData(): Promise<VolatilityNewCa
       prisma,
       runtimeData.universeIds,
       symbols,
-      runtimeData.accountName
+      runtimeData.accountName,
     );
     await prisma.$disconnect();
     throw error;
@@ -275,7 +275,7 @@ export async function seedVolatilityNewCategoriesData(): Promise<VolatilityNewCa
       prisma,
       runtimeData.universeIds,
       symbols,
-      runtimeData.accountName
+      runtimeData.accountName,
     ),
   };
 }

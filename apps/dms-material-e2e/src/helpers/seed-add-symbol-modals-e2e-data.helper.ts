@@ -1,5 +1,5 @@
+/* eslint-disable @typescript-eslint/naming-convention -- E2E test constants use UPPER_CASE for readability */
 import { Prisma, type PrismaClient } from '@prisma/client';
-
 import { initializePrismaClient } from './shared-prisma-client.helper';
 import { createRiskGroups } from './shared-risk-groups.helper';
 
@@ -28,7 +28,7 @@ function rethrowUnlessUniqueConstraint(e: unknown): void {
 
 async function pickAbsentSymbol(
   prisma: PrismaClient,
-  candidates: string[]
+  candidates: string[],
 ): Promise<string> {
   for (const candidate of candidates) {
     const existing = await prisma.universe.findFirst({
@@ -41,15 +41,15 @@ async function pickAbsentSymbol(
   }
   throw new Error(
     `All candidate symbols are already in use: ${candidates.join(
-      ', '
-    )}. Cannot seed test data.`
+      ', ',
+    )}. Cannot seed test data.`,
   );
 }
 
 async function createUniverseSymbolAtomically(
   prisma: PrismaClient,
   candidates: string[],
-  data: Omit<Prisma.universeUncheckedCreateInput, 'symbol'>
+  data: Omit<Prisma.universeUncheckedCreateInput, 'symbol'>,
 ): Promise<string> {
   for (const candidate of candidates) {
     try {
@@ -61,15 +61,15 @@ async function createUniverseSymbolAtomically(
   }
   throw new Error(
     `All candidate symbols are already in use: ${candidates.join(
-      ', '
-    )}. Cannot seed test data.`
+      ', ',
+    )}. Cannot seed test data.`,
   );
 }
 
 async function seedAccountAndTrade(
   prisma: PrismaClient,
   universeInSymbol: string,
-  riskGroupId: string
+  riskGroupId: string,
 ): Promise<string> {
   const universeRow = await prisma.universe.findFirst({
     where: { symbol: universeInSymbol },
@@ -77,7 +77,7 @@ async function seedAccountAndTrade(
   });
   if (universeRow === null) {
     throw new Error(
-      `Failed to find universe row for symbol: ${universeInSymbol}`
+      `Failed to find universe row for symbol: ${universeInSymbol}`,
     );
   }
   const account = await prisma.accounts.create({
@@ -99,7 +99,7 @@ async function seedAccountAndTrade(
 
 async function verifyOutSymbolAbsent(
   prisma: PrismaClient,
-  universeOutSymbol: string
+  universeOutSymbol: string,
 ): Promise<void> {
   const outCheck = await prisma.universe.findFirst({
     where: { symbol: universeOutSymbol },
@@ -107,7 +107,7 @@ async function verifyOutSymbolAbsent(
   });
   if (outCheck !== null) {
     throw new Error(
-      `universeOutSymbol ${universeOutSymbol} is unexpectedly in the Universe.`
+      `universeOutSymbol ${universeOutSymbol} is unexpectedly in the Universe.`,
     );
   }
 }
@@ -115,7 +115,7 @@ async function verifyOutSymbolAbsent(
 function buildCleanup(
   prisma: PrismaClient,
   accountId: string,
-  universeInSymbol: string
+  universeInSymbol: string,
 ): () => Promise<void> {
   return async function cleanupAddSymbolModalsData(): Promise<void> {
     try {
@@ -150,18 +150,18 @@ export async function seedAddSymbolModalsE2eData(): Promise<SeederResult> {
         most_recent_sell_price: null,
         expired: false,
         is_closed_end_fund: true,
-      }
+      },
     );
     universeOutSymbol = await pickAbsentSymbol(
       prisma,
       UNIV_OUT_CANDIDATES.filter(function notSameAsIn(c: string): boolean {
         return c !== universeInSymbol;
-      })
+      }),
     );
     accountId = await seedAccountAndTrade(
       prisma,
       universeInSymbol,
-      riskGroupId
+      riskGroupId,
     );
     await verifyOutSymbolAbsent(prisma, universeOutSymbol);
   } catch (error) {

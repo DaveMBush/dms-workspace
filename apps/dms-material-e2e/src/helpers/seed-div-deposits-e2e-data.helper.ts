@@ -1,5 +1,4 @@
 import type { PrismaClient } from '@prisma/client';
-
 import { generateUniqueId } from './generate-unique-id.helper';
 import type { SeederResultBase } from './seeder-result-base.types';
 import { initializePrismaClient } from './shared-prisma-client.helper';
@@ -12,8 +11,9 @@ interface DivDepositsSeederResult extends SeederResultBase {
 /**
  * Get or create a divDepositType named "Dividend" and return its id.
  */
+/* eslint-disable @typescript-eslint/naming-convention -- E2E test constants use UPPER_CASE for readability */
 async function getOrCreateDivDepositType(
-  prisma: PrismaClient
+  prisma: PrismaClient,
 ): Promise<string> {
   const existing = await prisma.divDepositType.findFirst({
     where: { name: 'Dividend' },
@@ -35,7 +35,7 @@ const SEEDED_AMOUNTS = [50, 200, 100];
 async function createDivDeposits(
   prisma: PrismaClient,
   accountId: string,
-  divDepositTypeId: string
+  divDepositTypeId: string,
 ): Promise<void> {
   await prisma.divDeposits.createMany({
     data: [

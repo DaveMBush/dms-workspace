@@ -14,8 +14,9 @@ const BASE_UNIVERSE_COUNT = 50;
 /**
  * Get or create a divDepositType named "Dividend" and return its id.
  */
+
 async function getOrCreateDividendType(
-  prisma: Awaited<ReturnType<typeof initializePrismaClient>>
+  prisma: Awaited<ReturnType<typeof initializePrismaClient>>,
 ): Promise<string> {
   const existing = await prisma.divDepositType.findFirst({
     where: { name: 'Dividend' },
@@ -43,7 +44,7 @@ async function getOrCreateDividendType(
 function createBulkDivDeposits(
   accountId: string,
   divDepositTypeId: string,
-  universeIds: string[]
+  universeIds: string[],
 ): any[] {
   return universeIds.map(function mapDeposit(universeId: string, i: number) {
     return {
@@ -61,7 +62,7 @@ async function cleanupScrollDivDeposits(
   prisma: Awaited<ReturnType<typeof initializePrismaClient>>,
   accountId: string,
   accountName: string,
-  isNewAccount: boolean
+  isNewAccount: boolean,
 ): Promise<void> {
   try {
     await prisma.divDeposits.deleteMany({ where: { accountId } });
@@ -84,7 +85,7 @@ async function cleanupScrollDivDeposits(
  * the seeded div deposits, not the pre-existing account.
  */
 export async function seedScrollDivDepositsWithSymbolsData(
-  targetAccountId?: string
+  targetAccountId?: string,
 ): Promise<SeederResult> {
   const prisma = await initializePrismaClient();
   const uniqueId = generateUniqueId();
@@ -95,14 +96,14 @@ export async function seedScrollDivDepositsWithSymbolsData(
   try {
     const baseUniverseIds = await fetchExistingUniverseIds(
       prisma,
-      BASE_UNIVERSE_COUNT
+      BASE_UNIVERSE_COUNT,
     );
     // Cycle through the 50 base IDs to produce 60 deposit rows
     const universeIds = Array.from(
       { length: ROW_COUNT },
       function cycleId(_: unknown, i: number): string {
         return baseUniverseIds[i % baseUniverseIds.length];
-      }
+      },
     );
     const divDepositTypeId = await getOrCreateDividendType(prisma);
     if (isNewAccount) {
@@ -129,7 +130,7 @@ export async function seedScrollDivDepositsWithSymbolsData(
         prisma,
         accountId,
         accountName,
-        isNewAccount
+        isNewAccount,
       );
     },
   };

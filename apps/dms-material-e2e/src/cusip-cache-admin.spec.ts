@@ -1,5 +1,4 @@
-import { test, expect, Page } from 'playwright/test';
-
+import { expect, Page, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 
 const BASE_API = `${
@@ -24,11 +23,11 @@ async function seedTestMapping(page: Page): Promise<void> {
 
 async function cleanupTestMapping(page: Page): Promise<void> {
   const searchResponse = await page.request.get(
-    `${BASE_API}/search?cusip=${TEST_CUSIP}`
+    `${BASE_API}/search?cusip=${TEST_CUSIP}`,
   );
   if (!searchResponse.ok()) {
     throw new Error(
-      `Failed to search test mapping: ${searchResponse.status()}`
+      `Failed to search test mapping: ${searchResponse.status()}`,
     );
   }
   const searchData = (await searchResponse.json()) as {
@@ -38,7 +37,7 @@ async function cleanupTestMapping(page: Page): Promise<void> {
     const deleteResponse = await page.request.delete(`${BASE_API}/${entry.id}`);
     if (!deleteResponse.ok()) {
       throw new Error(
-        `Failed to delete test mapping ${entry.id}: ${deleteResponse.status()}`
+        `Failed to delete test mapping ${entry.id}: ${deleteResponse.status()}`,
       );
     }
   }
@@ -61,7 +60,7 @@ test.describe('CUSIP Cache Admin UI', function describeCusipCache() {
       page,
     }) {
       await expect(
-        page.locator('[data-testid="cusip-cache-page"]')
+        page.locator('[data-testid="cusip-cache-page"]'),
       ).toBeVisible({ timeout: 10000 });
     });
 
@@ -95,7 +94,7 @@ test.describe('CUSIP Cache Admin UI', function describeCusipCache() {
       page,
     }) {
       await expect(
-        page.locator('[data-testid="refresh-button"]')
+        page.locator('[data-testid="refresh-button"]'),
       ).toBeVisible();
     });
 
@@ -110,7 +109,7 @@ test.describe('CUSIP Cache Admin UI', function describeCusipCache() {
 
       await page.waitForURL('**/global/cusip-cache', { timeout: 10000 });
       await expect(
-        page.locator('[data-testid="cusip-cache-page"]')
+        page.locator('[data-testid="cusip-cache-page"]'),
       ).toBeVisible();
     });
   });
@@ -129,11 +128,11 @@ test.describe('CUSIP Cache Admin UI', function describeCusipCache() {
       await page.locator('[data-testid="search-button"]').click();
 
       await expect(
-        page.locator('[data-testid="search-results-table"]')
+        page.locator('[data-testid="search-results-table"]'),
       ).toBeVisible({ timeout: 10000 });
 
       const firstRow = page.locator(
-        '[data-testid="search-results-table"] tr.mat-mdc-row'
+        '[data-testid="search-results-table"] tr.mat-mdc-row',
       );
       await expect(firstRow.first()).toContainText(TEST_CUSIP);
     });
@@ -160,7 +159,7 @@ test.describe('CUSIP Cache Admin UI', function describeCusipCache() {
       await page.locator('[data-testid="search-button"]').click();
 
       await expect(
-        page.locator('[data-testid="search-results-table"]')
+        page.locator('[data-testid="search-results-table"]'),
       ).toBeVisible({ timeout: 10000 });
     });
 
@@ -171,13 +170,13 @@ test.describe('CUSIP Cache Admin UI', function describeCusipCache() {
       await page.locator('[data-testid="search-button"]').click();
 
       await expect(
-        page.locator('[data-testid="search-results-table"]')
+        page.locator('[data-testid="search-results-table"]'),
       ).toBeVisible({ timeout: 10000 });
 
       await page.locator('[data-testid="clear-search-button"]').click();
 
       await expect(
-        page.locator('[data-testid="search-results-table"]')
+        page.locator('[data-testid="search-results-table"]'),
       ).not.toBeVisible();
     });
   });
@@ -187,7 +186,7 @@ test.describe('CUSIP Cache Admin UI', function describeCusipCache() {
       await page.locator('[data-testid="add-mapping-button"]').click();
 
       await expect(
-        page.locator('[data-testid="dialog-cusip-input"]')
+        page.locator('[data-testid="dialog-cusip-input"]'),
       ).toBeVisible({ timeout: 5000 });
     });
 
@@ -220,7 +219,7 @@ test.describe('CUSIP Cache Admin UI', function describeCusipCache() {
 
       // Verify dialog closes
       await expect(
-        page.locator('[data-testid="dialog-cusip-input"]')
+        page.locator('[data-testid="dialog-cusip-input"]'),
       ).not.toBeVisible({ timeout: 5000 });
 
       // Verify the entry was actually created by searching for it
@@ -228,11 +227,11 @@ test.describe('CUSIP Cache Admin UI', function describeCusipCache() {
       await page.locator('[data-testid="search-button"]').click();
 
       await expect(
-        page.locator('[data-testid="search-results-table"]')
+        page.locator('[data-testid="search-results-table"]'),
       ).toBeVisible({ timeout: 10000 });
 
       const firstRow = page.locator(
-        '[data-testid="search-results-table"] tr.mat-mdc-row'
+        '[data-testid="search-results-table"] tr.mat-mdc-row',
       );
       await expect(firstRow.first()).toContainText(TEST_CUSIP);
     });
@@ -258,13 +257,13 @@ test.describe('CUSIP Cache Admin UI', function describeCusipCache() {
       await page.locator('[data-testid="add-mapping-button"]').click();
 
       await expect(
-        page.locator('[data-testid="dialog-cusip-input"]')
+        page.locator('[data-testid="dialog-cusip-input"]'),
       ).toBeVisible({ timeout: 5000 });
 
       await page.locator('[data-testid="dialog-cancel-button"]').click();
 
       await expect(
-        page.locator('[data-testid="dialog-cusip-input"]')
+        page.locator('[data-testid="dialog-cusip-input"]'),
       ).not.toBeVisible({ timeout: 5000 });
     });
   });
@@ -284,19 +283,19 @@ test.describe('CUSIP Cache Admin UI', function describeCusipCache() {
       await page.locator('[data-testid="search-button"]').click();
 
       await expect(
-        page.locator('[data-testid="search-results-table"]')
+        page.locator('[data-testid="search-results-table"]'),
       ).toBeVisible({ timeout: 10000 });
 
       // Click edit on first result
       await page.locator('[data-testid="edit-button"]').first().click();
 
       await expect(
-        page.locator('[data-testid="dialog-cusip-input"]')
+        page.locator('[data-testid="dialog-cusip-input"]'),
       ).toBeVisible({ timeout: 5000 });
 
       // CUSIP should be pre-filled and disabled in edit mode
       await expect(
-        page.locator('[data-testid="dialog-cusip-input"]')
+        page.locator('[data-testid="dialog-cusip-input"]'),
       ).toBeDisabled();
     });
   });
@@ -315,7 +314,7 @@ test.describe('CUSIP Cache Admin UI', function describeCusipCache() {
       await page.locator('[data-testid="search-button"]').click();
 
       await expect(
-        page.locator('[data-testid="search-results-table"]')
+        page.locator('[data-testid="search-results-table"]'),
       ).toBeVisible({ timeout: 10000 });
 
       await page.locator('[data-testid="delete-button"]').first().click();
@@ -327,7 +326,7 @@ test.describe('CUSIP Cache Admin UI', function describeCusipCache() {
 
       // Click confirm/delete button in the confirmation dialog
       const confirmButton = page.locator(
-        'mat-dialog-container button:has-text("Delete")'
+        'mat-dialog-container button:has-text("Delete")',
       );
       await confirmButton.click();
 
@@ -380,7 +379,7 @@ test.describe('CUSIP Cache Admin UI', function describeCusipCache() {
 
       // Should have at least one audit row with the seeded CUSIP
       const auditRows = page.locator(
-        '[data-testid="audit-table"] tr.mat-mdc-row'
+        '[data-testid="audit-table"] tr.mat-mdc-row',
       );
       await expect(auditRows.first()).toBeVisible({ timeout: 5000 });
     });
@@ -398,7 +397,7 @@ test.describe('CUSIP Cache Admin UI', function describeCusipCache() {
             setTimeout(resolve, 1000);
           });
           await route.continue();
-        }
+        },
       );
 
       await page.goto('/global/cusip-cache');
@@ -419,7 +418,7 @@ test.describe('CUSIP Cache Admin UI', function describeCusipCache() {
       await page.waitForTimeout(300);
 
       await expect(
-        page.locator('[data-testid="cusip-cache-page"]')
+        page.locator('[data-testid="cusip-cache-page"]'),
       ).toBeVisible();
     });
 
@@ -430,7 +429,7 @@ test.describe('CUSIP Cache Admin UI', function describeCusipCache() {
       await page.waitForTimeout(300);
 
       await expect(
-        page.locator('[data-testid="cusip-cache-page"]')
+        page.locator('[data-testid="cusip-cache-page"]'),
       ).toBeVisible();
     });
   });

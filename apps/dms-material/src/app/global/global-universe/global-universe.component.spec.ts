@@ -1,17 +1,16 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal, Signal } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Sort } from '@angular/material/sort';
 import { provideSmartNgRX } from '@smarttools/smart-signals';
 import { of, throwError } from 'rxjs';
-
-import { ScreenerService } from '../global-screener/services/screener.service';
+import { GlobalLoadingService } from '../../shared/services/global-loading.service';
 import { NotificationService } from '../../shared/services/notification.service';
 import { SortFilterStateService } from '../../shared/services/sort-filter-state.service';
 import { UniverseSyncService } from '../../shared/services/universe-sync.service';
 import { UpdateUniverseFieldsService } from '../../shared/services/update-universe-fields.service';
-import { GlobalLoadingService } from '../../shared/services/global-loading.service';
 import { Universe } from '../../store/universe/universe.interface';
+import { ScreenerService } from '../global-screener/services/screener.service';
 import { GlobalUniverseComponent } from './global-universe.component';
 import { UniverseService } from './services/universe.service';
 
@@ -40,14 +39,14 @@ vi.mock(
   '../../store/risk-group/selectors/select-risk-group-entities.function',
   () => ({
     selectRiskGroupEntities: vi.fn().mockReturnValue({ entities: {}, ids: [] }),
-  })
+  }),
 );
 
 vi.mock(
   '../../store/risk-group/selectors/select-risk-group-entity.function',
   () => ({
     selectRiskGroupEntity: vi.fn().mockReturnValue({ id: '', name: '' }),
-  })
+  }),
 );
 
 vi.mock('../../store/screen/selectors/select-screen.function', () => ({
@@ -79,7 +78,7 @@ describe('GlobalUniverseComponent', () => {
           inserted: 5,
           updated: 10,
           markedExpired: 2,
-        })
+        }),
       ),
       isSyncing: vi.fn().mockReturnValue(false),
     };
@@ -118,7 +117,7 @@ describe('GlobalUniverseComponent', () => {
       expect(
         component.columns.find(function findActions(c) {
           return c.field === 'actions';
-        })
+        }),
       ).toBeTruthy();
     });
 
@@ -193,7 +192,7 @@ describe('GlobalUniverseComponent', () => {
       component.syncUniverse();
       expect(mockNotification.showPersistent).toHaveBeenCalledWith(
         expect.stringContaining('5 inserted'),
-        'success'
+        'success',
       );
     });
 
@@ -201,7 +200,7 @@ describe('GlobalUniverseComponent', () => {
       component.syncUniverse();
       expect(mockNotification.showPersistent).toHaveBeenCalledWith(
         expect.stringContaining('10 updated'),
-        'success'
+        'success',
       );
     });
 
@@ -209,7 +208,7 @@ describe('GlobalUniverseComponent', () => {
       component.syncUniverse();
       expect(mockNotification.showPersistent).toHaveBeenCalledWith(
         expect.stringContaining('2 expired'),
-        'success'
+        'success',
       );
     });
 
@@ -217,12 +216,12 @@ describe('GlobalUniverseComponent', () => {
       mockSyncService.syncFromScreener.mockReturnValue(
         throwError(function createError() {
           return new Error('Sync failed');
-        })
+        }),
       );
       component.syncUniverse();
       expect(mockNotification.showPersistent).toHaveBeenCalledWith(
         expect.stringContaining('Failed'),
-        'error'
+        'error',
       );
     });
   });
@@ -242,7 +241,7 @@ describe('GlobalUniverseComponent', () => {
         expect.anything(),
         expect.objectContaining({
           width: '400px',
-        })
+        }),
       );
     });
   });
@@ -291,7 +290,7 @@ describe('GlobalUniverseComponent', () => {
   describe('deleteUniverse', () => {
     function makeSmartArray(
       id: string,
-      mockDelete: ReturnType<typeof vi.fn>
+      mockDelete: ReturnType<typeof vi.fn>,
     ): Universe[] {
       const rowProxy = {
         id,
@@ -479,28 +478,32 @@ describe('GlobalUniverseComponent - Refresh Button', () => {
     await vi.waitFor(() => {
       expect(refreshSpy).toHaveBeenCalled();
       expect(notificationSpy).toHaveBeenCalledWith(
-        'Universe data refreshed successfully'
+        'Universe data refreshed successfully',
       );
     });
   });
 
   it('should handle refresh errors gracefully', () => {
-    (screenerService.error as unknown as { set(msg: string): void }).set('Failed to refresh');
+    (screenerService.error as unknown as { set(msg: string): void }).set(
+      'Failed to refresh',
+    );
     fixture.detectChanges();
 
     const errorEl = fixture.nativeElement.querySelector(
-      '[data-testid="error-message"]'
+      '[data-testid="error-message"]',
     );
     expect(errorEl).toBeTruthy();
   });
 
   it('should display error message when refresh fails', () => {
     const errorMessage = 'Network error occurred';
-    (screenerService.error as unknown as { set(msg: string): void }).set(errorMessage);
+    (screenerService.error as unknown as { set(msg: string): void }).set(
+      errorMessage,
+    );
     fixture.detectChanges();
 
     const errorEl = fixture.nativeElement.querySelector(
-      '[data-testid="error-message"]'
+      '[data-testid="error-message"]',
     );
     expect(errorEl.textContent).toContain(errorMessage);
   });
@@ -522,7 +525,7 @@ describe('GlobalUniverseComponent - Universe Update Button Integration (TDD - St
           inserted: 5,
           updated: 10,
           markedExpired: 2,
-        })
+        }),
       ),
       isSyncing: vi.fn().mockReturnValue(false),
     };
@@ -551,7 +554,7 @@ describe('GlobalUniverseComponent - Universe Update Button Integration (TDD - St
   it('should call UniverseSyncService.syncFromScreener when update button is clicked', () => {
     fixture.detectChanges();
     const button = fixture.nativeElement.querySelector(
-      '[data-testid="update-universe-button"]'
+      '[data-testid="update-universe-button"]',
     );
     button.click();
     fixture.detectChanges();
@@ -564,7 +567,7 @@ describe('GlobalUniverseComponent - Universe Update Button Integration (TDD - St
     fixture.detectChanges();
 
     const button = fixture.nativeElement.querySelector(
-      '[data-testid="update-universe-button"]'
+      '[data-testid="update-universe-button"]',
     );
     expect(button.disabled).toBe(true);
   });
@@ -574,7 +577,7 @@ describe('GlobalUniverseComponent - Universe Update Button Integration (TDD - St
     fixture.detectChanges();
 
     const button = fixture.nativeElement.querySelector(
-      '[data-testid="update-universe-button"]'
+      '[data-testid="update-universe-button"]',
     );
     expect(button.disabled).toBe(false);
   });
@@ -584,7 +587,7 @@ describe('GlobalUniverseComponent - Universe Update Button Integration (TDD - St
     fixture.detectChanges();
 
     const button = fixture.nativeElement.querySelector(
-      '[data-testid="update-universe-button"]'
+      '[data-testid="update-universe-button"]',
     );
     const spinner = button.querySelector('mat-spinner');
     expect(spinner).toBeTruthy();
@@ -595,7 +598,7 @@ describe('GlobalUniverseComponent - Universe Update Button Integration (TDD - St
     fixture.detectChanges();
 
     const button = fixture.nativeElement.querySelector(
-      '[data-testid="update-universe-button"]'
+      '[data-testid="update-universe-button"]',
     );
     const icon = button.querySelector('mat-icon');
     expect(icon).toBeTruthy();
@@ -606,12 +609,12 @@ describe('GlobalUniverseComponent - Universe Update Button Integration (TDD - St
     mockSyncService.syncFromScreener.mockReturnValue(
       throwError(function createError() {
         return new Error('Sync failed');
-      })
+      }),
     );
 
     fixture.detectChanges();
     const button = fixture.nativeElement.querySelector(
-      '[data-testid="update-universe-button"]'
+      '[data-testid="update-universe-button"]',
     );
     button.click();
     fixture.detectChanges();
@@ -626,7 +629,7 @@ describe('GlobalUniverseComponent - Universe Update Button Integration (TDD - St
     fixture.detectChanges();
 
     const button = fixture.nativeElement.querySelector(
-      '[data-testid="update-universe-button"]'
+      '[data-testid="update-universe-button"]',
     );
 
     // Button is disabled, but try to trigger click
@@ -692,11 +695,13 @@ describe('GlobalUniverseComponent - Loading and Error Handling', () => {
   });
 
   it('should display error message when error occurs', () => {
-    (screenerService.error as unknown as { set(msg: string): void }).set('Network error');
+    (screenerService.error as unknown as { set(msg: string): void }).set(
+      'Network error',
+    );
     fixture.detectChanges();
 
     const errorEl = fixture.nativeElement.querySelector(
-      '[data-testid="error-message"]'
+      '[data-testid="error-message"]',
     );
     expect(errorEl.textContent).toContain('Network error');
   });
@@ -707,22 +712,26 @@ describe('GlobalUniverseComponent - Loading and Error Handling', () => {
     component.onRefresh();
 
     expect(notificationSpy).toHaveBeenCalledWith(
-      'Universe data refreshed successfully'
+      'Universe data refreshed successfully',
     );
   });
 
   it('should enable retry on error', () => {
-    (screenerService.error as unknown as { set(msg: string): void }).set('Failed');
+    (screenerService.error as unknown as { set(msg: string): void }).set(
+      'Failed',
+    );
     fixture.detectChanges();
 
     const retryButton = fixture.nativeElement.querySelector(
-      '[data-testid="retry-button"]'
+      '[data-testid="retry-button"]',
     );
     expect(retryButton).toBeTruthy();
   });
 
   it('should clear error when retrying', () => {
-    (screenerService.error as unknown as { set(msg: string): void }).set('Error');
+    (screenerService.error as unknown as { set(msg: string): void }).set(
+      'Error',
+    );
     component.onRefresh();
 
     expect(screenerService.error()).toBe(null);
@@ -748,7 +757,7 @@ describe('GlobalUniverseComponent - Universe Sync Notifications (TDD - Story AK.
           inserted: 5,
           updated: 10,
           markedExpired: 2,
-        })
+        }),
       ),
       isSyncing: vi.fn().mockReturnValue(false),
     };
@@ -776,18 +785,18 @@ describe('GlobalUniverseComponent - Universe Sync Notifications (TDD - Story AK.
         inserted: 5,
         updated: 10,
         markedExpired: 2,
-      })
+      }),
     );
 
     const button = fixture.nativeElement.querySelector(
-      '[data-testid="update-universe-button"]'
+      '[data-testid="update-universe-button"]',
     );
     button.click();
     fixture.detectChanges();
 
     expect(mockNotification.showPersistent).toHaveBeenCalledWith(
       expect.stringContaining('Universe updated'),
-      'success'
+      'success',
     );
   });
 
@@ -796,18 +805,18 @@ describe('GlobalUniverseComponent - Universe Sync Notifications (TDD - Story AK.
     mockSyncService.syncFromScreener.mockReturnValue(
       throwError(function createError() {
         return new Error(errorMessage);
-      })
+      }),
     );
 
     const button = fixture.nativeElement.querySelector(
-      '[data-testid="update-universe-button"]'
+      '[data-testid="update-universe-button"]',
     );
     button.click();
     fixture.detectChanges();
 
     expect(mockNotification.showPersistent).toHaveBeenCalledWith(
       expect.stringContaining('failed'),
-      'error'
+      'error',
     );
   });
 
@@ -817,18 +826,18 @@ describe('GlobalUniverseComponent - Universe Sync Notifications (TDD - Story AK.
         inserted: 15,
         updated: 5,
         markedExpired: 1,
-      })
+      }),
     );
 
     const button = fixture.nativeElement.querySelector(
-      '[data-testid="update-universe-button"]'
+      '[data-testid="update-universe-button"]',
     );
     button.click();
     fixture.detectChanges();
 
     expect(mockNotification.showPersistent).toHaveBeenCalledWith(
       expect.stringMatching(/15.*inserted/i),
-      'success'
+      'success',
     );
   });
 
@@ -838,18 +847,18 @@ describe('GlobalUniverseComponent - Universe Sync Notifications (TDD - Story AK.
         inserted: 3,
         updated: 25,
         markedExpired: 0,
-      })
+      }),
     );
 
     const button = fixture.nativeElement.querySelector(
-      '[data-testid="update-universe-button"]'
+      '[data-testid="update-universe-button"]',
     );
     button.click();
     fixture.detectChanges();
 
     expect(mockNotification.showPersistent).toHaveBeenCalledWith(
       expect.stringMatching(/25.*updated/i),
-      'success'
+      'success',
     );
   });
 
@@ -859,18 +868,18 @@ describe('GlobalUniverseComponent - Universe Sync Notifications (TDD - Story AK.
         inserted: 2,
         updated: 8,
         markedExpired: 12,
-      })
+      }),
     );
 
     const button = fixture.nativeElement.querySelector(
-      '[data-testid="update-universe-button"]'
+      '[data-testid="update-universe-button"]',
     );
     button.click();
     fixture.detectChanges();
 
     expect(mockNotification.showPersistent).toHaveBeenCalledWith(
       expect.stringMatching(/12.*expired/i),
-      'success'
+      'success',
     );
   });
 
@@ -879,7 +888,7 @@ describe('GlobalUniverseComponent - Universe Sync Notifications (TDD - Story AK.
     fixture.detectChanges();
 
     const button = fixture.nativeElement.querySelector(
-      '[data-testid="update-universe-button"]'
+      '[data-testid="update-universe-button"]',
     );
 
     // Button should be disabled, but try to trigger handler directly if possible
@@ -896,18 +905,18 @@ describe('GlobalUniverseComponent - Universe Sync Notifications (TDD - Story AK.
     mockSyncService.syncFromScreener.mockReturnValue(
       throwError(function createError() {
         return { message: errorDetails };
-      })
+      }),
     );
 
     const button = fixture.nativeElement.querySelector(
-      '[data-testid="update-universe-button"]'
+      '[data-testid="update-universe-button"]',
     );
     button.click();
     fixture.detectChanges();
 
     expect(mockNotification.showPersistent).toHaveBeenCalledWith(
       expect.stringContaining(errorDetails),
-      'error'
+      'error',
     );
   });
 
@@ -915,18 +924,18 @@ describe('GlobalUniverseComponent - Universe Sync Notifications (TDD - Story AK.
     mockSyncService.syncFromScreener.mockReturnValue(
       throwError(function createError() {
         return {};
-      })
+      }),
     );
 
     const button = fixture.nativeElement.querySelector(
-      '[data-testid="update-universe-button"]'
+      '[data-testid="update-universe-button"]',
     );
     button.click();
     fixture.detectChanges();
 
     expect(mockNotification.showPersistent).toHaveBeenCalledWith(
       expect.stringMatching(/failed|error/i),
-      'error'
+      'error',
     );
   });
 
@@ -936,18 +945,18 @@ describe('GlobalUniverseComponent - Universe Sync Notifications (TDD - Story AK.
         inserted: 0,
         updated: 0,
         markedExpired: 0,
-      })
+      }),
     );
 
     const button = fixture.nativeElement.querySelector(
-      '[data-testid="update-universe-button"]'
+      '[data-testid="update-universe-button"]',
     );
     button.click();
     fixture.detectChanges();
 
     expect(mockNotification.showPersistent).toHaveBeenCalledWith(
       expect.anything(),
-      'success'
+      'success',
     );
   });
 });
@@ -977,7 +986,7 @@ describe('GlobalUniverseComponent - Update Fields Button Integration (TDD - Stor
           updated: 10,
           correlationId: 'test-correlation-id',
           logFilePath: '/logs/test.log',
-        })
+        }),
       ),
       isUpdating: vi.fn().mockReturnValue(false),
     };
@@ -1028,7 +1037,7 @@ describe('GlobalUniverseComponent - Update Fields Button Integration (TDD - Stor
     component.updateFields();
 
     expect(mockGlobalLoading.show).toHaveBeenCalledWith(
-      'Updating universe fields...'
+      'Updating universe fields...',
     );
   });
 
@@ -1049,7 +1058,7 @@ describe('GlobalUniverseComponent - Update Fields Button Integration (TDD - Stor
 
     expect(mockNotification.showPersistent).toHaveBeenCalledWith(
       expect.stringContaining('10 entries updated'),
-      'success'
+      'success',
     );
   });
 
@@ -1057,7 +1066,7 @@ describe('GlobalUniverseComponent - Update Fields Button Integration (TDD - Stor
     mockUpdateFieldsService.updateFields.mockReturnValue(
       throwError(function createError() {
         return new Error('Update failed');
-      })
+      }),
     );
 
     component.updateFields();
@@ -1069,14 +1078,14 @@ describe('GlobalUniverseComponent - Update Fields Button Integration (TDD - Stor
     mockUpdateFieldsService.updateFields.mockReturnValue(
       throwError(function createError() {
         return new Error('Update failed');
-      })
+      }),
     );
 
     component.updateFields();
 
     expect(mockNotification.showPersistent).toHaveBeenCalledWith(
       expect.stringContaining('Failed to update'),
-      'error'
+      'error',
     );
   });
 
@@ -1085,14 +1094,14 @@ describe('GlobalUniverseComponent - Update Fields Button Integration (TDD - Stor
     mockUpdateFieldsService.updateFields.mockReturnValue(
       throwError(function createError() {
         return { message: errorMessage };
-      })
+      }),
     );
 
     component.updateFields();
 
     expect(mockNotification.showPersistent).toHaveBeenCalledWith(
       expect.stringContaining(errorMessage),
-      'error'
+      'error',
     );
   });
 });
@@ -1117,11 +1126,11 @@ describe('GlobalUniverseComponent - SmartNgRX Integration', () => {
   beforeEach(async () => {
     localStorage.clear();
     // Get reference to the mocked selector
-    const { selectUniverses } = await import(
-      '../../store/universe/selectors/select-universes.function'
-    );
-     
-    selectUniversesMock = selectUniverses as unknown as typeof selectUniversesMock;
+    const { selectUniverses } =
+      await import('../../store/universe/selectors/select-universes.function');
+
+    selectUniversesMock =
+      selectUniverses as unknown as typeof selectUniversesMock;
 
     mockSyncService = {
       syncFromScreener: vi.fn().mockReturnValue(
@@ -1129,7 +1138,7 @@ describe('GlobalUniverseComponent - SmartNgRX Integration', () => {
           inserted: 5,
           updated: 10,
           markedExpired: 2,
-        })
+        }),
       ),
       isSyncing: vi.fn().mockReturnValue(false),
     };
@@ -1395,11 +1404,11 @@ describe('Universe Selectors', () => {
   beforeEach(async () => {
     localStorage.clear();
     // Get reference to the mocked selector
-    const { selectUniverses } = await import(
-      '../../store/universe/selectors/select-universes.function'
-    );
-     
-    selectUniversesMock = selectUniverses as unknown as typeof selectUniversesMock;
+    const { selectUniverses } =
+      await import('../../store/universe/selectors/select-universes.function');
+
+    selectUniversesMock =
+      selectUniverses as unknown as typeof selectUniversesMock;
 
     mockSyncService = {
       syncFromScreener: vi.fn().mockReturnValue(
@@ -1407,7 +1416,7 @@ describe('Universe Selectors', () => {
           inserted: 5,
           updated: 10,
           markedExpired: 2,
-        })
+        }),
       ),
       isSyncing: vi.fn().mockReturnValue(false),
     };
@@ -1605,7 +1614,7 @@ describe('GlobalUniverseComponent - Distribution Field Editing Validation (TDD -
       expect(cellEditSpy).not.toHaveBeenCalled();
       // Should show error notification
       expect(mockNotification.error).toHaveBeenCalledWith(
-        'Distribution value cannot be negative'
+        'Distribution value cannot be negative',
       );
     });
 
@@ -1658,7 +1667,7 @@ describe('GlobalUniverseComponent - Distribution Field Editing Validation (TDD -
 
       expect(cellEditSpy).not.toHaveBeenCalled();
       expect(mockNotification.error).toHaveBeenCalledWith(
-        'Distribution value cannot be negative'
+        'Distribution value cannot be negative',
       );
     });
   });
@@ -1676,7 +1685,7 @@ describe('GlobalUniverseComponent - Distribution Field Editing Validation (TDD -
 
       expect(cellEditSpy).not.toHaveBeenCalled();
       expect(mockNotification.error).toHaveBeenCalledWith(
-        'Distributions per year cannot be negative'
+        'Distributions per year cannot be negative',
       );
     });
 
@@ -1692,7 +1701,7 @@ describe('GlobalUniverseComponent - Distribution Field Editing Validation (TDD -
 
       expect(cellEditSpy).not.toHaveBeenCalled();
       expect(mockNotification.error).toHaveBeenCalledWith(
-        'Distributions per year must be a whole number'
+        'Distributions per year must be a whole number',
       );
     });
 
@@ -1708,7 +1717,7 @@ describe('GlobalUniverseComponent - Distribution Field Editing Validation (TDD -
 
       expect(cellEditSpy).not.toHaveBeenCalled();
       expect(mockNotification.error).toHaveBeenCalledWith(
-        'Distributions per year must be a whole number'
+        'Distributions per year must be a whole number',
       );
     });
 
@@ -1782,7 +1791,7 @@ describe('GlobalUniverseComponent - Distribution Field Editing Validation (TDD -
 
       expect(cellEditSpy).not.toHaveBeenCalled();
       expect(mockNotification.error).toHaveBeenCalledWith(
-        'Invalid date format'
+        'Invalid date format',
       );
     });
 
@@ -1798,7 +1807,7 @@ describe('GlobalUniverseComponent - Distribution Field Editing Validation (TDD -
 
       expect(cellEditSpy).not.toHaveBeenCalled();
       expect(mockNotification.error).toHaveBeenCalledWith(
-        'Invalid date format'
+        'Invalid date format',
       );
     });
 
@@ -1814,7 +1823,7 @@ describe('GlobalUniverseComponent - Distribution Field Editing Validation (TDD -
 
       expect(cellEditSpy).not.toHaveBeenCalled();
       expect(mockNotification.error).toHaveBeenCalledWith(
-        'Invalid date format'
+        'Invalid date format',
       );
     });
 
@@ -1830,7 +1839,7 @@ describe('GlobalUniverseComponent - Distribution Field Editing Validation (TDD -
 
       expect(cellEditSpy).not.toHaveBeenCalled();
       expect(mockNotification.error).toHaveBeenCalledWith(
-        'Invalid date format'
+        'Invalid date format',
       );
     });
 
@@ -1921,7 +1930,7 @@ describe('GlobalUniverseComponent - Distribution Field Editing Validation (TDD -
       // Test distribution error
       component.onCellEdit(row, 'distribution', -1);
       expect(mockNotification.error).toHaveBeenCalledWith(
-        'Distribution value cannot be negative'
+        'Distribution value cannot be negative',
       );
 
       mockNotification.error.mockClear();
@@ -1929,7 +1938,7 @@ describe('GlobalUniverseComponent - Distribution Field Editing Validation (TDD -
       // Test distributions_per_year negative error
       component.onCellEdit(row, 'distributions_per_year', -1);
       expect(mockNotification.error).toHaveBeenCalledWith(
-        'Distributions per year cannot be negative'
+        'Distributions per year cannot be negative',
       );
 
       mockNotification.error.mockClear();
@@ -1937,7 +1946,7 @@ describe('GlobalUniverseComponent - Distribution Field Editing Validation (TDD -
       // Test distributions_per_year decimal error
       component.onCellEdit(row, 'distributions_per_year', 1.5);
       expect(mockNotification.error).toHaveBeenCalledWith(
-        'Distributions per year must be a whole number'
+        'Distributions per year must be a whole number',
       );
 
       mockNotification.error.mockClear();
@@ -1945,7 +1954,7 @@ describe('GlobalUniverseComponent - Distribution Field Editing Validation (TDD -
       // Test ex_date error
       component.onCellEdit(row, 'ex_date', 'invalid');
       expect(mockNotification.error).toHaveBeenCalledWith(
-        'Invalid date format'
+        'Invalid date format',
       );
     });
 
@@ -2093,7 +2102,7 @@ describe('GlobalUniverseComponent - Ex-Date Editing Enhancements (TDD - Story AN
 
       expect(cellEditSpy).not.toHaveBeenCalled();
       expect(mockNotification.error).toHaveBeenCalledWith(
-        'Invalid date format'
+        'Invalid date format',
       );
     });
   });
@@ -2171,7 +2180,7 @@ describe('GlobalUniverseComponent - Ex-Date Editing Enhancements (TDD - Story AN
 
       expect(cellEditSpy).not.toHaveBeenCalled();
       expect(mockNotification.error).toHaveBeenCalledWith(
-        'Invalid date format'
+        'Invalid date format',
       );
     });
 
@@ -2248,7 +2257,7 @@ describe('GlobalUniverseComponent - Ex-Date Editing Enhancements (TDD - Story AN
 
       expect(cellEditSpy).not.toHaveBeenCalled();
       expect(mockNotification.error).toHaveBeenCalledWith(
-        'Invalid date format'
+        'Invalid date format',
       );
     });
 
@@ -2265,7 +2274,7 @@ describe('GlobalUniverseComponent - Ex-Date Editing Enhancements (TDD - Story AN
 
       expect(cellEditSpy).not.toHaveBeenCalled();
       expect(mockNotification.error).toHaveBeenCalledWith(
-        'Invalid date format'
+        'Invalid date format',
       );
     });
 
@@ -2282,7 +2291,7 @@ describe('GlobalUniverseComponent - Ex-Date Editing Enhancements (TDD - Story AN
 
       expect(cellEditSpy).not.toHaveBeenCalled();
       expect(mockNotification.error).toHaveBeenCalledWith(
-        'Invalid date format'
+        'Invalid date format',
       );
     });
   });
@@ -2427,7 +2436,7 @@ describe('GlobalUniverseComponent - Ex-Date Editing Enhancements (TDD - Story AN
       const sortFilterStateService = TestBed.inject(SortFilterStateService);
       const clearSpy = vi.spyOn(
         sortFilterStateService,
-        'clearSortColumnsState'
+        'clearSortColumnsState',
       );
       component.onSortChange({ active: 'symbol', direction: '' });
       expect(clearSpy).toHaveBeenCalledWith('universes');
@@ -2479,10 +2488,10 @@ describe('GlobalUniverseComponent - Client-Side Sorting Removal', () => {
   describe('Verify no client-side sorting', () => {
     it('should not have sortData method', () => {
       expect(
-        (component as unknown as Record<string, unknown>)['sortData']
+        (component as unknown as Record<string, unknown>)['sortData'],
       ).toBeUndefined();
       expect(
-        typeof (component as unknown as Record<string, unknown>)['sortData']
+        typeof (component as unknown as Record<string, unknown>)['sortData'],
       ).not.toBe('function');
     });
 
@@ -2531,10 +2540,10 @@ describe('GlobalUniverseComponent - Client-Side Sorting Removal', () => {
 
       // Component should NOT have any local sort logic that reorders filteredData$
       expect(
-        (component as unknown as Record<string, unknown>)['sortData']
+        (component as unknown as Record<string, unknown>)['sortData'],
       ).toBeUndefined();
       expect(
-        (component as unknown as Record<string, unknown>)['compareFunction']
+        (component as unknown as Record<string, unknown>)['compareFunction'],
       ).toBeUndefined();
     });
 
@@ -2552,11 +2561,11 @@ describe('GlobalUniverseComponent - Client-Side Sorting Removal', () => {
       component.filteredData$();
 
       // The component should not sort the data array
-      const dataSortCalls = sortSpy.mock.calls.filter(function isDataSort(
-        call
-      ) {
-        return call.length > 0;
-      });
+      const dataSortCalls = sortSpy.mock.calls.filter(
+        function isDataSort(call) {
+          return call.length > 0;
+        },
+      );
       expect(dataSortCalls.length).toBe(0);
 
       sortSpy.mockRestore();
@@ -2576,7 +2585,7 @@ describe('GlobalUniverseComponent - Sort State Restoration on Init', () => {
         universes: {
           sortColumns: [{ column: 'symbol', direction: 'asc' }],
         },
-      })
+      }),
     );
 
     const fixture = TestBed.configureTestingModule({
@@ -2600,7 +2609,7 @@ describe('GlobalUniverseComponent - Sort State Restoration on Init', () => {
             { column: 'last_price', direction: 'desc' },
           ],
         },
-      })
+      }),
     );
 
     const fixture = TestBed.configureTestingModule({

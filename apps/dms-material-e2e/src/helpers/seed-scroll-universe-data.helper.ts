@@ -14,9 +14,10 @@ const ROW_COUNT = 60;
 /**
  * Generate many universe records for scroll testing
  */
+
 function createBulkRecords(
   symbols: string[],
-  riskGroupId: string
+  riskGroupId: string,
 ): UniverseRecord[] {
   const futureDate = new Date();
   futureDate.setFullYear(futureDate.getFullYear() + 1);
@@ -47,7 +48,7 @@ export async function seedScrollUniverseData(): Promise<SeederResult> {
     { length: ROW_COUNT },
     function generateSymbol(_: unknown, i: number): string {
       return `USCRL${String(i).padStart(2, '0')}-${uniqueId}`;
-    }
+    },
   );
 
   try {

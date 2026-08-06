@@ -1,8 +1,7 @@
 /* eslint-disable vitest/no-disabled-tests -- Pre-existing: integration tests blocked on database setup */
-import { PrismaClient } from '@prisma/client';
-import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 import { rmSync } from 'fs';
-
+import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
+import { PrismaClient } from '@prisma/client';
 import { authDatabaseMonitorService } from './auth-database-monitor.service';
 import { authDatabaseOptimizerService } from './auth-database-optimizer.service';
 import { databasePerformanceBenchmarkService } from './database-performance-benchmark.service';
@@ -189,7 +188,7 @@ describe('Database Performance Integration Tests', () => {
     it('should measure authentication queries performance', async () => {
       const authProfile =
         await databasePerformanceService.profileAuthenticationQueries(
-          testClient
+          testClient,
         );
 
       expect(authProfile.userLookupTime).toBeGreaterThan(0);
@@ -202,7 +201,7 @@ describe('Database Performance Integration Tests', () => {
     it('should perform optimized user lookup', async () => {
       const result = await authDatabaseOptimizerService.optimizedUserLookup(
         testClient,
-        'test-user-1'
+        'test-user-1',
       );
 
       expect(result).toBeDefined();
@@ -214,14 +213,14 @@ describe('Database Performance Integration Tests', () => {
       const usernames = ['test-user-1', 'test-user-2', 'test-user-3'];
       const result = await authDatabaseOptimizerService.batchUserLookup(
         testClient,
-        usernames
+        usernames,
       );
 
       expect(result).toHaveLength(3);
       expect(
         result.map(function mapToName(user) {
           return user.name;
-        })
+        }),
       ).toEqual(expect.arrayContaining(usernames));
     });
 
@@ -229,7 +228,7 @@ describe('Database Performance Integration Tests', () => {
       const result =
         await authDatabaseOptimizerService.optimizedSessionDataQuery(
           testClient,
-          'test-account-1'
+          'test-account-1',
         );
 
       expect(result).toBeDefined();
@@ -241,11 +240,11 @@ describe('Database Performance Integration Tests', () => {
     it('should validate account existence efficiently', async () => {
       const exists = await authDatabaseOptimizerService.accountExists(
         testClient,
-        'test-user-1'
+        'test-user-1',
       );
       const notExists = await authDatabaseOptimizerService.accountExists(
         testClient,
-        'nonexistent-user'
+        'nonexistent-user',
       );
 
       expect(exists).toBe(true);
@@ -255,7 +254,7 @@ describe('Database Performance Integration Tests', () => {
     it('should get account session stats', async () => {
       const stats = await authDatabaseOptimizerService.getAccountSessionStats(
         testClient,
-        'test-account-1'
+        'test-account-1',
       );
 
       expect(stats.totalTrades).toBe(2);
@@ -270,16 +269,15 @@ describe('Database Performance Integration Tests', () => {
       // Skip - performance metrics tracking has integration issues in test environment
       await authDatabaseOptimizerService.optimizedUserLookup(
         testClient,
-        'test-user-1'
+        'test-user-1',
       );
       await authDatabaseOptimizerService.optimizedSessionDataQuery(
         testClient,
-        'test-account-1'
+        'test-account-1',
       );
 
-      const metrics = await authDatabaseMonitorService.getAuthDatabaseMetrics(
-        testClient
-      );
+      const metrics =
+        await authDatabaseMonitorService.getAuthDatabaseMetrics(testClient);
 
       expect(metrics.authOperationCount).toBeGreaterThan(0);
       expect(metrics.averageAuthQueryTime).toBeGreaterThan(0);
@@ -290,12 +288,11 @@ describe('Database Performance Integration Tests', () => {
       // Perform auth operations to generate metrics
       await authDatabaseOptimizerService.optimizedUserLookup(
         testClient,
-        'test-user-1'
+        'test-user-1',
       );
 
-      const health = await authDatabaseMonitorService.monitorAuthDatabaseHealth(
-        testClient
-      );
+      const health =
+        await authDatabaseMonitorService.monitorAuthDatabaseHealth(testClient);
 
       expect(health.healthy).toBeDefined();
       expect(health.authPerformanceOk).toBeDefined();
@@ -307,7 +304,7 @@ describe('Database Performance Integration Tests', () => {
       // Perform auth operations
       await authDatabaseOptimizerService.optimizedUserLookup(
         testClient,
-        'test-user-1'
+        'test-user-1',
       );
 
       const exportedMetrics =
@@ -317,7 +314,7 @@ describe('Database Performance Integration Tests', () => {
       expect(exportedMetrics.authOperations).toBeDefined();
       expect(exportedMetrics.performance).toBeDefined();
       expect(
-        exportedMetrics.performance.efficiencyScore
+        exportedMetrics.performance.efficiencyScore,
       ).toBeGreaterThanOrEqual(0);
     });
   });
@@ -337,9 +334,9 @@ describe('Database Performance Integration Tests', () => {
         async function createOperation(_, i) {
           return authDatabaseOptimizerService.optimizedUserLookup(
             testClient,
-            `test-user-${(i % 3) + 1}`
+            `test-user-${(i % 3) + 1}`,
           );
-        }
+        },
       );
 
       const startTime = performance.now();
@@ -358,13 +355,13 @@ describe('Database Performance Integration Tests', () => {
       const benchmark =
         await databasePerformanceBenchmarkService.runComprehensiveBenchmark(
           testClient,
-          10 // Reduced iterations for testing
+          10, // Reduced iterations for testing
         );
 
       expect(benchmark.improvementPercentage).toBeGreaterThanOrEqual(30);
       expect(benchmark.meetsTarget).toBe(true);
       expect(benchmark.optimized.totalTime).toBeLessThan(
-        benchmark.baseline.totalTime
+        benchmark.baseline.totalTime,
       );
     }, 30000); // 30 second timeout for benchmark
 
@@ -372,7 +369,7 @@ describe('Database Performance Integration Tests', () => {
       // Skip - benchmark requires fine-tuning for test environment
       const detailedTests =
         await databasePerformanceBenchmarkService.runDetailedPerformanceTests(
-          testClient
+          testClient,
         );
 
       const passedTests = detailedTests.filter(function filterPassed(test) {
@@ -382,7 +379,7 @@ describe('Database Performance Integration Tests', () => {
       expect(detailedTests.length).toBeGreaterThan(0);
       // At least 75% of tests should pass the 30% improvement threshold
       expect(passedTests.length).toBeGreaterThanOrEqual(
-        Math.ceil(detailedTests.length * 0.75)
+        Math.ceil(detailedTests.length * 0.75),
       );
     }, 20000); // 20 second timeout
 
@@ -390,7 +387,7 @@ describe('Database Performance Integration Tests', () => {
       // Skip - benchmark requires fine-tuning for test environment
       const report =
         await databasePerformanceBenchmarkService.generatePerformanceReport(
-          testClient
+          testClient,
         );
 
       expect(report.summary).toContain('Performance Benchmark Results');
@@ -410,13 +407,13 @@ describe('Database Performance Integration Tests', () => {
         operations.push(
           authDatabaseOptimizerService.optimizedUserLookup(
             testClient,
-            'test-user-1'
+            'test-user-1',
           ),
           authDatabaseOptimizerService.optimizedSessionDataQuery(
             testClient,
-            'test-account-1'
+            'test-account-1',
           ),
-          authDatabaseOptimizerService.accountExists(testClient, 'test-user-1')
+          authDatabaseOptimizerService.accountExists(testClient, 'test-user-1'),
         );
       }
 
@@ -436,9 +433,9 @@ describe('Database Performance Integration Tests', () => {
         async function createLoadOperation(_, i) {
           return authDatabaseOptimizerService.optimizedUserLookup(
             testClient,
-            `test-user-${(i % 3) + 1}`
+            `test-user-${(i % 3) + 1}`,
           );
-        }
+        },
       );
 
       await Promise.all(loadOperations);
@@ -458,11 +455,11 @@ describe('Database Performance Integration Tests', () => {
       // Perform tracked operations
       await authDatabaseOptimizerService.optimizedUserLookup(
         testClient,
-        'test-user-1'
+        'test-user-1',
       );
       await authDatabaseOptimizerService.optimizedSessionDataQuery(
         testClient,
-        'test-account-1'
+        'test-account-1',
       );
       await authDatabaseOptimizerService.batchUserLookup(testClient, [
         'test-user-1',
@@ -512,7 +509,7 @@ describe('Database Performance Integration Tests', () => {
       const optimizedResult =
         await authDatabaseOptimizerService.optimizedUserLookup(
           testClient,
-          'consistency-test-user'
+          'consistency-test-user',
         );
 
       // Verify through regular query
