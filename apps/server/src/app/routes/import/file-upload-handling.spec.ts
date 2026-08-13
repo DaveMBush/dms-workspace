@@ -1,7 +1,9 @@
+import multipart from '@fastify/multipart';
+import fastify from 'fastify';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import type { Mock } from 'vitest';
-
 import type { ImportResult } from './import-result.interface';
+import registerImportRoutes from './index';
 
 vi.mock('./fidelity-import-service.function', function () {
   return {
@@ -9,11 +11,7 @@ vi.mock('./fidelity-import-service.function', function () {
   };
 });
 
-import fastify from 'fastify';
-import multipart from '@fastify/multipart';
-import registerImportRoutes from './index';
-
-function buildApp() {
+function buildApp(): fastify.FastifyInstance {
   const app = fastify({ bodyLimit: 15 * 1024 * 1024 });
   app.register(multipart, {
     limits: { fileSize: 15 * 1024 * 1024 },
@@ -23,7 +21,7 @@ function buildApp() {
       registerImportRoutes(instance);
       done();
     },
-    { prefix: '/api/import' }
+    { prefix: '/api/import' },
   );
   return app;
 }
@@ -86,7 +84,7 @@ describe('POST /api/import/fidelity - File Upload Handling (TDD RED)', function 
 
       expect(response.statusCode).toBe(200);
       expect(mockImportFidelityTransactions).toHaveBeenCalledWith(
-        expect.stringContaining('Date,Action')
+        expect.stringContaining('Date,Action'),
       );
     });
 
@@ -271,7 +269,7 @@ describe('POST /api/import/fidelity - File Upload Handling (TDD RED)', function 
       // Verify file was processed in memory, not written to disk
       // Fastify multipart should use buffer mode, not file mode
       expect(mockImportFidelityTransactions).toHaveBeenCalledWith(
-        expect.any(String)
+        expect.any(String),
       );
     });
 
@@ -306,7 +304,7 @@ describe('POST /api/import/fidelity - File Upload Handling (TDD RED)', function 
 
       // Buffer mode: service receives a string, not a file path
       expect(mockImportFidelityTransactions).toHaveBeenCalledWith(
-        expect.any(String)
+        expect.any(String),
       );
     });
   });
@@ -383,7 +381,7 @@ describe('POST /api/import/fidelity - File Upload Handling (TDD RED)', function 
 
     test('should handle exception during file processing gracefully', async function () {
       mockImportFidelityTransactions.mockRejectedValue(
-        new Error('Processing crashed')
+        new Error('Processing crashed'),
       );
 
       const boundary = '----FormBoundary';
@@ -409,7 +407,7 @@ describe('POST /api/import/fidelity - File Upload Handling (TDD RED)', function 
       expect(response.statusCode).toBe(500);
       const result = JSON.parse(response.body) as ImportResult;
       expect(result.errors[0]).toMatch(
-        /unexpected error|internal server error/i
+        /unexpected error|internal server error/i,
       );
     });
   });

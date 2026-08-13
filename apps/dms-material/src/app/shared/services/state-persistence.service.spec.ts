@@ -1,5 +1,4 @@
 import { TestBed } from '@angular/core/testing';
-
 import { StatePersistenceService } from './state-persistence.service';
 
 describe('StatePersistenceService', () => {
@@ -8,7 +7,7 @@ describe('StatePersistenceService', () => {
   let mockSetItem: ReturnType<typeof vi.fn>;
   let mockRemoveItem: ReturnType<typeof vi.fn>;
 
-  const STORAGE_KEY = 'dms-ui-state';
+  const storageKey = 'dms-ui-state';
 
   beforeEach(() => {
     mockGetItem = vi.fn();
@@ -51,24 +50,24 @@ describe('StatePersistenceService', () => {
       service.saveState('test-key', 'test-value');
 
       expect(mockSetItem).toHaveBeenCalledWith(
-        STORAGE_KEY,
-        JSON.stringify({ 'test-key': 'test-value' })
+        storageKey,
+        JSON.stringify({ 'test-key': 'test-value' }),
       );
     });
 
     it('should merge with existing state when saving', () => {
       mockGetItem.mockReturnValue(
-        JSON.stringify({ 'existing-key': 'existing-value' })
+        JSON.stringify({ 'existing-key': 'existing-value' }),
       );
 
       service.saveState('new-key', 'new-value');
 
       expect(mockSetItem).toHaveBeenCalledWith(
-        STORAGE_KEY,
+        storageKey,
         JSON.stringify({
           'existing-key': 'existing-value',
           'new-key': 'new-value',
-        })
+        }),
       );
     });
 
@@ -78,8 +77,8 @@ describe('StatePersistenceService', () => {
       service.saveState('test-key', 'new-value');
 
       expect(mockSetItem).toHaveBeenCalledWith(
-        STORAGE_KEY,
-        JSON.stringify({ 'test-key': 'new-value' })
+        storageKey,
+        JSON.stringify({ 'test-key': 'new-value' }),
       );
     });
 
@@ -90,8 +89,8 @@ describe('StatePersistenceService', () => {
       service.saveState('complex-key', complexValue);
 
       expect(mockSetItem).toHaveBeenCalledWith(
-        STORAGE_KEY,
-        JSON.stringify({ 'complex-key': complexValue })
+        storageKey,
+        JSON.stringify({ 'complex-key': complexValue }),
       );
     });
 
@@ -101,8 +100,8 @@ describe('StatePersistenceService', () => {
       service.saveState('test-key', 'test-value');
 
       expect(mockSetItem).toHaveBeenCalledWith(
-        STORAGE_KEY,
-        JSON.stringify({ 'test-key': 'test-value' })
+        storageKey,
+        JSON.stringify({ 'test-key': 'test-value' }),
       );
     });
 
@@ -125,7 +124,7 @@ describe('StatePersistenceService', () => {
 
     it('should load state from localStorage', () => {
       mockGetItem.mockReturnValue(
-        JSON.stringify({ 'test-key': 'saved-value' })
+        JSON.stringify({ 'test-key': 'saved-value' }),
       );
 
       const result = service.loadState('test-key', 'default');
@@ -152,7 +151,7 @@ describe('StatePersistenceService', () => {
     it('should deserialize complex objects from JSON', () => {
       const complexValue = { nested: { data: [1, 2, 3] }, flag: true };
       mockGetItem.mockReturnValue(
-        JSON.stringify({ 'complex-key': complexValue })
+        JSON.stringify({ 'complex-key': complexValue }),
       );
 
       const result = service.loadState('complex-key', {});
@@ -208,21 +207,21 @@ describe('StatePersistenceService', () => {
 
     it('should remove specific key from localStorage state', () => {
       mockGetItem.mockReturnValue(
-        JSON.stringify({ 'key-a': 'value-a', 'key-b': 'value-b' })
+        JSON.stringify({ 'key-a': 'value-a', 'key-b': 'value-b' }),
       );
 
       service.clearState('key-a');
 
       expect(mockSetItem).toHaveBeenCalledWith(
-        STORAGE_KEY,
-        JSON.stringify({ 'key-b': 'value-b' })
+        storageKey,
+        JSON.stringify({ 'key-b': 'value-b' }),
       );
     });
 
     it('should remove all state when no key is provided', () => {
       service.clearState();
 
-      expect(mockRemoveItem).toHaveBeenCalledWith(STORAGE_KEY);
+      expect(mockRemoveItem).toHaveBeenCalledWith(storageKey);
     });
 
     it('should handle clearing a key that does not exist', () => {
@@ -231,8 +230,8 @@ describe('StatePersistenceService', () => {
       service.clearState('non-existent-key');
 
       expect(mockSetItem).toHaveBeenCalledWith(
-        STORAGE_KEY,
-        JSON.stringify({ 'existing-key': 'value' })
+        storageKey,
+        JSON.stringify({ 'existing-key': 'value' }),
       );
     });
 

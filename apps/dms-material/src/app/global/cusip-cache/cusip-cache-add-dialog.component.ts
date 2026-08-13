@@ -18,7 +18,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { CusipCacheEntry } from './cusip-cache-entry.interface';
 import { CusipCacheSource } from './cusip-cache-source.type';
 
-const CUSIP_PATTERN = /^[A-Za-z0-9]{9}$/;
+const cusipPattern = /^[A-Za-z0-9]{9}$/;
 
 @Component({
   selector: 'dms-cusip-cache-add-dialog',
@@ -37,7 +37,7 @@ export class CusipCacheAddDialogComponent {
   private readonly fb = inject(FormBuilder);
 
   private readonly dialogRef = inject(
-    MatDialogRef<CusipCacheAddDialogComponent>
+    MatDialogRef<CusipCacheAddDialogComponent>,
   );
 
   readonly data: CusipCacheEntry | null =
@@ -48,7 +48,7 @@ export class CusipCacheAddDialogComponent {
   readonly form: FormGroup = this.fb.group({
     cusip: [
       { value: this.data?.cusip ?? '', disabled: this.isEdit },
-      [Validators.required, Validators.pattern(CUSIP_PATTERN)],
+      [Validators.required, Validators.pattern(cusipPattern)],
     ],
     symbol: [
       this.data?.symbol ?? '',

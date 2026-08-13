@@ -1,10 +1,10 @@
-import { createUniverseEntry } from './create-universe-entry.helper';
-import { prisma } from '../../prisma/prisma-client';
-import { fetchAndUpdatePriceData } from '../universe/fetch-and-update-price-data.function';
-import { getDistributions } from '../settings/common/get-distributions.function';
-import { recalculateUniverseVolatility } from '../../volatility/recalculate-universe-volatility.function';
-import { logger } from '../../../utils/structured-logger';
 import { vi } from 'vitest';
+import { logger } from '../../../utils/structured-logger';
+import { prisma } from '../../prisma/prisma-client';
+import { recalculateUniverseVolatility } from '../../volatility/recalculate-universe-volatility.function';
+import { getDistributions } from '../settings/common/get-distributions.function';
+import { fetchAndUpdatePriceData } from '../universe/fetch-and-update-price-data.function';
+import { createUniverseEntry } from './create-universe-entry.helper';
 
 vi.mock('../../prisma/prisma-client', function () {
   return {
@@ -34,7 +34,7 @@ vi.mock(
     return {
       recalculateUniverseVolatility: vi.fn(),
     };
-  }
+  },
 );
 
 vi.mock('../../../utils/structured-logger', function () {
@@ -46,7 +46,11 @@ vi.mock('../../../utils/structured-logger', function () {
   };
 });
 
-const mockPrisma = prisma as any;
+const mockLogger = logger as {
+  warn: ReturnType<typeof vi.fn>;
+  info: ReturnType<typeof vi.fn>;
+};
+const mockPrisma = prisma;
 const mockFetchAndUpdatePriceData = fetchAndUpdatePriceData as ReturnType<
   typeof vi.fn
 >;
@@ -84,7 +88,7 @@ describe('createUniverseEntry', function () {
       risk_group_id: 'inc-id',
       expired: true,
       is_closed_end_fund: true,
-    } as any);
+    });
 
     await createUniverseEntry('PDI', 'inc-id', true);
 
@@ -105,7 +109,7 @@ describe('createUniverseEntry', function () {
       risk_group_id: 'eq-id',
       expired: false,
       is_closed_end_fund: false,
-    } as any);
+    });
 
     await createUniverseEntry('SPY', 'eq-id', false);
 
@@ -123,7 +127,7 @@ describe('createUniverseEntry', function () {
     mockPrisma.universe.create.mockResolvedValue({
       ...mockCreatedEntry,
       id: 'returned-id',
-    } as any);
+    });
 
     const result = await createUniverseEntry('SPY', 'eq-id', false);
 
@@ -131,7 +135,7 @@ describe('createUniverseEntry', function () {
   });
 
   test('should call fetchAndUpdatePriceData after creating entry', async function () {
-    mockPrisma.universe.create.mockResolvedValue(mockCreatedEntry as any);
+    mockPrisma.universe.create.mockResolvedValue(mockCreatedEntry);
 
     await createUniverseEntry('PDI', 'inc-id', true);
 
@@ -139,7 +143,7 @@ describe('createUniverseEntry', function () {
       'test-entry-id',
       'PDI',
       expect.objectContaining({ id: 'test-entry-id' }),
-      expect.objectContaining({ logContext: 'CUSIP resolution' })
+      expect.objectContaining({ logContext: 'CUSIP resolution' }),
     );
   });
 
@@ -149,34 +153,34 @@ describe('createUniverseEntry', function () {
       { amount: 0.5, date: new Date('2024-02-01') },
     ];
     mockGetDistributions.mockResolvedValue({ result: undefined, history });
-    mockPrisma.universe.create.mockResolvedValue(mockCreatedEntry as any);
+    mockPrisma.universe.create.mockResolvedValue(mockCreatedEntry);
 
     await createUniverseEntry('PDI', 'inc-id', true);
 
     expect(mockRecalculateUniverseVolatility).toHaveBeenCalledOnce();
     expect(mockRecalculateUniverseVolatility).toHaveBeenCalledWith(
       'test-entry-id',
-      history
+      history,
     );
   });
 
   test('should call recalculateUniverseVolatility even when getDistributions returns empty history', async function () {
     mockGetDistributions.mockResolvedValue({ result: undefined, history: [] });
-    mockPrisma.universe.create.mockResolvedValue(mockCreatedEntry as any);
+    mockPrisma.universe.create.mockResolvedValue(mockCreatedEntry);
 
     await createUniverseEntry('PDI', 'inc-id', false);
 
     expect(mockRecalculateUniverseVolatility).toHaveBeenCalledOnce();
     expect(mockRecalculateUniverseVolatility).toHaveBeenCalledWith(
       'test-entry-id',
-      []
+      [],
     );
   });
 
   test('should pass prefetchedDistributionOutcome to fetchAndUpdatePriceData', async function () {
     const outcome = { result: undefined, history: [] };
     mockGetDistributions.mockResolvedValue(outcome);
-    mockPrisma.universe.create.mockResolvedValue(mockCreatedEntry as any);
+    mockPrisma.universe.create.mockResolvedValue(mockCreatedEntry);
 
     await createUniverseEntry('PDI', 'inc-id', false);
 
@@ -187,82 +191,82 @@ describe('createUniverseEntry', function () {
       expect.objectContaining({
         logContext: 'CUSIP resolution',
         prefetchedDistributionOutcome: outcome,
-      })
+      }),
     );
   });
 
   test('should log warn and still return entry when fetchAndUpdatePriceData throws', async function () {
-    mockPrisma.universe.create.mockResolvedValue(mockCreatedEntry as any);
+    mockPrisma.universe.create.mockResolvedValue(mockCreatedEntry);
     mockFetchAndUpdatePriceData.mockRejectedValue(new Error('Fetch failed'));
 
     const result = await createUniverseEntry('SPY', 'eq-id', false);
 
-    expect((logger as any).warn).toHaveBeenCalledWith(
+    expect(mockLogger.warn).toHaveBeenCalledWith(
       'Unexpected error during price/dividend fetch after CUSIP resolution',
-      expect.objectContaining({ symbol: 'SPY' })
+      expect.objectContaining({ symbol: 'SPY' }),
     );
     expect(result.id).toBe('test-entry-id');
   });
 
   test('should log warn and fall back to empty history when getDistributions throws an Error', async function () {
     mockGetDistributions.mockRejectedValue(
-      new Error('Distribution fetch failed')
+      new Error('Distribution fetch failed'),
     );
-    mockPrisma.universe.create.mockResolvedValue(mockCreatedEntry as any);
+    mockPrisma.universe.create.mockResolvedValue(mockCreatedEntry);
 
     const result = await createUniverseEntry('PDI', 'inc-id', true);
 
-    expect((logger as any).warn).toHaveBeenCalledWith(
+    expect(mockLogger.warn).toHaveBeenCalledWith(
       'Dividend history fetch failed during CUSIP resolution',
       expect.objectContaining({
         symbol: 'PDI',
         error: 'Distribution fetch failed',
-      })
+      }),
     );
     expect(mockRecalculateUniverseVolatility).toHaveBeenCalledWith(
       'test-entry-id',
-      []
+      [],
     );
     expect(result.id).toBe('test-entry-id');
   });
 
   test('should log warn and fall back to empty history when getDistributions throws a non-Error', async function () {
     mockGetDistributions.mockRejectedValue('string error');
-    mockPrisma.universe.create.mockResolvedValue(mockCreatedEntry as any);
+    mockPrisma.universe.create.mockResolvedValue(mockCreatedEntry);
 
     const result = await createUniverseEntry('PDI', 'inc-id', true);
 
-    expect((logger as any).warn).toHaveBeenCalledWith(
+    expect(mockLogger.warn).toHaveBeenCalledWith(
       'Dividend history fetch failed during CUSIP resolution',
-      expect.objectContaining({ symbol: 'PDI', error: 'string error' })
+      expect.objectContaining({ symbol: 'PDI', error: 'string error' }),
     );
     expect(result.id).toBe('test-entry-id');
   });
 
   test('should log warn and continue when recalculateUniverseVolatility throws', async function () {
     mockRecalculateUniverseVolatility.mockRejectedValue(
-      new Error('Volatility failed')
+      new Error('Volatility failed'),
     );
-    mockPrisma.universe.create.mockResolvedValue(mockCreatedEntry as any);
+    mockPrisma.universe.create.mockResolvedValue(mockCreatedEntry);
 
     const result = await createUniverseEntry('PDI', 'inc-id', true);
 
-    expect((logger as any).warn).toHaveBeenCalledWith(
+    expect(mockLogger.warn).toHaveBeenCalledWith(
       'Volatility recalculation failed during CUSIP resolution',
-      expect.objectContaining({ symbol: 'PDI', error: 'Volatility failed' })
+      expect.objectContaining({ symbol: 'PDI', error: 'Volatility failed' }),
     );
     expect(result.id).toBe('test-entry-id');
   });
 
   test('should log warn and continue when recalculateUniverseVolatility throws a non-Error', async function () {
     mockRecalculateUniverseVolatility.mockRejectedValue('non-error string');
-    mockPrisma.universe.create.mockResolvedValue(mockCreatedEntry as any);
+    mockPrisma.universe.create.mockResolvedValue(mockCreatedEntry);
 
     const result = await createUniverseEntry('PDI', 'inc-id', true);
 
-    expect((logger as any).warn).toHaveBeenCalledWith(
+    expect(mockLogger.warn).toHaveBeenCalledWith(
       'Volatility recalculation failed during CUSIP resolution',
-      expect.objectContaining({ symbol: 'PDI', error: 'non-error string' })
+      expect.objectContaining({ symbol: 'PDI', error: 'non-error string' }),
     );
     expect(result.id).toBe('test-entry-id');
   });

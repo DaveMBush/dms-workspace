@@ -1,10 +1,10 @@
-/* eslint-disable @smarttools/one-exported-item-per-file, @typescript-eslint/strict-boolean-expressions -- Infrastructure monitoring code with specific requirements */
+/* eslint-disable @smarttools/one-exported-item-per-file -- Infrastructure monitoring code with specific requirements */
 
 import { FastifyRequest } from 'fastify';
 
 // Helper functions
 export function extractUserIdFromRequest(
-  request: FastifyRequest
+  request: FastifyRequest,
 ): string | undefined {
   const authHeader = request.headers.authorization;
   if (authHeader?.startsWith('Bearer ')) {
@@ -21,7 +21,7 @@ export function extractUserIdFromRequest(
 }
 
 export function extractSessionIdFromRequest(
-  request: FastifyRequest
+  request: FastifyRequest,
 ): string | undefined {
   const sessionHeader = request.headers['x-session-id'] as string;
   if (sessionHeader !== undefined && sessionHeader.length > 0) {

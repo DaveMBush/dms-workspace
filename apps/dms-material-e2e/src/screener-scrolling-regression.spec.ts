@@ -28,7 +28,6 @@
  */
 
 import { expect, test } from 'playwright/test';
-
 import { assertStickyHeaderInvariant } from './helpers/assert-sticky-header-invariant.helper';
 import { login } from './helpers/login.helper';
 import { seedScrollScreenerData } from './helpers/seed-scroll-screener-data.helper';
@@ -109,7 +108,7 @@ test.describe('Screener — Story 101.3 slow-scroll header-invariant regression'
     await assertStickyHeaderInvariant(
       page,
       VIEWPORT_SELECTOR,
-      HEADER_ROW_SELECTOR
+      HEADER_ROW_SELECTOR,
     );
   });
 });

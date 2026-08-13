@@ -174,7 +174,6 @@
  */
 
 import { expect, Locator, Page, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 import { seedScrollDivDepositsWithSymbolsData } from './helpers/seed-scroll-div-deposits-with-symbols-data.helper';
 import { seedScrollOpenPositionsData } from './helpers/seed-scroll-open-positions-data.helper';
@@ -252,7 +251,7 @@ async function captureSlowScrollFrames(
   page: Page,
   viewportLocator: Locator,
   headerLocator: Locator,
-  options: SlowScrollOptions = {}
+  options: SlowScrollOptions = {},
 ): Promise<FrameSnapshot[]> {
   const {
     totalPx = SLOW_SCROLL_TOTAL_PX,
@@ -264,11 +263,10 @@ async function captureSlowScrollFrames(
   for (let y = stepPx; y <= totalPx; y += stepPx) {
     await viewportLocator.evaluate(function setScrollTop(
       el: Element,
-      top: number
+      top: number,
     ) {
       (el as HTMLElement).scrollTop = top;
-    },
-    y);
+    }, y);
     await page.waitForTimeout(frameDelayMs);
 
     const [hb, vb, st] = await Promise.all([
@@ -332,7 +330,7 @@ test.describe('Universe — Round 7 slow-scroll sticky-header regression (Story 
     // must equal the viewport's screen Y on every frame (within PIXEL_TOLERANCE).
     // Violation: headerTop > viewportTop + PIXEL_TOLERANCE = header drifted down.
     const driftingDown = snapshots.filter(function isDriftingDown(
-      snap: FrameSnapshot
+      snap: FrameSnapshot,
     ) {
       return snap.headerTop - snap.viewportTop > PIXEL_TOLERANCE;
     });
@@ -341,7 +339,7 @@ test.describe('Universe — Round 7 slow-scroll sticky-header regression (Story 
       driftingDown,
       `Universe header-scrolls-with-content: ${driftingDown.length} frame(s) where header Y ` +
         `exceeded viewport Y by >${PIXEL_TOLERANCE}px during 4px/step slow scroll. ` +
-        'position:sticky anchoring failed — fix in Story 101.2.'
+        'position:sticky anchoring failed — fix in Story 101.2.',
     ).toHaveLength(0);
   });
 
@@ -365,7 +363,7 @@ test.describe('Universe — Round 7 slow-scroll sticky-header regression (Story 
     // Violation: viewportTop - headerTop > PIXEL_TOLERANCE
     //   = header Y is above viewport Y = header slid behind app bar.
     const hiddenBehindBar = snapshots.filter(function isAboveViewport(
-      snap: FrameSnapshot
+      snap: FrameSnapshot,
     ) {
       return snap.viewportTop - snap.headerTop > PIXEL_TOLERANCE;
     });
@@ -373,7 +371,7 @@ test.describe('Universe — Round 7 slow-scroll sticky-header regression (Story 
     expect(
       hiddenBehindBar,
       `Universe header-under-header: ${hiddenBehindBar.length} frame(s) where header Y was ` +
-        `>${PIXEL_TOLERANCE}px above viewport Y (header slid behind app bar). Fix in Story 101.2.`
+        `>${PIXEL_TOLERANCE}px above viewport Y (header slid behind app bar). Fix in Story 101.2.`,
     ).toHaveLength(0);
   });
 });
@@ -417,14 +415,14 @@ test.describe('Open Positions — Round 7 slow-scroll sticky-header regression (
 
     const snapshots = await captureSlowScrollFrames(page, viewport, header);
     const driftingDown = snapshots.filter(function isDriftingDown(
-      snap: FrameSnapshot
+      snap: FrameSnapshot,
     ) {
       return snap.headerTop - snap.viewportTop > PIXEL_TOLERANCE;
     });
 
     expect(
       driftingDown,
-      `Open Positions header-scrolls-with-content: ${driftingDown.length} frames with drift >${PIXEL_TOLERANCE}px. Fix in Story 101.2.`
+      `Open Positions header-scrolls-with-content: ${driftingDown.length} frames with drift >${PIXEL_TOLERANCE}px. Fix in Story 101.2.`,
     ).toHaveLength(0);
   });
 
@@ -443,14 +441,14 @@ test.describe('Open Positions — Round 7 slow-scroll sticky-header regression (
 
     const snapshots = await captureSlowScrollFrames(page, viewport, header);
     const hiddenBehindBar = snapshots.filter(function isAboveViewport(
-      snap: FrameSnapshot
+      snap: FrameSnapshot,
     ) {
       return snap.viewportTop - snap.headerTop > PIXEL_TOLERANCE;
     });
 
     expect(
       hiddenBehindBar,
-      `Open Positions header-under-header: ${hiddenBehindBar.length} frames hidden behind app bar. Fix in Story 101.2.`
+      `Open Positions header-under-header: ${hiddenBehindBar.length} frames hidden behind app bar. Fix in Story 101.2.`,
     ).toHaveLength(0);
   });
 });
@@ -494,14 +492,14 @@ test.describe('Sold Positions — Round 7 slow-scroll sticky-header regression (
 
     const snapshots = await captureSlowScrollFrames(page, viewport, header);
     const driftingDown = snapshots.filter(function isDriftingDown(
-      snap: FrameSnapshot
+      snap: FrameSnapshot,
     ) {
       return snap.headerTop - snap.viewportTop > PIXEL_TOLERANCE;
     });
 
     expect(
       driftingDown,
-      `Sold Positions header-scrolls-with-content: ${driftingDown.length} frames with drift >${PIXEL_TOLERANCE}px. Fix in Story 101.2.`
+      `Sold Positions header-scrolls-with-content: ${driftingDown.length} frames with drift >${PIXEL_TOLERANCE}px. Fix in Story 101.2.`,
     ).toHaveLength(0);
   });
 
@@ -520,14 +518,14 @@ test.describe('Sold Positions — Round 7 slow-scroll sticky-header regression (
 
     const snapshots = await captureSlowScrollFrames(page, viewport, header);
     const hiddenBehindBar = snapshots.filter(function isAboveViewport(
-      snap: FrameSnapshot
+      snap: FrameSnapshot,
     ) {
       return snap.viewportTop - snap.headerTop > PIXEL_TOLERANCE;
     });
 
     expect(
       hiddenBehindBar,
-      `Sold Positions header-under-header: ${hiddenBehindBar.length} frames hidden behind app bar. Fix in Story 101.2.`
+      `Sold Positions header-under-header: ${hiddenBehindBar.length} frames hidden behind app bar. Fix in Story 101.2.`,
     ).toHaveLength(0);
   });
 });
@@ -571,14 +569,14 @@ test.describe('Dividend Deposits — Round 7 slow-scroll sticky-header regressio
 
     const snapshots = await captureSlowScrollFrames(page, viewport, header);
     const driftingDown = snapshots.filter(function isDriftingDown(
-      snap: FrameSnapshot
+      snap: FrameSnapshot,
     ) {
       return snap.headerTop - snap.viewportTop > PIXEL_TOLERANCE;
     });
 
     expect(
       driftingDown,
-      `Dividend Deposits header-scrolls-with-content: ${driftingDown.length} frames with drift >${PIXEL_TOLERANCE}px. Fix in Story 101.2.`
+      `Dividend Deposits header-scrolls-with-content: ${driftingDown.length} frames with drift >${PIXEL_TOLERANCE}px. Fix in Story 101.2.`,
     ).toHaveLength(0);
   });
 
@@ -597,14 +595,14 @@ test.describe('Dividend Deposits — Round 7 slow-scroll sticky-header regressio
 
     const snapshots = await captureSlowScrollFrames(page, viewport, header);
     const hiddenBehindBar = snapshots.filter(function isAboveViewport(
-      snap: FrameSnapshot
+      snap: FrameSnapshot,
     ) {
       return snap.viewportTop - snap.headerTop > PIXEL_TOLERANCE;
     });
 
     expect(
       hiddenBehindBar,
-      `Dividend Deposits header-under-header: ${hiddenBehindBar.length} frames hidden behind app bar. Fix in Story 101.2.`
+      `Dividend Deposits header-under-header: ${hiddenBehindBar.length} frames hidden behind app bar. Fix in Story 101.2.`,
     ).toHaveLength(0);
   });
 });
@@ -650,14 +648,14 @@ test.describe('Screener — Round 7 slow-scroll sticky-header regression (Story 
 
     const snapshots = await captureSlowScrollFrames(page, viewport, header);
     const driftingDown = snapshots.filter(function isDriftingDown(
-      snap: FrameSnapshot
+      snap: FrameSnapshot,
     ) {
       return snap.headerTop - snap.viewportTop > PIXEL_TOLERANCE;
     });
 
     expect(
       driftingDown,
-      `Screener header-scrolls-with-content: ${driftingDown.length} frames with drift >${PIXEL_TOLERANCE}px. Fix in Story 101.2.`
+      `Screener header-scrolls-with-content: ${driftingDown.length} frames with drift >${PIXEL_TOLERANCE}px. Fix in Story 101.2.`,
     ).toHaveLength(0);
   });
 
@@ -675,70 +673,68 @@ test.describe('Screener — Round 7 slow-scroll sticky-header regression (Story 
 
     const snapshots = await captureSlowScrollFrames(page, viewport, header);
     const hiddenBehindBar = snapshots.filter(function isAboveViewport(
-      snap: FrameSnapshot
+      snap: FrameSnapshot,
     ) {
       return snap.viewportTop - snap.headerTop > PIXEL_TOLERANCE;
     });
 
     expect(
       hiddenBehindBar,
-      `Screener header-under-header: ${hiddenBehindBar.length} frames hidden behind app bar. Fix in Story 101.2.`
+      `Screener header-under-header: ${hiddenBehindBar.length} frames hidden behind app bar. Fix in Story 101.2.`,
     ).toHaveLength(0);
   });
 });
 
 // ─── Flicker (skipped — assertion pattern requires live-app frame observation) ─
 
-test.describe.skip(
-  'Round 7 Flicker — row position jitter during slow scroll (Story 101.1)',
-  () => {
-    // TODO Story 101.2: implement flicker detection.
-    //
-    // Flicker definition (per Epic 101 story): no two consecutive frames where
-    // the SAME row's getBoundingClientRect().top changes by more than one scroll
-    // step (SLOW_SCROLL_STEP_PX) AND then reverts in the next frame.
-    //
-    // The assertion requires capturing per-row Y positions on each frame and
-    // comparing consecutive deltas. This pattern needs live-app observation to
-    // calibrate: is the jitter 1 frame (16ms) or multiple? Does it always revert
-    // or sometimes leave the row displaced? Until confirmed, the assertion risks
-    // false-negatives (misses flicker) or false-positives (noise from sub-pixel
-    // rounding) if written without observational data.
-    //
-    // Placeholder tests are SKIPPED (test.describe.skip) until Story 101.2
-    // runs the live-app sequence and measures actual frame deltas.
-    //
-    // Provisional assertion structure (for Story 101.2 to refine):
-    //
-    //   interface RowFrameSnapshot { rowIndex: number; top: number; }
-    //   const rowSnapshots: RowFrameSnapshot[][] = [];
-    //   // capture rowSnapshots[frame][rowIndex].top for each frame
-    //   // then:
-    //   for (let f = 1; f < rowSnapshots.length - 1; f++) {
-    //     for (const row of rowSnapshots[f]) {
-    //       const prev = rowSnapshots[f - 1].find(r => r.rowIndex === row.rowIndex);
-    //       const next = rowSnapshots[f + 1].find(r => r.rowIndex === row.rowIndex);
-    //       if (!prev || !next) continue;
-    //       const jumpThisFrame = Math.abs(row.top - prev.top);
-    //       const revertNextFrame = Math.abs(next.top - row.top);
-    //       // Flicker: large jump then revert
-    //       if (jumpThisFrame > ROW_HEIGHT_PX / 2 && revertNextFrame > ROW_HEIGHT_PX / 2) {
-    //         flickerEvents.push({ frame: f, rowIndex: row.rowIndex, jump: jumpThisFrame });
-    //       }
-    //     }
-    //   }
-    //   expect(flickerEvents).toHaveLength(0);
+test.describe
+  .skip('Round 7 Flicker — row position jitter during slow scroll (Story 101.1)', () => {
+  // TODO Story 101.2: implement flicker detection.
+  //
+  // Flicker definition (per Epic 101 story): no two consecutive frames where
+  // the SAME row's getBoundingClientRect().top changes by more than one scroll
+  // step (SLOW_SCROLL_STEP_PX) AND then reverts in the next frame.
+  //
+  // The assertion requires capturing per-row Y positions on each frame and
+  // comparing consecutive deltas. This pattern needs live-app observation to
+  // calibrate: is the jitter 1 frame (16ms) or multiple? Does it always revert
+  // or sometimes leave the row displaced? Until confirmed, the assertion risks
+  // false-negatives (misses flicker) or false-positives (noise from sub-pixel
+  // rounding) if written without observational data.
+  //
+  // Placeholder tests are SKIPPED (test.describe.skip) until Story 101.2
+  // runs the live-app sequence and measures actual frame deltas.
+  //
+  // Provisional assertion structure (for Story 101.2 to refine):
+  //
+  //   interface RowFrameSnapshot { rowIndex: number; top: number; }
+  //   const rowSnapshots: RowFrameSnapshot[][] = [];
+  //   // capture rowSnapshots[frame][rowIndex].top for each frame
+  //   // then:
+  //   for (let f = 1; f < rowSnapshots.length - 1; f++) {
+  //     for (const row of rowSnapshots[f]) {
+  //       const prev = rowSnapshots[f - 1].find(r => r.rowIndex === row.rowIndex);
+  //       const next = rowSnapshots[f + 1].find(r => r.rowIndex === row.rowIndex);
+  //       if (!prev || !next) continue;
+  //       const jumpThisFrame = Math.abs(row.top - prev.top);
+  //       const revertNextFrame = Math.abs(next.top - row.top);
+  //       // Flicker: large jump then revert
+  //       if (jumpThisFrame > ROW_HEIGHT_PX / 2 && revertNextFrame > ROW_HEIGHT_PX / 2) {
+  //         flickerEvents.push({ frame: f, rowIndex: row.rowIndex, jump: jumpThisFrame });
+  //       }
+  //     }
+  //   }
+  //   expect(flickerEvents).toHaveLength(0);
 
-    test('Universe: no row flicker during slow scroll', async ({ page }) => {
-      // Placeholder — skipped. See describe block comment.
-      await page.goto('/global/universe');
-    });
+  test('Universe: no row flicker during slow scroll', async ({ page }) => {
+    // Placeholder — skipped. See describe block comment.
+    await page.goto('/global/universe');
+  });
 
-    test('Open Positions: no row flicker during slow scroll', async ({
-      page,
-    }) => {
-      // Placeholder — skipped. See describe block comment.
-      await page.goto('/global/universe');
-    });
-  }
-);
+  test('Open Positions: no row flicker during slow scroll', async ({
+    page,
+  }) => {
+    // Placeholder — skipped. See describe block comment.
+    await page.goto('/global/universe');
+  });
+});

@@ -6,14 +6,22 @@
  * Add Symbol dialog, via both the + button flow and the CSV import flow.
  * Also verifies that a plain equity (AAPL) retains the "Equities" Risk Group.
  */
+
 import path from 'path';
 import { expect, Page, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 import { initializePrismaClient } from './helpers/shared-prisma-client.helper';
 import { createRiskGroups } from './helpers/shared-risk-groups.helper';
 
-const FIXTURES_DIR = path.resolve(__dirname, '..', 'fixtures');
+// Resolve the fixtures directory relative to the workspace root. The
+// compiled test files are emitted into a `dist` folder, so using
+// __dirname would point at that location and miss the source fixtures.
+const _FIXTURES_DIR = path.resolve(
+  process.cwd(),
+  'apps',
+  'dms-material-e2e',
+  'fixtures',
+);
 const CEF_SYMBOL_BUTTON = 'OXLC';
 const CEF_SYMBOL_CSV = 'ECC';
 const EQUITY_SYMBOL = 'AAPL';
@@ -26,17 +34,29 @@ async function navigateToUniverse(page: Page): Promise<void> {
   await expect(page.locator('dms-base-table')).toBeVisible({ timeout: 15000 });
 }
 
+async function deleteSymbol(
+  symbol: string,
+  prisma: {
+    universe: {
+      findFirst(q: { where: { symbol: string } }): Promise<{ id: string }>;
+    };
+    delete(q: { where: { id: string } }): Promise<void>;
+    trades: { deleteMany(q: { where: { universeId: string } }): Promise<void> };
+  },
+): Promise<void> {
+  const existing = await prisma.universe.findFirst({ where: { symbol } });
+  if (!existing) {
+    return;
+  }
+  await prisma.trades.deleteMany({ where: { universeId: existing.id } });
+  await prisma.universe.delete({ where: { id: existing.id } });
+}
+
 async function cleanupTestData(): Promise<void> {
   const prisma = await initializePrismaClient();
   try {
     for (const symbol of TEST_SYMBOLS) {
-      const existing = await prisma.universe.findFirst({
-        where: { symbol },
-      });
-      if (existing) {
-        await prisma.trades.deleteMany({ where: { universeId: existing.id } });
-        await prisma.universe.delete({ where: { id: existing.id } });
-      }
+      await deleteSymbol(symbol, prisma);
     }
     await prisma.accounts.deleteMany({ where: { name: CEF_IMPORT_ACCOUNT } });
   } finally {
@@ -61,7 +81,7 @@ async function seedTestData(): Promise<void> {
 
 async function typeSymbolAndSelectAutocomplete(
   page: Page,
-  symbol: string
+  symbol: string,
 ): Promise<void> {
   await page.route('**/api/symbol/search**', async (route) => {
     await route.fulfill({
@@ -84,13 +104,13 @@ async function typeSymbolAndSelectAutocomplete(
 
 async function selectRiskGroupInDialog(
   page: Page,
-  groupName: string
+  groupName: string,
 ): Promise<void> {
   await page.locator('mat-select[formcontrolname="riskGroupId"]').click();
   await page.waitForTimeout(300);
   const option = page
     .locator(
-      '.cdk-overlay-container .mat-option, .cdk-overlay-container .mat-mdc-option'
+      '.cdk-overlay-container .mat-option, .cdk-overlay-container .mat-mdc-option',
     )
     .filter({ hasText: groupName })
     .first();
@@ -109,11 +129,11 @@ async function addSymbolViaButton(page: Page, symbol: string): Promise<void> {
   const addResponsePromise = page.waitForResponse(
     (response) =>
       response.url().includes('/api/universe/add') && response.status() === 200,
-    { timeout: 30000 }
+    { timeout: 30000 },
   );
   await page.locator('[data-testid="submit-button"]').click();
   await expect(
-    page.locator('[data-testid="add-symbol-dialog"]')
+    page.locator('[data-testid="add-symbol-dialog"]'),
   ).not.toBeVisible({ timeout: 30000 });
   // Ensure add is fully committed (including CEF classification) before navigating
   await addResponsePromise;
@@ -124,11 +144,19 @@ async function addSymbolViaButton(page: Page, symbol: string): Promise<void> {
 async function importCsvFile(page: Page, filename: string): Promise<void> {
   await page.locator('[data-testid="import-transactions-button"]').click();
   await expect(
-    page.getByRole('heading', { name: 'Import Fidelity Transactions' })
+    page.getByRole('heading', { name: 'Import Fidelity Transactions' }),
   ).toBeVisible({ timeout: 5000 });
-  await page
-    .locator('input[type="file"]')
-    .setInputFiles(path.join(FIXTURES_DIR, filename));
+  // Resolve the fixture path relative to the workspace root. Using
+  // __dirname would point at the compiled output directory (dist), which
+  // does not contain the source fixtures.
+  const filePath = path.resolve(
+    process.cwd(),
+    'apps',
+    'dms-material-e2e',
+    'fixtures',
+    filename,
+  );
+  await page.locator('input[type="file"]').setInputFiles(filePath);
   const uploadButton = page.locator('[data-testid="upload-button"]');
   await expect(uploadButton).toBeEnabled({ timeout: 5000 });
   // Register response listener BEFORE upload click to avoid race condition
@@ -136,11 +164,11 @@ async function importCsvFile(page: Page, filename: string): Promise<void> {
     (response) =>
       response.url().includes('/api/import/fidelity') &&
       response.status() === 200,
-    { timeout: 30000 }
+    { timeout: 30000 },
   );
   await uploadButton.click();
   await expect(
-    page.getByRole('heading', { name: 'Import Fidelity Transactions' })
+    page.getByRole('heading', { name: 'Import Fidelity Transactions' }),
   ).not.toBeVisible({ timeout: 30000 });
   // Ensure import is fully committed before navigating
   await importResponsePromise;

@@ -1,5 +1,4 @@
 import { expect, Page, test } from 'playwright/test';
-
 import { generateUniqueId } from './helpers/generate-unique-id.helper';
 import { login } from './helpers/login.helper';
 import { initializePrismaClient } from './helpers/shared-prisma-client.helper';
@@ -20,7 +19,10 @@ interface SeederResult {
   symbolWithoutDate: string;
 }
 
-function getUniverseRowBySymbol(page: Page, symbol: string) {
+function getUniverseRowBySymbol(
+  page: Page,
+  symbol: string,
+): ReturnType<typeof page.locator> {
   return page.locator('.dms-body-row[role="row"]').filter({
     has: page.locator('.dms-body-cell[data-column="symbol"]', {
       hasText: symbol,
@@ -30,7 +32,7 @@ function getUniverseRowBySymbol(page: Page, symbol: string) {
 
 async function filterUniverseToSymbol(
   page: Page,
-  symbol: string
+  symbol: string,
 ): Promise<void> {
   const symbolFilter = page.getByPlaceholder('Search Symbol');
   await symbolFilter.fill(symbol);
@@ -143,7 +145,7 @@ test.describe('Date Editor Width Consistency', () => {
 
     // Measure width of the filled date input
     const filledWidth = await filledInput.evaluate(function measureWidth(
-      el: HTMLInputElement
+      el: HTMLInputElement,
     ): number {
       return el.offsetWidth;
     });
@@ -166,7 +168,7 @@ test.describe('Date Editor Width Consistency', () => {
 
     // Measure width of the empty date input
     const emptyWidth = await emptyInput.evaluate(function measureWidth(
-      el: HTMLInputElement
+      el: HTMLInputElement,
     ): number {
       return el.offsetWidth;
     });

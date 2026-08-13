@@ -1,14 +1,13 @@
-import { describe, expect, test, vi, beforeEach } from 'vitest';
-
-import { mapFidelityTransactions } from './fidelity-data-mapper.function';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { prisma } from '../../prisma/prisma-client';
-import { getDistributions } from '../settings/common/get-distributions.function';
-import { getLastPrice } from '../settings/common/get-last-price.function';
-import { adjustLotsForSplit } from './adjust-lots-for-split.function';
 import {
   classifySymbolRiskGroupId,
   lookupCefConnectSymbol,
 } from '../common/cef-classification.function';
+import { getDistributions } from '../settings/common/get-distributions.function';
+import { getLastPrice } from '../settings/common/get-last-price.function';
+import { adjustLotsForSplit } from './adjust-lots-for-split.function';
+import { mapFidelityTransactions } from './fidelity-data-mapper.function';
 
 vi.mock('../../prisma/prisma-client', function () {
   return {
@@ -53,12 +52,12 @@ vi.mock('../common/cef-classification.function', function () {
   };
 });
 
-const mockPrisma = prisma as any;
-const mockGetDistributions = getDistributions as any;
-const mockGetLastPrice = getLastPrice as any;
-const mockAdjustLotsForSplit = adjustLotsForSplit as any;
-const mockLookupCefConnectSymbol = lookupCefConnectSymbol as any;
-const mockClassifySymbolRiskGroupId = classifySymbolRiskGroupId as any;
+const mockPrisma = vi.mocked(prisma);
+const mockGetDistributions = vi.mocked(getDistributions);
+const mockGetLastPrice = vi.mocked(getLastPrice);
+const mockAdjustLotsForSplit = vi.mocked(adjustLotsForSplit);
+const mockLookupCefConnectSymbol = vi.mocked(lookupCefConnectSymbol);
+const mockClassifySymbolRiskGroupId = vi.mocked(classifySymbolRiskGroupId);
 
 const DEFAULT_RISK_GROUPS = [
   { id: 'equities-rg', name: 'Equities' },
@@ -407,7 +406,7 @@ describe('mapFidelityTransactions', function () {
       });
       expect(result.divDeposits).toHaveLength(1);
       expect(result.divDeposits[0].divDepositTypeId).toBe(
-        'new-cash-deposit-type'
+        'new-cash-deposit-type',
       );
     });
 
@@ -742,7 +741,7 @@ describe('mapFidelityTransactions', function () {
       mockPrisma.risk_group.findMany.mockResolvedValue([]);
 
       await expect(mapFidelityTransactions(rows)).rejects.toThrow(
-        'Equities risk group not found in database'
+        'Equities risk group not found in database',
       );
     });
   });
@@ -867,16 +866,16 @@ describe('mapFidelityTransactions', function () {
         risk_group_id: 'equities-rg',
       });
       mockLookupCefConnectSymbol.mockRejectedValue(
-        new Error('Network timeout')
+        new Error('Network timeout'),
       );
       const { logger } = await import('../../../utils/structured-logger');
-      const mockLogger = logger as any;
+      const mockLogger = vi.mocked(logger);
 
       const result = await mapFidelityTransactions(rows);
 
       expect(mockLogger.warn).toHaveBeenCalledWith(
         'CEF classification lookup failed; using default risk group',
-        expect.objectContaining({ symbol: 'ERRSTOCK' })
+        expect.objectContaining({ symbol: 'ERRSTOCK' }),
       );
       expect(mockPrisma.universe.create).toHaveBeenCalledWith({
         data: {

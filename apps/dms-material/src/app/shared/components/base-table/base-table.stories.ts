@@ -1,5 +1,4 @@
-import { type Meta, type StoryObj } from '@storybook/angular';
-
+import { type Meta, type StoryObj } from '@storybook/angular-vite';
 import { BaseTableComponent } from './base-table.component';
 import { ColumnDef } from './column-def.interface';
 

@@ -1,5 +1,4 @@
 import { FastifyInstance } from 'fastify';
-
 import { logger } from '../../../utils/structured-logger';
 import { prisma } from '../../prisma/prisma-client';
 import { recalculateUniverseVolatility } from '../../volatility/recalculate-universe-volatility.function';
@@ -11,8 +10,8 @@ import registerAddSymbol from './add-symbol';
 import { addSymbol } from './add-symbol/add-symbol.function';
 import registerGetAllUniverses from './get-all-universes';
 import registerSyncFromScreener from './sync-from-screener';
-import { Universe } from './universe.interface';
 import universeHelpers from './universe-helpers';
+import { Universe } from './universe.interface';
 
 interface UniverseWithTrades {
   id: string;
@@ -67,7 +66,7 @@ function mapUniverseToResponse(u: UniverseWithTrades): Universe {
       universeHelpers.calculateAvgPurchaseYieldPercent(
         openTrades,
         u.distribution,
-        u.distributions_per_year
+        u.distributions_per_year,
       ),
   };
 }
@@ -111,9 +110,9 @@ function handleGetUniversesRoute(fastify: FastifyInstance): void {
         },
       });
       return universes.map(function mapUniverse(u) {
-        return mapUniverseToResponse(u as UniverseWithTrades);
+        return mapUniverseToResponse(u);
       });
-    }
+    },
   );
 }
 
@@ -158,7 +157,7 @@ function handleAddUniverseRoute(fastify: FastifyInstance): void {
           deletable: !result.is_closed_end_fund,
         },
       ]);
-    }
+    },
   );
 }
 
@@ -216,13 +215,13 @@ function handleDeleteUniverseRoute(fastify: FastifyInstance): void {
           .status(500)
           .send({ success: false, error: 'Internal server error' });
       }
-    }
+    },
   );
 }
 
 async function updateUniverseData(
   id: string,
-  data: Omit<Universe, 'id'>
+  data: Omit<Universe, 'id'>,
 ): Promise<unknown> {
   return prisma.universe.update({
     where: { id },
@@ -257,7 +256,7 @@ async function fetchUpdatedUniverse(id: string): Promise<UniverseWithTrades[]> {
 
 async function fetchHistoryForSymbol(
   symbol: string,
-  universeId: string
+  universeId: string,
 ): Promise<ProcessedRow[]> {
   try {
     const history = await fetchDividendHistory(symbol);
@@ -295,7 +294,7 @@ function handleUpdateUniverseRoute(fastify: FastifyInstance): void {
       const result = universes.map(mapUniverseToResponse);
 
       reply.status(200).send(result);
-    }
+    },
   );
 }
 export default function registerUniverseRoutes(fastify: FastifyInstance): void {

@@ -1,6 +1,5 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import fastify, { FastifyInstance } from 'fastify';
-
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import registerTradeRoutes from './index';
 
 // Hoisted mocks
@@ -108,7 +107,7 @@ function makeOpenTrade(overrides: Partial<OpenTradeRow> = {}): OpenTradeRow {
 }
 
 function makeClosedTrade(
-  overrides: Partial<ClosedTradeRow> = {}
+  overrides: Partial<ClosedTradeRow> = {},
 ): ClosedTradeRow {
   return {
     id: 'ct1',
@@ -126,7 +125,7 @@ function makeClosedTrade(
   };
 }
 
-function makeOpenTradesSeedData() {
+function makeOpenTradesSeedData(): HydratedTradeRow[] {
   return [
     {
       ...makeOpenTrade({
@@ -191,7 +190,7 @@ function makeOpenTradesSeedData() {
   ];
 }
 
-function makeClosedTradesSeedData() {
+function makeClosedTradesSeedData(): HydratedTradeRow[] {
   return [
     {
       ...makeClosedTrade({
@@ -593,7 +592,7 @@ describe('Closed Trades Endpoint - Sorting', function closedTradesSortingTests()
 
       expect(response.statusCode).toBe(200);
       const rows = JSON.parse(
-        response.body
+        response.body,
       ) as unknown as ClosedTradeResponse[];
       expect(rows.length).toBe(4);
       for (const row of rows) {
@@ -616,7 +615,7 @@ describe('Closed Trades Endpoint - Sorting', function closedTradesSortingTests()
 
       expect(response.statusCode).toBe(200);
       const rows = JSON.parse(
-        response.body
+        response.body,
       ) as unknown as ClosedTradeResponse[];
       const symbols = rows.map(function extractSymbol(r) {
         return r.symbol;
@@ -635,7 +634,7 @@ describe('Closed Trades Endpoint - Sorting', function closedTradesSortingTests()
 
       expect(response.statusCode).toBe(200);
       const rows = JSON.parse(
-        response.body
+        response.body,
       ) as unknown as ClosedTradeResponse[];
       const symbols = rows.map(function extractSymbol(r) {
         return r.symbol;
@@ -655,7 +654,7 @@ describe('Closed Trades Endpoint - Sorting', function closedTradesSortingTests()
 
       expect(response.statusCode).toBe(200);
       const rows = JSON.parse(
-        response.body
+        response.body,
       ) as unknown as ClosedTradeResponse[];
       const dates = rows.map(function extractDate(r) {
         return r.sell_date;
@@ -679,7 +678,7 @@ describe('Closed Trades Endpoint - Sorting', function closedTradesSortingTests()
 
       expect(response.statusCode).toBe(200);
       const rows = JSON.parse(
-        response.body
+        response.body,
       ) as unknown as ClosedTradeResponse[];
       const dates = rows.map(function extractDate(r) {
         return r.sell_date;
@@ -704,7 +703,7 @@ describe('Closed Trades Endpoint - Sorting', function closedTradesSortingTests()
 
       expect(response.statusCode).toBe(200);
       const rows = JSON.parse(
-        response.body
+        response.body,
       ) as unknown as ClosedTradeResponse[];
       const profits = rows.map(function extractProfit(r) {
         return r.profit;
@@ -724,7 +723,7 @@ describe('Closed Trades Endpoint - Sorting', function closedTradesSortingTests()
 
       expect(response.statusCode).toBe(200);
       const rows = JSON.parse(
-        response.body
+        response.body,
       ) as unknown as ClosedTradeResponse[];
       const profits = rows.map(function extractProfit(r) {
         return r.profit;
@@ -744,7 +743,7 @@ describe('Closed Trades Endpoint - Sorting', function closedTradesSortingTests()
 
       expect(response.statusCode).toBe(200);
       const rows = JSON.parse(
-        response.body
+        response.body,
       ) as unknown as ClosedTradeResponse[];
       const percents = rows.map(function extractPercent(r) {
         return r.percentGain;
@@ -767,7 +766,7 @@ describe('Closed Trades Endpoint - Sorting', function closedTradesSortingTests()
 
       expect(response.statusCode).toBe(200);
       const rows = JSON.parse(
-        response.body
+        response.body,
       ) as unknown as ClosedTradeResponse[];
       const percents = rows.map(function extractPercent(r) {
         return r.percentGain;
@@ -790,7 +789,7 @@ describe('Closed Trades Endpoint - Sorting', function closedTradesSortingTests()
 
       expect(response.statusCode).toBe(200);
       const rows = JSON.parse(
-        response.body
+        response.body,
       ) as unknown as ClosedTradeResponse[];
       expect(rows.length).toBe(4);
       // Default sort should be by symbol ascending

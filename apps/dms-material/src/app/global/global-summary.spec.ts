@@ -1,11 +1,15 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { signal } from '@angular/core';
 import { provideHttpClient } from '@angular/common/http';
 import {
   HttpTestingController,
   provideHttpClientTesting,
 } from '@angular/common/http/testing';
+import { signal } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ActivatedRoute } from '@angular/router';
 import { provideSmartNgRX } from '@smarttools/smart-signals';
+import { SummaryViewComponent } from '../shared/components/summary-view/summary-view';
+import { topEffectsServiceToken } from '../store/top/top-effect-service-token';
+import { SummaryService } from './services/summary.service';
 
 // Mock upstream selectors BEFORE anything else
 vi.mock('../store/top/selectors/select-top-entities.function', () => ({
@@ -19,11 +23,6 @@ vi.mock('../store/accounts/selectors/select-top-accounts.function', () => ({
 vi.mock('../store/accounts/selectors/select-accounts.function', () => ({
   selectAccounts: signal([]),
 }));
-
-import { SummaryViewComponent } from '../shared/components/summary-view/summary-view';
-import { SummaryService } from './services/summary.service';
-import { ActivatedRoute } from '@angular/router';
-import { topEffectsServiceToken } from '../store/top/top-effect-service-token';
 
 describe('SummaryViewComponent', () => {
   let component: SummaryViewComponent;
@@ -78,7 +77,7 @@ describe('SummaryViewComponent', () => {
     fixture.detectChanges();
     const httpMock = TestBed.inject(HttpTestingController);
     const summaryReq = httpMock.expectOne(
-      (req) => req.url === '/api/summary' && req.params.has('month')
+      (req) => req.url === '/api/summary' && req.params.has('month'),
     );
     summaryReq.flush({
       deposits: 100000,
@@ -91,7 +90,7 @@ describe('SummaryViewComponent', () => {
     httpMock.match((req) => req.url.includes('/api/summary'));
     fixture.detectChanges();
     const charts = fixture.nativeElement.querySelectorAll(
-      'dms-summary-display'
+      'dms-summary-display',
     );
     expect(charts.length).toBe(2); // pie and line
   });
@@ -100,7 +99,7 @@ describe('SummaryViewComponent', () => {
     fixture.detectChanges();
     // The year picker must be inside a mat-form-field so it doesn't expand to fill remaining width
     const yearFormField = fixture.nativeElement.querySelector(
-      'mat-form-field mat-select[aria-label="Select year"]'
+      'mat-form-field mat-select[aria-label="Select year"]',
     );
     expect(yearFormField).not.toBeNull();
   });
@@ -109,7 +108,7 @@ describe('SummaryViewComponent', () => {
     fixture.detectChanges();
     const httpMockBug5 = TestBed.inject(HttpTestingController);
     const summaryReqBug5 = httpMockBug5.expectOne(
-      (req) => req.url === '/api/summary' && req.params.has('month')
+      (req) => req.url === '/api/summary' && req.params.has('month'),
     );
     summaryReqBug5.flush({
       deposits: 100000,
@@ -123,7 +122,7 @@ describe('SummaryViewComponent', () => {
     fixture.detectChanges();
     // The line chart (second dms-summary-display) should receive height 100%
     const charts = fixture.nativeElement.querySelectorAll(
-      'dms-summary-display'
+      'dms-summary-display',
     );
     expect(charts.length).toBe(2);
     // Verify the component property returns performance data (chart is configured)
@@ -173,7 +172,8 @@ describe('SummaryViewComponent - Service Integration', () => {
     fixture.detectChanges();
 
     const req = httpMock.expectOne(
-      (request) => request.url === '/api/summary' && request.params.has('month')
+      (request) =>
+        request.url === '/api/summary' && request.params.has('month'),
     );
     expect(req.request.method).toBe('GET');
 
@@ -274,7 +274,7 @@ describe('SummaryViewComponent - Service Integration', () => {
     fixture.detectChanges();
 
     const req1 = httpMock.expectOne(
-      (request) => request.url === '/api/summary'
+      (request) => request.url === '/api/summary',
     );
     req1.flush({
       deposits: 100000,
@@ -290,7 +290,7 @@ describe('SummaryViewComponent - Service Integration', () => {
     const req2 = httpMock.expectOne(
       (request) =>
         request.url === '/api/summary' &&
-        request.params.get('month') === '2025-06'
+        request.params.get('month') === '2025-06',
     );
     req2.flush({
       deposits: 120000,
@@ -340,7 +340,7 @@ describe('SummaryViewComponent - Graph Integration', () => {
     fixture.detectChanges();
 
     const req = httpMock.expectOne(
-      (request) => request.url === '/api/summary/graph'
+      (request) => request.url === '/api/summary/graph',
     );
     expect(req.request.method).toBe('GET');
     expect(req.request.params.has('year')).toBe(true);
@@ -355,7 +355,7 @@ describe('SummaryViewComponent - Graph Integration', () => {
     fixture.detectChanges();
 
     const req = httpMock.expectOne(
-      (request) => request.url === '/api/summary/graph'
+      (request) => request.url === '/api/summary/graph',
     );
     req.flush([
       { month: '01-2025', deposits: 40000, dividends: 50, capitalGains: 0 },
@@ -374,7 +374,7 @@ describe('SummaryViewComponent - Graph Integration', () => {
     fixture.detectChanges();
 
     const req = httpMock.expectOne(
-      (request) => request.url === '/api/summary/graph'
+      (request) => request.url === '/api/summary/graph',
     );
     req.flush([
       { month: '01-2025', deposits: 40000, dividends: 50, capitalGains: 0 },
@@ -393,7 +393,7 @@ describe('SummaryViewComponent - Graph Integration', () => {
     fixture.detectChanges();
 
     const req = httpMock.expectOne(
-      (request) => request.url === '/api/summary/graph'
+      (request) => request.url === '/api/summary/graph',
     );
     // Jan: deposits=40000, capitalGains=0  → line = 40000 + 0 = 40000
     // Feb: deposits=40200, capitalGains=100 → line = 40200 + (0+100) = 40300
@@ -406,7 +406,7 @@ describe('SummaryViewComponent - Graph Integration', () => {
 
     const chartData = component.performanceChartData();
     const gainsDataset = chartData.datasets.find(
-      (ds) => ds.label === 'Capital Gains'
+      (ds) => ds.label === 'Capital Gains',
     );
     expect(gainsDataset).toBeDefined();
     expect(gainsDataset!.data).toEqual([40000, 40300]);
@@ -416,7 +416,7 @@ describe('SummaryViewComponent - Graph Integration', () => {
     fixture.detectChanges();
 
     const req = httpMock.expectOne(
-      (request) => request.url === '/api/summary/graph'
+      (request) => request.url === '/api/summary/graph',
     );
     // Jan: deposits=40000, capitalGains=0, dividends=50
     //   → line = 40000 + 0 + 50 = 40050
@@ -431,7 +431,7 @@ describe('SummaryViewComponent - Graph Integration', () => {
 
     const chartData = component.performanceChartData();
     const divDataset = chartData.datasets.find(
-      (ds) => ds.label === 'Dividends'
+      (ds) => ds.label === 'Dividends',
     );
     expect(divDataset).toBeDefined();
     expect(divDataset!.data).toEqual([40050, 40400]);
@@ -561,7 +561,7 @@ describe('SummaryViewComponent - Error Handling', () => {
     fixture.detectChanges();
 
     const req = httpMock.expectOne(
-      (request) => request.url === '/api/summary/graph'
+      (request) => request.url === '/api/summary/graph',
     );
     req.error(new ProgressEvent('error'));
 
@@ -598,7 +598,7 @@ describe('SummaryViewComponent - Error Handling', () => {
     fixture.detectChanges();
 
     const req = httpMock.expectOne(
-      (request) => request.url === '/api/summary/graph'
+      (request) => request.url === '/api/summary/graph',
     );
     req.error(new ProgressEvent('error'));
 
@@ -643,7 +643,7 @@ describe('Pie Chart Display', () => {
   it('should render pie chart component with real data', () => {
     fixture.detectChanges();
     const summaryReqPie = httpMock.expectOne(
-      (req) => req.url === '/api/summary' && req.params.has('month')
+      (req) => req.url === '/api/summary' && req.params.has('month'),
     );
     summaryReqPie.flush({
       deposits: 100000,
@@ -656,7 +656,7 @@ describe('Pie Chart Display', () => {
     fixture.detectChanges();
 
     const pieCharts = fixture.nativeElement.querySelectorAll(
-      'dms-summary-display'
+      'dms-summary-display',
     );
     expect(pieCharts.length).toBe(2);
   });
@@ -665,7 +665,7 @@ describe('Pie Chart Display', () => {
     fixture.detectChanges();
 
     const summaryReq = httpMock.expectOne(
-      (req) => req.url === '/api/summary' && req.params.has('month')
+      (req) => req.url === '/api/summary' && req.params.has('month'),
     );
     summaryReq.flush({
       deposits: 100000,
@@ -684,7 +684,7 @@ describe('Pie Chart Display', () => {
     fixture.detectChanges();
 
     const summaryReq = httpMock.expectOne(
-      (req) => req.url === '/api/summary' && req.params.has('month')
+      (req) => req.url === '/api/summary' && req.params.has('month'),
     );
     summaryReq.flush({
       deposits: 100000,
@@ -703,7 +703,7 @@ describe('Pie Chart Display', () => {
     fixture.detectChanges();
 
     const summaryReq = httpMock.expectOne(
-      (req) => req.url === '/api/summary' && req.params.has('month')
+      (req) => req.url === '/api/summary' && req.params.has('month'),
     );
     summaryReq.flush({
       deposits: 100000,
@@ -758,7 +758,7 @@ describe('Pie Chart Display', () => {
     fixture.detectChanges();
 
     const summaryReq = httpMock.expectOne(
-      (req) => req.url === '/api/summary' && req.params.has('month')
+      (req) => req.url === '/api/summary' && req.params.has('month'),
     );
     summaryReq.flush({
       deposits: 100000,
@@ -782,7 +782,7 @@ describe('Pie Chart Display', () => {
     };
 
     const result = (tooltipCallback as (...args: unknown[]) => string)(
-      tooltipItem
+      tooltipItem,
     );
     expect(result).toContain('$50,000');
     expect(result).toContain('50%');
@@ -792,7 +792,7 @@ describe('Pie Chart Display', () => {
     fixture.detectChanges();
 
     const summaryReq = httpMock.expectOne(
-      (req) => req.url === '/api/summary' && req.params.has('month')
+      (req) => req.url === '/api/summary' && req.params.has('month'),
     );
     summaryReq.flush({
       deposits: 100000,
@@ -809,7 +809,7 @@ describe('Pie Chart Display', () => {
     component.selectedMonth.setValue('2025-04');
     const summaryReq2 = httpMock.expectOne(
       (req) =>
-        req.url === '/api/summary' && req.params.get('month') === '2025-04'
+        req.url === '/api/summary' && req.params.get('month') === '2025-04',
     );
     summaryReq2.flush({
       deposits: 80000,
@@ -828,7 +828,7 @@ describe('Pie Chart Display', () => {
     fixture.detectChanges();
 
     const displays = fixture.nativeElement.querySelectorAll(
-      'dms-summary-display'
+      'dms-summary-display',
     );
     // Should have at least one summary display (pie chart)
     expect(displays.length).toBeGreaterThanOrEqual(1);
@@ -838,7 +838,7 @@ describe('Pie Chart Display', () => {
     fixture.detectChanges();
 
     const summaryReq = httpMock.expectOne(
-      (req) => req.url === '/api/summary' && req.params.has('month')
+      (req) => req.url === '/api/summary' && req.params.has('month'),
     );
     summaryReq.flush({
       deposits: 100000,
@@ -853,11 +853,10 @@ describe('Pie Chart Display', () => {
     // All data values should sum to total and reflect proportions
     const total = chartData.datasets[0].data.reduce(function sum(
       a: number,
-      b: number
+      b: number,
     ): number {
       return a + b;
-    },
-    0);
+    }, 0);
     expect(total).toBe(100000);
   });
 });
@@ -952,7 +951,7 @@ describe('Month/Year Selector', () => {
     ]);
 
     const initialSummaryReq = httpMock.expectOne(
-      (req) => req.url === '/api/summary' && req.params.has('month')
+      (req) => req.url === '/api/summary' && req.params.has('month'),
     );
     initialSummaryReq.flush({
       deposits: 50000,
@@ -968,7 +967,7 @@ describe('Month/Year Selector', () => {
 
     const refreshReq = httpMock.expectOne(
       (req) =>
-        req.url === '/api/summary' && req.params.get('month') === '2025-02'
+        req.url === '/api/summary' && req.params.get('month') === '2025-02',
     );
     refreshReq.flush({
       deposits: 40000,
@@ -991,7 +990,7 @@ describe('Month/Year Selector', () => {
     fixture.detectChanges();
 
     const summaryReq = httpMock.expectOne(
-      (req) => req.url === '/api/summary' && req.params.has('month')
+      (req) => req.url === '/api/summary' && req.params.has('month'),
     );
     expect(summaryReq.request.params.get('month')).toBe(expectedMonth);
     summaryReq.flush({
@@ -1126,7 +1125,7 @@ describe('Month/Year Selector', () => {
 
     const changeReq = httpMock.expectOne(
       (req) =>
-        req.url === '/api/summary' && req.params.get('month') === '2025-02'
+        req.url === '/api/summary' && req.params.get('month') === '2025-02',
     );
     changeReq.flush({
       deposits: 40000,
@@ -1142,7 +1141,7 @@ describe('Month/Year Selector', () => {
 
     const refreshReq = httpMock.expectOne(
       (req) =>
-        req.url === '/api/summary' && req.params.get('month') === '2025-02'
+        req.url === '/api/summary' && req.params.get('month') === '2025-02',
     );
     refreshReq.flush({
       deposits: 41000,
@@ -1179,7 +1178,7 @@ describe('Month/Year Selector', () => {
     const graphReq = httpMock.expectOne(
       (req) =>
         req.url === '/api/summary/graph' &&
-        req.params.get('year') === currentYear.toString()
+        req.params.get('year') === currentYear.toString(),
     );
     expect(graphReq.request.method).toBe('GET');
     graphReq.flush([]);
@@ -1198,7 +1197,7 @@ describe('Month/Year Selector', () => {
 
     const graphReq = httpMock.expectOne(
       (req) =>
-        req.url === '/api/summary/graph' && req.params.get('year') === '2023'
+        req.url === '/api/summary/graph' && req.params.get('year') === '2023',
     );
     expect(graphReq.request.method).toBe('GET');
     graphReq.flush([]);
@@ -1215,7 +1214,7 @@ describe('Month/Year Selector', () => {
 
     // The year mat-select must be in the DOM
     const yearSelect = fixture.nativeElement.querySelector(
-      'mat-select[aria-label="Select year"]'
+      'mat-select[aria-label="Select year"]',
     );
     expect(yearSelect).not.toBeNull();
 
@@ -1290,7 +1289,7 @@ describe('Branch Coverage - Edge Cases', () => {
     };
 
     const result = (tooltipCallback as (...args: unknown[]) => string)(
-      tooltipItem
+      tooltipItem,
     );
     expect(result).toContain('$50,000');
     expect(result).toContain('50%');
@@ -1312,7 +1311,7 @@ describe('Branch Coverage - Edge Cases', () => {
     };
 
     const result = (tooltipCallback as (...args: unknown[]) => string)(
-      tooltipItem
+      tooltipItem,
     );
     expect(result).toContain('Equities');
     expect(result).toContain('$0');
@@ -1333,7 +1332,7 @@ describe('Branch Coverage - Edge Cases', () => {
     };
 
     const result = (tooltipCallback as (...args: unknown[]) => string)(
-      tooltipItem
+      tooltipItem,
     );
     expect(result).toContain('Equities');
     expect(result).toContain('0%');
@@ -1344,7 +1343,7 @@ describe('Branch Coverage - Edge Cases', () => {
 
     // Flush initial summary request from ngOnInit
     const initialReq = httpMock.expectOne(
-      (req) => req.url === '/api/summary' && req.params.has('month')
+      (req) => req.url === '/api/summary' && req.params.has('month'),
     );
     initialReq.flush({
       deposits: 0,
@@ -1356,7 +1355,7 @@ describe('Branch Coverage - Edge Cases', () => {
     });
 
     // Set null value — should NOT trigger a new fetchSummary
-    component.selectedMonth.setValue(null as unknown as string);
+    component.selectedMonth.setValue(null);
 
     // No additional summary request should be made
     httpMock.expectNone(function matchRefreshSummary(req) {
@@ -1374,7 +1373,7 @@ describe('Branch Coverage - Edge Cases', () => {
 
     // Flush initial request
     const initialReq = httpMock.expectOne(
-      (req) => req.url === '/api/summary' && req.params.has('month')
+      (req) => req.url === '/api/summary' && req.params.has('month'),
     );
     initialReq.flush({
       deposits: 0,
@@ -1386,7 +1385,7 @@ describe('Branch Coverage - Edge Cases', () => {
     });
 
     // Force selectedMonth to null (edge case)
-    component.selectedMonth.setValue(null as unknown as string);
+    component.selectedMonth.setValue(null);
 
     // Call refreshData — should use fallback getCurrentMonth()
     component.refreshData();

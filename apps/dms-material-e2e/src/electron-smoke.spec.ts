@@ -17,7 +17,6 @@
 import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
-
 import { _electron as electron, ElectronApplication, Page } from 'playwright';
 import { expect, test } from 'playwright/test';
 
@@ -96,7 +95,7 @@ test.describe('Packaged Electron Smoke Test', () => {
           'Packaged Electron smoke test requires root privileges (dpkg -i must',
           'set the chrome-sandbox SUID bit).',
           'Run: sudo pnpm e2e:electron:smoke',
-        ].join(' ')
+        ].join(' '),
       );
       return;
     }
@@ -107,7 +106,7 @@ test.describe('Packaged Electron Smoke Test', () => {
         [
           `No .deb artifact found in ${DEB_DIST_DIR}.`,
           'Build the package first: pnpm nx run electron:build:linux',
-        ].join(' ')
+        ].join(' '),
       );
       return;
     }
@@ -127,7 +126,7 @@ test.describe('Packaged Electron Smoke Test', () => {
           `  error: ${e.message}`,
           `  stdout: ${e.stdout ?? '(none)'}`,
           `  stderr: ${e.stderr ?? '(none)'}`,
-        ].join('\n')
+        ].join('\n'),
       );
     }
   });
@@ -159,7 +158,7 @@ test.describe('Packaged Electron Smoke Test', () => {
     expect(
       fs.existsSync(CHROME_SANDBOX_PATH),
       `chrome-sandbox not found at ${CHROME_SANDBOX_PATH}. ` +
-        `The afterInstall hook from Story 102.1 may not have run.`
+        `The afterInstall hook from Story 102.1 may not have run.`,
     ).toBe(true);
 
     // eslint-disable-next-line sonarjs/os-command -- CHROME_SANDBOX_PATH is a constant defined in this test file
@@ -170,7 +169,7 @@ test.describe('Packaged Electron Smoke Test', () => {
     expect(
       statOutput,
       `Expected "root:root 4755" — got "${statOutput}". ` +
-        `Story 102.1 afterInstall hook (chown/chmod) may have regressed.`
+        `Story 102.1 afterInstall hook (chown/chmod) may have regressed.`,
     ).toBe('root:root 4755');
   });
 
@@ -227,13 +226,13 @@ test.describe('Packaged Electron Smoke Test', () => {
       expect(
         processOutput,
         `Sandbox FATAL detected — Story 102.1 chrome-sandbox fix may have regressed.\n` +
-          `Captured output:\n${processOutput}`
+          `Captured output:\n${processOutput}`,
       ).not.toContain(SANDBOX_FATAL);
 
       expect(
         processOutput,
         `tslib module-not-found error detected — Story 102.2 importHelpers inlining ` +
-          `may have regressed.\nCaptured output:\n${processOutput}`
+          `may have regressed.\nCaptured output:\n${processOutput}`,
       ).not.toContain(TSLIB_MISSING);
 
       // --- AC#3 assertions ---
@@ -243,13 +242,13 @@ test.describe('Packaged Electron Smoke Test', () => {
       const bodyText = await window.locator('body').textContent();
       expect(
         bodyText,
-        'body element has no text content — home route did not render'
+        'body element has no text content — home route did not render',
       ).toBeTruthy();
 
       expect(
         consoleErrors,
-        `Renderer console errors on initial load:\n${consoleErrors.join('\n')}`
+        `Renderer console errors on initial load:\n${consoleErrors.join('\n')}`,
       ).toHaveLength(0);
-    }
+    },
   );
 });

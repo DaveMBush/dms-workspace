@@ -23,7 +23,7 @@ export class ErrorHandlingService {
   handleOperationError(
     error: unknown,
     operationName: string,
-    options: ErrorHandlingOptions = {}
+    options: ErrorHandlingOptions = {},
   ): void {
     const { hideLoading = true, persistent = true } = options;
 
@@ -47,14 +47,14 @@ export class ErrorHandlingService {
    * @returns Error message string
    */
   extractErrorMessage(error: unknown): string {
-    const DEFAULT_ERROR_MESSAGE = 'Unknown error';
+    const defaultErrorMessage = 'Unknown error';
 
     if (error instanceof Error) {
       return error.message;
     }
 
     if (error === null || error === undefined || typeof error !== 'object') {
-      return DEFAULT_ERROR_MESSAGE;
+      return defaultErrorMessage;
     }
 
     const err = error as {
@@ -72,6 +72,6 @@ export class ErrorHandlingService {
       }
     }
 
-    return DEFAULT_ERROR_MESSAGE;
+    return defaultErrorMessage;
   }
 }

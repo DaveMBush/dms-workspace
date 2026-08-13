@@ -1,6 +1,5 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import fastify, { FastifyInstance } from 'fastify';
-
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import registerGraphRoutes from './index';
 
 // Hoisted mocks
@@ -72,16 +71,14 @@ describe('GET /api/summary/graph - January baseline (regression: AS.9 Bug #4)', 
         const y = monthStart.getFullYear();
         if (y === 2024 && m === 11) {
           // December 2024
-          return Promise.resolve(makeAccountData(5000));
+          return makeAccountData(5000);
         }
         if (y === 2025 && m === 0) {
           // January 2025
-          return Promise.resolve(makeAccountData(3000));
+          return makeAccountData(3000);
         }
-        return Promise.resolve([
-          { id: 'account-1', divDeposits: [], trades: [] },
-        ]);
-      }
+        return makeAccountData(0);
+      },
     );
 
     const response = await app.inject({
@@ -127,7 +124,7 @@ describe('GET /api/summary/graph - January baseline (regression: AS.9 Bug #4)', 
   it('should carry the full prior year running total into January', async () => {
     // Prior year (2024) has deposits every month, so December has a large running total
     mockPrismaAccounts.findMany.mockImplementation(
-      (query: {
+      async (query: {
         include: {
           divDeposits: { where: { date: { gte: Date; lt: Date } } };
         };
@@ -143,7 +140,7 @@ describe('GET /api/summary/graph - January baseline (regression: AS.9 Bug #4)', 
         return Promise.resolve([
           { id: 'account-1', divDeposits: [], trades: [] },
         ]);
-      }
+      },
     );
 
     const response = await app.inject({

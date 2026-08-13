@@ -14,7 +14,6 @@
  */
 
 import { expect, Locator, test } from 'playwright/test';
-
 import { assertStickyHeaderInvariant } from './helpers/assert-sticky-header-invariant.helper';
 import { assertVisibleRowsNonEmpty } from './helpers/assert-visible-rows-non-empty.helper';
 import { login } from './helpers/login.helper';
@@ -90,7 +89,7 @@ test.describe('Dividend Deposits Scrolling Regression — Story 87.3', () => {
       page,
       SYMBOL_CELL_SELECTOR,
       'Dividend Deposits: blank symbol cells detected after fast scroll to bottom. ' +
-        'Story 87.3 regression guard: SmartNgRX lazy-load placeholder rows should not produce blank cells.'
+        'Story 87.3 regression guard: SmartNgRX lazy-load placeholder rows should not produce blank cells.',
     );
   });
 
@@ -110,7 +109,7 @@ test.describe('Dividend Deposits Scrolling Regression — Story 87.3', () => {
       page,
       SYMBOL_CELL_SELECTOR,
       'Dividend Deposits: blank symbol cells detected after oscillation scroll (bottom\u2192top\u2192bottom). ' +
-        'Story 87.3 regression guard: repeated isLoading cycles should not produce blank symbol cells.'
+        'Story 87.3 regression guard: repeated isLoading cycles should not produce blank symbol cells.',
     );
   });
   test('no blank rows after sort change and scroll to bottom', async ({
@@ -132,7 +131,7 @@ test.describe('Dividend Deposits Scrolling Regression — Story 87.3', () => {
       page,
       SYMBOL_CELL_SELECTOR,
       'Dividend Deposits: blank symbol cells detected after sort change + scroll to bottom. ' +
-        'Story 87.3 regression guard: sort-triggered isLoading window should not produce blank rows.'
+        'Story 87.3 regression guard: sort-triggered isLoading window should not produce blank rows.',
     );
   });
 });
@@ -178,7 +177,7 @@ test.describe('Dividend Deposits — Story 101.3 slow-scroll header-invariant re
     await assertStickyHeaderInvariant(
       page,
       VIEWPORT_SELECTOR,
-      HEADER_ROW_SELECTOR
+      HEADER_ROW_SELECTOR,
     );
   });
 });

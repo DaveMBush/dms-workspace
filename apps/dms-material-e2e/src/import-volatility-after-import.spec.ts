@@ -1,6 +1,5 @@
 import fs from 'fs';
 import path from 'path';
-
 import type { PrismaClient } from '@prisma/client';
 import { expect, test } from 'playwright/test';
 
@@ -23,6 +22,7 @@ import { expect, test } from 'playwright/test';
  * route interception is needed; determinism comes from using a fictional symbol.
  */
 
+/* eslint-disable @typescript-eslint/naming-convention -- E2E test constants use UPPER_CASE for readability */
 const TEST_SYMBOL = 'IMPVOL92';
 const TEST_ACCOUNT_NAME = 'Import Volatility Test Account 92';
 const FIXTURES_DIR = path.resolve(__dirname, '..', 'fixtures');
@@ -34,9 +34,8 @@ function getWorkspaceRoot(): string {
 
 async function initializePrismaClient(): Promise<PrismaClient> {
   const { PrismaClient } = await import('@prisma/client');
-  const { PrismaBetterSqlite3 } = await import(
-    '@prisma/adapter-better-sqlite3'
-  );
+  const { PrismaBetterSqlite3 } =
+    await import('@prisma/adapter-better-sqlite3');
   const testDbUrl = `file:${getWorkspaceRoot()}/test-database.db`;
   const adapter = new PrismaBetterSqlite3({ url: testDbUrl });
   return new PrismaClient({ adapter });
@@ -74,7 +73,7 @@ test.describe('CSV Import — Volatility Present After Import (Story 92.2)', () 
     });
     if (!accountResponse.ok()) {
       throw new Error(
-        `Failed to create test account: ${accountResponse.status()}`
+        `Failed to create test account: ${accountResponse.status()}`,
       );
     }
     const accounts = (await accountResponse.json()) as Array<{ id: string }>;
@@ -104,11 +103,11 @@ test.describe('CSV Import — Volatility Present After Import (Story 92.2)', () 
     // Delete the test account
     if (testAccountId !== null) {
       const deleteResponse = await request.delete(
-        `/api/accounts/${testAccountId}`
+        `/api/accounts/${testAccountId}`,
       );
       if (!deleteResponse.ok()) {
         console.warn(
-          `Failed to delete test account ${testAccountId}: ${deleteResponse.status()}`
+          `Failed to delete test account ${testAccountId}: ${deleteResponse.status()}`,
         );
       }
     }
@@ -120,7 +119,7 @@ test.describe('CSV Import — Volatility Present After Import (Story 92.2)', () 
     // Read the fixture CSV that contains a single BUY row for IMPVOL92
     const csvContent = fs.readFileSync(
       path.join(FIXTURES_DIR, 'fidelity-impvol92-volatility.csv'),
-      'utf-8'
+      'utf-8',
     );
 
     // POST the CSV content directly to the import endpoint (text/plain is
@@ -156,17 +155,17 @@ test.describe('CSV Import — Volatility Present After Import (Story 92.2)', () 
     const entry = universes.find((u) => u.symbol === TEST_SYMBOL);
     expect(
       entry,
-      `Expected ${TEST_SYMBOL} to be present in universe after import`
+      `Expected ${TEST_SYMBOL} to be present in universe after import`,
     ).toBeDefined();
 
     // AC #1 — both volatility fields must be non-null after import
     expect(
       entry!.volatilityLong,
-      'volatilityLong must be non-null after CSV import'
+      'volatilityLong must be non-null after CSV import',
     ).not.toBeNull();
     expect(
       entry!.volatilityShort,
-      'volatilityShort must be non-null after CSV import'
+      'volatilityShort must be non-null after CSV import',
     ).not.toBeNull();
   });
 });

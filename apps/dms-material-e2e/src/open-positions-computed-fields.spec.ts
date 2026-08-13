@@ -1,5 +1,4 @@
 import { expect, Page, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 import { seedOpenPositionsE2eData } from './helpers/seed-open-positions-e2e-data.helper';
 
@@ -57,7 +56,7 @@ async function getColumnIndex(page: Page, headerText: string): Promise<number> {
     }
   }
   throw new Error(
-    `Column header "${headerText}" not found in open-positions table`
+    `Column header "${headerText}" not found in open-positions table`,
   );
 }
 
@@ -113,7 +112,7 @@ test.describe('Open Positions — Computed Columns Render Non-Blank Values (Stor
         const cell = page
           .locator('[data-testid="open-positions-table"]')
           .locator(
-            `.dms-body-row[role="row"] .dms-body-cell:nth-child(${colIdx})`
+            `.dms-body-row[role="row"] .dms-body-cell:nth-child(${colIdx})`,
           )
           .first();
 
@@ -126,16 +125,16 @@ test.describe('Open Positions — Computed Columns Render Non-Blank Values (Stor
             {
               message: `Column "${header}" cell should contain non-blank text`,
               timeout: 10000,
-            }
+            },
           )
           .not.toBe('');
 
         const cellText = ((await cell.textContent()) ?? '').trim();
         expect(
           isNumericCellText(cellText),
-          `Column "${header}" value "${cellText}" should parse as a finite number`
+          `Column "${header}" value "${cellText}" should parse as a finite number`,
         ).toBe(true);
       }
-    }
+    },
   );
 });

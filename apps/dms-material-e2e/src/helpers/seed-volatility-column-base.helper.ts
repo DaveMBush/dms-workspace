@@ -18,7 +18,7 @@ interface VolatilityColumnSeederResult extends SeederResultBase {
 function buildDepositData(
   accountId: string,
   divDepositTypeId: string,
-  universeId: string
+  universeId: string,
 ): Array<{
   date: Date;
   amount: number;
@@ -27,7 +27,7 @@ function buildDepositData(
   universeId: string;
 }> {
   return buildMonthlyDates(MONTHS_TO_SEED).map(function buildDepositRecord(
-    date: Date
+    date: Date,
   ) {
     return {
       date,
@@ -41,7 +41,7 @@ function buildDepositData(
 
 export async function seedVolatilityColumnE2eData(
   symbolPrefix: string,
-  accountPrefix: string
+  accountPrefix: string,
 ): Promise<VolatilityColumnSeederResult> {
   const prisma = await initializePrismaClient();
   const uniqueId = generateUniqueId();

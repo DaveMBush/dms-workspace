@@ -1,5 +1,4 @@
-import { test, expect } from 'playwright/test';
-
+import { expect, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 
 /**
@@ -21,7 +20,11 @@ import { login } from './helpers/login.helper';
  * Helper to create mock SyncSummary response
  * Matches the actual API response format
  */
-function createMockSyncResponse(totalSymbols: number) {
+function createMockSyncResponse(totalSymbols: number): {
+  inserted: number;
+  updated: number;
+  total: number;
+} {
   const inserted = Math.floor(totalSymbols * 0.3);
   const updated = Math.floor(totalSymbols * 0.5);
   const markedExpired = totalSymbols - inserted - updated;
@@ -258,7 +261,7 @@ test.describe('Universe Update Flow', () => {
               status: 200,
               json: createMockSyncResponse(count),
             });
-          }
+          },
         );
 
         const button = page.locator('[data-testid="update-universe-button"]');
@@ -449,7 +452,7 @@ test.describe('Universe Update Flow', () => {
               status: statusCode,
               json: { error: `Error ${statusCode}` },
             });
-          }
+          },
         );
 
         const button = page.locator('[data-testid="update-universe-button"]');

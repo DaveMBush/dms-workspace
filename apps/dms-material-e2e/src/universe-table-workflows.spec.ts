@@ -1,9 +1,11 @@
 import { expect, Page, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 import { seedUniverseData } from './helpers/seed-universe-data.helper';
 
-function getUniverseRowBySymbol(page: Page, symbol: string) {
+function getUniverseRowBySymbol(
+  page: Page,
+  symbol: string,
+): import('playwright').Locator {
   return page.locator('.dms-body-row[role="row"]').filter({
     has: page.locator('.dms-body-cell[data-column="symbol"]', {
       hasText: symbol,
@@ -11,11 +13,14 @@ function getUniverseRowBySymbol(page: Page, symbol: string) {
   });
 }
 
-function getDistributionCellBySymbol(page: Page, symbol: string) {
+function getDistributionCellBySymbol(
+  page: Page,
+  symbol: string,
+): import('playwright').Locator {
   return getUniverseRowBySymbol(page, symbol)
     .first()
     .locator(
-      '.dms-body-cell[data-column="distribution"] [data-testid^="distribution-cell-"]'
+      '.dms-body-cell[data-column="distribution"] [data-testid^="distribution-cell-"]',
     )
     .first();
 }
@@ -30,7 +35,7 @@ async function getFirstVisibleUniverseSymbol(page: Page): Promise<string> {
       async function readVisibleSymbolText() {
         return (await firstVisibleSymbolCell.textContent())?.trim() ?? '';
       },
-      { timeout: 10000 }
+      { timeout: 10000 },
     )
     .toMatch(/^(?!…$).+/);
   const symbolText = (await firstVisibleSymbolCell.textContent())?.trim() ?? '';
@@ -40,7 +45,7 @@ async function getFirstVisibleUniverseSymbol(page: Page): Promise<string> {
 
 async function filterUniverseToSymbol(
   page: Page,
-  symbol: string
+  symbol: string,
 ): Promise<void> {
   const symbolFilter = page.getByPlaceholder('Search Symbol');
   await symbolFilter.fill(symbol);
@@ -107,7 +112,7 @@ test.describe('Universe Table Workflows', () => {
     test('should display correct number of columns', async ({ page }) => {
       // The table has filter row and header row - count only header row
       const headers = page.locator(
-        '.dms-column-header-row[role="row"] [role="columnheader"]'
+        '.dms-column-header-row[role="row"] [role="columnheader"]',
       );
       const headerCount = await headers.count();
       // Vol, SVol, Symbol, Risk Group, Distribution, Dist/Year, Yield %,
@@ -118,7 +123,7 @@ test.describe('Universe Table Workflows', () => {
 
     test('should display symbol data in symbol column', async ({ page }) => {
       const symbolCell = page.locator(
-        '.dms-body-row[role="row"]:first-child .dms-body-cell[data-column="symbol"]'
+        '.dms-body-row[role="row"]:first-child .dms-body-cell[data-column="symbol"]',
       );
       await expect(symbolCell).toBeVisible();
       const text = await symbolCell.textContent();
@@ -128,7 +133,7 @@ test.describe('Universe Table Workflows', () => {
     test('should display risk group data', async ({ page }) => {
       await filterUniverseToSymbol(page, symbols[1]);
       const riskGroupCell = getUniverseRowBySymbol(page, symbols[1]).locator(
-        '.dms-body-cell[data-column="risk_group"]'
+        '.dms-body-cell[data-column="risk_group"]',
       );
       await expect(riskGroupCell).toBeVisible();
       const text = await riskGroupCell.textContent();
@@ -139,7 +144,7 @@ test.describe('Universe Table Workflows', () => {
       page,
     }) => {
       const distributionCell = page.locator(
-        '.dms-body-row[role="row"]:first-child .dms-body-cell[data-column="distribution"]'
+        '.dms-body-row[role="row"]:first-child .dms-body-cell[data-column="distribution"]',
       );
       await expect(distributionCell).toBeVisible();
       const text = await distributionCell.textContent();
@@ -151,7 +156,7 @@ test.describe('Universe Table Workflows', () => {
       page,
     }) => {
       const yieldCell = page.locator(
-        '.dms-body-row[role="row"]:first-child .dms-body-cell[data-column="yield_percent"]'
+        '.dms-body-row[role="row"]:first-child .dms-body-cell[data-column="yield_percent"]',
       );
       await expect(yieldCell).toBeVisible();
       const text = await yieldCell.textContent();
@@ -162,7 +167,7 @@ test.describe('Universe Table Workflows', () => {
 
     test('should display ex-date in correct format', async ({ page }) => {
       const exDateCell = page.locator(
-        '.dms-body-row[role="row"]:first-child .dms-body-cell[data-column="ex_date"]'
+        '.dms-body-row[role="row"]:first-child .dms-body-cell[data-column="ex_date"]',
       );
       await expect(exDateCell).toBeVisible();
       const text = await exDateCell.textContent();
@@ -172,7 +177,7 @@ test.describe('Universe Table Workflows', () => {
 
     test('should display action buttons in last column', async ({ page }) => {
       const actionsCell = page.locator(
-        '.dms-body-row[role="row"]:first-child .dms-body-cell[data-column="actions"]'
+        '.dms-body-row[role="row"]:first-child .dms-body-cell[data-column="actions"]',
       );
       await expect(actionsCell).toBeVisible();
     });
@@ -194,9 +199,8 @@ test.describe('Universe Table Workflows', () => {
     test('should display current value in edit mode', async ({ page }) => {
       const symbol = await getFirstVisibleUniverseSymbol(page);
       const distributionCell = getDistributionCellBySymbol(page, symbol);
-      const originalValue = await distributionCell.textContent();
+      const _originalValue = await distributionCell.textContent();
       await distributionCell.click();
-
       const input = page.locator('input[data-testid="distribution-input"]');
       const inputValue = await input.inputValue();
       // Input should contain numeric value without currency symbol
@@ -283,7 +287,7 @@ test.describe('Universe Table Workflows', () => {
     }) => {
       await filterUniverseToSymbol(page, symbols[3]);
       const distributionCell = page.locator(
-        '[data-testid="distribution-cell-0"]'
+        '[data-testid="distribution-cell-0"]',
       );
       const yieldCell = page.locator('[data-testid="yield-cell-0"]');
 
@@ -376,7 +380,7 @@ test.describe('Universe Table Workflows', () => {
       await expect(row).toBeVisible();
 
       const exDateCell = row.locator(
-        '.dms-body-cell[data-column="ex_date"] [data-testid^="ex-date-cell-"]'
+        '.dms-body-cell[data-column="ex_date"] [data-testid^="ex-date-cell-"]',
       );
       await exDateCell.click();
 
@@ -396,7 +400,7 @@ test.describe('Universe Table Workflows', () => {
       await expect(datepicker).not.toBeVisible();
 
       const expiredIndicator = row.locator(
-        '.dms-body-cell[data-column="expired"] .expired-indicator'
+        '.dms-body-cell[data-column="expired"] .expired-indicator',
       );
       await expect(expiredIndicator).toHaveText('*', { timeout: 15000 });
     });
@@ -433,7 +437,7 @@ test.describe('Universe Table Workflows', () => {
         .locator('.dms-body-row[role="row"][data-has-position="true"]')
         .first();
       const deleteButton = positionRow.locator(
-        '[data-testid^="delete-symbol"]'
+        '[data-testid^="delete-symbol"]',
       );
       await expect(deleteButton).not.toBeVisible();
     });
@@ -481,8 +485,7 @@ test.describe('Universe Table Workflows', () => {
 
       // Get symbol name for notification check
       const symbolCell = page.locator('tbody tr:first-child td:first-child');
-      const symbolName = await symbolCell.textContent();
-
+      const _symbolName = await symbolCell.textContent();
       await deleteButton.click();
 
       const confirmButton = page.locator('button:has-text("Delete")');
@@ -780,7 +783,7 @@ test.describe('Universe Table Workflows', () => {
           .locator('td:nth-child(4)')
           .textContent();
         const yieldValue = parseFloat(
-          firstYieldCell?.replace(/[^0-9.]/g, '') || '0'
+          firstYieldCell?.replace(/[^0-9.]/g, '') || '0',
         );
         expect(yieldValue).toBeGreaterThanOrEqual(5);
       }
@@ -819,7 +822,7 @@ test.describe('Universe Table Workflows', () => {
           .locator('td:nth-child(4)')
           .textContent();
         const yieldValue = parseFloat(
-          yieldText?.replace(/[^0-9.]/g, '') || '0'
+          yieldText?.replace(/[^0-9.]/g, '') || '0',
         );
         expect(yieldValue).toBeGreaterThanOrEqual(3);
       }
@@ -945,7 +948,7 @@ test.describe('Universe Table Workflows', () => {
       page,
     }) => {
       const distributionCell = page.locator(
-        '[data-testid="distribution-cell-0"]'
+        '[data-testid="distribution-cell-0"]',
       );
 
       // Double click rapidly
@@ -959,14 +962,14 @@ test.describe('Universe Table Workflows', () => {
     });
 
     test('should handle network timeout during save', async ({ page }) => {
-      await page.route('**/api/universe/*', async (route) => {
+      await page.route('**/api/universe/*', async (_route) => {
         // Never resolve to simulate timeout
         // eslint-disable-next-line @typescript-eslint/no-empty-function -- Intentionally empty to simulate timeout
         await new Promise(() => {});
       });
 
       const distributionCell = page.locator(
-        '[data-testid="distribution-cell-0"]'
+        '[data-testid="distribution-cell-0"]',
       );
       await distributionCell.click();
 
@@ -1101,7 +1104,7 @@ test.describe('Empty Universe State', () => {
 
     // Assert column headers are visible and not obscured
     await expect(
-      page.locator('.dms-header-cell[role="columnheader"]').first()
+      page.locator('.dms-header-cell[role="columnheader"]').first(),
     ).toBeVisible();
   });
 });

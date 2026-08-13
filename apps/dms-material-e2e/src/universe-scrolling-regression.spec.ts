@@ -27,7 +27,6 @@
  */
 
 import { expect, Locator, test } from 'playwright/test';
-
 import { assertStickyHeaderInvariant } from './helpers/assert-sticky-header-invariant.helper';
 import { assertVisibleRowsNonEmpty } from './helpers/assert-visible-rows-non-empty.helper';
 import { login } from './helpers/login.helper';
@@ -108,7 +107,7 @@ test.describe('Universe Scrolling Regression — blank rows on fast scroll', () 
       SYMBOL_CELL_SELECTOR,
       'Visible rows have empty symbol cells after fast scroll to bottom. ' +
         'This indicates the CDK virtual scroll blank-row regression from Epic 60 is active. ' +
-        'See enrich-universe-with-risk-groups.function.ts isLoading filter.'
+        'See enrich-universe-with-risk-groups.function.ts isLoading filter.',
     );
   });
 
@@ -131,7 +130,7 @@ test.describe('Universe Scrolling Regression — blank rows on fast scroll', () 
       page,
       SYMBOL_CELL_SELECTOR,
       'Visible rows have empty symbol cells after scrolling bottom→top. ' +
-        'Epic 60 regression: isLoading filter in enrich-universe-with-risk-groups shrinks array on re-entry.'
+        'Epic 60 regression: isLoading filter in enrich-universe-with-risk-groups shrinks array on re-entry.',
     );
   });
 
@@ -163,7 +162,7 @@ test.describe('Universe Scrolling Regression — blank rows on fast scroll', () 
       page,
       SYMBOL_CELL_SELECTOR,
       'Visible rows have empty symbol cells after repeated scroll oscillation. ' +
-        'Epic 60 regression: repeated isLoading cycles destabilise CDK viewport height.'
+        'Epic 60 regression: repeated isLoading cycles destabilise CDK viewport height.',
     );
   });
 
@@ -223,7 +222,7 @@ test.describe('Universe Scrolling Regression — blank rows on fast scroll', () 
       'Visible rows have empty symbol cells after sort change + fast scroll. ' +
         'Round 5 (Epic 64) regression: excludeLoadingRows filter in filteredData$ removes ' +
         'placeholder rows, re-shrinking the CDK data array during isLoading window. ' +
-        'See global-universe.component.ts filteredData$ and Story 64.2 for the fix.'
+        'See global-universe.component.ts filteredData$ and Story 64.2 for the fix.',
     );
   });
 
@@ -260,7 +259,7 @@ test.describe('Universe Scrolling Regression — blank rows on fast scroll', () 
       page,
       SYMBOL_CELL_SELECTOR,
       'Visible rows have empty symbol cells after symbol filter change + fast scroll. ' +
-        'Epic 60 regression: filter triggers mass isLoading state, old null-return collapses array.'
+        'Epic 60 regression: filter triggers mass isLoading state, old null-return collapses array.',
     );
   });
 
@@ -312,7 +311,7 @@ test.describe('Universe Scrolling Regression — blank rows on fast scroll', () 
       'Visible rows have empty symbol cells after multiple rapid sort toggles + fast scroll. ' +
         'Epic 64 regression: overlapping isLoading windows from consecutive sort clicks ' +
         're-shrink the CDK array when excludeLoadingRows filter is present. ' +
-        'See global-universe.component.ts filteredData$ and Story 64.2 for the fix.'
+        'See global-universe.component.ts filteredData$ and Story 64.2 for the fix.',
     );
   });
 
@@ -354,7 +353,7 @@ test.describe('Universe Scrolling Regression — blank rows on fast scroll', () 
       'Visible rows have empty symbol cells after subset symbol filter + scroll to bottom. ' +
         'Epic 64 regression: excludeLoadingRows filter interacted with reduced result size to ' +
         're-shrink the CDK array during the filter isLoading window. ' +
-        'See global-universe.component.ts filteredData$ and Story 64.2 for the fix.'
+        'See global-universe.component.ts filteredData$ and Story 64.2 for the fix.',
     );
   });
 
@@ -379,7 +378,7 @@ test.describe('Universe Scrolling Regression — blank rows on fast scroll', () 
       page,
       SYMBOL_CELL_SELECTOR,
       'Universe: blank symbol cells detected after oscillation scroll (bottom→top→bottom→top). ' +
-        'Story 87.3 regression guard: CDK viewport should remain stable across all oscillation cycles.'
+        'Story 87.3 regression guard: CDK viewport should remain stable across all oscillation cycles.',
     );
   });
 
@@ -391,7 +390,7 @@ test.describe('Universe Scrolling Regression — blank rows on fast scroll', () 
     // in the 'Equities' risk group, so filtering by it keeps all rows visible
     // while still triggering the round-trip and the resulting isLoading cycle.
     const riskGroupSelect = page.locator(
-      'div.dms-filter-row mat-select[panelwidth=""]'
+      'div.dms-filter-row mat-select[panelwidth=""]',
     );
     await expect(riskGroupSelect).toBeVisible({ timeout: 10000 });
     await riskGroupSelect.click();
@@ -405,7 +404,7 @@ test.describe('Universe Scrolling Regression — blank rows on fast scroll', () 
       page,
       SYMBOL_CELL_SELECTOR,
       'Universe: blank symbol cells detected after risk group filter + scroll to bottom. ' +
-        'Story 87.3 regression guard: filter-triggered isLoading window should not produce blank rows.'
+        'Story 87.3 regression guard: filter-triggered isLoading window should not produce blank rows.',
     );
   });
 
@@ -429,7 +428,7 @@ test.describe('Universe Scrolling Regression — blank rows on fast scroll', () 
       page,
       SYMBOL_CELL_SELECTOR,
       'Universe: blank symbol cells detected after sort change + scroll to bottom. ' +
-        'Story 87.3 regression guard: sort-triggered isLoading window should not produce blank rows.'
+        'Story 87.3 regression guard: sort-triggered isLoading window should not produce blank rows.',
     );
   });
 });
@@ -495,7 +494,7 @@ test.describe('Universe — Story 101.3 slow-scroll header-invariant regression'
     await assertStickyHeaderInvariant(
       page,
       VIEWPORT_SELECTOR,
-      HEADER_ROW_SELECTOR
+      HEADER_ROW_SELECTOR,
     );
   });
 });

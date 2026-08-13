@@ -1,5 +1,4 @@
 import { expect, Page, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 import { seedLastPriceE2eData } from './helpers/seed-last-price-e2e-data.helper';
 
@@ -78,7 +77,7 @@ async function getColumnIndex(page: Page, headerText: string): Promise<number> {
     }
   }
   throw new Error(
-    `Column header "${headerText}" not found in open-positions table`
+    `Column header "${headerText}" not found in open-positions table`,
   );
 }
 
@@ -119,12 +118,12 @@ test.describe('Open Positions — Last $ Column Renders Correctly (Story 99.3)',
     });
     expect(
       response.ok(),
-      `POST /api/trades failed with status ${response.status()} — server may be down or route broken`
+      `POST /api/trades failed with status ${response.status()} — server may be down or route broken`,
     ).toBe(true);
 
     const trades = (await response.json()) as Array<{
       id: string;
-      // eslint-disable-next-line @typescript-eslint/naming-convention -- Server API returns snake_case property names matching DB column names
+
       last_price: number;
     }>;
 
@@ -134,26 +133,26 @@ test.describe('Open Positions — Last $ Column Renders Correctly (Story 99.3)',
     expect(
       tradeA,
       `Server did not return a Trade row for symbolA (${symbolA}) ` +
-        `— mapTradeToResponse or POST /api/trades route is broken`
+        `— mapTradeToResponse or POST /api/trades route is broken`,
     ).toBeDefined();
     expect(
       tradeB,
       `Server did not return a Trade row for symbolB (${symbolB}) ` +
-        `— mapTradeToResponse or POST /api/trades route is broken`
+        `— mapTradeToResponse or POST /api/trades route is broken`,
     ).toBeDefined();
 
     expect(
       tradeA!.last_price,
       `Server last_price for ${symbolA} was ${tradeA!.last_price}, ` +
         `expected ${SYMBOL_A_LAST_PRICE} — mapTradeToResponse did not ` +
-        `forward Universe.last_price (Story 99.2 server wiring broken)`
+        `forward Universe.last_price (Story 99.2 server wiring broken)`,
     ).toBe(SYMBOL_A_LAST_PRICE);
 
     expect(
       tradeB!.last_price,
       `Server last_price for ${symbolB} was ${tradeB!.last_price}, ` +
         `expected 0 — mapTradeToResponse did not handle zero ` +
-        `Universe.last_price (Story 99.2 server wiring broken)`
+        `Universe.last_price (Story 99.2 server wiring broken)`,
     ).toBe(0);
   });
 
@@ -171,7 +170,7 @@ test.describe('Open Positions — Last $ Column Renders Correctly (Story 99.3)',
     // ── Symbol A: assert the known price renders as "$123.45" ────────────
     const rowA = page
       .locator(
-        `.dms-body-row[role="row"]:has(.dms-body-cell:has-text("${symbolA}"))`
+        `.dms-body-row[role="row"]:has(.dms-body-cell:has-text("${symbolA}"))`,
       )
       .first();
     const cellA = rowA.locator(`.dms-body-cell:nth-child(${lastPriceColIdx})`);
@@ -189,7 +188,7 @@ test.describe('Open Positions — Last $ Column Renders Correctly (Story 99.3)',
     // ── Symbol B: zero price → "$0.00"; must not expose null/NaN ────────
     const rowB = page
       .locator(
-        `.dms-body-row[role="row"]:has(.dms-body-cell:has-text("${symbolB}"))`
+        `.dms-body-row[role="row"]:has(.dms-body-cell:has-text("${symbolB}"))`,
       )
       .first();
 
@@ -215,7 +214,7 @@ test.describe('Open Positions — Last $ Column Renders Correctly (Story 99.3)',
     expect(
       textB,
       `Last $ cell for ${symbolB} must not expose a literal ` +
-        `null / undefined / NaN string — check the currency pipe path`
+        `null / undefined / NaN string — check the currency pipe path`,
     ).not.toMatch(/null|undefined|NaN/i);
   });
 });

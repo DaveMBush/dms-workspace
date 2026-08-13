@@ -1,6 +1,5 @@
 import {
   provideHttpClient,
-  withFetch,
   withInterceptors,
   withInterceptorsFromDi,
 } from '@angular/common/http';
@@ -20,7 +19,6 @@ import {
   provideSmartNgRX,
   smartErrorHandlerToken,
 } from '@smarttools/smart-signals';
-
 import { environment } from '../environments/environment';
 import { configureAmplify } from './amplify.config';
 import { appRoutes } from './app.routes';
@@ -33,22 +31,22 @@ import { ProfileService } from './auth/services/profile.service';
 import { ErrorHandlerService } from './error-handler/error-handler.service';
 import { ThemeService } from './shared/services/theme.service';
 import { UniverseSyncService } from './shared/services/universe-sync.service';
-import { AccountEffectsService } from './store/accounts/account-effect.service';
 import { accountEffectsServiceToken } from './store/accounts/account-effect-service-token';
-import { DivDepositTypesEffectsService } from './store/div-deposit-types/div-deposit-types-effect.service';
+import { AccountEffectsService } from './store/accounts/account-effect.service';
 import { divDepositTypesEffectsServiceToken } from './store/div-deposit-types/div-deposit-types-effect-service-token';
-import { DivDepositsEffectsService } from './store/div-deposits/div-deposits-effect.service';
+import { DivDepositTypesEffectsService } from './store/div-deposit-types/div-deposit-types-effect.service';
 import { divDepositsEffectsServiceToken } from './store/div-deposits/div-deposits-effect-service-token';
-import { RiskGroupEffectsService } from './store/risk-group/risk-group-effect.service';
+import { DivDepositsEffectsService } from './store/div-deposits/div-deposits-effect.service';
 import { riskGroupEffectsServiceToken } from './store/risk-group/risk-group-effect-service-token';
-import { ScreenEffectsService } from './store/screen/screen-effect.service';
+import { RiskGroupEffectsService } from './store/risk-group/risk-group-effect.service';
 import { screenEffectsServiceToken } from './store/screen/screen-effect-service-token';
-import { TopEffectsService } from './store/top/top-effect.service';
+import { ScreenEffectsService } from './store/screen/screen-effect.service';
 import { topEffectsServiceToken } from './store/top/top-effect-service-token';
-import { TradeEffectsService } from './store/trades/trade-effect.service';
+import { TopEffectsService } from './store/top/top-effect.service';
 import { tradeEffectsServiceToken } from './store/trades/trade-effect-service-token';
-import { UniverseEffectsService } from './store/universe/universe-effect.service';
+import { TradeEffectsService } from './store/trades/trade-effect.service';
 import { universeEffectsServiceToken } from './store/universe/universe-effect-service-token';
+import { UniverseEffectsService } from './store/universe/universe-effect.service';
 
 function shouldUseElectronMockAuth(): boolean {
   if (typeof window === 'undefined') {
@@ -141,7 +139,6 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(
       withInterceptors([authInterceptor, sortInterceptor]),
       withInterceptorsFromDi(),
-      withFetch()
     ),
 
     // Router

@@ -23,11 +23,12 @@ function readCellTexts(cellElements: Element[]): string[] {
  * @param failureMessage - Message to display when the assertion fails.
  * @param timeout        - Maximum polling time in milliseconds. Default: 10000.
  */
+
 export async function assertVisibleRowsNonEmpty(
   page: Page,
   cellSelector: string,
   failureMessage: string,
-  timeout = 10000
+  timeout = 10000,
 ): Promise<void> {
   // Wait for at least one row to be visible first
   await expect(page.locator(ROW_SELECTOR).first()).toBeVisible({ timeout });
@@ -47,7 +48,7 @@ export async function assertVisibleRowsNonEmpty(
           return text === '';
         }).length;
       },
-      { message: failureMessage, timeout }
+      { message: failureMessage, timeout },
     )
     .toBe(0);
 }

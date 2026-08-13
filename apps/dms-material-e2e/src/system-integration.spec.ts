@@ -1,7 +1,5 @@
 import path from 'path';
-
 import { expect, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 
 const TARGET_SYMBOLS = ['OXLC', 'NHS', 'DHY', 'CIK', 'DMB'];
@@ -14,23 +12,23 @@ test.describe.serial('System Integration — Epic 75', () => {
 
   test.beforeAll(async ({ request }) => {
     const response = await request.delete(
-      'http://localhost:3000/api/test/reset'
+      'http://localhost:3000/api/test/reset',
     );
     if (!response.ok()) {
       throw new Error(
-        `DB reset failed: ${response.status()} ${await response.text()}`
+        `DB reset failed: ${response.status()} ${await response.text()}`,
       );
     }
 
     // Ensure system test account exists (needed for Fidelity CSV import)
     const accountRes = await request.post(
       'http://localhost:3000/api/accounts/add',
-      { data: { name: 'System E2E Test Account' } }
+      { data: { name: 'System E2E Test Account' } },
     );
     // Accept 200 (created) or 409 (already exists); throw on anything else
     if (!accountRes.ok() && accountRes.status() !== 409) {
       throw new Error(
-        `Failed to create system test account: ${accountRes.status()}`
+        `Failed to create system test account: ${accountRes.status()}`,
       );
     }
   });
@@ -86,17 +84,20 @@ test.describe.serial('System Integration — Epic 75', () => {
 
     // Verify distributions_per_year via the API for known monthly payers
     const universeResponse = await request.get(
-      'http://localhost:3000/api/universe'
+      'http://localhost:3000/api/universe',
     );
     expect(universeResponse.ok()).toBeTruthy();
-    const universes = (await universeResponse.json()) as any[];
+    const universes = (await universeResponse.json()) as Record<
+      string,
+      unknown
+    >[];
 
     const bySymbol = Object.fromEntries(universes.map((u) => [u.symbol, u]));
     for (const sym of TARGET_SYMBOLS) {
       expect(bySymbol[sym], `${sym} not found in universe`).toBeDefined();
       expect(
         bySymbol[sym].distributions_per_year,
-        `${sym} distributions_per_year`
+        `${sym} distributions_per_year`,
       ).toBe(12);
     }
   });
@@ -109,17 +110,17 @@ test.describe.serial('System Integration — Epic 75', () => {
     const responsePromise = page.waitForResponse(
       (res) =>
         res.url().includes('/api/import/fidelity') &&
-        res.request().method() === 'POST'
+        res.request().method() === 'POST',
     );
 
     const importButton = page.locator(
-      '[data-testid="import-transactions-button"]'
+      '[data-testid="import-transactions-button"]',
     );
     await expect(importButton).toBeVisible();
     await importButton.click();
 
     await expect(
-      page.getByRole('heading', { name: 'Import Fidelity Transactions' })
+      page.getByRole('heading', { name: 'Import Fidelity Transactions' }),
     ).toBeVisible();
 
     const filePath = path.join(FIXTURES_DIR, 'system-fidelity-2025.csv');
@@ -158,17 +159,17 @@ test.describe.serial('System Integration — Epic 75', () => {
     const responsePromise = page.waitForResponse(
       (res) =>
         res.url().includes('/api/import/fidelity') &&
-        res.request().method() === 'POST'
+        res.request().method() === 'POST',
     );
 
     const importButton = page.locator(
-      '[data-testid="import-transactions-button"]'
+      '[data-testid="import-transactions-button"]',
     );
     await expect(importButton).toBeVisible();
     await importButton.click();
 
     await expect(
-      page.getByRole('heading', { name: 'Import Fidelity Transactions' })
+      page.getByRole('heading', { name: 'Import Fidelity Transactions' }),
     ).toBeVisible();
 
     const filePath = path.join(FIXTURES_DIR, 'system-fidelity-2026.csv');

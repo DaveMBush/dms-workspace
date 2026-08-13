@@ -64,3 +64,5 @@ dist/storybook/
 apps/server/coverage
 .nx/polygraph
 .nx/self-healing
+
+.nx/migrate-runs

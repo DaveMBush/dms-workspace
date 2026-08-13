@@ -1,10 +1,9 @@
-/* eslint-disable @typescript-eslint/naming-convention, @smarttools/no-anonymous-functions, @typescript-eslint/require-await, @typescript-eslint/strict-boolean-expressions, @smarttools/one-exported-item-per-file -- Infrastructure monitoring code with specific requirements */
+/* eslint-disable @typescript-eslint/naming-convention, @smarttools/no-anonymous-functions, @typescript-eslint/require-await, @smarttools/one-exported-item-per-file -- Infrastructure monitoring code with specific requirements */
 // X-Ray Distributed Tracing Middleware for Fastify
 // Provides request tracing and performance monitoring
 
 import { randomUUID } from 'crypto';
 import { FastifyReply, FastifyRequest } from 'fastify';
-
 import { logger } from '../utils/structured-logger';
 import { LogContext } from '../utils/structured-logger-types';
 import {
@@ -24,7 +23,7 @@ const USER_AGENT_HEADER = 'user-agent';
 // Main tracing middleware - simplified without hooks
 export async function tracingMiddleware(
   request: FastifyRequest,
-  _reply: FastifyReply
+  _reply: FastifyReply,
 ): Promise<void> {
   const requestId = request.id ?? randomUUID();
   const traceId = generateTraceId(request);
@@ -77,7 +76,7 @@ function addRequestMetadata(
   segment: MockXRaySegment,
   request: FastifyRequest,
   requestId: string,
-  traceId: string
+  traceId: string,
 ): void {
   segment.addAnnotation('method', request.method);
   segment.addAnnotation('url', request.url);
@@ -89,7 +88,7 @@ function addRequestMetadata(
 function addAuthMetadata(
   segment: MockXRaySegment,
   request: FastifyRequest,
-  userId?: string
+  userId?: string,
 ): void {
   const hasAuth = Boolean(request.headers.authorization);
   if (hasAuth) {

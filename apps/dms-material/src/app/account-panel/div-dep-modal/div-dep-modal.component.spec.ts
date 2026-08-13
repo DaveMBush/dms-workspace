@@ -1,10 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { vi } from 'vitest';
-
-import { DivDepModalComponent } from './div-dep-modal.component';
 import { DivDepModalData } from './div-dep-modal-data.interface';
+import { DivDepModalComponent } from './div-dep-modal.component';
 
 vi.mock(
   '../../store/div-deposit-types/selectors/select-div-deposit-types.function',
@@ -14,7 +13,7 @@ vi.mock(
       { id: 'type-2', name: 'Special' },
       { id: 'type-deposit', name: 'Deposit' },
     ]),
-  })
+  }),
 );
 
 vi.mock('../../store/universe/selectors/select-universes.function', () => ({
@@ -30,7 +29,7 @@ describe('DivDepModalComponent', () => {
   let fixture: ComponentFixture<DivDepModalComponent>;
   let mockDialogRef: { close: ReturnType<typeof vi.fn> };
 
-  const createComponent = (data: DivDepModalData) => {
+  const createComponent = (data: DivDepModalData): void => {
     mockDialogRef = { close: vi.fn() };
     TestBed.configureTestingModule({
       imports: [DivDepModalComponent, MatNativeDateModule],
@@ -69,7 +68,10 @@ describe('DivDepModalComponent', () => {
     };
 
     beforeEach(() =>
-      createComponent({ mode: 'edit', dividend: dividend as any })
+      createComponent({
+        mode: 'edit',
+        dividend: dividend as DivDeposit & { symbol?: string },
+      }),
     );
 
     it('should populate form with dividend data', () => {
@@ -99,7 +101,7 @@ describe('DivDepModalComponent', () => {
       component.form.get('symbol')?.setValue('NOTEXIST');
       component.form.get('symbol')?.markAsTouched();
       expect(component.form.get('symbol')?.hasError('invalidSymbol')).toBe(
-        true
+        true,
       );
     });
 
@@ -107,7 +109,7 @@ describe('DivDepModalComponent', () => {
       component.form.get('symbol')?.setValue('AAPL');
       expect(component.form.get('symbol')?.hasError('required')).toBe(false);
       expect(component.form.get('symbol')?.hasError('invalidSymbol')).toBe(
-        false
+        false,
       );
     });
 
@@ -131,7 +133,9 @@ describe('DivDepModalComponent', () => {
     });
 
     it('should close dialog with data on valid submit', () => {
-      (component as any).selectedUniverseId = 'universe-1';
+      (
+        component as unknown as { selectedUniverseId: string | null }
+      ).selectedUniverseId = 'universe-1';
       component.form.patchValue({
         symbol: 'AAPL',
         date: new Date(),
@@ -196,7 +200,7 @@ describe('DivDepModalComponent', () => {
       component.form.get('symbol')?.setValue('NOTEXIST');
       component.form.get('symbol')?.markAsTouched();
       expect(component.form.get('symbol')?.hasError('invalidSymbol')).toBe(
-        true
+        true,
       );
     });
   });
@@ -223,10 +227,25 @@ describe('DivDepModalComponent', () => {
       const fakeAutocomplete = {
         searchControl: { value: 'aapl', setValue: vi.fn() },
       };
-      (component as any).symbolAutocomplete = fakeAutocomplete;
+      (
+        component as unknown as {
+          symbolAutocomplete: {
+            searchControl: {
+              value: string;
+              setValue: ReturnType<typeof vi.fn>;
+            };
+          };
+        }
+      ).symbolAutocomplete = fakeAutocomplete;
       component.onSymbolBlur();
-      expect((component as any).selectedUniverseId).toBe('universe-aapl');
-      expect((component as any).selectedSymbolId).toBe('AAPL');
+      expect(
+        (component as unknown as { selectedUniverseId: string | null })
+          .selectedUniverseId,
+      ).toBe('universe-aapl');
+      expect(
+        (component as unknown as { selectedSymbolId: string | null })
+          .selectedSymbolId,
+      ).toBe('AAPL');
       expect(component.symbolControl.value).toBe('AAPL');
     });
 
@@ -234,11 +253,20 @@ describe('DivDepModalComponent', () => {
       const fakeAutocomplete = {
         searchControl: { value: 'aapl', setValue: vi.fn() },
       };
-      (component as any).symbolAutocomplete = fakeAutocomplete;
+      (
+        component as unknown as {
+          symbolAutocomplete: {
+            searchControl: {
+              value: string;
+              setValue: ReturnType<typeof vi.fn>;
+            };
+          };
+        }
+      ).symbolAutocomplete = fakeAutocomplete;
       component.onSymbolBlur();
       expect(fakeAutocomplete.searchControl.setValue).toHaveBeenCalledWith(
         'AAPL',
-        { emitEvent: false }
+        { emitEvent: false },
       );
     });
 
@@ -246,9 +274,21 @@ describe('DivDepModalComponent', () => {
       const fakeAutocomplete = {
         searchControl: { value: 'UNKNOWN', setValue: vi.fn() },
       };
-      (component as any).symbolAutocomplete = fakeAutocomplete;
+      (
+        component as unknown as {
+          symbolAutocomplete: {
+            searchControl: {
+              value: string;
+              setValue: ReturnType<typeof vi.fn>;
+            };
+          };
+        }
+      ).symbolAutocomplete = fakeAutocomplete;
       component.onSymbolBlur();
-      expect((component as any).selectedUniverseId).toBeNull();
+      expect(
+        (component as unknown as { selectedUniverseId: string | null })
+          .selectedUniverseId,
+      ).toBeNull();
       expect(component.symbolControl.touched).toBe(true);
     });
   });

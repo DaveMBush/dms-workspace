@@ -1,6 +1,8 @@
-import { afterEach, describe, expect, test, vi, beforeEach } from 'vitest';
-
+import fastify from 'fastify';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import type { Mock } from 'vitest';
 import type { ImportResult } from './import-result.interface';
+import registerImportRoutes from './index';
 
 vi.mock('./fidelity-import-service.function', function () {
   return {
@@ -8,18 +10,14 @@ vi.mock('./fidelity-import-service.function', function () {
   };
 });
 
-import fastify from 'fastify';
-import type { Mock } from 'vitest';
-import registerImportRoutes from './index';
-
-function buildApp() {
+function buildApp(): fastify.FastifyInstance {
   const app = fastify();
   app.register(
     function registerRoutes(instance, _, done) {
       registerImportRoutes(instance);
       done();
     },
-    { prefix: '/api/import' }
+    { prefix: '/api/import' },
   );
   return app;
 }
@@ -60,7 +58,7 @@ describe('POST /api/import/fidelity endpoint', function () {
 
       expect(response.statusCode).toBe(200);
       expect(mockImportFidelityTransactions).toHaveBeenCalledWith(
-        expect.stringContaining('Date,Action')
+        expect.stringContaining('Date,Action'),
       );
     });
 
@@ -146,7 +144,7 @@ describe('POST /api/import/fidelity endpoint', function () {
 
     test('should return 500 for unexpected server errors', async function () {
       mockImportFidelityTransactions.mockRejectedValue(
-        new Error('Unexpected DB crash')
+        new Error('Unexpected DB crash'),
       );
 
       const response = await app.inject({
@@ -222,14 +220,14 @@ describe('POST /api/import/fidelity endpoint', function () {
               warnings: [],
             });
           }
-        }
+        },
       );
       authApp.register(
         function registerRoutes(instance, _, done) {
           registerImportRoutes(instance);
           done();
         },
-        { prefix: '/api/import' }
+        { prefix: '/api/import' },
       );
 
       const response = await authApp.inject({

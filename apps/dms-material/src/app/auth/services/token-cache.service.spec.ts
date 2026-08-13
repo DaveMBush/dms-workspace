@@ -225,8 +225,8 @@ describe('TokenCacheService', () => {
       service.set(key, token);
 
       // Simulate concurrent reads
-      const promises = Array.from({ length: 10 }, () =>
-        Promise.resolve(service.get(key))
+      const promises = Array.from({ length: 10 }, async () =>
+        Promise.resolve(service.get(key)),
       );
 
       const results = await Promise.all(promises);
@@ -280,10 +280,10 @@ describe('TokenCacheService', () => {
       ];
 
       const results = await Promise.all(
-        operations.map(function mapOperations(op) {
+        operations.map(async function mapOperations(op) {
           const result = op();
           return Promise.resolve(result);
-        })
+        }),
       );
 
       // Verify the get operations returned correct values
@@ -322,10 +322,14 @@ describe('TokenCacheService', () => {
 
   describe('Edge Cases', () => {
     it('should handle null and undefined keys gracefully', () => {
-      expect(() => service.get(null as any)).not.toThrow();
-      expect(() => service.get(undefined as any)).not.toThrow();
-      expect(() => service.set(null as any, 'token')).not.toThrow();
-      expect(() => service.set(undefined as any, 'token')).not.toThrow();
+      expect(() => service.get(null as unknown as string)).not.toThrow();
+      expect(() => service.get(undefined as unknown as string)).not.toThrow();
+      expect(() =>
+        service.set(null as unknown as string, 'token'),
+      ).not.toThrow();
+      expect(() =>
+        service.set(undefined as unknown as string, 'token'),
+      ).not.toThrow();
     });
 
     it('should handle large number of cache entries', () => {

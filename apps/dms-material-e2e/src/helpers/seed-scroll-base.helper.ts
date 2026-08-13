@@ -17,21 +17,22 @@ const BASE_UNIVERSE_COUNT = 50;
  * Returns `{ accountId, isNewAccount }` so callers can decide whether to
  * delete the account in their cleanup function.
  */
+
 export async function seedScrollTradesCommon(
   prisma: Awaited<ReturnType<typeof initializePrismaClient>>,
   accountName: string,
   bulkDataFn: (accountId: string, universeIds: string[]) => any[],
-  targetAccountId?: string
+  targetAccountId?: string,
 ): Promise<{ accountId: string; isNewAccount: boolean }> {
   const baseUniverseIds = await fetchExistingUniverseIds(
     prisma,
-    BASE_UNIVERSE_COUNT
+    BASE_UNIVERSE_COUNT,
   );
   const universeIds = Array.from(
     { length: ROW_COUNT },
     function cycleId(_: unknown, i: number): string {
       return baseUniverseIds[i % baseUniverseIds.length];
-    }
+    },
   );
   let accountId: string;
   let isNewAccount: boolean;

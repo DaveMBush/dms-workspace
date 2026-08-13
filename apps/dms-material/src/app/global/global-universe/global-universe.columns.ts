@@ -1,6 +1,6 @@
 import { ColumnDef } from '../../shared/components/base-table/column-def.interface';
 
-export const UNIVERSE_COLUMNS: ColumnDef[] = [
+export const universeColumns: ColumnDef[] = [
   {
     field: 'vol',
     header: 'Vol',

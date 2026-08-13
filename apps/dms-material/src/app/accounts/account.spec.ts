@@ -1,8 +1,10 @@
+import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
-import { signal } from '@angular/core';
-
 import { StatePersistenceService } from '../shared/services/state-persistence.service';
+import { Account as AccountInterface } from '../store/accounts/account.interface';
+import { AccountComponent } from './account';
+import { AccountComponentService } from './account-component.service';
 
 // Mock upstream selectors BEFORE anything else
 vi.mock('../store/top/selectors/select-top-entities.function', () => ({
@@ -12,10 +14,6 @@ vi.mock('../store/top/selectors/select-top-entities.function', () => ({
 vi.mock('../store/accounts/selectors/select-accounts.function', () => ({
   selectAccounts: signal([]),
 }));
-
-import { AccountComponent } from './account';
-import { AccountComponentService } from './account-component.service';
-import { Account as AccountInterface } from '../store/accounts/account.interface';
 
 describe('AccountComponent', () => {
   let component: AccountComponent;
@@ -98,8 +96,10 @@ describe('AccountComponent', () => {
     };
 
     // Mock the accounts$ signal
-    component.accounts$ = signal(mockAccounts) as any;
-    component.top = { '1': { id: '1', name: 'Top 1' } } as any;
+    component.accounts$ = signal(mockAccounts);
+    component.top = {
+      '1': { id: '1', name: 'Top 1' },
+    } as unknown as typeof component.top;
   });
 
   describe('initialization', () => {
@@ -122,7 +122,7 @@ describe('AccountComponent', () => {
     });
 
     it('should delegate to service when addAccount is called', () => {
-      (component as any).addAccount();
+      (component as unknown as { addAccount(): void }).addAccount();
       expect(mockAccountService.addAccount).toHaveBeenCalled();
     });
 
@@ -136,7 +136,7 @@ describe('AccountComponent', () => {
         divDeposits: [],
         months: [],
       });
-      component.accounts$ = signal(mockAccounts) as any;
+      component.accounts$ = signal(mockAccounts);
       fixture.detectChanges();
 
       const editor = fixture.nativeElement.querySelector('dms-node-editor');
@@ -148,7 +148,7 @@ describe('AccountComponent', () => {
       fixture.detectChanges();
 
       const accountLinks = fixture.nativeElement.querySelectorAll(
-        'a[routerlink*="/account/1"]'
+        'a[routerlink*="/account/1"]',
       );
       expect(accountLinks.length).toBe(0);
     });
@@ -157,7 +157,9 @@ describe('AccountComponent', () => {
   describe('Save Functionality', () => {
     it('should call service saveEdit when invoked', () => {
       const account = mockAccounts[0];
-      (component as any).saveEdit(account);
+      (
+        component as unknown as { saveEdit(account: AccountInterface): void }
+      ).saveEdit(account);
       expect(mockAccountService.saveEdit).toHaveBeenCalledWith(account);
     });
   });
@@ -165,7 +167,9 @@ describe('AccountComponent', () => {
   describe('Cancel Functionality', () => {
     it('should call service cancelEdit when invoked', () => {
       const account = mockAccounts[0];
-      (component as any).cancelEdit(account);
+      (
+        component as unknown as { cancelEdit(account: AccountInterface): void }
+      ).cancelEdit(account);
       expect(mockAccountService.cancelEdit).toHaveBeenCalledWith(account);
     });
   });
@@ -182,7 +186,13 @@ describe('AccountComponent', () => {
 
   describe('Edit Functionality', () => {
     it('should have editAccount method', () => {
-      expect((component as any).editAccount).toBeDefined();
+      expect(
+        (
+          component as unknown as {
+            editAccount(account: AccountInterface): void;
+          }
+        ).editAccount,
+      ).toBeDefined();
     });
 
     it('should delegate to service when editAccount is called', () => {
@@ -191,8 +201,12 @@ describe('AccountComponent', () => {
       const mockEvent = {
         preventDefault: vi.fn(),
         stopPropagation: vi.fn(),
-      } as any;
-      (component as any).editAccount(mockEvent, account);
+      };
+      (
+        component as unknown as {
+          editAccount(event: Event, account: AccountInterface): void;
+        }
+      ).editAccount(mockEvent, account);
       expect(mockAccountService.editAccount).toHaveBeenCalledWith(account);
     });
 
@@ -209,7 +223,7 @@ describe('AccountComponent', () => {
       fixture.detectChanges();
 
       const accountLinks = fixture.nativeElement.querySelectorAll(
-        'a[routerlink*="/account/1"]'
+        'a[routerlink*="/account/1"]',
       );
       expect(accountLinks.length).toBe(0);
     });
@@ -222,8 +236,12 @@ describe('AccountComponent', () => {
       const mockEvent = {
         preventDefault: vi.fn(),
         stopPropagation: vi.fn(),
-      } as any;
-      (component as any).editAccount(mockEvent, account);
+      };
+      (
+        component as unknown as {
+          editAccount(event: Event, account: AccountInterface): void;
+        }
+      ).editAccount(mockEvent, account);
 
       // Should not set editingNode when adding
       expect(component.editingNode).toBe('');
@@ -232,7 +250,7 @@ describe('AccountComponent', () => {
 
   describe('Empty State', () => {
     it('should show empty message when no accounts', () => {
-      component.accounts$ = signal([]) as any;
+      component.accounts$ = signal([]);
       fixture.detectChanges();
 
       const emptyMessage =
@@ -264,8 +282,12 @@ describe('AccountComponent', () => {
       const mockEvent = {
         preventDefault: vi.fn(),
         stopPropagation: vi.fn(),
-      } as any;
-      (component as any).deleteAccount(mockEvent, account);
+      };
+      (
+        component as unknown as {
+          deleteAccount(event: Event, account: AccountInterface): void;
+        }
+      ).deleteAccount(mockEvent, account);
       expect(mockAccountService.deleteAccount).toHaveBeenCalledWith(account);
     });
 
@@ -274,7 +296,7 @@ describe('AccountComponent', () => {
       fixture.detectChanges();
 
       const deleteButton = fixture.nativeElement.querySelector(
-        'a[routerlink*="/account/1"] .delete-button'
+        'a[routerlink*="/account/1"] .delete-button',
       );
       expect(deleteButton).toBeFalsy();
     });
@@ -284,7 +306,7 @@ describe('AccountComponent', () => {
       fixture.detectChanges();
 
       const deleteButton = fixture.nativeElement.querySelector(
-        'a[routerlink*="/account/1"] .delete-button'
+        'a[routerlink*="/account/1"] .delete-button',
       );
       expect(deleteButton).toBeFalsy();
     });
@@ -296,7 +318,7 @@ describe('AccountComponent', () => {
 
       expect(mockStatePersistenceService.saveState).toHaveBeenCalledWith(
         'global-tab-selection',
-        'universe'
+        'universe',
       );
     });
 
@@ -307,7 +329,7 @@ describe('AccountComponent', () => {
 
       expect(mockStatePersistenceService.loadState).toHaveBeenCalledWith(
         'global-tab-selection',
-        null
+        null,
       );
     });
 
@@ -318,7 +340,7 @@ describe('AccountComponent', () => {
 
       expect(mockStatePersistenceService.loadState).toHaveBeenCalledWith(
         'global-tab-selection',
-        null
+        null,
       );
     });
 
@@ -349,7 +371,7 @@ describe('AccountComponent', () => {
 
       expect(mockStatePersistenceService.saveState).toHaveBeenCalledWith(
         'selected-account',
-        account.id
+        account.id,
       );
     });
 
@@ -360,7 +382,7 @@ describe('AccountComponent', () => {
 
       expect(mockStatePersistenceService.loadState).toHaveBeenCalledWith(
         'selected-account',
-        null
+        null,
       );
     });
 
@@ -370,7 +392,7 @@ describe('AccountComponent', () => {
       component.ngOnInit();
 
       expect(mockRouter.navigate).not.toHaveBeenCalledWith(
-        expect.arrayContaining([expect.stringContaining('/account')])
+        expect.arrayContaining([expect.stringContaining('/account')]),
       );
     });
 
@@ -398,10 +420,14 @@ describe('AccountComponent', () => {
 
       component.onAccountSelect(account);
       mockStatePersistenceService.saveState.mockClear();
-      (component as any).deleteAccount(event, account);
+      (
+        component as unknown as {
+          deleteAccount(event: Event, account: AccountInterface): void;
+        }
+      ).deleteAccount(event, account);
 
       expect(mockStatePersistenceService.clearState).toHaveBeenCalledWith(
-        'selected-account'
+        'selected-account',
       );
     });
 
@@ -409,10 +435,14 @@ describe('AccountComponent', () => {
       const event = new Event('click');
       const account = mockAccounts[0];
 
-      (component as any).deleteAccount(event, account);
+      (
+        component as unknown as {
+          deleteAccount(event: Event, account: AccountInterface): void;
+        }
+      ).deleteAccount(event, account);
 
       expect(mockStatePersistenceService.clearState).toHaveBeenCalledWith(
-        'account-tab-' + account.id
+        'account-tab-' + account.id,
       );
     });
   });

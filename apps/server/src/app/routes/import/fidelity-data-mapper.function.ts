@@ -32,7 +32,7 @@ function convertDate(dateStr: string): string {
  */
 async function resolveAccount(
   accountName: string,
-  cache: Map<string, { id: string }>
+  cache: Map<string, { id: string }>,
 ): Promise<{ id: string }> {
   const cached = cache.get(accountName);
   if (cached) {
@@ -55,7 +55,7 @@ async function resolveAccount(
 async function resolveSymbol(
   symbol: string,
   /* v8 ignore next */
-  createIfNotFound: boolean = false
+  createIfNotFound: boolean = false,
 ): Promise<{ id: string } | null> {
   const universeEntry = await prisma.universe.findFirst({ where: { symbol } });
   if (!universeEntry && createIfNotFound) {
@@ -71,11 +71,11 @@ async function resolveSymbol(
 function mapPurchase(
   row: FidelityCsvRow,
   accountId: string,
-  universeId: string
+  universeId: string,
 ): MappedTrade {
   if (row.quantity < 0) {
     throw new Error(
-      `Invalid quantity for purchase: ${row.quantity} (must be non-negative)`
+      `Invalid quantity for purchase: ${row.quantity} (must be non-negative)`,
     );
   }
   return {
@@ -94,7 +94,7 @@ function mapPurchase(
 function mapSale(
   row: FidelityCsvRow,
   accountId: string,
-  universeId: string
+  universeId: string,
 ): MappedSale {
   return {
     universeId,
@@ -111,7 +111,7 @@ function mapSale(
 async function mapDividend(
   row: FidelityCsvRow,
   accountId: string,
-  universeId: string
+  universeId: string,
 ): Promise<MappedDivDeposit> {
   const depositType =
     (await prisma.divDepositType.findFirst({ where: { name: 'Dividend' } })) ??
@@ -131,7 +131,7 @@ async function mapDividend(
  */
 async function mapCashDeposit(
   row: FidelityCsvRow,
-  accountId: string
+  accountId: string,
 ): Promise<MappedDivDeposit> {
   const depositType =
     (await prisma.divDepositType.findFirst({
@@ -157,7 +157,7 @@ async function mapCashDeposit(
  * @throws Error if account or symbol not found in database
  */
 export async function mapFidelityTransactions(
-  rows: FidelityCsvRow[]
+  rows: FidelityCsvRow[],
 ): Promise<MappedTransactionResult> {
   const result: MappedTransactionResult = {
     trades: [],
@@ -220,13 +220,13 @@ function isSellAction(action: string): boolean {
 }
 
 function createUnknownTransaction(row: FidelityCsvRow): UnknownTransaction {
-  return row as UnknownTransaction;
+  return row;
 }
 
 async function handleBuyRow(
   row: FidelityCsvRow,
   result: MappedTransactionResult,
-  accountId: string
+  accountId: string,
 ): Promise<void> {
   const universe = await resolveSymbol(row.symbol, true);
   /* v8 ignore start */
@@ -239,7 +239,7 @@ async function handleBuyRow(
 async function handleSellRow(
   row: FidelityCsvRow,
   result: MappedTransactionResult,
-  accountId: string
+  accountId: string,
 ): Promise<void> {
   const universe = await resolveSymbol(row.symbol, false);
   if (universe) {
@@ -252,7 +252,7 @@ async function handleSellRow(
 async function handleDividendRow(
   row: FidelityCsvRow,
   result: MappedTransactionResult,
-  accountId: string
+  accountId: string,
 ): Promise<void> {
   const shouldAutoCreate = isMoneyMarketFund(row.symbol);
   const universe = await resolveSymbol(row.symbol, shouldAutoCreate);
@@ -274,7 +274,7 @@ async function handleDividendRow(
 async function handleSplitRow(
   row: FidelityCsvRow,
   result: MappedTransactionResult,
-  accountCache: Map<string, { id: string }>
+  accountCache: Map<string, { id: string }>,
 ): Promise<void> {
   // Only process FROM rows; TO rows and unrecognised split rows are silently skipped.
   if (!isSplitFromRow(row)) {
@@ -295,7 +295,7 @@ async function handleSplitRow(
 async function mapSingleRow(
   row: FidelityCsvRow,
   result: MappedTransactionResult,
-  accountCache: Map<string, { id: string }>
+  accountCache: Map<string, { id: string }>,
 ): Promise<void> {
   // In-lieu rows are skipped entirely.
   if (isInLieuRow(row)) {

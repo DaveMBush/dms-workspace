@@ -10,11 +10,13 @@
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "ignoreDeprecations": "6.0"
   },
   "include": [
     "**/*.ts",
     "**/*.js",
+    "**/*.mjs",
     "playwright.config.ts",
     "src/**/*.spec.ts",
     "src/**/*.spec.js",

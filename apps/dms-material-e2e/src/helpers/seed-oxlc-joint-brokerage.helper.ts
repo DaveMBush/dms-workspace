@@ -1,5 +1,4 @@
 import type { PrismaClient } from '@prisma/client';
-
 import type { SeederResultBase } from './seeder-result-base.types';
 import { initializePrismaClient } from './shared-prisma-client.helper';
 import { createRiskGroups } from './shared-risk-groups.helper';
@@ -14,7 +13,7 @@ interface OxlcJointBrokerageSeederResult extends SeederResultBase {
 async function cleanupOxlcData(
   prisma: PrismaClient,
   accountId: string,
-  oxlcUniverseId: string | null
+  oxlcUniverseId: string | null,
 ): Promise<void> {
   try {
     await prisma.trades.deleteMany({ where: { accountId } });

@@ -28,7 +28,7 @@ test.describe('Loading Spinner Centering', () => {
           contentType: 'application/json',
           body: JSON.stringify({ success: true, count: 100 }),
         });
-      }
+      },
     );
 
     // Navigate to screener
@@ -76,7 +76,7 @@ test.describe('Loading Spinner Centering', () => {
 
     // Verify the centered wrapper exists inside the overlay
     const wrapper = loadingOverlay.locator(
-      'div.flex.flex-col.items-center.justify-center'
+      'div.flex.flex-col.items-center.justify-center',
     );
     await expect(wrapper).toBeVisible();
 
@@ -99,7 +99,7 @@ test.describe('Loading Spinner Centering', () => {
           contentType: 'application/json',
           body: JSON.stringify({ success: true, count: 100 }),
         });
-      }
+      },
     );
 
     // Navigate to screener
@@ -161,7 +161,7 @@ test.describe('Loading Spinner Centering', () => {
             logFilePath: '',
           }),
         });
-      }
+      },
     );
 
     // Trigger loading by updating universe
@@ -199,7 +199,7 @@ test.describe('Loading Spinner Centering', () => {
         if (url.includes('/months')) {
           const now = new Date();
           const currentMonth = `${String(now.getFullYear())}-${String(
-            now.getMonth() + 1
+            now.getMonth() + 1,
           ).padStart(2, '0')}`;
           await route.fulfill({
             status: 200,
@@ -224,7 +224,7 @@ test.describe('Loading Spinner Centering', () => {
         if (url.includes('/graph')) {
           const nowGraph = new Date();
           const graphMonth = `${String(nowGraph.getFullYear())}-${String(
-            nowGraph.getMonth() + 1
+            nowGraph.getMonth() + 1,
           ).padStart(2, '0')}`;
           await route.fulfill({
             status: 200,
@@ -253,7 +253,7 @@ test.describe('Loading Spinner Centering', () => {
             tax_free_income: 20000,
           }),
         });
-      }
+      },
     );
 
     // Navigate to account summary page (triggers data load)
@@ -285,37 +285,42 @@ test.describe('Loading Spinner Centering', () => {
     // Now hold summary routes so the reload shows the spinner long enough to verify
     let intercepting = true;
     const pendingRoutes: Array<() => Promise<void>> = [];
-    await page.route(/\/api\/summary/, function holdSummaryRoutesAC33(route) {
-      const url = route.request().url();
-      if (!intercepting || url.includes('/graph') || url.includes('/years')) {
-        return route.continue();
-      }
-      return new Promise<void>(function deferRouteAC33(resolve) {
-        pendingRoutes.push(async function releasePendingRouteAC33() {
-          if (url.includes('/months')) {
-            await route.fulfill({
-              status: 200,
-              contentType: 'application/json',
-              body: JSON.stringify([{ month: '2025-03', label: 'March 2025' }]),
-            });
-          } else {
-            await route.fulfill({
-              status: 200,
-              contentType: 'application/json',
-              body: JSON.stringify({
-                deposits: 100000,
-                dividends: 2500,
-                capitalGains: 5000,
-                equities: 50000,
-                income: 30000,
-                tax_free_income: 20000,
-              }),
-            });
-          }
-          resolve();
+    await page.route(
+      /\/api\/summary/,
+      async function holdSummaryRoutesAC33(route) {
+        const url = route.request().url();
+        if (!intercepting || url.includes('/graph') || url.includes('/years')) {
+          return route.continue();
+        }
+        return new Promise<void>(function deferRouteAC33(resolve) {
+          pendingRoutes.push(async function releasePendingRouteAC33() {
+            if (url.includes('/months')) {
+              await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify([
+                  { month: '2025-03', label: 'March 2025' },
+                ]),
+              });
+            } else {
+              await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({
+                  deposits: 100000,
+                  dividends: 2500,
+                  capitalGains: 5000,
+                  equities: 50000,
+                  income: 30000,
+                  tax_free_income: 20000,
+                }),
+              });
+            }
+            resolve();
+          });
         });
-      });
-    });
+      },
+    );
 
     // Reload page; Angular will re-bootstrap and fire API calls (all held open)
     void page.reload({ waitUntil: 'domcontentloaded' });
@@ -328,7 +333,7 @@ test.describe('Loading Spinner Centering', () => {
           document.querySelector('[data-testid="loading-spinner"]') !== null
         );
       },
-      { timeout: 10000 }
+      { timeout: 10000 },
     );
 
     // Spinner confirmed in DOM — assert visible and check centering classes
@@ -342,7 +347,7 @@ test.describe('Loading Spinner Centering', () => {
 
     // Release held routes and wait for loading to complete
     intercepting = false;
-    await Promise.all(pendingRoutes.map((fn) => fn()));
+    await Promise.all(pendingRoutes.map(async (fn) => fn()));
 
     // Wait for loading to complete
     await expect(loadingSpinner).toBeHidden({ timeout: 15000 });
@@ -361,7 +366,7 @@ test.describe('Loading Spinner Centering', () => {
           contentType: 'application/json',
           body: JSON.stringify({ success: true, count: 100 }),
         });
-      }
+      },
     );
 
     const screenSizes = [
@@ -410,7 +415,7 @@ test.describe('Loading Spinner Centering', () => {
 
       // Verify centered wrapper exists
       const wrapper = loadingOverlay.locator(
-        'div.flex.flex-col.items-center.justify-center'
+        'div.flex.flex-col.items-center.justify-center',
       );
       await expect(wrapper).toBeVisible();
 

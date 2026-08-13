@@ -1,7 +1,7 @@
-import { SymbolOption } from './symbol-option.interface';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { SymbolAutocompleteComponent } from './symbol-autocomplete.component';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { SymbolOption } from './symbol-option.interface';
 
 describe('SymbolAutocompleteComponent', () => {
   let component: SymbolAutocompleteComponent;
@@ -85,6 +85,6 @@ describe('SymbolAutocompleteComponent', () => {
   });
 
   it('should display empty string when option is null', () => {
-    expect(component.displayFn(null as any)).toBe('');
+    expect(component.displayFn(null)).toBe('');
   });
 });

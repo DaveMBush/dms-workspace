@@ -1,6 +1,5 @@
 import path from 'path';
 import { expect, Page, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 import { seedAllThreeSplitsE2eData } from './helpers/seed-all-three-splits-e2e-data.helper';
 import { seedSplitImportE2eData } from './helpers/seed-split-import-e2e-data.helper';
@@ -15,12 +14,12 @@ async function navigateToUniverse(page: Page): Promise<void> {
 
 async function openImportDialog(page: Page): Promise<void> {
   const importButton = page.locator(
-    '[data-testid="import-transactions-button"]'
+    '[data-testid="import-transactions-button"]',
   );
   await expect(importButton).toBeVisible({ timeout: 10000 });
   await importButton.click();
   await expect(
-    page.getByRole('heading', { name: 'Import Fidelity Transactions' })
+    page.getByRole('heading', { name: 'Import Fidelity Transactions' }),
   ).toBeVisible({ timeout: 5000 });
 }
 
@@ -40,7 +39,7 @@ async function verifySymbolRow(
   page: Page,
   symbol: string,
   expectedQty: number,
-  expectedBuy: number
+  expectedBuy: number,
 ): Promise<void> {
   const rows = page
     .locator('.dms-body-row[role="row"]')
@@ -57,7 +56,7 @@ async function verifySymbolRow(
     .textContent();
   expect(parseFloat((buyText?.trim() ?? '0').replace(/[$,]/g, ''))).toBeCloseTo(
     expectedBuy,
-    2
+    2,
   );
 }
 
@@ -94,6 +93,7 @@ test.describe('OXLC Split Import E2E', () => {
    *  - No fractional sale records created (1530 is exactly divisible by 5)
    *  - "IN LIEU OF FRX SHARE" row did not produce a duplicate sale
    */
+
   test('should import OXLC reverse split CSV and adjust open lots', async ({
     page,
   }) => {
@@ -124,7 +124,7 @@ test.describe('OXLC Split Import E2E', () => {
 
     // Dialog closes automatically on success
     await expect(
-      page.getByRole('heading', { name: 'Import Fidelity Transactions' })
+      page.getByRole('heading', { name: 'Import Fidelity Transactions' }),
     ).not.toBeVisible({ timeout: 10000 });
 
     // Verify open lots via direct DB query (AC1: 1530 / 5 = 306)
@@ -137,11 +137,10 @@ test.describe('OXLC Split Import E2E', () => {
       });
       const totalQty = openLots.reduce(function sumQuantities(
         sum: number,
-        trade: { quantity: number; buy: number }
+        trade: { quantity: number; buy: number },
       ) {
         return sum + trade.quantity;
-      },
-      0);
+      }, 0);
       expect(totalQty).toBe(306);
       // Per-lot split assertions: 500→100@$20, 500→100@$19, 530→106@$18
       expect(openLots.map((lot) => lot.quantity)).toEqual([100, 100, 106]);
@@ -166,7 +165,7 @@ test.describe('OXLC Split Import E2E', () => {
   }) => {
     await page.goto(`/account/${accountId}/open`);
     await expect(
-      page.locator('[data-testid="open-positions-table"]')
+      page.locator('[data-testid="open-positions-table"]'),
     ).toBeVisible({ timeout: 15000 });
     await page.waitForSelector('.dms-body-row[role="row"]', { timeout: 15000 });
 
@@ -266,7 +265,7 @@ test.describe('All-Three Reverse Split E2E', () => {
 
     // Dialog closes automatically on success
     await expect(
-      page.getByRole('heading', { name: 'Import Fidelity Transactions' })
+      page.getByRole('heading', { name: 'Import Fidelity Transactions' }),
     ).not.toBeVisible({ timeout: 10000 });
 
     const prisma = await initializePrismaClient();
@@ -317,7 +316,7 @@ test.describe('All-Three Reverse Split E2E', () => {
   }) => {
     await page.goto(`/account/${accountId}/open`);
     await expect(
-      page.locator('[data-testid="open-positions-table"]')
+      page.locator('[data-testid="open-positions-table"]'),
     ).toBeVisible({ timeout: 15000 });
     await page.waitForSelector('.dms-body-row[role="row"]', { timeout: 15000 });
 

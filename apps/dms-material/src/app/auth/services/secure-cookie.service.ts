@@ -4,7 +4,6 @@ import { catchError, EMPTY, map, Observable, switchMap } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 import { CSRFTokenResponse } from './csrf-token-response.interface';
-import { SecureCookieRequest } from './secure-cookie-request.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -23,13 +22,13 @@ export class SecureCookieService {
         {
           token,
           expirationDate: expirationDate.toISOString(),
-        } as SecureCookieRequest,
+        },
         {
           headers: {
             'X-CSRF-Token': csrfToken,
           },
           withCredentials: true,
-        }
+        },
       );
     }
 
@@ -60,7 +59,7 @@ export class SecureCookieService {
             'X-CSRF-Token': csrfToken,
           },
           withCredentials: true,
-        }
+        },
       );
     }
 
@@ -71,7 +70,7 @@ export class SecureCookieService {
 
     return this.getCSRFToken().pipe(
       switchMap(makeClearCookiesRequest),
-      catchError(handleClearCookiesError)
+      catchError(handleClearCookiesError),
     );
   }
 

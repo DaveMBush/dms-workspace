@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
-
-import { accountsDefinition } from './accounts-definition.const';
 import { Account } from './account.interface';
+import { accountsDefinition } from './accounts-definition.const';
 
 describe('Account soldTrades PartialArrayDefinition (Story 40.3)', () => {
   it('should accept PartialArrayDefinition shape for soldTrades', () => {
@@ -12,17 +11,17 @@ describe('Account soldTrades PartialArrayDefinition (Story 40.3)', () => {
         startIndex: 0,
         indexes: [],
         length: 0,
-      } as unknown as Account['openTrades'],
+      },
       soldTrades: {
         startIndex: 0,
         indexes: ['trade-1', 'trade-2'],
         length: 10,
-      } as unknown as Account['soldTrades'],
+      },
       divDeposits: {
         startIndex: 0,
         indexes: [],
         length: 0,
-      } as unknown as Account['divDeposits'],
+      },
       months: [],
     };
 

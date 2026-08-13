@@ -27,7 +27,6 @@
  */
 
 import { expect, type Page } from 'playwright/test';
-
 import { slowScrollToBottom } from './slow-scroll.helper';
 
 // ─── Constants (not exported) ─────────────────────────────────────────────────
@@ -53,7 +52,7 @@ const DRIFT_TOLERANCE = 1;
 
 async function assertViewportCssGuards(
   page: Page,
-  containerSelector: string
+  containerSelector: string,
 ): Promise<void> {
   const containValue = await page
     .locator(containerSelector)
@@ -66,7 +65,7 @@ async function assertViewportCssGuards(
     'CSS guard (Story 101.3): cdk-virtual-scroll-viewport must not have ' +
       '`contain: layout` — layout containment creates an IFC that breaks ' +
       'position:sticky in CSS Containment Level 2 browsers (Chrome 114+, Firefox 109+). ' +
-      'See base-table.component.scss SCROLLING REGRESSION HISTORY (Epic 101).'
+      'See base-table.component.scss SCROLLING REGRESSION HISTORY (Epic 101).',
   ).not.toMatch(/\blayout\b/);
 
   expect(
@@ -74,7 +73,7 @@ async function assertViewportCssGuards(
     'CSS guard (Story 101.3): cdk-virtual-scroll-viewport must not have ' +
       '`contain: paint` — in CSS Containment Level 2, contain:paint implies ' +
       'contain:layout. This was the root cause of the Round 7 scrolling artifacts ' +
-      '(Epic 101, Story 101.2). Do not re-add contain:paint to .virtual-scroll-viewport.'
+      '(Epic 101, Story 101.2). Do not re-add contain:paint to .virtual-scroll-viewport.',
   ).not.toMatch(/\bpaint\b/);
 
   const overflowY = await page
@@ -86,7 +85,7 @@ async function assertViewportCssGuards(
   expect(
     ['auto', 'scroll'],
     'CSS guard (Story 101.3): cdk-virtual-scroll-viewport must have ' +
-      `overflow-y: auto or scroll so it is the scroll container CDK targets. Got: "${overflowY}".`
+      `overflow-y: auto or scroll so it is the scroll container CDK targets. Got: "${overflowY}".`,
   ).toContain(overflowY);
 }
 
@@ -103,7 +102,7 @@ function assertOverlapInvariant(samples: SamplesArr, tolerance: number): void {
       `during slow scroll (DRIFT_TOLERANCE=${tolerance}px). ` +
       'header-under-header artifact detected. ' +
       'Root cause: layout containment on cdk-virtual-scroll-viewport breaks position:sticky. ' +
-      'See base-table.component.scss (Epic 101 comment) and Story 101.2.'
+      'See base-table.component.scss (Epic 101 comment) and Story 101.2.',
   ).toHaveLength(0);
 }
 
@@ -118,7 +117,7 @@ function assertDriftInvariant(samples: SamplesArr, tolerance: number): void {
       `during slow scroll (DRIFT_TOLERANCE=${tolerance}px). ` +
       'header-scrolls-with-content artifact detected. ' +
       'Root cause: layout containment on cdk-virtual-scroll-viewport breaks position:sticky. ' +
-      'See base-table.component.scss (Epic 101 comment) and Story 101.2.'
+      'See base-table.component.scss (Epic 101 comment) and Story 101.2.',
   ).toHaveLength(0);
 }
 
@@ -133,7 +132,7 @@ interface MatchedRow {
 function buildMatchedRows(
   curr: LocalRowSnapshot[],
   prev: LocalRowSnapshot[],
-  next: LocalRowSnapshot[]
+  next: LocalRowSnapshot[],
 ): MatchedRow[] {
   return curr
     .map(function mapRowWithNeighbors(row) {
@@ -156,7 +155,7 @@ function checkRowFlicker(
   curr: LocalRowSnapshot[],
   prev: LocalRowSnapshot[],
   next: LocalRowSnapshot[],
-  ctx: { frameIndex: number; rowHeightPx: number }
+  ctx: { frameIndex: number; rowHeightPx: number },
 ): void {
   const { frameIndex, rowHeightPx } = ctx;
   const threshold = rowHeightPx / 2;
@@ -204,11 +203,11 @@ function checkRowFlicker(
       throw new Error(
         `Row flicker detected at frame ${frameIndex}, rowIndex ${row.rowIndex}: ` +
           `jumped ${jumpThisFrame.toFixed(
-            1
+            1,
           )}px then reverted ${revertNextFrame.toFixed(1)}px ` +
           `(threshold=${threshold}px). ` +
           'Row position jitter during slow scroll detected (Epic 105 round-8). ' +
-          'Root cause: row-specific position shift (not a CDK global content-wrapper adjustment).'
+          'Root cause: row-specific position shift (not a CDK global content-wrapper adjustment).',
       );
     }
   }
@@ -216,7 +215,7 @@ function checkRowFlicker(
 
 function assertFlickerInvariant(
   samples: SamplesArr,
-  rowHeightPx: number
+  rowHeightPx: number,
 ): void {
   for (let f = 1; f < samples.length - 1; f++) {
     const prev = samples[f - 1].rows;
@@ -252,7 +251,7 @@ export async function assertStickyHeaderInvariant(
     scrollMs?: number;
     rowSelector?: string;
     rowHeightPx?: number;
-  }
+  },
 ): Promise<void> {
   await assertViewportCssGuards(page, containerSelector);
 
@@ -267,7 +266,7 @@ export async function assertStickyHeaderInvariant(
   expect(
     samples.length,
     'Slow-scroll frame capture returned no frames. ' +
-      'Check that all selectors resolve to elements visible on the page.'
+      'Check that all selectors resolve to elements visible on the page.',
   ).toBeGreaterThan(0);
 
   assertOverlapInvariant(samples, DRIFT_TOLERANCE);

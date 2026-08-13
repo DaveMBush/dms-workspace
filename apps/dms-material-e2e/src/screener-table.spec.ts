@@ -1,5 +1,4 @@
-import { test, expect } from 'playwright/test';
-
+import { expect, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 import { seedScreenerData } from './helpers/seed-screener-data.helper';
 
@@ -31,16 +30,16 @@ test.describe('Screener Table', () => {
 
     test('should display all required columns', async ({ page }) => {
       await expect(
-        page.getByRole('columnheader', { name: 'Symbol' })
+        page.getByRole('columnheader', { name: 'Symbol' }),
       ).toBeVisible();
       await expect(
-        page.getByRole('columnheader', { name: 'Risk Group' })
+        page.getByRole('columnheader', { name: 'Risk Group' }),
       ).toBeVisible();
     });
 
     test('should display data rows', async ({ page }) => {
       const rows = page.locator(
-        '[data-testid="screener-table"] .dms-body-row[role="row"]'
+        '[data-testid="screener-table"] .dms-body-row[role="row"]',
       );
       await expect(rows).not.toHaveCount(0);
     });
@@ -48,7 +47,7 @@ test.describe('Screener Table', () => {
     test('should display symbols in sorted order', async ({ page }) => {
       const symbols = await page
         .locator(
-          '[data-testid="screener-table"] .dms-body-row[role="row"] .dms-body-cell:first-child'
+          '[data-testid="screener-table"] .dms-body-row[role="row"] .dms-body-cell:first-child',
         )
         .allTextContents();
 
@@ -56,7 +55,7 @@ test.describe('Screener Table', () => {
       expect(symbols.length).toBeGreaterThan(0);
 
       // Items should be sorted alphabetically by symbol
-      const sortedSymbols = [...symbols].sort();
+      const sortedSymbols = [...symbols].sort((a, b) => a.localeCompare(b));
       expect(symbols).toEqual(sortedSymbols);
     });
   });
@@ -73,13 +72,13 @@ test.describe('Screener Table', () => {
 
       await expect(page.getByRole('option', { name: 'All' })).toBeVisible();
       await expect(
-        page.getByRole('option', { name: 'Equities' })
+        page.getByRole('option', { name: 'Equities' }),
       ).toBeVisible();
       await expect(
-        page.getByRole('option', { name: 'Income', exact: true })
+        page.getByRole('option', { name: 'Income', exact: true }),
       ).toBeVisible();
       await expect(
-        page.getByRole('option', { name: 'Tax Free Income' })
+        page.getByRole('option', { name: 'Tax Free Income' }),
       ).toBeVisible();
     });
 
@@ -94,7 +93,7 @@ test.describe('Screener Table', () => {
       // All visible rows should have "Equities" risk group
       const riskGroups = await page
         .locator(
-          '[data-testid="screener-table"] .dms-body-row[role="row"] .dms-body-cell:nth-child(2)'
+          '[data-testid="screener-table"] .dms-body-row[role="row"] .dms-body-cell:nth-child(2)',
         )
         .allTextContents();
 

@@ -68,15 +68,14 @@
  *   the CI-green regression suite to avoid flaky test noise.
  */
 
-import { type Page, test } from 'playwright/test';
-
+import { test, type Page } from 'playwright/test';
 import { applyAndClearColumnFilter } from './helpers/apply-and-clear-column-filter.helper';
 import { assertStickyHeaderInvariant } from './helpers/assert-sticky-header-invariant.helper';
-import { swapActiveAccountViaNavigation } from './helpers/swap-active-account-via-navigation.helper';
-import { swapUniverseAccount } from './helpers/swap-universe-account.helper';
 import { login } from './helpers/login.helper';
 import { seedScrollOpenPositionsData } from './helpers/seed-scroll-open-positions-data.helper';
 import { seedScrollUniverseData } from './helpers/seed-scroll-universe-data.helper';
+import { swapActiveAccountViaNavigation } from './helpers/swap-active-account-via-navigation.helper';
+import { swapUniverseAccount } from './helpers/swap-universe-account.helper';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -123,21 +122,21 @@ const PASS_2_OPTIONS = {
  */
 async function runTwoPassInvariantCheck(
   page: Page,
-  contextChange: () => Promise<void>
+  contextChange: () => Promise<void>,
 ): Promise<void> {
   // Pass 1: baseline — drift, overlap, CSS guards
   await assertStickyHeaderInvariant(
     page,
     VIEWPORT_SELECTOR,
-    HEADER_ROW_SELECTOR
+    HEADER_ROW_SELECTOR,
   );
 
   // Reset viewport scroll before context-change
-  await page
-    .locator(VIEWPORT_SELECTOR)
-    .evaluate(function resetScroll(el: Element) {
-      (el as HTMLElement).scrollTop = 0;
-    });
+  await page.locator(VIEWPORT_SELECTOR).evaluate(function resetScroll(
+    el: Element,
+  ) {
+    (el as HTMLElement).scrollTop = 0;
+  });
 
   // In-place data-context change
   await contextChange();
@@ -147,7 +146,7 @@ async function runTwoPassInvariantCheck(
     page,
     VIEWPORT_SELECTOR,
     HEADER_ROW_SELECTOR,
-    PASS_2_OPTIONS
+    PASS_2_OPTIONS,
   );
 }
 

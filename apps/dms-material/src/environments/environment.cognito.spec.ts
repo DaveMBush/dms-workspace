@@ -11,11 +11,11 @@ describe('Cognito Configuration', () => {
       expect(cognitoConfigDev.userPoolId).toBeDefined();
       expect(cognitoConfigDev.userPoolWebClientId).toBeDefined();
       expect(cognitoConfigDev.domain).toContain(
-        '.auth.us-east-1.amazoncognito.com'
+        '.auth.us-east-1.amazoncognito.com',
       );
       expect(cognitoConfigDev.redirectSignIn).toBe('http://localhost:4200');
       expect(cognitoConfigDev.redirectSignOut).toBe(
-        'http://localhost:4200/auth/signout'
+        'http://localhost:4200/auth/signout',
       );
       expect(cognitoConfigDev.scopes).toEqual([
         'openid',
@@ -25,13 +25,13 @@ describe('Cognito Configuration', () => {
       ]);
       expect(
         cognitoConfigDev.hostedUIUrl.includes('REPLACE_WITH') ||
-          cognitoConfigDev.hostedUIUrl.includes('https://')
+          cognitoConfigDev.hostedUIUrl.includes('https://'),
       ).toBe(true);
       expect(
         cognitoConfigDev.jwtIssuer.includes('REPLACE_WITH') ||
           cognitoConfigDev.jwtIssuer.includes(
-            'cognito-idp.us-east-1.amazonaws.com'
-          )
+            'cognito-idp.us-east-1.amazonaws.com',
+          ),
       ).toBe(true);
     });
 
@@ -41,7 +41,7 @@ describe('Cognito Configuration', () => {
       expect(cognitoConfigProd.userPoolId).toBeDefined();
       expect(cognitoConfigProd.userPoolWebClientId).toBeDefined();
       expect(cognitoConfigProd.domain).toContain(
-        '.auth.us-east-1.amazoncognito.com'
+        '.auth.us-east-1.amazoncognito.com',
       );
       expect(cognitoConfigProd.redirectSignIn).toContain('https://');
       expect(cognitoConfigProd.redirectSignOut).toContain('https://');
@@ -53,13 +53,13 @@ describe('Cognito Configuration', () => {
       ]);
       expect(
         cognitoConfigProd.hostedUIUrl.includes('REPLACE_WITH') ||
-          cognitoConfigProd.hostedUIUrl.includes('https://')
+          cognitoConfigProd.hostedUIUrl.includes('https://'),
       ).toBe(true);
       expect(
         cognitoConfigProd.jwtIssuer.includes('REPLACE_WITH') ||
           cognitoConfigProd.jwtIssuer.includes(
-            'cognito-idp.us-east-1.amazonaws.com'
-          )
+            'cognito-idp.us-east-1.amazonaws.com',
+          ),
       ).toBe(true);
     });
 
@@ -69,11 +69,11 @@ describe('Cognito Configuration', () => {
       expect(cognitoConfigStaging.userPoolId).toBeDefined();
       expect(cognitoConfigStaging.userPoolWebClientId).toBeDefined();
       expect(cognitoConfigStaging.domain).toContain(
-        '.auth.us-east-1.amazoncognito.com'
+        '.auth.us-east-1.amazoncognito.com',
       );
       expect(cognitoConfigStaging.redirectSignIn).toContain('https://staging.');
       expect(cognitoConfigStaging.redirectSignOut).toContain(
-        'https://staging.'
+        'https://staging.',
       );
       expect(cognitoConfigStaging.scopes).toEqual([
         'openid',
@@ -83,13 +83,13 @@ describe('Cognito Configuration', () => {
       ]);
       expect(
         cognitoConfigStaging.hostedUIUrl.includes('REPLACE_WITH') ||
-          cognitoConfigStaging.hostedUIUrl.includes('https://')
+          cognitoConfigStaging.hostedUIUrl.includes('https://'),
       ).toBe(true);
       expect(
         cognitoConfigStaging.jwtIssuer.includes('REPLACE_WITH') ||
           cognitoConfigStaging.jwtIssuer.includes(
-            'cognito-idp.us-east-1.amazonaws.com'
-          )
+            'cognito-idp.us-east-1.amazonaws.com',
+          ),
       ).toBe(true);
     });
   });
@@ -112,7 +112,7 @@ describe('Cognito Configuration', () => {
 
     it('should throw error for unknown environment', () => {
       expect(() => {
-        getCognitoConfig('unknown' as any);
+        getCognitoConfig('unknown' as 'dev' | 'prod' | 'staging');
       }).toThrow('Unknown environment: unknown');
     });
   });
@@ -123,11 +123,11 @@ describe('Cognito Configuration', () => {
       expect(cognitoConfigProd.redirectSignOut).toMatch(/^https:\/\//);
       expect(
         cognitoConfigProd.hostedUIUrl.includes('REPLACE_WITH') ||
-          cognitoConfigProd.hostedUIUrl.startsWith('https://')
+          cognitoConfigProd.hostedUIUrl.startsWith('https://'),
       ).toBe(true);
       expect(
         cognitoConfigProd.jwtIssuer.includes('REPLACE_WITH') ||
-          cognitoConfigProd.jwtIssuer.startsWith('https://')
+          cognitoConfigProd.jwtIssuer.startsWith('https://'),
       ).toBe(true);
     });
 
@@ -136,11 +136,11 @@ describe('Cognito Configuration', () => {
       expect(cognitoConfigStaging.redirectSignOut).toMatch(/^https:\/\//);
       expect(
         cognitoConfigStaging.hostedUIUrl.includes('REPLACE_WITH') ||
-          cognitoConfigStaging.hostedUIUrl.startsWith('https://')
+          cognitoConfigStaging.hostedUIUrl.startsWith('https://'),
       ).toBe(true);
       expect(
         cognitoConfigStaging.jwtIssuer.includes('REPLACE_WITH') ||
-          cognitoConfigStaging.jwtIssuer.startsWith('https://')
+          cognitoConfigStaging.jwtIssuer.startsWith('https://'),
       ).toBe(true);
     });
 
@@ -156,13 +156,13 @@ describe('Cognito Configuration', () => {
 
     it('should include admin scope for single-user app', () => {
       expect(cognitoConfigDev.scopes).toContain(
-        'aws.cognito.signin.user.admin'
+        'aws.cognito.signin.user.admin',
       );
       expect(cognitoConfigStaging.scopes).toContain(
-        'aws.cognito.signin.user.admin'
+        'aws.cognito.signin.user.admin',
       );
       expect(cognitoConfigProd.scopes).toContain(
-        'aws.cognito.signin.user.admin'
+        'aws.cognito.signin.user.admin',
       );
     });
 
@@ -181,17 +181,17 @@ describe('Cognito Configuration', () => {
       // For each config, allow placeholder or valid pattern
       expect(
         cognitoConfigDev.jwtIssuer.includes('REPLACE_WITH') ||
-          jwtIssuerPattern.test(cognitoConfigDev.jwtIssuer)
+          jwtIssuerPattern.test(cognitoConfigDev.jwtIssuer),
       ).toBe(true);
 
       expect(
         cognitoConfigStaging.jwtIssuer.includes('REPLACE_WITH') ||
-          jwtIssuerPattern.test(cognitoConfigStaging.jwtIssuer)
+          jwtIssuerPattern.test(cognitoConfigStaging.jwtIssuer),
       ).toBe(true);
 
       expect(
         cognitoConfigProd.jwtIssuer.includes('REPLACE_WITH') ||
-          jwtIssuerPattern.test(cognitoConfigProd.jwtIssuer)
+          jwtIssuerPattern.test(cognitoConfigProd.jwtIssuer),
       ).toBe(true);
     });
 
@@ -201,17 +201,17 @@ describe('Cognito Configuration', () => {
       // For each config, allow placeholder or valid pattern
       expect(
         cognitoConfigDev.domain.includes('REPLACE_WITH') ||
-          domainPattern.test(cognitoConfigDev.domain)
+          domainPattern.test(cognitoConfigDev.domain),
       ).toBe(true);
 
       expect(
         cognitoConfigStaging.domain.includes('REPLACE_WITH') ||
-          domainPattern.test(cognitoConfigStaging.domain)
+          domainPattern.test(cognitoConfigStaging.domain),
       ).toBe(true);
 
       expect(
         cognitoConfigProd.domain.includes('REPLACE_WITH') ||
-          domainPattern.test(cognitoConfigProd.domain)
+          domainPattern.test(cognitoConfigProd.domain),
       ).toBe(true);
     });
 
@@ -219,17 +219,17 @@ describe('Cognito Configuration', () => {
       // Dev should use localhost
       expect(cognitoConfigDev.redirectSignIn).toBe('http://localhost:4200');
       expect(cognitoConfigDev.redirectSignOut).toBe(
-        'http://localhost:4200/auth/signout'
+        'http://localhost:4200/auth/signout',
       );
 
       // Staging and prod should use HTTPS
       expect(cognitoConfigStaging.redirectSignIn).toMatch(/^https:\/\//);
       expect(cognitoConfigStaging.redirectSignOut).toMatch(
-        /^https:\/\/.*\/auth\/signout$/
+        /^https:\/\/.*\/auth\/signout$/,
       );
       expect(cognitoConfigProd.redirectSignIn).toMatch(/^https:\/\//);
       expect(cognitoConfigProd.redirectSignOut).toMatch(
-        /^https:\/\/.*\/auth\/signout$/
+        /^https:\/\/.*\/auth\/signout$/,
       );
     });
   });

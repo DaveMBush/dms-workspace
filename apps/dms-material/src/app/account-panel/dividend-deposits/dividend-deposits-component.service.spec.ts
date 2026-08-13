@@ -1,10 +1,9 @@
-import { TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
 import { vi } from 'vitest';
-
-import { DivDeposit } from '../../store/div-deposits/div-deposit.interface';
-import { selectCurrentAccountSignal } from '../../store/current-account/select-current-account.signal';
 import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
+import { selectCurrentAccountSignal } from '../../store/current-account/select-current-account.signal';
+import { DivDeposit } from '../../store/div-deposits/div-deposit.interface';
 import { DividendDepositsComponentService } from './dividend-deposits-component.service';
 
 // Mock SmartNgRX dependencies to prevent store initialization
@@ -21,7 +20,7 @@ vi.mock(
       { id: 'type-1', name: 'Regular' },
       { id: 'type-2', name: 'Special' },
     ]),
-  })
+  }),
 );
 
 vi.mock('../../store/current-account/current-account.signal-store', () => ({
@@ -45,7 +44,7 @@ vi.mock(
   '../../store/accounts/selectors/select-accounts-entity.function',
   () => ({
     selectAccountsEntity: vi.fn().mockReturnValue([]),
-  })
+  }),
 );
 
 // Mock selectAccounts to avoid SmartNgRX initialization
@@ -68,7 +67,7 @@ function createDivDeposit(overrides: Partial<DivDeposit> = {}): DivDeposit {
 }
 
 // Story 94.2: symbols are now embedded directly on each DivDeposit row
-const TEST_SYMBOLS = ['PDI', 'AAPL', 'MSFT'];
+const testSymbols = ['PDI', 'AAPL', 'MSFT'];
 
 // Helper to create a mock SmartArray-like array with specified length
 function createMockDivDepositsArray(count: number): DivDeposit[] {
@@ -80,8 +79,8 @@ function createMockDivDepositsArray(count: number): DivDeposit[] {
         amount: (i + 1) * 10,
         divDepositTypeId: i % 2 === 0 ? 'type-1' : 'type-2',
         universeId: `universe-${(i % 3) + 1}`,
-        symbol: TEST_SYMBOLS[i % 3],
-      })
+        symbol: testSymbols[i % 3],
+      }),
     );
   }
   return items;
@@ -110,7 +109,7 @@ describe('DividendDepositsComponentService - Virtual Data Access (AX.3)', () => 
 
     // Set the selectCurrentAccountSignal mock to return our mock account
     const selectCurrentAccountSignalMock = vi.mocked(
-      selectCurrentAccountSignal
+      selectCurrentAccountSignal,
     );
     selectCurrentAccountSignalMock.mockReturnValue(mockCurrentAccount);
 
@@ -201,9 +200,9 @@ describe('DividendDepositsComponentService - Virtual Data Access (AX.3)', () => 
     const dividends = service.dividends();
 
     // Symbols come from d.symbol directly, not from a universe lookup
-    expect(dividends[0].symbol).toBe('PDI'); // TEST_SYMBOLS[0]
-    expect(dividends[1].symbol).toBe('AAPL'); // TEST_SYMBOLS[1]
-    expect(dividends[2].symbol).toBe('MSFT'); // TEST_SYMBOLS[2]
+    expect(dividends[0].symbol).toBe('PDI'); // testSymbols[0]
+    expect(dividends[1].symbol).toBe('AAPL'); // testSymbols[1]
+    expect(dividends[2].symbol).toBe('MSFT'); // testSymbols[2]
   });
 
   // AC: Test that deposit type names are resolved for visible items
