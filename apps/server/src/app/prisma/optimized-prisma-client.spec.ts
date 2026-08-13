@@ -3,6 +3,7 @@ import { execSync } from 'child_process';
 import { rmSync } from 'fs';
 import { PrismaClient } from '@prisma/client';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
+
 // Note: source functions are dynamically imported in beforeAll after vi.resetModules()
 // to ensure they get fresh references to the test DB's Prisma client.
 // Static imports above capture stale client refs — always use globalThis dynamic refs in tests.
@@ -27,7 +28,10 @@ describe('OptimizedPrismaClient', () => {
     // We generate a temporary config that points to the test DB.
     const { writeFileSync, unlinkSync } = await import('fs');
     const { resolve } = await import('path');
-    const schemaPath = resolve(__dirname, '../../../../../prisma/schema.prisma');
+    const schemaPath = resolve(
+      __dirname,
+      '../../../../../prisma/schema.prisma',
+    );
     const tempConfigPath = testDbPath + '.tmp.config.ts';
     const configContent = `import { defineConfig, env } from 'prisma/config';
 export default defineConfig({
@@ -116,8 +120,10 @@ export default defineConfig({
       await import('./optimized-health-check.function');
 
     (globalThis as any).__testOptimizedUserLookup = optimizedUserLookup;
-    (globalThis as any).__testOptimizedSessionDataLoad = optimizedSessionDataLoad;
-    (globalThis as any).__testOptimizedBatchAccountLoad = optimizedBatchAccountLoad;
+    (globalThis as any).__testOptimizedSessionDataLoad =
+      optimizedSessionDataLoad;
+    (globalThis as any).__testOptimizedBatchAccountLoad =
+      optimizedBatchAccountLoad;
     (globalThis as any).__testOptimizedHealthCheck = optimizedHealthCheck;
   });
 
@@ -496,10 +502,16 @@ export default defineConfig({
       expect(totalTime).toBeLessThan(500);
 
       // Individual operation performance (only assert when metrics present)
-      if (userLookup.metrics && typeof userLookup.metrics.duration === 'number') {
+      if (
+        userLookup.metrics &&
+        typeof userLookup.metrics.duration === 'number'
+      ) {
         expect(userLookup.metrics.duration).toBeLessThan(100);
       }
-      if (sessionData.metrics && typeof sessionData.metrics.duration === 'number') {
+      if (
+        sessionData.metrics &&
+        typeof sessionData.metrics.duration === 'number'
+      ) {
         expect(sessionData.metrics.duration).toBeLessThan(200);
       }
       if (typeof health.connectionTime === 'number') {
@@ -516,7 +528,10 @@ export default defineConfig({
         (globalThis as any).__testOptimizedUserLookup('opt-account-2'),
         (globalThis as any).__testOptimizedSessionDataLoad('opt-account-1'),
         (globalThis as any).__testOptimizedSessionDataLoad('opt-account-2'),
-        (globalThis as any).__testOptimizedBatchAccountLoad(['opt-account-1', 'opt-account-2']),
+        (globalThis as any).__testOptimizedBatchAccountLoad([
+          'opt-account-1',
+          'opt-account-2',
+        ]),
       ];
 
       const results = await Promise.all(concurrentOperations);
@@ -539,7 +554,9 @@ export default defineConfig({
 
       for (let i = 0; i < iterations; i++) {
         const startTime = performance.now();
-        await (globalThis as any).__testOptimizedSessionDataLoad('opt-account-1');
+        await (globalThis as any).__testOptimizedSessionDataLoad(
+          'opt-account-1',
+        );
         const endTime = performance.now();
         operationTimes.push(endTime - startTime);
       }
@@ -570,7 +587,9 @@ export default defineConfig({
     it('should handle connection pool efficiently', async () => {
       // Test multiple concurrent operations to stress connection pool (use globalThis dynamic refs)
       const operations = Array.from({ length: 5 }, async (_, i) =>
-        (globalThis as any).__testOptimizedSessionDataLoad(`opt-account-${(i % 3) + 1}`),
+        (globalThis as any).__testOptimizedSessionDataLoad(
+          `opt-account-${(i % 3) + 1}`,
+        ),
       );
 
       const startTime = performance.now();
@@ -590,7 +609,10 @@ export default defineConfig({
       // Perform several operations (use globalThis dynamic refs)
       await (globalThis as any).__testOptimizedUserLookup();
       await (globalThis as any).__testOptimizedSessionDataLoad('opt-account-1');
-      await (globalThis as any).__testOptimizedBatchAccountLoad(['opt-account-1', 'opt-account-2']);
+      await (globalThis as any).__testOptimizedBatchAccountLoad([
+        'opt-account-1',
+        'opt-account-2',
+      ]);
 
       // Check connection health after operations
       const health = await (globalThis as any).__testOptimizedHealthCheck();
