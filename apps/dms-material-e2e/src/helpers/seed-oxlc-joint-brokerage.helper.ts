@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention -- E2E test constants use UPPER_CASE for readability */
 import type { PrismaClient } from '@prisma/client';
 import type { SeederResultBase } from './seeder-result-base.types';
 import { initializePrismaClient } from './shared-prisma-client.helper';

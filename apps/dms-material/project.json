@@ -9,6 +9,7 @@
     "build": {
       "executor": "@angular/build:application",
       "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
       "options": {
         "outputPath": "dist/apps/dms-material",
         "browser": "apps/dms-material/src/main.ts",
@@ -57,12 +58,17 @@
           "extractLicenses": false,
           "sourceMap": true
         }
-      },
-      "defaultConfiguration": "production"
+      }
     },
     "serve": {
       "continuous": true,
       "executor": "@angular/build:dev-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "port": 4201,
+        "proxyConfig": "apps/dms-material/proxy.conf.json",
+        "hmr": false
+      },
       "configurations": {
         "production": {
           "buildTarget": "dms-material:build:production"
@@ -76,12 +82,6 @@
           "proxyConfig": "apps/dms-material/proxy.test-conf.json",
           "hmr": false
         }
-      },
-      "defaultConfiguration": "development",
-      "options": {
-        "port": 4201,
-        "proxyConfig": "apps/dms-material/proxy.conf.json",
-        "hmr": false
       }
     },
     "extract-i18n": {
@@ -91,7 +91,17 @@
       }
     },
     "lint": {
-      "executor": "@nx/eslint:lint"
+      "inputs": [
+        "default",
+        "^default",
+        "{workspaceRoot}/.eslintrc.json",
+        "{workspaceRoot}/.eslintignore",
+        "{workspaceRoot}/eslint.config.mjs",
+        "{workspaceRoot}/tools/eslint-rules/**/*",
+        {
+          "externalDependencies": ["eslint"]
+        }
+      ]
     },
     "test": {
       "executor": "@nx/vitest:test",

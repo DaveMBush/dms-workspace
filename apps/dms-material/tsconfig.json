@@ -1,6 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "allowJs": true,
     "strict": true,
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
@@ -22,7 +23,13 @@
     "strictTemplates": true
   },
   "files": [],
-  "include": [],
+  "include": [
+    "eslint.config.mjs",
+    "postcss.config.js",
+    "proxy.playwright.conf.js",
+    "tailwind.config.js",
+    "vite.config.mts"
+  ],
   "references": [
     {
       "path": "./tsconfig.app.json"

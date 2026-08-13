@@ -24,7 +24,6 @@ import { initializePrismaClient } from './shared-prisma-client.helper';
  * This verifies the rendering half of the fix; Story 88.3 tests the wiring.
  */
 
-/* eslint-disable @typescript-eslint/naming-convention -- E2E test constants use UPPER_CASE for readability */
 const DISTRIBUTIONS_PER_YEAR = 12;
 const LAST_PRICE = 10.0;
 const MONTHS_TO_SEED = 12;

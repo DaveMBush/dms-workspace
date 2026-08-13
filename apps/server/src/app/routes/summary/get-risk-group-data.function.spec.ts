@@ -44,7 +44,16 @@ describe.skipIf(process.env.CI)('getRiskGroupData', () => {
 
     // Apply migrations to test database
     const { execSync } = await import('child_process');
-    execSync(`npx prisma migrate deploy --schema=./prisma/schema.prisma`, {
+    const { fileURLToPath } = await import('url');
+    const { dirname } = await import('path');
+    const fileName = fileURLToPath(import.meta.url);
+    const directoryName = dirname(fileName);
+    // apps/server/src/app/routes/summary -> ../../../../prisma/schema.prisma
+    const schemaPath = join(
+      directoryName,
+      '../../../../../../prisma/schema.prisma',
+    );
+    execSync(`npx prisma migrate deploy --schema=${schemaPath}`, {
       env: { ...process.env, DATABASE_URL: testDbUrl },
     });
 

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention -- Property names match database column names */
 export interface UniverseRecord {
   symbol: string;
   risk_group_id: string;
@@ -11,4 +10,3 @@ export interface UniverseRecord {
   expired: boolean;
   is_closed_end_fund: boolean;
 }
-/* eslint-enable @typescript-eslint/naming-convention -- Re-enable naming convention */

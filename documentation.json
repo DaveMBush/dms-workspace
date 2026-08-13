@@ -1,0 +1,1883 @@
+{
+  "pipes": [],
+  "interfaces": [
+    {
+      "name": "SampleRow",
+      "id": "interface-SampleRow-e89629595d8360c19a90aa6933c74c83bb3a9f1ac7454eeb42f1b576279c28a40a015bae8e29f04c3391add2f1dac1b049c4d5ed9c91501cfa02673eb1daa7ad",
+      "file": "apps/dms-material/src/app/shared/components/base-table/base-table.stories.ts",
+      "deprecated": false,
+      "deprecationMessage": "",
+      "type": "interface",
+      "sourceCode": "import { type Meta, type StoryObj } from '@storybook/angular-vite';\nimport { BaseTableComponent } from './base-table.component';\nimport { ColumnDef } from './column-def.interface';\n\ninterface SampleRow {\n  id: string;\n  name: string;\n  ticker: string;\n  value: number;\n}\n\ninterface UniverseRow {\n  id: string;\n  ticker: string;\n  name: string;\n  price: number;\n  marketCap: number;\n  sector: string;\n  peRatio: number;\n}\n\nconst sampleColumns: ColumnDef[] = [\n  { field: 'name', header: 'Name', sortable: true, type: 'text', width: 150 },\n  {\n    field: 'ticker',\n    header: 'Ticker',\n    sortable: true,\n    type: 'text',\n    width: 100,\n  },\n  {\n    field: 'value',\n    header: 'Value',\n    sortable: true,\n    type: 'currency',\n    width: 120,\n  },\n];\n\nconst sampleData: SampleRow[] = [\n  { id: '1', name: 'Apple Inc.', ticker: 'AAPL', value: 189.3 },\n  { id: '2', name: 'Alphabet Inc.', ticker: 'GOOG', value: 140.52 },\n  { id: '3', name: 'Microsoft Corp.', ticker: 'MSFT', value: 415.22 },\n  { id: '4', name: 'Amazon.com Inc.', ticker: 'AMZN', value: 179.78 },\n  { id: '5', name: 'NVIDIA Corp.', ticker: 'NVDA', value: 880.0 },\n  { id: '6', name: 'Meta Platforms Inc.', ticker: 'META', value: 505.75 },\n  { id: '7', name: 'Tesla Inc.', ticker: 'TSLA', value: 248.42 },\n  { id: '8', name: 'Berkshire Hathaway', ticker: 'BRK.B', value: 412.18 },\n];\n\nconst universeColumns: ColumnDef[] = [\n  {\n    field: 'ticker',\n    header: 'Ticker',\n    sortable: true,\n    type: 'text',\n    width: 100,\n  },\n  { field: 'name', header: 'Name', sortable: true, type: 'text', width: 200 },\n  {\n    field: 'price',\n    header: 'Price',\n    sortable: true,\n    type: 'currency',\n    width: 100,\n  },\n  {\n    field: 'marketCap',\n    header: 'Market Cap',\n    sortable: true,\n    type: 'number',\n    width: 130,\n  },\n  {\n    field: 'sector',\n    header: 'Sector',\n    sortable: false,\n    type: 'text',\n    width: 130,\n  },\n  {\n    field: 'peRatio',\n    header: 'P/E Ratio',\n    sortable: true,\n    type: 'number',\n    width: 100,\n  },\n];\n\nconst universeData: UniverseRow[] = [\n  {\n    id: '1',\n    ticker: 'AAPL',\n    name: 'Apple Inc.',\n    price: 189.3,\n    marketCap: 2_940_000_000_000,\n    sector: 'Technology',\n    peRatio: 31.2,\n  },\n  {\n    id: '2',\n    ticker: 'MSFT',\n    name: 'Microsoft Corp.',\n    price: 415.22,\n    marketCap: 3_090_000_000_000,\n    sector: 'Technology',\n    peRatio: 36.8,\n  },\n  {\n    id: '3',\n    ticker: 'GOOGL',\n    name: 'Alphabet Inc.',\n    price: 140.52,\n    marketCap: 1_760_000_000_000,\n    sector: 'Communication Services',\n    peRatio: 25.4,\n  },\n  {\n    id: '4',\n    ticker: 'AMZN',\n    name: 'Amazon.com Inc.',\n    price: 179.78,\n    marketCap: 1_870_000_000_000,\n    sector: 'Consumer Discretionary',\n    peRatio: 60.1,\n  },\n  {\n    id: '5',\n    ticker: 'NVDA',\n    name: 'NVIDIA Corp.',\n    price: 880.0,\n    marketCap: 2_170_000_000_000,\n    sector: 'Technology',\n    peRatio: 72.5,\n  },\n  {\n    id: '6',\n    ticker: 'JPM',\n    name: 'JPMorgan Chase',\n    price: 198.45,\n    marketCap: 572_000_000_000,\n    sector: 'Financials',\n    peRatio: 11.8,\n  },\n  {\n    id: '7',\n    ticker: 'JNJ',\n    name: 'Johnson & Johnson',\n    price: 156.32,\n    marketCap: 376_000_000_000,\n    sector: 'Healthcare',\n    peRatio: 22.1,\n  },\n  {\n    id: '8',\n    ticker: 'XOM',\n    name: 'Exxon Mobil Corp.',\n    price: 104.67,\n    marketCap: 441_000_000_000,\n    sector: 'Energy',\n    peRatio: 13.4,\n  },\n  {\n    id: '9',\n    ticker: 'PG',\n    name: 'Procter & Gamble',\n    price: 162.89,\n    marketCap: 383_000_000_000,\n    sector: 'Consumer Staples',\n    peRatio: 26.7,\n  },\n  {\n    id: '10',\n    ticker: 'V',\n    name: 'Visa Inc.',\n    price: 281.34,\n    marketCap: 577_000_000_000,\n    sector: 'Financials',\n    peRatio: 31.9,\n  },\n];\n\nconst TABLE_TEMPLATE = `\n  <div style=\"height: 500px; width: 100%; display: flex;\">\n    <dms-base-table\n      style=\"display: block; flex: 1 1 auto; height: 100%; min-height: 0; width: 100%;\"\n      [data]=\"data\"\n      [columns]=\"columns\"\n      [tableLabel]=\"tableLabel\"\n      [rowHeight]=\"rowHeight\"\n      [loading]=\"loading\"\n      [selectable]=\"selectable\"\n      [multiSelect]=\"multiSelect\"\n      [sortColumns]=\"sortColumns\"\n      (sortChange)=\"sortChange($event)\"\n      (rowClick)=\"rowClick($event)\"\n      (selectionChange)=\"selectionChange($event)\"\n      (renderedRangeChange)=\"renderedRangeChange($event)\"\n    ></dms-base-table>\n  </div>\n`;\n\nconst meta: Meta<BaseTableComponent<SampleRow>> = {\n  component: BaseTableComponent,\n  title: 'Shared/BaseTable',\n  render: function renderBaseTable(args) {\n    return {\n      props: args,\n      template: TABLE_TEMPLATE,\n    };\n  },\n  argTypes: {\n    sortChange: { action: 'sortChange' },\n    rowClick: { action: 'rowClick' },\n    selectionChange: { action: 'selectionChange' },\n    renderedRangeChange: { action: 'renderedRangeChange' },\n  },\n};\n\nexport default meta;\n\ntype Story = StoryObj<BaseTableComponent<SampleRow>>;\ntype UniverseStory = StoryObj<BaseTableComponent<UniverseRow>>;\n\nexport const Default: Story = {\n  args: {\n    data: sampleData,\n    columns: sampleColumns,\n    tableLabel: 'Sample positions table',\n    rowHeight: 52,\n    loading: false,\n    selectable: true,\n    multiSelect: false,\n    sortColumns: [{ column: 'name', direction: 'asc' }],\n  },\n};\n\nexport const EmptyState: Story = {\n  args: {\n    data: [],\n    columns: sampleColumns,\n    tableLabel: 'Empty table',\n    loading: false,\n    selectable: false,\n  },\n};\n\nexport const UniverseTableVariation: UniverseStory = {\n  args: {\n    data: universeData,\n    columns: universeColumns,\n    tableLabel: 'Universe screener table',\n    rowHeight: 52,\n    loading: false,\n    selectable: true,\n    multiSelect: true,\n    sortColumns: [{ column: 'ticker', direction: 'asc' }],\n  },\n};\n",
+      "displayName": "SampleRow",
+      "properties": [
+        {
+          "name": "id",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "type": "string",
+          "indexKey": "",
+          "optional": false,
+          "description": "",
+          "line": 6,
+          "rawdescription": "\n"
+        },
+        {
+          "name": "name",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "type": "string",
+          "indexKey": "",
+          "optional": false,
+          "description": "",
+          "line": 7,
+          "rawdescription": "\n"
+        },
+        {
+          "name": "ticker",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "type": "string",
+          "indexKey": "",
+          "optional": false,
+          "description": "",
+          "line": 8,
+          "rawdescription": "\n"
+        },
+        {
+          "name": "value",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "type": "number",
+          "indexKey": "",
+          "optional": false,
+          "description": "",
+          "line": 9,
+          "rawdescription": "\n"
+        }
+      ],
+      "indexSignatures": [],
+      "kind": 172,
+      "methods": [],
+      "extends": [],
+      "relationships": {
+        "incoming": [],
+        "outgoing": []
+      }
+    },
+    {
+      "name": "UniverseRow",
+      "id": "interface-UniverseRow-e89629595d8360c19a90aa6933c74c83bb3a9f1ac7454eeb42f1b576279c28a40a015bae8e29f04c3391add2f1dac1b049c4d5ed9c91501cfa02673eb1daa7ad",
+      "file": "apps/dms-material/src/app/shared/components/base-table/base-table.stories.ts",
+      "deprecated": false,
+      "deprecationMessage": "",
+      "type": "interface",
+      "sourceCode": "import { type Meta, type StoryObj } from '@storybook/angular-vite';\nimport { BaseTableComponent } from './base-table.component';\nimport { ColumnDef } from './column-def.interface';\n\ninterface SampleRow {\n  id: string;\n  name: string;\n  ticker: string;\n  value: number;\n}\n\ninterface UniverseRow {\n  id: string;\n  ticker: string;\n  name: string;\n  price: number;\n  marketCap: number;\n  sector: string;\n  peRatio: number;\n}\n\nconst sampleColumns: ColumnDef[] = [\n  { field: 'name', header: 'Name', sortable: true, type: 'text', width: 150 },\n  {\n    field: 'ticker',\n    header: 'Ticker',\n    sortable: true,\n    type: 'text',\n    width: 100,\n  },\n  {\n    field: 'value',\n    header: 'Value',\n    sortable: true,\n    type: 'currency',\n    width: 120,\n  },\n];\n\nconst sampleData: SampleRow[] = [\n  { id: '1', name: 'Apple Inc.', ticker: 'AAPL', value: 189.3 },\n  { id: '2', name: 'Alphabet Inc.', ticker: 'GOOG', value: 140.52 },\n  { id: '3', name: 'Microsoft Corp.', ticker: 'MSFT', value: 415.22 },\n  { id: '4', name: 'Amazon.com Inc.', ticker: 'AMZN', value: 179.78 },\n  { id: '5', name: 'NVIDIA Corp.', ticker: 'NVDA', value: 880.0 },\n  { id: '6', name: 'Meta Platforms Inc.', ticker: 'META', value: 505.75 },\n  { id: '7', name: 'Tesla Inc.', ticker: 'TSLA', value: 248.42 },\n  { id: '8', name: 'Berkshire Hathaway', ticker: 'BRK.B', value: 412.18 },\n];\n\nconst universeColumns: ColumnDef[] = [\n  {\n    field: 'ticker',\n    header: 'Ticker',\n    sortable: true,\n    type: 'text',\n    width: 100,\n  },\n  { field: 'name', header: 'Name', sortable: true, type: 'text', width: 200 },\n  {\n    field: 'price',\n    header: 'Price',\n    sortable: true,\n    type: 'currency',\n    width: 100,\n  },\n  {\n    field: 'marketCap',\n    header: 'Market Cap',\n    sortable: true,\n    type: 'number',\n    width: 130,\n  },\n  {\n    field: 'sector',\n    header: 'Sector',\n    sortable: false,\n    type: 'text',\n    width: 130,\n  },\n  {\n    field: 'peRatio',\n    header: 'P/E Ratio',\n    sortable: true,\n    type: 'number',\n    width: 100,\n  },\n];\n\nconst universeData: UniverseRow[] = [\n  {\n    id: '1',\n    ticker: 'AAPL',\n    name: 'Apple Inc.',\n    price: 189.3,\n    marketCap: 2_940_000_000_000,\n    sector: 'Technology',\n    peRatio: 31.2,\n  },\n  {\n    id: '2',\n    ticker: 'MSFT',\n    name: 'Microsoft Corp.',\n    price: 415.22,\n    marketCap: 3_090_000_000_000,\n    sector: 'Technology',\n    peRatio: 36.8,\n  },\n  {\n    id: '3',\n    ticker: 'GOOGL',\n    name: 'Alphabet Inc.',\n    price: 140.52,\n    marketCap: 1_760_000_000_000,\n    sector: 'Communication Services',\n    peRatio: 25.4,\n  },\n  {\n    id: '4',\n    ticker: 'AMZN',\n    name: 'Amazon.com Inc.',\n    price: 179.78,\n    marketCap: 1_870_000_000_000,\n    sector: 'Consumer Discretionary',\n    peRatio: 60.1,\n  },\n  {\n    id: '5',\n    ticker: 'NVDA',\n    name: 'NVIDIA Corp.',\n    price: 880.0,\n    marketCap: 2_170_000_000_000,\n    sector: 'Technology',\n    peRatio: 72.5,\n  },\n  {\n    id: '6',\n    ticker: 'JPM',\n    name: 'JPMorgan Chase',\n    price: 198.45,\n    marketCap: 572_000_000_000,\n    sector: 'Financials',\n    peRatio: 11.8,\n  },\n  {\n    id: '7',\n    ticker: 'JNJ',\n    name: 'Johnson & Johnson',\n    price: 156.32,\n    marketCap: 376_000_000_000,\n    sector: 'Healthcare',\n    peRatio: 22.1,\n  },\n  {\n    id: '8',\n    ticker: 'XOM',\n    name: 'Exxon Mobil Corp.',\n    price: 104.67,\n    marketCap: 441_000_000_000,\n    sector: 'Energy',\n    peRatio: 13.4,\n  },\n  {\n    id: '9',\n    ticker: 'PG',\n    name: 'Procter & Gamble',\n    price: 162.89,\n    marketCap: 383_000_000_000,\n    sector: 'Consumer Staples',\n    peRatio: 26.7,\n  },\n  {\n    id: '10',\n    ticker: 'V',\n    name: 'Visa Inc.',\n    price: 281.34,\n    marketCap: 577_000_000_000,\n    sector: 'Financials',\n    peRatio: 31.9,\n  },\n];\n\nconst TABLE_TEMPLATE = `\n  <div style=\"height: 500px; width: 100%; display: flex;\">\n    <dms-base-table\n      style=\"display: block; flex: 1 1 auto; height: 100%; min-height: 0; width: 100%;\"\n      [data]=\"data\"\n      [columns]=\"columns\"\n      [tableLabel]=\"tableLabel\"\n      [rowHeight]=\"rowHeight\"\n      [loading]=\"loading\"\n      [selectable]=\"selectable\"\n      [multiSelect]=\"multiSelect\"\n      [sortColumns]=\"sortColumns\"\n      (sortChange)=\"sortChange($event)\"\n      (rowClick)=\"rowClick($event)\"\n      (selectionChange)=\"selectionChange($event)\"\n      (renderedRangeChange)=\"renderedRangeChange($event)\"\n    ></dms-base-table>\n  </div>\n`;\n\nconst meta: Meta<BaseTableComponent<SampleRow>> = {\n  component: BaseTableComponent,\n  title: 'Shared/BaseTable',\n  render: function renderBaseTable(args) {\n    return {\n      props: args,\n      template: TABLE_TEMPLATE,\n    };\n  },\n  argTypes: {\n    sortChange: { action: 'sortChange' },\n    rowClick: { action: 'rowClick' },\n    selectionChange: { action: 'selectionChange' },\n    renderedRangeChange: { action: 'renderedRangeChange' },\n  },\n};\n\nexport default meta;\n\ntype Story = StoryObj<BaseTableComponent<SampleRow>>;\ntype UniverseStory = StoryObj<BaseTableComponent<UniverseRow>>;\n\nexport const Default: Story = {\n  args: {\n    data: sampleData,\n    columns: sampleColumns,\n    tableLabel: 'Sample positions table',\n    rowHeight: 52,\n    loading: false,\n    selectable: true,\n    multiSelect: false,\n    sortColumns: [{ column: 'name', direction: 'asc' }],\n  },\n};\n\nexport const EmptyState: Story = {\n  args: {\n    data: [],\n    columns: sampleColumns,\n    tableLabel: 'Empty table',\n    loading: false,\n    selectable: false,\n  },\n};\n\nexport const UniverseTableVariation: UniverseStory = {\n  args: {\n    data: universeData,\n    columns: universeColumns,\n    tableLabel: 'Universe screener table',\n    rowHeight: 52,\n    loading: false,\n    selectable: true,\n    multiSelect: true,\n    sortColumns: [{ column: 'ticker', direction: 'asc' }],\n  },\n};\n",
+      "displayName": "UniverseRow",
+      "properties": [
+        {
+          "name": "id",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "type": "string",
+          "indexKey": "",
+          "optional": false,
+          "description": "",
+          "line": 13,
+          "rawdescription": "\n"
+        },
+        {
+          "name": "marketCap",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "type": "number",
+          "indexKey": "",
+          "optional": false,
+          "description": "",
+          "line": 17,
+          "rawdescription": "\n"
+        },
+        {
+          "name": "name",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "type": "string",
+          "indexKey": "",
+          "optional": false,
+          "description": "",
+          "line": 15,
+          "rawdescription": "\n"
+        },
+        {
+          "name": "peRatio",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "type": "number",
+          "indexKey": "",
+          "optional": false,
+          "description": "",
+          "line": 19,
+          "rawdescription": "\n"
+        },
+        {
+          "name": "price",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "type": "number",
+          "indexKey": "",
+          "optional": false,
+          "description": "",
+          "line": 16,
+          "rawdescription": "\n"
+        },
+        {
+          "name": "sector",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "type": "string",
+          "indexKey": "",
+          "optional": false,
+          "description": "",
+          "line": 18,
+          "rawdescription": "\n"
+        },
+        {
+          "name": "ticker",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "type": "string",
+          "indexKey": "",
+          "optional": false,
+          "description": "",
+          "line": 14,
+          "rawdescription": "\n"
+        }
+      ],
+      "indexSignatures": [],
+      "kind": 172,
+      "methods": [],
+      "extends": [],
+      "relationships": {
+        "incoming": [],
+        "outgoing": []
+      }
+    }
+  ],
+  "injectables": [],
+  "guards": [],
+  "interceptors": [],
+  "classes": [],
+  "directives": [],
+  "components": [],
+  "modules": [],
+  "miscellaneous": {
+    "variables": [
+      {
+        "name": "config",
+        "ctype": "miscellaneous",
+        "subtype": "variable",
+        "file": "apps/dms-material/.storybook/main.ts",
+        "coverageIgnore": false,
+        "deprecated": false,
+        "deprecationMessage": "",
+        "type": "StorybookConfig",
+        "defaultValue": "{\n  stories: ['../src/app/**/*.@(mdx|stories.@(js|jsx|ts|tsx))'],\n  addons: ['@storybook/addon-themes'],\n  framework: '@storybook/angular-vite',\n  core: {\n    builder: '@storybook/builder-vite',\n  },\n  viteFinal: async function viteFinal(viteConfig) {\n    // Vite-based builder avoids webpack version conflicts\n    const { mergeConfig } = await import('vite');\n    const tsconfigPaths = await import('vite-tsconfig-paths');\n    return mergeConfig(viteConfig, {\n      define: {\n        ngDevMode: 'false',\n      },\n      plugins: [tsconfigPaths.default()],\n    });\n  },\n}"
+      },
+      {
+        "name": "Currency",
+        "ctype": "miscellaneous",
+        "subtype": "variable",
+        "file": "apps/dms-material/src/app/shared/components/editable-cell/editable-cell.stories.ts",
+        "coverageIgnore": false,
+        "deprecated": false,
+        "deprecationMessage": "",
+        "type": "Story",
+        "defaultValue": "{\n  args: {\n    value: 1234.56,\n    format: 'currency',\n    decimalFormat: '1.2-2',\n  },\n}"
+      },
+      {
+        "name": "CustomLabel",
+        "ctype": "miscellaneous",
+        "subtype": "variable",
+        "file": "apps/dms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.stories.ts",
+        "coverageIgnore": false,
+        "deprecated": false,
+        "deprecationMessage": "",
+        "type": "Story",
+        "defaultValue": "{\n  args: {\n    searchFn: mockSearchFn,\n    label: 'Select Ticker',\n    placeholder: 'Type 2+ characters...',\n    minLength: 2,\n    forceSelection: false,\n  },\n}"
+      },
+      {
+        "name": "CustomPlaceholder",
+        "ctype": "miscellaneous",
+        "subtype": "variable",
+        "file": "apps/dms-material/src/app/shared/components/edit/node-editor.stories.ts",
+        "coverageIgnore": false,
+        "deprecated": false,
+        "deprecationMessage": "",
+        "type": "Story",
+        "defaultValue": "{\n  args: {\n    placeholder$: 'Type node name here',\n  },\n}"
+      },
+      {
+        "name": "Decimal",
+        "ctype": "miscellaneous",
+        "subtype": "variable",
+        "file": "apps/dms-material/src/app/shared/components/editable-cell/editable-cell.stories.ts",
+        "coverageIgnore": false,
+        "deprecated": false,
+        "deprecationMessage": "",
+        "type": "Story",
+        "defaultValue": "{\n  args: {\n    value: 9.875,\n    format: 'decimal',\n    decimalFormat: '1.3-3',\n  },\n}"
+      },
+      {
+        "name": "Default",
+        "ctype": "miscellaneous",
+        "subtype": "variable",
+        "file": "apps/dms-material/src/app/dashboard/dashboard.stories.ts",
+        "coverageIgnore": false,
+        "deprecated": false,
+        "deprecationMessage": "",
+        "type": "Story",
+        "defaultValue": "{}"
+      },
+      {
+        "name": "Default",
+        "ctype": "miscellaneous",
+        "subtype": "variable",
+        "file": "apps/dms-material/src/app/shared/components/base-table/base-table.stories.ts",
+        "coverageIgnore": false,
+        "deprecated": false,
+        "deprecationMessage": "",
+        "type": "Story",
+        "defaultValue": "{\n  args: {\n    data: sampleData,\n    columns: sampleColumns,\n    tableLabel: 'Sample positions table',\n    rowHeight: 52,\n    loading: false,\n    selectable: true,\n    multiSelect: false,\n    sortColumns: [{ column: 'name', direction: 'asc' }],\n  },\n}"
+      },
+      {
+        "name": "Default",
+        "ctype": "miscellaneous",
+        "subtype": "variable",
+        "file": "apps/dms-material/src/app/shared/components/edit/node-editor.stories.ts",
+        "coverageIgnore": false,
+        "deprecated": false,
+        "deprecationMessage": "",
+        "type": "Story",
+        "defaultValue": "{\n  args: {\n    placeholder$: 'Enter a value...',\n  },\n}"
+      },
+      {
+        "name": "Default",
+        "ctype": "miscellaneous",
+        "subtype": "variable",
+        "file": "apps/dms-material/src/app/shared/components/editable-cell/editable-cell.stories.ts",
+        "coverageIgnore": false,
+        "deprecated": false,
+        "deprecationMessage": "",
+        "type": "Story",
+        "defaultValue": "{\n  args: {\n    value: 42,\n    format: 'number',\n    step: 1,\n    decimalFormat: '1.2-2',\n    testIdFieldName: '',\n    testId: '',\n  },\n}"
+      },
+      {
+        "name": "Default",
+        "ctype": "miscellaneous",
+        "subtype": "variable",
+        "file": "apps/dms-material/src/app/shared/components/editable-date-cell/editable-date-cell.stories.ts",
+        "coverageIgnore": false,
+        "deprecated": false,
+        "deprecationMessage": "",
+        "type": "Story",
+        "defaultValue": "{\n  args: {\n    value: new Date(2025, 0, 15),\n    dateFormat: 'MM/dd/yyyy',\n    testIdFieldName: '',\n    testId: '',\n  },\n}"
+      },
+      {
+        "name": "Default",
+        "ctype": "miscellaneous",
+        "subtype": "variable",
+        "file": "apps/dms-material/src/app/shared/components/splitter/splitter.stories.ts",
+        "coverageIgnore": false,
+        "deprecated": false,
+        "deprecationMessage": "",
+        "type": "Story",
+        "defaultValue": "{\n  args: {\n    stateKey: 'storybook-splitter',\n    initialLeftWidth: 30,\n  },\n}"
+      },
+      {
+        "name": "Default",
+        "ctype": "miscellaneous",
+        "subtype": "variable",
+        "file": "apps/dms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.stories.ts",
+        "coverageIgnore": false,
+        "deprecated": false,
+        "deprecationMessage": "",
+        "type": "Story",
+        "defaultValue": "{\n  args: {\n    searchFn: mockSearchFn,\n    label: 'Symbol',\n    placeholder: 'Search for a symbol...',\n    minLength: 2,\n    forceSelection: true,\n  },\n}"
+      },
+      {
+        "name": "Empty",
+        "ctype": "miscellaneous",
+        "subtype": "variable",
+        "file": "apps/dms-material/src/app/shared/components/editable-date-cell/editable-date-cell.stories.ts",
+        "coverageIgnore": false,
+        "deprecated": false,
+        "deprecationMessage": "",
+        "type": "Story",
+        "defaultValue": "{\n  args: {\n    value: null,\n    dateFormat: 'MM/dd/yyyy',\n  },\n}"
+      },
+      {
+        "name": "EmptyState",
+        "ctype": "miscellaneous",
+        "subtype": "variable",
+        "file": "apps/dms-material/src/app/shared/components/base-table/base-table.stories.ts",
+        "coverageIgnore": false,
+        "deprecated": false,
+        "deprecationMessage": "",
+        "type": "Story",
+        "defaultValue": "{\n  args: {\n    data: [],\n    columns: sampleColumns,\n    tableLabel: 'Empty table',\n    loading: false,\n    selectable: false,\n  },\n}"
+      },
+      {
+        "name": "EvenSplit",
+        "ctype": "miscellaneous",
+        "subtype": "variable",
+        "file": "apps/dms-material/src/app/shared/components/splitter/splitter.stories.ts",
+        "coverageIgnore": false,
+        "deprecated": false,
+        "deprecationMessage": "",
+        "type": "Story",
+        "defaultValue": "{\n  args: {\n    stateKey: 'storybook-splitter-even',\n    initialLeftWidth: 50,\n  },\n}"
+      },
+      {
+        "name": "FutureDate",
+        "ctype": "miscellaneous",
+        "subtype": "variable",
+        "file": "apps/dms-material/src/app/shared/components/editable-date-cell/editable-date-cell.stories.ts",
+        "coverageIgnore": false,
+        "deprecated": false,
+        "deprecationMessage": "",
+        "type": "Story",
+        "defaultValue": "{\n  args: {\n    value: new Date(2025, 5, 30),\n    dateFormat: 'MM/dd/yyyy',\n  },\n}"
+      },
+      {
+        "name": "meta",
+        "ctype": "miscellaneous",
+        "subtype": "variable",
+        "file": "apps/dms-material/src/app/introduction.stories.ts",
+        "coverageIgnore": false,
+        "deprecated": false,
+        "deprecationMessage": "",
+        "type": "Meta",
+        "defaultValue": "{\n  title: 'Introduction',\n  component: IntroductionComponent,\n  decorators: [\n    moduleMetadata({\n      imports: [IntroductionComponent],\n    }),\n  ],\n}"
+      },
+      {
+        "name": "meta",
+        "ctype": "miscellaneous",
+        "subtype": "variable",
+        "file": "apps/dms-material/src/app/dashboard/dashboard.stories.ts",
+        "coverageIgnore": false,
+        "deprecated": false,
+        "deprecationMessage": "",
+        "type": "Meta<DashboardComponent>",
+        "defaultValue": "{\n  component: DashboardComponent,\n  title: 'Components/Dashboard',\n}"
+      },
+      {
+        "name": "meta",
+        "ctype": "miscellaneous",
+        "subtype": "variable",
+        "file": "apps/dms-material/src/app/shared/components/base-table/base-table.stories.ts",
+        "coverageIgnore": false,
+        "deprecated": false,
+        "deprecationMessage": "",
+        "type": "Meta<BaseTableComponent<SampleRow>>",
+        "defaultValue": "{\n  component: BaseTableComponent,\n  title: 'Shared/BaseTable',\n  render: function renderBaseTable(args) {\n    return {\n      props: args,\n      template: TABLE_TEMPLATE,\n    };\n  },\n  argTypes: {\n    sortChange: { action: 'sortChange' },\n    rowClick: { action: 'rowClick' },\n    selectionChange: { action: 'selectionChange' },\n    renderedRangeChange: { action: 'renderedRangeChange' },\n  },\n}"
+      },
+      {
+        "name": "meta",
+        "ctype": "miscellaneous",
+        "subtype": "variable",
+        "file": "apps/dms-material/src/app/shared/components/edit/node-editor.stories.ts",
+        "coverageIgnore": false,
+        "deprecated": false,
+        "deprecationMessage": "",
+        "type": "Meta<NodeEditorComponent>",
+        "defaultValue": "{\n  component: NodeEditorComponent,\n  title: 'Components/NodeEditor',\n  argTypes: {\n    save: { action: 'save' },\n    cancel: { action: 'cancel' },\n  },\n}"
+      },
+      {
+        "name": "meta",
+        "ctype": "miscellaneous",
+        "subtype": "variable",
+        "file": "apps/dms-material/src/app/shared/components/editable-cell/editable-cell.stories.ts",
+        "coverageIgnore": false,
+        "deprecated": false,
+        "deprecationMessage": "",
+        "type": "Meta<EditableCellComponent>",
+        "defaultValue": "{\n  component: EditableCellComponent,\n  title: 'Components/EditableCell',\n  argTypes: {\n    valueChange: { action: 'valueChange' },\n    format: {\n      control: 'select',\n      options: ['number', 'decimal', 'currency'],\n    },\n  },\n}"
+      },
+      {
+        "name": "meta",
+        "ctype": "miscellaneous",
+        "subtype": "variable",
+        "file": "apps/dms-material/src/app/shared/components/editable-date-cell/editable-date-cell.stories.ts",
+        "coverageIgnore": false,
+        "deprecated": false,
+        "deprecationMessage": "",
+        "type": "Meta<EditableDateCellComponent>",
+        "defaultValue": "{\n  component: EditableDateCellComponent,\n  title: 'Components/EditableDateCell',\n  argTypes: {\n    valueChange: { action: 'valueChange' },\n  },\n}"
+      },
+      {
+        "name": "meta",
+        "ctype": "miscellaneous",
+        "subtype": "variable",
+        "file": "apps/dms-material/src/app/shared/components/splitter/splitter.stories.ts",
+        "coverageIgnore": false,
+        "deprecated": false,
+        "deprecationMessage": "",
+        "type": "Meta<SplitterComponent>",
+        "defaultValue": "{\n  component: SplitterComponent,\n  title: 'Components/Splitter',\n  argTypes: {\n    widthChange: { action: 'widthChange' },\n  },\n  decorators: [splitterContainerDecorator],\n}"
+      },
+      {
+        "name": "meta",
+        "ctype": "miscellaneous",
+        "subtype": "variable",
+        "file": "apps/dms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.stories.ts",
+        "coverageIgnore": false,
+        "deprecated": false,
+        "deprecationMessage": "",
+        "type": "Meta<SymbolAutocompleteComponent>",
+        "defaultValue": "{\n  component: SymbolAutocompleteComponent,\n  title: 'Components/SymbolAutocomplete',\n  argTypes: {\n    symbolSelected: { action: 'symbolSelected' },\n    symbolBlurred: { action: 'symbolBlurred' },\n    searchFn: { table: { disable: true } },\n  },\n}"
+      },
+      {
+        "name": "mockSymbols",
+        "ctype": "miscellaneous",
+        "subtype": "variable",
+        "file": "apps/dms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.stories.ts",
+        "coverageIgnore": false,
+        "deprecated": false,
+        "deprecationMessage": "",
+        "type": "SymbolOption[]",
+        "defaultValue": "[\n  { id: '1', symbol: 'AAPL', name: 'Apple Inc.' },\n  { id: '2', symbol: 'AMZN', name: 'Amazon.com Inc.' },\n  { id: '3', symbol: 'GOOG', name: 'Alphabet Inc.' },\n  { id: '4', symbol: 'MSFT', name: 'Microsoft Corp.' },\n  { id: '5', symbol: 'NVDA', name: 'NVIDIA Corp.' },\n  { id: '6', symbol: 'TSLA', name: 'Tesla Inc.' },\n]"
+      },
+      {
+        "name": "NarrowLeft",
+        "ctype": "miscellaneous",
+        "subtype": "variable",
+        "file": "apps/dms-material/src/app/shared/components/splitter/splitter.stories.ts",
+        "coverageIgnore": false,
+        "deprecated": false,
+        "deprecationMessage": "",
+        "type": "Story",
+        "defaultValue": "{\n  args: {\n    stateKey: 'storybook-splitter-narrow',\n    initialLeftWidth: 20,\n  },\n}"
+      },
+      {
+        "name": "preview",
+        "ctype": "miscellaneous",
+        "subtype": "variable",
+        "file": "apps/dms-material/.storybook/preview.ts",
+        "coverageIgnore": false,
+        "deprecated": false,
+        "deprecationMessage": "",
+        "type": "Preview",
+        "defaultValue": "{\n  decorators: [\n    withThemeByClassName({\n      themes: {\n        Light: '',\n        Dark: 'dark-theme',\n      },\n      defaultTheme: 'Light',\n    }),\n  ],\n}"
+      },
+      {
+        "name": "sampleColumns",
+        "ctype": "miscellaneous",
+        "subtype": "variable",
+        "file": "apps/dms-material/src/app/shared/components/base-table/base-table.stories.ts",
+        "coverageIgnore": false,
+        "deprecated": false,
+        "deprecationMessage": "",
+        "type": "ColumnDef[]",
+        "defaultValue": "[\n  { field: 'name', header: 'Name', sortable: true, type: 'text', width: 150 },\n  {\n    field: 'ticker',\n    header: 'Ticker',\n    sortable: true,\n    type: 'text',\n    width: 100,\n  },\n  {\n    field: 'value',\n    header: 'Value',\n    sortable: true,\n    type: 'currency',\n    width: 120,\n  },\n]"
+      },
+      {
+        "name": "sampleData",
+        "ctype": "miscellaneous",
+        "subtype": "variable",
+        "file": "apps/dms-material/src/app/shared/components/base-table/base-table.stories.ts",
+        "coverageIgnore": false,
+        "deprecated": false,
+        "deprecationMessage": "",
+        "type": "SampleRow[]",
+        "defaultValue": "[\n  { id: '1', name: 'Apple Inc.', ticker: 'AAPL', value: 189.3 },\n  { id: '2', name: 'Alphabet Inc.', ticker: 'GOOG', value: 140.52 },\n  { id: '3', name: 'Microsoft Corp.', ticker: 'MSFT', value: 415.22 },\n  { id: '4', name: 'Amazon.com Inc.', ticker: 'AMZN', value: 179.78 },\n  { id: '5', name: 'NVIDIA Corp.', ticker: 'NVDA', value: 880.0 },\n  { id: '6', name: 'Meta Platforms Inc.', ticker: 'META', value: 505.75 },\n  { id: '7', name: 'Tesla Inc.', ticker: 'TSLA', value: 248.42 },\n  { id: '8', name: 'Berkshire Hathaway', ticker: 'BRK.B', value: 412.18 },\n]"
+      },
+      {
+        "name": "splitterContainerDecorator",
+        "ctype": "miscellaneous",
+        "subtype": "variable",
+        "file": "apps/dms-material/src/app/shared/components/splitter/splitter.stories.ts",
+        "coverageIgnore": false,
+        "deprecated": false,
+        "deprecationMessage": "",
+        "type": "Decorator",
+        "defaultValue": "function splitterContainerDecorator(storyFn, context) {\n    const story = storyFn({ args: context.args });\n    return {\n      ...story,\n      template: `<div style=\"width:600px; height:300px; border:1px solid #ccc;\">\n      <dms-splitter [stateKey]=\"stateKey\" [initialLeftWidth]=\"initialLeftWidth\">\n      </dms-splitter>\n    </div>`,\n      props: story.props,\n    };\n  }"
+      },
+      {
+        "name": "TABLE_TEMPLATE",
+        "ctype": "miscellaneous",
+        "subtype": "variable",
+        "file": "apps/dms-material/src/app/shared/components/base-table/base-table.stories.ts",
+        "coverageIgnore": false,
+        "deprecated": false,
+        "deprecationMessage": "",
+        "type": "unknown",
+        "defaultValue": "`\n  <div style=\"height: 500px; width: 100%; display: flex;\">\n    <dms-base-table\n      style=\"display: block; flex: 1 1 auto; height: 100%; min-height: 0; width: 100%;\"\n      [data]=\"data\"\n      [columns]=\"columns\"\n      [tableLabel]=\"tableLabel\"\n      [rowHeight]=\"rowHeight\"\n      [loading]=\"loading\"\n      [selectable]=\"selectable\"\n      [multiSelect]=\"multiSelect\"\n      [sortColumns]=\"sortColumns\"\n      (sortChange)=\"sortChange($event)\"\n      (rowClick)=\"rowClick($event)\"\n      (selectionChange)=\"selectionChange($event)\"\n      (renderedRangeChange)=\"renderedRangeChange($event)\"\n    ></dms-base-table>\n  </div>\n`"
+      },
+      {
+        "name": "universeColumns",
+        "ctype": "miscellaneous",
+        "subtype": "variable",
+        "file": "apps/dms-material/src/app/shared/components/base-table/base-table.stories.ts",
+        "coverageIgnore": false,
+        "deprecated": false,
+        "deprecationMessage": "",
+        "type": "ColumnDef[]",
+        "defaultValue": "[\n  {\n    field: 'ticker',\n    header: 'Ticker',\n    sortable: true,\n    type: 'text',\n    width: 100,\n  },\n  { field: 'name', header: 'Name', sortable: true, type: 'text', width: 200 },\n  {\n    field: 'price',\n    header: 'Price',\n    sortable: true,\n    type: 'currency',\n    width: 100,\n  },\n  {\n    field: 'marketCap',\n    header: 'Market Cap',\n    sortable: true,\n    type: 'number',\n    width: 130,\n  },\n  {\n    field: 'sector',\n    header: 'Sector',\n    sortable: false,\n    type: 'text',\n    width: 130,\n  },\n  {\n    field: 'peRatio',\n    header: 'P/E Ratio',\n    sortable: true,\n    type: 'number',\n    width: 100,\n  },\n]"
+      },
+      {
+        "name": "universeData",
+        "ctype": "miscellaneous",
+        "subtype": "variable",
+        "file": "apps/dms-material/src/app/shared/components/base-table/base-table.stories.ts",
+        "coverageIgnore": false,
+        "deprecated": false,
+        "deprecationMessage": "",
+        "type": "UniverseRow[]",
+        "defaultValue": "[\n  {\n    id: '1',\n    ticker: 'AAPL',\n    name: 'Apple Inc.',\n    price: 189.3,\n    marketCap: 2_940_000_000_000,\n    sector: 'Technology',\n    peRatio: 31.2,\n  },\n  {\n    id: '2',\n    ticker: 'MSFT',\n    name: 'Microsoft Corp.',\n    price: 415.22,\n    marketCap: 3_090_000_000_000,\n    sector: 'Technology',\n    peRatio: 36.8,\n  },\n  {\n    id: '3',\n    ticker: 'GOOGL',\n    name: 'Alphabet Inc.',\n    price: 140.52,\n    marketCap: 1_760_000_000_000,\n    sector: 'Communication Services',\n    peRatio: 25.4,\n  },\n  {\n    id: '4',\n    ticker: 'AMZN',\n    name: 'Amazon.com Inc.',\n    price: 179.78,\n    marketCap: 1_870_000_000_000,\n    sector: 'Consumer Discretionary',\n    peRatio: 60.1,\n  },\n  {\n    id: '5',\n    ticker: 'NVDA',\n    name: 'NVIDIA Corp.',\n    price: 880.0,\n    marketCap: 2_170_000_000_000,\n    sector: 'Technology',\n    peRatio: 72.5,\n  },\n  {\n    id: '6',\n    ticker: 'JPM',\n    name: 'JPMorgan Chase',\n    price: 198.45,\n    marketCap: 572_000_000_000,\n    sector: 'Financials',\n    peRatio: 11.8,\n  },\n  {\n    id: '7',\n    ticker: 'JNJ',\n    name: 'Johnson & Johnson',\n    price: 156.32,\n    marketCap: 376_000_000_000,\n    sector: 'Healthcare',\n    peRatio: 22.1,\n  },\n  {\n    id: '8',\n    ticker: 'XOM',\n    name: 'Exxon Mobil Corp.',\n    price: 104.67,\n    marketCap: 441_000_000_000,\n    sector: 'Energy',\n    peRatio: 13.4,\n  },\n  {\n    id: '9',\n    ticker: 'PG',\n    name: 'Procter & Gamble',\n    price: 162.89,\n    marketCap: 383_000_000_000,\n    sector: 'Consumer Staples',\n    peRatio: 26.7,\n  },\n  {\n    id: '10',\n    ticker: 'V',\n    name: 'Visa Inc.',\n    price: 281.34,\n    marketCap: 577_000_000_000,\n    sector: 'Financials',\n    peRatio: 31.9,\n  },\n]"
+      },
+      {
+        "name": "UniverseTableVariation",
+        "ctype": "miscellaneous",
+        "subtype": "variable",
+        "file": "apps/dms-material/src/app/shared/components/base-table/base-table.stories.ts",
+        "coverageIgnore": false,
+        "deprecated": false,
+        "deprecationMessage": "",
+        "type": "UniverseStory",
+        "defaultValue": "{\n  args: {\n    data: universeData,\n    columns: universeColumns,\n    tableLabel: 'Universe screener table',\n    rowHeight: 52,\n    loading: false,\n    selectable: true,\n    multiSelect: true,\n    sortColumns: [{ column: 'ticker', direction: 'asc' }],\n  },\n}"
+      },
+      {
+        "name": "Welcome",
+        "ctype": "miscellaneous",
+        "subtype": "variable",
+        "file": "apps/dms-material/src/app/introduction.stories.ts",
+        "coverageIgnore": false,
+        "deprecated": false,
+        "deprecationMessage": "",
+        "type": "StoryObj",
+        "defaultValue": "{\n  render: () => ({\n    template: `<app-introduction></app-introduction>`,\n  }),\n}"
+      },
+      {
+        "name": "WithMinMax",
+        "ctype": "miscellaneous",
+        "subtype": "variable",
+        "file": "apps/dms-material/src/app/shared/components/editable-cell/editable-cell.stories.ts",
+        "coverageIgnore": false,
+        "deprecated": false,
+        "deprecationMessage": "",
+        "type": "Story",
+        "defaultValue": "{\n  args: {\n    value: 50,\n    format: 'number',\n    min: 0,\n    max: 100,\n    step: 5,\n  },\n}"
+      }
+    ],
+    "functions": [
+      {
+        "name": "mockSearchFn",
+        "file": "apps/dms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.stories.ts",
+        "ctype": "miscellaneous",
+        "subtype": "function",
+        "coverageIgnore": false,
+        "deprecated": false,
+        "deprecationMessage": "",
+        "rawdescription": "",
+        "description": "",
+        "displayName": "mockSearchFn",
+        "args": [
+          {
+            "name": "query",
+            "type": "string",
+            "deprecated": false,
+            "deprecationMessage": ""
+          }
+        ],
+        "returnType": "Promise<SymbolOption[]>",
+        "jsdoctags": [
+          {
+            "name": "query",
+            "type": "string",
+            "deprecated": false,
+            "deprecationMessage": "",
+            "tagName": {
+              "text": "param"
+            }
+          }
+        ]
+      },
+      {
+        "name": "symbolMatches",
+        "file": "apps/dms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.stories.ts",
+        "ctype": "miscellaneous",
+        "subtype": "function",
+        "coverageIgnore": false,
+        "deprecated": false,
+        "deprecationMessage": "",
+        "rawdescription": "",
+        "description": "",
+        "displayName": "symbolMatches",
+        "args": [
+          {
+            "name": "lower",
+            "type": "string",
+            "deprecated": false,
+            "deprecationMessage": ""
+          },
+          {
+            "name": "s",
+            "type": "SymbolOption",
+            "deprecated": false,
+            "deprecationMessage": ""
+          }
+        ],
+        "returnType": "boolean",
+        "jsdoctags": [
+          {
+            "name": "lower",
+            "type": "string",
+            "deprecated": false,
+            "deprecationMessage": "",
+            "tagName": {
+              "text": "param"
+            }
+          },
+          {
+            "name": "s",
+            "type": "SymbolOption",
+            "deprecated": false,
+            "deprecationMessage": "",
+            "tagName": {
+              "text": "param"
+            }
+          }
+        ]
+      }
+    ],
+    "typealiases": [
+      {
+        "name": "Story",
+        "ctype": "miscellaneous",
+        "subtype": "typealias",
+        "coverageIgnore": false,
+        "rawtype": "StoryObj<DashboardComponent>",
+        "file": "apps/dms-material/src/app/dashboard/dashboard.stories.ts",
+        "deprecated": false,
+        "deprecationMessage": "",
+        "rawdescription": "",
+        "description": "",
+        "kind": 184
+      },
+      {
+        "name": "Story",
+        "ctype": "miscellaneous",
+        "subtype": "typealias",
+        "coverageIgnore": false,
+        "rawtype": "StoryObj<BaseTableComponent<SampleRow>>",
+        "file": "apps/dms-material/src/app/shared/components/base-table/base-table.stories.ts",
+        "deprecated": false,
+        "deprecationMessage": "",
+        "rawdescription": "",
+        "description": "",
+        "kind": 184
+      },
+      {
+        "name": "Story",
+        "ctype": "miscellaneous",
+        "subtype": "typealias",
+        "coverageIgnore": false,
+        "rawtype": "StoryObj<NodeEditorComponent>",
+        "file": "apps/dms-material/src/app/shared/components/edit/node-editor.stories.ts",
+        "deprecated": false,
+        "deprecationMessage": "",
+        "rawdescription": "",
+        "description": "",
+        "kind": 184
+      },
+      {
+        "name": "Story",
+        "ctype": "miscellaneous",
+        "subtype": "typealias",
+        "coverageIgnore": false,
+        "rawtype": "StoryObj<EditableCellComponent>",
+        "file": "apps/dms-material/src/app/shared/components/editable-cell/editable-cell.stories.ts",
+        "deprecated": false,
+        "deprecationMessage": "",
+        "rawdescription": "",
+        "description": "",
+        "kind": 184
+      },
+      {
+        "name": "Story",
+        "ctype": "miscellaneous",
+        "subtype": "typealias",
+        "coverageIgnore": false,
+        "rawtype": "StoryObj<EditableDateCellComponent>",
+        "file": "apps/dms-material/src/app/shared/components/editable-date-cell/editable-date-cell.stories.ts",
+        "deprecated": false,
+        "deprecationMessage": "",
+        "rawdescription": "",
+        "description": "",
+        "kind": 184
+      },
+      {
+        "name": "Story",
+        "ctype": "miscellaneous",
+        "subtype": "typealias",
+        "coverageIgnore": false,
+        "rawtype": "StoryObj<SplitterComponent>",
+        "file": "apps/dms-material/src/app/shared/components/splitter/splitter.stories.ts",
+        "deprecated": false,
+        "deprecationMessage": "",
+        "rawdescription": "",
+        "description": "",
+        "kind": 184
+      },
+      {
+        "name": "Story",
+        "ctype": "miscellaneous",
+        "subtype": "typealias",
+        "coverageIgnore": false,
+        "rawtype": "StoryObj<SymbolAutocompleteComponent>",
+        "file": "apps/dms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.stories.ts",
+        "deprecated": false,
+        "deprecationMessage": "",
+        "rawdescription": "",
+        "description": "",
+        "kind": 184
+      },
+      {
+        "name": "UniverseStory",
+        "ctype": "miscellaneous",
+        "subtype": "typealias",
+        "coverageIgnore": false,
+        "rawtype": "StoryObj<BaseTableComponent<UniverseRow>>",
+        "file": "apps/dms-material/src/app/shared/components/base-table/base-table.stories.ts",
+        "deprecated": false,
+        "deprecationMessage": "",
+        "rawdescription": "",
+        "description": "",
+        "kind": 184
+      }
+    ],
+    "enumerations": [],
+    "groupedVariables": {
+      "apps/dms-material/.storybook/main.ts": [
+        {
+          "name": "config",
+          "ctype": "miscellaneous",
+          "subtype": "variable",
+          "file": "apps/dms-material/.storybook/main.ts",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "type": "StorybookConfig",
+          "defaultValue": "{\n  stories: ['../src/app/**/*.@(mdx|stories.@(js|jsx|ts|tsx))'],\n  addons: ['@storybook/addon-themes'],\n  framework: '@storybook/angular-vite',\n  core: {\n    builder: '@storybook/builder-vite',\n  },\n  viteFinal: async function viteFinal(viteConfig) {\n    // Vite-based builder avoids webpack version conflicts\n    const { mergeConfig } = await import('vite');\n    const tsconfigPaths = await import('vite-tsconfig-paths');\n    return mergeConfig(viteConfig, {\n      define: {\n        ngDevMode: 'false',\n      },\n      plugins: [tsconfigPaths.default()],\n    });\n  },\n}"
+        }
+      ],
+      "apps/dms-material/src/app/shared/components/editable-cell/editable-cell.stories.ts": [
+        {
+          "name": "Currency",
+          "ctype": "miscellaneous",
+          "subtype": "variable",
+          "file": "apps/dms-material/src/app/shared/components/editable-cell/editable-cell.stories.ts",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "type": "Story",
+          "defaultValue": "{\n  args: {\n    value: 1234.56,\n    format: 'currency',\n    decimalFormat: '1.2-2',\n  },\n}"
+        },
+        {
+          "name": "Decimal",
+          "ctype": "miscellaneous",
+          "subtype": "variable",
+          "file": "apps/dms-material/src/app/shared/components/editable-cell/editable-cell.stories.ts",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "type": "Story",
+          "defaultValue": "{\n  args: {\n    value: 9.875,\n    format: 'decimal',\n    decimalFormat: '1.3-3',\n  },\n}"
+        },
+        {
+          "name": "Default",
+          "ctype": "miscellaneous",
+          "subtype": "variable",
+          "file": "apps/dms-material/src/app/shared/components/editable-cell/editable-cell.stories.ts",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "type": "Story",
+          "defaultValue": "{\n  args: {\n    value: 42,\n    format: 'number',\n    step: 1,\n    decimalFormat: '1.2-2',\n    testIdFieldName: '',\n    testId: '',\n  },\n}"
+        },
+        {
+          "name": "meta",
+          "ctype": "miscellaneous",
+          "subtype": "variable",
+          "file": "apps/dms-material/src/app/shared/components/editable-cell/editable-cell.stories.ts",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "type": "Meta<EditableCellComponent>",
+          "defaultValue": "{\n  component: EditableCellComponent,\n  title: 'Components/EditableCell',\n  argTypes: {\n    valueChange: { action: 'valueChange' },\n    format: {\n      control: 'select',\n      options: ['number', 'decimal', 'currency'],\n    },\n  },\n}"
+        },
+        {
+          "name": "WithMinMax",
+          "ctype": "miscellaneous",
+          "subtype": "variable",
+          "file": "apps/dms-material/src/app/shared/components/editable-cell/editable-cell.stories.ts",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "type": "Story",
+          "defaultValue": "{\n  args: {\n    value: 50,\n    format: 'number',\n    min: 0,\n    max: 100,\n    step: 5,\n  },\n}"
+        }
+      ],
+      "apps/dms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.stories.ts": [
+        {
+          "name": "CustomLabel",
+          "ctype": "miscellaneous",
+          "subtype": "variable",
+          "file": "apps/dms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.stories.ts",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "type": "Story",
+          "defaultValue": "{\n  args: {\n    searchFn: mockSearchFn,\n    label: 'Select Ticker',\n    placeholder: 'Type 2+ characters...',\n    minLength: 2,\n    forceSelection: false,\n  },\n}"
+        },
+        {
+          "name": "Default",
+          "ctype": "miscellaneous",
+          "subtype": "variable",
+          "file": "apps/dms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.stories.ts",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "type": "Story",
+          "defaultValue": "{\n  args: {\n    searchFn: mockSearchFn,\n    label: 'Symbol',\n    placeholder: 'Search for a symbol...',\n    minLength: 2,\n    forceSelection: true,\n  },\n}"
+        },
+        {
+          "name": "meta",
+          "ctype": "miscellaneous",
+          "subtype": "variable",
+          "file": "apps/dms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.stories.ts",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "type": "Meta<SymbolAutocompleteComponent>",
+          "defaultValue": "{\n  component: SymbolAutocompleteComponent,\n  title: 'Components/SymbolAutocomplete',\n  argTypes: {\n    symbolSelected: { action: 'symbolSelected' },\n    symbolBlurred: { action: 'symbolBlurred' },\n    searchFn: { table: { disable: true } },\n  },\n}"
+        },
+        {
+          "name": "mockSymbols",
+          "ctype": "miscellaneous",
+          "subtype": "variable",
+          "file": "apps/dms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.stories.ts",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "type": "SymbolOption[]",
+          "defaultValue": "[\n  { id: '1', symbol: 'AAPL', name: 'Apple Inc.' },\n  { id: '2', symbol: 'AMZN', name: 'Amazon.com Inc.' },\n  { id: '3', symbol: 'GOOG', name: 'Alphabet Inc.' },\n  { id: '4', symbol: 'MSFT', name: 'Microsoft Corp.' },\n  { id: '5', symbol: 'NVDA', name: 'NVIDIA Corp.' },\n  { id: '6', symbol: 'TSLA', name: 'Tesla Inc.' },\n]"
+        }
+      ],
+      "apps/dms-material/src/app/shared/components/edit/node-editor.stories.ts": [
+        {
+          "name": "CustomPlaceholder",
+          "ctype": "miscellaneous",
+          "subtype": "variable",
+          "file": "apps/dms-material/src/app/shared/components/edit/node-editor.stories.ts",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "type": "Story",
+          "defaultValue": "{\n  args: {\n    placeholder$: 'Type node name here',\n  },\n}"
+        },
+        {
+          "name": "Default",
+          "ctype": "miscellaneous",
+          "subtype": "variable",
+          "file": "apps/dms-material/src/app/shared/components/edit/node-editor.stories.ts",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "type": "Story",
+          "defaultValue": "{\n  args: {\n    placeholder$: 'Enter a value...',\n  },\n}"
+        },
+        {
+          "name": "meta",
+          "ctype": "miscellaneous",
+          "subtype": "variable",
+          "file": "apps/dms-material/src/app/shared/components/edit/node-editor.stories.ts",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "type": "Meta<NodeEditorComponent>",
+          "defaultValue": "{\n  component: NodeEditorComponent,\n  title: 'Components/NodeEditor',\n  argTypes: {\n    save: { action: 'save' },\n    cancel: { action: 'cancel' },\n  },\n}"
+        }
+      ],
+      "apps/dms-material/src/app/dashboard/dashboard.stories.ts": [
+        {
+          "name": "Default",
+          "ctype": "miscellaneous",
+          "subtype": "variable",
+          "file": "apps/dms-material/src/app/dashboard/dashboard.stories.ts",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "type": "Story",
+          "defaultValue": "{}"
+        },
+        {
+          "name": "meta",
+          "ctype": "miscellaneous",
+          "subtype": "variable",
+          "file": "apps/dms-material/src/app/dashboard/dashboard.stories.ts",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "type": "Meta<DashboardComponent>",
+          "defaultValue": "{\n  component: DashboardComponent,\n  title: 'Components/Dashboard',\n}"
+        }
+      ],
+      "apps/dms-material/src/app/shared/components/base-table/base-table.stories.ts": [
+        {
+          "name": "Default",
+          "ctype": "miscellaneous",
+          "subtype": "variable",
+          "file": "apps/dms-material/src/app/shared/components/base-table/base-table.stories.ts",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "type": "Story",
+          "defaultValue": "{\n  args: {\n    data: sampleData,\n    columns: sampleColumns,\n    tableLabel: 'Sample positions table',\n    rowHeight: 52,\n    loading: false,\n    selectable: true,\n    multiSelect: false,\n    sortColumns: [{ column: 'name', direction: 'asc' }],\n  },\n}"
+        },
+        {
+          "name": "EmptyState",
+          "ctype": "miscellaneous",
+          "subtype": "variable",
+          "file": "apps/dms-material/src/app/shared/components/base-table/base-table.stories.ts",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "type": "Story",
+          "defaultValue": "{\n  args: {\n    data: [],\n    columns: sampleColumns,\n    tableLabel: 'Empty table',\n    loading: false,\n    selectable: false,\n  },\n}"
+        },
+        {
+          "name": "meta",
+          "ctype": "miscellaneous",
+          "subtype": "variable",
+          "file": "apps/dms-material/src/app/shared/components/base-table/base-table.stories.ts",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "type": "Meta<BaseTableComponent<SampleRow>>",
+          "defaultValue": "{\n  component: BaseTableComponent,\n  title: 'Shared/BaseTable',\n  render: function renderBaseTable(args) {\n    return {\n      props: args,\n      template: TABLE_TEMPLATE,\n    };\n  },\n  argTypes: {\n    sortChange: { action: 'sortChange' },\n    rowClick: { action: 'rowClick' },\n    selectionChange: { action: 'selectionChange' },\n    renderedRangeChange: { action: 'renderedRangeChange' },\n  },\n}"
+        },
+        {
+          "name": "sampleColumns",
+          "ctype": "miscellaneous",
+          "subtype": "variable",
+          "file": "apps/dms-material/src/app/shared/components/base-table/base-table.stories.ts",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "type": "ColumnDef[]",
+          "defaultValue": "[\n  { field: 'name', header: 'Name', sortable: true, type: 'text', width: 150 },\n  {\n    field: 'ticker',\n    header: 'Ticker',\n    sortable: true,\n    type: 'text',\n    width: 100,\n  },\n  {\n    field: 'value',\n    header: 'Value',\n    sortable: true,\n    type: 'currency',\n    width: 120,\n  },\n]"
+        },
+        {
+          "name": "sampleData",
+          "ctype": "miscellaneous",
+          "subtype": "variable",
+          "file": "apps/dms-material/src/app/shared/components/base-table/base-table.stories.ts",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "type": "SampleRow[]",
+          "defaultValue": "[\n  { id: '1', name: 'Apple Inc.', ticker: 'AAPL', value: 189.3 },\n  { id: '2', name: 'Alphabet Inc.', ticker: 'GOOG', value: 140.52 },\n  { id: '3', name: 'Microsoft Corp.', ticker: 'MSFT', value: 415.22 },\n  { id: '4', name: 'Amazon.com Inc.', ticker: 'AMZN', value: 179.78 },\n  { id: '5', name: 'NVIDIA Corp.', ticker: 'NVDA', value: 880.0 },\n  { id: '6', name: 'Meta Platforms Inc.', ticker: 'META', value: 505.75 },\n  { id: '7', name: 'Tesla Inc.', ticker: 'TSLA', value: 248.42 },\n  { id: '8', name: 'Berkshire Hathaway', ticker: 'BRK.B', value: 412.18 },\n]"
+        },
+        {
+          "name": "TABLE_TEMPLATE",
+          "ctype": "miscellaneous",
+          "subtype": "variable",
+          "file": "apps/dms-material/src/app/shared/components/base-table/base-table.stories.ts",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "type": "unknown",
+          "defaultValue": "`\n  <div style=\"height: 500px; width: 100%; display: flex;\">\n    <dms-base-table\n      style=\"display: block; flex: 1 1 auto; height: 100%; min-height: 0; width: 100%;\"\n      [data]=\"data\"\n      [columns]=\"columns\"\n      [tableLabel]=\"tableLabel\"\n      [rowHeight]=\"rowHeight\"\n      [loading]=\"loading\"\n      [selectable]=\"selectable\"\n      [multiSelect]=\"multiSelect\"\n      [sortColumns]=\"sortColumns\"\n      (sortChange)=\"sortChange($event)\"\n      (rowClick)=\"rowClick($event)\"\n      (selectionChange)=\"selectionChange($event)\"\n      (renderedRangeChange)=\"renderedRangeChange($event)\"\n    ></dms-base-table>\n  </div>\n`"
+        },
+        {
+          "name": "universeColumns",
+          "ctype": "miscellaneous",
+          "subtype": "variable",
+          "file": "apps/dms-material/src/app/shared/components/base-table/base-table.stories.ts",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "type": "ColumnDef[]",
+          "defaultValue": "[\n  {\n    field: 'ticker',\n    header: 'Ticker',\n    sortable: true,\n    type: 'text',\n    width: 100,\n  },\n  { field: 'name', header: 'Name', sortable: true, type: 'text', width: 200 },\n  {\n    field: 'price',\n    header: 'Price',\n    sortable: true,\n    type: 'currency',\n    width: 100,\n  },\n  {\n    field: 'marketCap',\n    header: 'Market Cap',\n    sortable: true,\n    type: 'number',\n    width: 130,\n  },\n  {\n    field: 'sector',\n    header: 'Sector',\n    sortable: false,\n    type: 'text',\n    width: 130,\n  },\n  {\n    field: 'peRatio',\n    header: 'P/E Ratio',\n    sortable: true,\n    type: 'number',\n    width: 100,\n  },\n]"
+        },
+        {
+          "name": "universeData",
+          "ctype": "miscellaneous",
+          "subtype": "variable",
+          "file": "apps/dms-material/src/app/shared/components/base-table/base-table.stories.ts",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "type": "UniverseRow[]",
+          "defaultValue": "[\n  {\n    id: '1',\n    ticker: 'AAPL',\n    name: 'Apple Inc.',\n    price: 189.3,\n    marketCap: 2_940_000_000_000,\n    sector: 'Technology',\n    peRatio: 31.2,\n  },\n  {\n    id: '2',\n    ticker: 'MSFT',\n    name: 'Microsoft Corp.',\n    price: 415.22,\n    marketCap: 3_090_000_000_000,\n    sector: 'Technology',\n    peRatio: 36.8,\n  },\n  {\n    id: '3',\n    ticker: 'GOOGL',\n    name: 'Alphabet Inc.',\n    price: 140.52,\n    marketCap: 1_760_000_000_000,\n    sector: 'Communication Services',\n    peRatio: 25.4,\n  },\n  {\n    id: '4',\n    ticker: 'AMZN',\n    name: 'Amazon.com Inc.',\n    price: 179.78,\n    marketCap: 1_870_000_000_000,\n    sector: 'Consumer Discretionary',\n    peRatio: 60.1,\n  },\n  {\n    id: '5',\n    ticker: 'NVDA',\n    name: 'NVIDIA Corp.',\n    price: 880.0,\n    marketCap: 2_170_000_000_000,\n    sector: 'Technology',\n    peRatio: 72.5,\n  },\n  {\n    id: '6',\n    ticker: 'JPM',\n    name: 'JPMorgan Chase',\n    price: 198.45,\n    marketCap: 572_000_000_000,\n    sector: 'Financials',\n    peRatio: 11.8,\n  },\n  {\n    id: '7',\n    ticker: 'JNJ',\n    name: 'Johnson & Johnson',\n    price: 156.32,\n    marketCap: 376_000_000_000,\n    sector: 'Healthcare',\n    peRatio: 22.1,\n  },\n  {\n    id: '8',\n    ticker: 'XOM',\n    name: 'Exxon Mobil Corp.',\n    price: 104.67,\n    marketCap: 441_000_000_000,\n    sector: 'Energy',\n    peRatio: 13.4,\n  },\n  {\n    id: '9',\n    ticker: 'PG',\n    name: 'Procter & Gamble',\n    price: 162.89,\n    marketCap: 383_000_000_000,\n    sector: 'Consumer Staples',\n    peRatio: 26.7,\n  },\n  {\n    id: '10',\n    ticker: 'V',\n    name: 'Visa Inc.',\n    price: 281.34,\n    marketCap: 577_000_000_000,\n    sector: 'Financials',\n    peRatio: 31.9,\n  },\n]"
+        },
+        {
+          "name": "UniverseTableVariation",
+          "ctype": "miscellaneous",
+          "subtype": "variable",
+          "file": "apps/dms-material/src/app/shared/components/base-table/base-table.stories.ts",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "type": "UniverseStory",
+          "defaultValue": "{\n  args: {\n    data: universeData,\n    columns: universeColumns,\n    tableLabel: 'Universe screener table',\n    rowHeight: 52,\n    loading: false,\n    selectable: true,\n    multiSelect: true,\n    sortColumns: [{ column: 'ticker', direction: 'asc' }],\n  },\n}"
+        }
+      ],
+      "apps/dms-material/src/app/shared/components/editable-date-cell/editable-date-cell.stories.ts": [
+        {
+          "name": "Default",
+          "ctype": "miscellaneous",
+          "subtype": "variable",
+          "file": "apps/dms-material/src/app/shared/components/editable-date-cell/editable-date-cell.stories.ts",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "type": "Story",
+          "defaultValue": "{\n  args: {\n    value: new Date(2025, 0, 15),\n    dateFormat: 'MM/dd/yyyy',\n    testIdFieldName: '',\n    testId: '',\n  },\n}"
+        },
+        {
+          "name": "Empty",
+          "ctype": "miscellaneous",
+          "subtype": "variable",
+          "file": "apps/dms-material/src/app/shared/components/editable-date-cell/editable-date-cell.stories.ts",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "type": "Story",
+          "defaultValue": "{\n  args: {\n    value: null,\n    dateFormat: 'MM/dd/yyyy',\n  },\n}"
+        },
+        {
+          "name": "FutureDate",
+          "ctype": "miscellaneous",
+          "subtype": "variable",
+          "file": "apps/dms-material/src/app/shared/components/editable-date-cell/editable-date-cell.stories.ts",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "type": "Story",
+          "defaultValue": "{\n  args: {\n    value: new Date(2025, 5, 30),\n    dateFormat: 'MM/dd/yyyy',\n  },\n}"
+        },
+        {
+          "name": "meta",
+          "ctype": "miscellaneous",
+          "subtype": "variable",
+          "file": "apps/dms-material/src/app/shared/components/editable-date-cell/editable-date-cell.stories.ts",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "type": "Meta<EditableDateCellComponent>",
+          "defaultValue": "{\n  component: EditableDateCellComponent,\n  title: 'Components/EditableDateCell',\n  argTypes: {\n    valueChange: { action: 'valueChange' },\n  },\n}"
+        }
+      ],
+      "apps/dms-material/src/app/shared/components/splitter/splitter.stories.ts": [
+        {
+          "name": "Default",
+          "ctype": "miscellaneous",
+          "subtype": "variable",
+          "file": "apps/dms-material/src/app/shared/components/splitter/splitter.stories.ts",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "type": "Story",
+          "defaultValue": "{\n  args: {\n    stateKey: 'storybook-splitter',\n    initialLeftWidth: 30,\n  },\n}"
+        },
+        {
+          "name": "EvenSplit",
+          "ctype": "miscellaneous",
+          "subtype": "variable",
+          "file": "apps/dms-material/src/app/shared/components/splitter/splitter.stories.ts",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "type": "Story",
+          "defaultValue": "{\n  args: {\n    stateKey: 'storybook-splitter-even',\n    initialLeftWidth: 50,\n  },\n}"
+        },
+        {
+          "name": "meta",
+          "ctype": "miscellaneous",
+          "subtype": "variable",
+          "file": "apps/dms-material/src/app/shared/components/splitter/splitter.stories.ts",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "type": "Meta<SplitterComponent>",
+          "defaultValue": "{\n  component: SplitterComponent,\n  title: 'Components/Splitter',\n  argTypes: {\n    widthChange: { action: 'widthChange' },\n  },\n  decorators: [splitterContainerDecorator],\n}"
+        },
+        {
+          "name": "NarrowLeft",
+          "ctype": "miscellaneous",
+          "subtype": "variable",
+          "file": "apps/dms-material/src/app/shared/components/splitter/splitter.stories.ts",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "type": "Story",
+          "defaultValue": "{\n  args: {\n    stateKey: 'storybook-splitter-narrow',\n    initialLeftWidth: 20,\n  },\n}"
+        },
+        {
+          "name": "splitterContainerDecorator",
+          "ctype": "miscellaneous",
+          "subtype": "variable",
+          "file": "apps/dms-material/src/app/shared/components/splitter/splitter.stories.ts",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "type": "Decorator",
+          "defaultValue": "function splitterContainerDecorator(storyFn, context) {\n    const story = storyFn({ args: context.args });\n    return {\n      ...story,\n      template: `<div style=\"width:600px; height:300px; border:1px solid #ccc;\">\n      <dms-splitter [stateKey]=\"stateKey\" [initialLeftWidth]=\"initialLeftWidth\">\n      </dms-splitter>\n    </div>`,\n      props: story.props,\n    };\n  }"
+        }
+      ],
+      "apps/dms-material/src/app/introduction.stories.ts": [
+        {
+          "name": "meta",
+          "ctype": "miscellaneous",
+          "subtype": "variable",
+          "file": "apps/dms-material/src/app/introduction.stories.ts",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "type": "Meta",
+          "defaultValue": "{\n  title: 'Introduction',\n  component: IntroductionComponent,\n  decorators: [\n    moduleMetadata({\n      imports: [IntroductionComponent],\n    }),\n  ],\n}"
+        },
+        {
+          "name": "Welcome",
+          "ctype": "miscellaneous",
+          "subtype": "variable",
+          "file": "apps/dms-material/src/app/introduction.stories.ts",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "type": "StoryObj",
+          "defaultValue": "{\n  render: () => ({\n    template: `<app-introduction></app-introduction>`,\n  }),\n}"
+        }
+      ],
+      "apps/dms-material/.storybook/preview.ts": [
+        {
+          "name": "preview",
+          "ctype": "miscellaneous",
+          "subtype": "variable",
+          "file": "apps/dms-material/.storybook/preview.ts",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "type": "Preview",
+          "defaultValue": "{\n  decorators: [\n    withThemeByClassName({\n      themes: {\n        Light: '',\n        Dark: 'dark-theme',\n      },\n      defaultTheme: 'Light',\n    }),\n  ],\n}"
+        }
+      ]
+    },
+    "groupedFunctions": {
+      "apps/dms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.stories.ts": [
+        {
+          "name": "mockSearchFn",
+          "file": "apps/dms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.stories.ts",
+          "ctype": "miscellaneous",
+          "subtype": "function",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "rawdescription": "",
+          "description": "",
+          "displayName": "mockSearchFn",
+          "args": [
+            {
+              "name": "query",
+              "type": "string",
+              "deprecated": false,
+              "deprecationMessage": ""
+            }
+          ],
+          "returnType": "Promise<SymbolOption[]>",
+          "jsdoctags": [
+            {
+              "name": "query",
+              "type": "string",
+              "deprecated": false,
+              "deprecationMessage": "",
+              "tagName": {
+                "text": "param"
+              }
+            }
+          ]
+        },
+        {
+          "name": "symbolMatches",
+          "file": "apps/dms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.stories.ts",
+          "ctype": "miscellaneous",
+          "subtype": "function",
+          "coverageIgnore": false,
+          "deprecated": false,
+          "deprecationMessage": "",
+          "rawdescription": "",
+          "description": "",
+          "displayName": "symbolMatches",
+          "args": [
+            {
+              "name": "lower",
+              "type": "string",
+              "deprecated": false,
+              "deprecationMessage": ""
+            },
+            {
+              "name": "s",
+              "type": "SymbolOption",
+              "deprecated": false,
+              "deprecationMessage": ""
+            }
+          ],
+          "returnType": "boolean",
+          "jsdoctags": [
+            {
+              "name": "lower",
+              "type": "string",
+              "deprecated": false,
+              "deprecationMessage": "",
+              "tagName": {
+                "text": "param"
+              }
+            },
+            {
+              "name": "s",
+              "type": "SymbolOption",
+              "deprecated": false,
+              "deprecationMessage": "",
+              "tagName": {
+                "text": "param"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "groupedEnumerations": {},
+    "groupedTypeAliases": {
+      "apps/dms-material/src/app/dashboard/dashboard.stories.ts": [
+        {
+          "name": "Story",
+          "ctype": "miscellaneous",
+          "subtype": "typealias",
+          "coverageIgnore": false,
+          "rawtype": "StoryObj<DashboardComponent>",
+          "file": "apps/dms-material/src/app/dashboard/dashboard.stories.ts",
+          "deprecated": false,
+          "deprecationMessage": "",
+          "rawdescription": "",
+          "description": "",
+          "kind": 184
+        }
+      ],
+      "apps/dms-material/src/app/shared/components/base-table/base-table.stories.ts": [
+        {
+          "name": "Story",
+          "ctype": "miscellaneous",
+          "subtype": "typealias",
+          "coverageIgnore": false,
+          "rawtype": "StoryObj<BaseTableComponent<SampleRow>>",
+          "file": "apps/dms-material/src/app/shared/components/base-table/base-table.stories.ts",
+          "deprecated": false,
+          "deprecationMessage": "",
+          "rawdescription": "",
+          "description": "",
+          "kind": 184
+        },
+        {
+          "name": "UniverseStory",
+          "ctype": "miscellaneous",
+          "subtype": "typealias",
+          "coverageIgnore": false,
+          "rawtype": "StoryObj<BaseTableComponent<UniverseRow>>",
+          "file": "apps/dms-material/src/app/shared/components/base-table/base-table.stories.ts",
+          "deprecated": false,
+          "deprecationMessage": "",
+          "rawdescription": "",
+          "description": "",
+          "kind": 184
+        }
+      ],
+      "apps/dms-material/src/app/shared/components/edit/node-editor.stories.ts": [
+        {
+          "name": "Story",
+          "ctype": "miscellaneous",
+          "subtype": "typealias",
+          "coverageIgnore": false,
+          "rawtype": "StoryObj<NodeEditorComponent>",
+          "file": "apps/dms-material/src/app/shared/components/edit/node-editor.stories.ts",
+          "deprecated": false,
+          "deprecationMessage": "",
+          "rawdescription": "",
+          "description": "",
+          "kind": 184
+        }
+      ],
+      "apps/dms-material/src/app/shared/components/editable-cell/editable-cell.stories.ts": [
+        {
+          "name": "Story",
+          "ctype": "miscellaneous",
+          "subtype": "typealias",
+          "coverageIgnore": false,
+          "rawtype": "StoryObj<EditableCellComponent>",
+          "file": "apps/dms-material/src/app/shared/components/editable-cell/editable-cell.stories.ts",
+          "deprecated": false,
+          "deprecationMessage": "",
+          "rawdescription": "",
+          "description": "",
+          "kind": 184
+        }
+      ],
+      "apps/dms-material/src/app/shared/components/editable-date-cell/editable-date-cell.stories.ts": [
+        {
+          "name": "Story",
+          "ctype": "miscellaneous",
+          "subtype": "typealias",
+          "coverageIgnore": false,
+          "rawtype": "StoryObj<EditableDateCellComponent>",
+          "file": "apps/dms-material/src/app/shared/components/editable-date-cell/editable-date-cell.stories.ts",
+          "deprecated": false,
+          "deprecationMessage": "",
+          "rawdescription": "",
+          "description": "",
+          "kind": 184
+        }
+      ],
+      "apps/dms-material/src/app/shared/components/splitter/splitter.stories.ts": [
+        {
+          "name": "Story",
+          "ctype": "miscellaneous",
+          "subtype": "typealias",
+          "coverageIgnore": false,
+          "rawtype": "StoryObj<SplitterComponent>",
+          "file": "apps/dms-material/src/app/shared/components/splitter/splitter.stories.ts",
+          "deprecated": false,
+          "deprecationMessage": "",
+          "rawdescription": "",
+          "description": "",
+          "kind": 184
+        }
+      ],
+      "apps/dms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.stories.ts": [
+        {
+          "name": "Story",
+          "ctype": "miscellaneous",
+          "subtype": "typealias",
+          "coverageIgnore": false,
+          "rawtype": "StoryObj<SymbolAutocompleteComponent>",
+          "file": "apps/dms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.stories.ts",
+          "deprecated": false,
+          "deprecationMessage": "",
+          "rawdescription": "",
+          "description": "",
+          "kind": 184
+        }
+      ]
+    }
+  },
+  "routes": {
+    "name": "<root>",
+    "kind": "module",
+    "children": []
+  },
+  "coverage": {
+    "count": 0,
+    "status": "low",
+    "files": [
+      {
+        "filePath": "apps/dms-material/.storybook/main.ts",
+        "type": "variable",
+        "linktype": "miscellaneous",
+        "linksubtype": "variable",
+        "name": "config",
+        "coveragePercent": 0,
+        "coverageCount": "0/1",
+        "status": "low"
+      },
+      {
+        "filePath": "apps/dms-material/.storybook/preview.ts",
+        "type": "variable",
+        "linktype": "miscellaneous",
+        "linksubtype": "variable",
+        "name": "preview",
+        "coveragePercent": 0,
+        "coverageCount": "0/1",
+        "status": "low"
+      },
+      {
+        "filePath": "apps/dms-material/src/app/dashboard/dashboard.stories.ts",
+        "type": "variable",
+        "linktype": "miscellaneous",
+        "linksubtype": "variable",
+        "name": "Default",
+        "coveragePercent": 0,
+        "coverageCount": "0/1",
+        "status": "low"
+      },
+      {
+        "filePath": "apps/dms-material/src/app/dashboard/dashboard.stories.ts",
+        "type": "variable",
+        "linktype": "miscellaneous",
+        "linksubtype": "variable",
+        "name": "meta",
+        "coveragePercent": 0,
+        "coverageCount": "0/1",
+        "status": "low"
+      },
+      {
+        "filePath": "apps/dms-material/src/app/dashboard/dashboard.stories.ts",
+        "type": "type alias",
+        "linktype": "miscellaneous",
+        "linksubtype": "typealias",
+        "name": "Story",
+        "coveragePercent": 0,
+        "coverageCount": "0/1",
+        "status": "low"
+      },
+      {
+        "filePath": "apps/dms-material/src/app/introduction.stories.ts",
+        "type": "variable",
+        "linktype": "miscellaneous",
+        "linksubtype": "variable",
+        "name": "meta",
+        "coveragePercent": 0,
+        "coverageCount": "0/1",
+        "status": "low"
+      },
+      {
+        "filePath": "apps/dms-material/src/app/introduction.stories.ts",
+        "type": "variable",
+        "linktype": "miscellaneous",
+        "linksubtype": "variable",
+        "name": "Welcome",
+        "coveragePercent": 0,
+        "coverageCount": "0/1",
+        "status": "low"
+      },
+      {
+        "filePath": "apps/dms-material/src/app/shared/components/base-table/base-table.stories.ts",
+        "type": "interface",
+        "linktype": "interface",
+        "name": "SampleRow",
+        "coveragePercent": 0,
+        "coverageCount": "0/5",
+        "status": "low"
+      },
+      {
+        "filePath": "apps/dms-material/src/app/shared/components/base-table/base-table.stories.ts",
+        "type": "interface",
+        "linktype": "interface",
+        "name": "UniverseRow",
+        "coveragePercent": 0,
+        "coverageCount": "0/8",
+        "status": "low"
+      },
+      {
+        "filePath": "apps/dms-material/src/app/shared/components/base-table/base-table.stories.ts",
+        "type": "variable",
+        "linktype": "miscellaneous",
+        "linksubtype": "variable",
+        "name": "Default",
+        "coveragePercent": 0,
+        "coverageCount": "0/1",
+        "status": "low"
+      },
+      {
+        "filePath": "apps/dms-material/src/app/shared/components/base-table/base-table.stories.ts",
+        "type": "variable",
+        "linktype": "miscellaneous",
+        "linksubtype": "variable",
+        "name": "EmptyState",
+        "coveragePercent": 0,
+        "coverageCount": "0/1",
+        "status": "low"
+      },
+      {
+        "filePath": "apps/dms-material/src/app/shared/components/base-table/base-table.stories.ts",
+        "type": "variable",
+        "linktype": "miscellaneous",
+        "linksubtype": "variable",
+        "name": "meta",
+        "coveragePercent": 0,
+        "coverageCount": "0/1",
+        "status": "low"
+      },
+      {
+        "filePath": "apps/dms-material/src/app/shared/components/base-table/base-table.stories.ts",
+        "type": "variable",
+        "linktype": "miscellaneous",
+        "linksubtype": "variable",
+        "name": "sampleColumns",
+        "coveragePercent": 0,
+        "coverageCount": "0/1",
+        "status": "low"
+      },
+      {
+        "filePath": "apps/dms-material/src/app/shared/components/base-table/base-table.stories.ts",
+        "type": "variable",
+        "linktype": "miscellaneous",
+        "linksubtype": "variable",
+        "name": "sampleData",
+        "coveragePercent": 0,
+        "coverageCount": "0/1",
+        "status": "low"
+      },
+      {
+        "filePath": "apps/dms-material/src/app/shared/components/base-table/base-table.stories.ts",
+        "type": "variable",
+        "linktype": "miscellaneous",
+        "linksubtype": "variable",
+        "name": "TABLE_TEMPLATE",
+        "coveragePercent": 0,
+        "coverageCount": "0/1",
+        "status": "low"
+      },
+      {
+        "filePath": "apps/dms-material/src/app/shared/components/base-table/base-table.stories.ts",
+        "type": "variable",
+        "linktype": "miscellaneous",
+        "linksubtype": "variable",
+        "name": "universeColumns",
+        "coveragePercent": 0,
+        "coverageCount": "0/1",
+        "status": "low"
+      },
+      {
+        "filePath": "apps/dms-material/src/app/shared/components/base-table/base-table.stories.ts",
+        "type": "variable",
+        "linktype": "miscellaneous",
+        "linksubtype": "variable",
+        "name": "universeData",
+        "coveragePercent": 0,
+        "coverageCount": "0/1",
+        "status": "low"
+      },
+      {
+        "filePath": "apps/dms-material/src/app/shared/components/base-table/base-table.stories.ts",
+        "type": "variable",
+        "linktype": "miscellaneous",
+        "linksubtype": "variable",
+        "name": "UniverseTableVariation",
+        "coveragePercent": 0,
+        "coverageCount": "0/1",
+        "status": "low"
+      },
+      {
+        "filePath": "apps/dms-material/src/app/shared/components/base-table/base-table.stories.ts",
+        "type": "type alias",
+        "linktype": "miscellaneous",
+        "linksubtype": "typealias",
+        "name": "Story",
+        "coveragePercent": 0,
+        "coverageCount": "0/1",
+        "status": "low"
+      },
+      {
+        "filePath": "apps/dms-material/src/app/shared/components/base-table/base-table.stories.ts",
+        "type": "type alias",
+        "linktype": "miscellaneous",
+        "linksubtype": "typealias",
+        "name": "UniverseStory",
+        "coveragePercent": 0,
+        "coverageCount": "0/1",
+        "status": "low"
+      },
+      {
+        "filePath": "apps/dms-material/src/app/shared/components/edit/node-editor.stories.ts",
+        "type": "variable",
+        "linktype": "miscellaneous",
+        "linksubtype": "variable",
+        "name": "CustomPlaceholder",
+        "coveragePercent": 0,
+        "coverageCount": "0/1",
+        "status": "low"
+      },
+      {
+        "filePath": "apps/dms-material/src/app/shared/components/edit/node-editor.stories.ts",
+        "type": "variable",
+        "linktype": "miscellaneous",
+        "linksubtype": "variable",
+        "name": "Default",
+        "coveragePercent": 0,
+        "coverageCount": "0/1",
+        "status": "low"
+      },
+      {
+        "filePath": "apps/dms-material/src/app/shared/components/edit/node-editor.stories.ts",
+        "type": "variable",
+        "linktype": "miscellaneous",
+        "linksubtype": "variable",
+        "name": "meta",
+        "coveragePercent": 0,
+        "coverageCount": "0/1",
+        "status": "low"
+      },
+      {
+        "filePath": "apps/dms-material/src/app/shared/components/edit/node-editor.stories.ts",
+        "type": "type alias",
+        "linktype": "miscellaneous",
+        "linksubtype": "typealias",
+        "name": "Story",
+        "coveragePercent": 0,
+        "coverageCount": "0/1",
+        "status": "low"
+      },
+      {
+        "filePath": "apps/dms-material/src/app/shared/components/editable-cell/editable-cell.stories.ts",
+        "type": "variable",
+        "linktype": "miscellaneous",
+        "linksubtype": "variable",
+        "name": "Currency",
+        "coveragePercent": 0,
+        "coverageCount": "0/1",
+        "status": "low"
+      },
+      {
+        "filePath": "apps/dms-material/src/app/shared/components/editable-cell/editable-cell.stories.ts",
+        "type": "variable",
+        "linktype": "miscellaneous",
+        "linksubtype": "variable",
+        "name": "Decimal",
+        "coveragePercent": 0,
+        "coverageCount": "0/1",
+        "status": "low"
+      },
+      {
+        "filePath": "apps/dms-material/src/app/shared/components/editable-cell/editable-cell.stories.ts",
+        "type": "variable",
+        "linktype": "miscellaneous",
+        "linksubtype": "variable",
+        "name": "Default",
+        "coveragePercent": 0,
+        "coverageCount": "0/1",
+        "status": "low"
+      },
+      {
+        "filePath": "apps/dms-material/src/app/shared/components/editable-cell/editable-cell.stories.ts",
+        "type": "variable",
+        "linktype": "miscellaneous",
+        "linksubtype": "variable",
+        "name": "meta",
+        "coveragePercent": 0,
+        "coverageCount": "0/1",
+        "status": "low"
+      },
+      {
+        "filePath": "apps/dms-material/src/app/shared/components/editable-cell/editable-cell.stories.ts",
+        "type": "variable",
+        "linktype": "miscellaneous",
+        "linksubtype": "variable",
+        "name": "WithMinMax",
+        "coveragePercent": 0,
+        "coverageCount": "0/1",
+        "status": "low"
+      },
+      {
+        "filePath": "apps/dms-material/src/app/shared/components/editable-cell/editable-cell.stories.ts",
+        "type": "type alias",
+        "linktype": "miscellaneous",
+        "linksubtype": "typealias",
+        "name": "Story",
+        "coveragePercent": 0,
+        "coverageCount": "0/1",
+        "status": "low"
+      },
+      {
+        "filePath": "apps/dms-material/src/app/shared/components/editable-date-cell/editable-date-cell.stories.ts",
+        "type": "variable",
+        "linktype": "miscellaneous",
+        "linksubtype": "variable",
+        "name": "Default",
+        "coveragePercent": 0,
+        "coverageCount": "0/1",
+        "status": "low"
+      },
+      {
+        "filePath": "apps/dms-material/src/app/shared/components/editable-date-cell/editable-date-cell.stories.ts",
+        "type": "variable",
+        "linktype": "miscellaneous",
+        "linksubtype": "variable",
+        "name": "Empty",
+        "coveragePercent": 0,
+        "coverageCount": "0/1",
+        "status": "low"
+      },
+      {
+        "filePath": "apps/dms-material/src/app/shared/components/editable-date-cell/editable-date-cell.stories.ts",
+        "type": "variable",
+        "linktype": "miscellaneous",
+        "linksubtype": "variable",
+        "name": "FutureDate",
+        "coveragePercent": 0,
+        "coverageCount": "0/1",
+        "status": "low"
+      },
+      {
+        "filePath": "apps/dms-material/src/app/shared/components/editable-date-cell/editable-date-cell.stories.ts",
+        "type": "variable",
+        "linktype": "miscellaneous",
+        "linksubtype": "variable",
+        "name": "meta",
+        "coveragePercent": 0,
+        "coverageCount": "0/1",
+        "status": "low"
+      },
+      {
+        "filePath": "apps/dms-material/src/app/shared/components/editable-date-cell/editable-date-cell.stories.ts",
+        "type": "type alias",
+        "linktype": "miscellaneous",
+        "linksubtype": "typealias",
+        "name": "Story",
+        "coveragePercent": 0,
+        "coverageCount": "0/1",
+        "status": "low"
+      },
+      {
+        "filePath": "apps/dms-material/src/app/shared/components/splitter/splitter.stories.ts",
+        "type": "variable",
+        "linktype": "miscellaneous",
+        "linksubtype": "variable",
+        "name": "Default",
+        "coveragePercent": 0,
+        "coverageCount": "0/1",
+        "status": "low"
+      },
+      {
+        "filePath": "apps/dms-material/src/app/shared/components/splitter/splitter.stories.ts",
+        "type": "variable",
+        "linktype": "miscellaneous",
+        "linksubtype": "variable",
+        "name": "EvenSplit",
+        "coveragePercent": 0,
+        "coverageCount": "0/1",
+        "status": "low"
+      },
+      {
+        "filePath": "apps/dms-material/src/app/shared/components/splitter/splitter.stories.ts",
+        "type": "variable",
+        "linktype": "miscellaneous",
+        "linksubtype": "variable",
+        "name": "meta",
+        "coveragePercent": 0,
+        "coverageCount": "0/1",
+        "status": "low"
+      },
+      {
+        "filePath": "apps/dms-material/src/app/shared/components/splitter/splitter.stories.ts",
+        "type": "variable",
+        "linktype": "miscellaneous",
+        "linksubtype": "variable",
+        "name": "NarrowLeft",
+        "coveragePercent": 0,
+        "coverageCount": "0/1",
+        "status": "low"
+      },
+      {
+        "filePath": "apps/dms-material/src/app/shared/components/splitter/splitter.stories.ts",
+        "type": "variable",
+        "linktype": "miscellaneous",
+        "linksubtype": "variable",
+        "name": "splitterContainerDecorator",
+        "coveragePercent": 0,
+        "coverageCount": "0/1",
+        "status": "low"
+      },
+      {
+        "filePath": "apps/dms-material/src/app/shared/components/splitter/splitter.stories.ts",
+        "type": "type alias",
+        "linktype": "miscellaneous",
+        "linksubtype": "typealias",
+        "name": "Story",
+        "coveragePercent": 0,
+        "coverageCount": "0/1",
+        "status": "low"
+      },
+      {
+        "filePath": "apps/dms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.stories.ts",
+        "type": "function",
+        "linktype": "miscellaneous",
+        "linksubtype": "function",
+        "name": "mockSearchFn",
+        "coveragePercent": 0,
+        "coverageCount": "0/1",
+        "status": "low"
+      },
+      {
+        "filePath": "apps/dms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.stories.ts",
+        "type": "function",
+        "linktype": "miscellaneous",
+        "linksubtype": "function",
+        "name": "symbolMatches",
+        "coveragePercent": 0,
+        "coverageCount": "0/1",
+        "status": "low"
+      },
+      {
+        "filePath": "apps/dms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.stories.ts",
+        "type": "variable",
+        "linktype": "miscellaneous",
+        "linksubtype": "variable",
+        "name": "CustomLabel",
+        "coveragePercent": 0,
+        "coverageCount": "0/1",
+        "status": "low"
+      },
+      {
+        "filePath": "apps/dms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.stories.ts",
+        "type": "variable",
+        "linktype": "miscellaneous",
+        "linksubtype": "variable",
+        "name": "Default",
+        "coveragePercent": 0,
+        "coverageCount": "0/1",
+        "status": "low"
+      },
+      {
+        "filePath": "apps/dms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.stories.ts",
+        "type": "variable",
+        "linktype": "miscellaneous",
+        "linksubtype": "variable",
+        "name": "meta",
+        "coveragePercent": 0,
+        "coverageCount": "0/1",
+        "status": "low"
+      },
+      {
+        "filePath": "apps/dms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.stories.ts",
+        "type": "variable",
+        "linktype": "miscellaneous",
+        "linksubtype": "variable",
+        "name": "mockSymbols",
+        "coveragePercent": 0,
+        "coverageCount": "0/1",
+        "status": "low"
+      },
+      {
+        "filePath": "apps/dms-material/src/app/shared/components/symbol-autocomplete/symbol-autocomplete.stories.ts",
+        "type": "type alias",
+        "linktype": "miscellaneous",
+        "linksubtype": "typealias",
+        "name": "Story",
+        "coveragePercent": 0,
+        "coverageCount": "0/1",
+        "status": "low"
+      }
+    ]
+  }
+}

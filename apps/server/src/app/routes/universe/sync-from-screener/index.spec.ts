@@ -164,10 +164,7 @@ describe('sync-from-screener route', () => {
 
     // Set up default transaction mock that handles the new structure
     h.client.$transaction.mockImplementation(
-      (fn: (client: unknown) => Promise<unknown>) => {
-        void fn(h.client);
-        return undefined as unknown;
-      },
+      (fn: (client: unknown) => unknown) => fn(h.client),
     );
   });
 

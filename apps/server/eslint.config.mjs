@@ -3,7 +3,12 @@ import baseConfig from '../../eslint.config.mjs';
 export default [
   ...baseConfig,
   {
-    ignores: ['vitest.config.ts', 'vitest.teardown.ts'],
+    ignores: [
+      'vitest.config.ts',
+      'vitest.teardown.ts',
+      'coverage/**',
+      'eslint.config.mjs',
+    ],
   },
   {
     files: ['**/*.ts'],

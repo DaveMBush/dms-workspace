@@ -23,7 +23,7 @@ import eslintPluginUnusedImports from 'eslint-plugin-unused-imports';
 
 const eslintConfig = async () => {
   const { default: stylisticEslintPlugin } =
-    await import('@stylistic/eslint-plugin-js');
+    await import('@stylistic/eslint-plugin');
   const { default: unicorn } = await import('eslint-plugin-unicorn');
 
   return [

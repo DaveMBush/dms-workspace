@@ -3,15 +3,7 @@ import type { StorybookConfig } from '@storybook/angular-vite';
 const config: StorybookConfig = {
   stories: ['../src/app/**/*.@(mdx|stories.@(js|jsx|ts|tsx))'],
   addons: ['@storybook/addon-themes'],
-  framework: {
-    name: '@storybook/angular-vite',
-    options: {
-      // Angular Vite options
-      jit: true,
-      liveReload: true,
-      compodoc: false,
-    },
-  },
+  framework: '@storybook/angular-vite',
   core: {
     builder: '@storybook/builder-vite',
   },
@@ -28,4 +20,4 @@ const config: StorybookConfig = {
   },
 };
 
-export { config };
+export default config;

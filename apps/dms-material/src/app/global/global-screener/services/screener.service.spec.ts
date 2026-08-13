@@ -78,8 +78,6 @@ describe('ScreenerService', () => {
   it('should return observable from refresh()', () => {
     const result = service.refresh();
     expect(result).toBeDefined();
-    expect(typeof result).toBe('Observable');
-
     result.subscribe();
 
     const req = httpMock.expectOne('/api/screener');

@@ -150,7 +150,7 @@ describe('DatabasePerformanceService', () => {
             if (callCount === 1) {
               return { '1': 1 };
             }
-            return { count: BigInt(5) };
+            return [{ count: BigInt(5) }];
           }),
         } as unknown as PrismaClient;
 

@@ -26,7 +26,6 @@
  *      or `scroll`.
  */
 
-/* eslint-disable @typescript-eslint/naming-convention -- E2E test constants use UPPER_CASE for readability */
 import { expect, type Page } from 'playwright/test';
 import { slowScrollToBottom } from './slow-scroll.helper';
 

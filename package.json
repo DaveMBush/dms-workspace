@@ -63,7 +63,8 @@
     "primeicons": "^7.0.0",
     "primeng": "^21.1.1",
     "rxjs": "~7.8.0",
-    "yahoo-finance2": "^3.13.0"
+    "yahoo-finance2": "^3.13.0",
+    "zone.js": "^0.16.2"
   },
   "devDependencies": {
     "@analogjs/vite-plugin-angular": "2.6.4",
@@ -110,7 +111,7 @@
     "@storybook/angular": "10.5.3",
     "@storybook/angular-vite": "^10.5.5",
     "@storybook/builder-vite": "^10.5.4",
-    "@stylistic/eslint-plugin-js": "4.4.1",
+    "@stylistic/eslint-plugin": "^2.6.4",
     "@swc-node/register": "1.11.1",
     "@swc/core": "1.15.8",
     "@swc/helpers": "0.5.18",

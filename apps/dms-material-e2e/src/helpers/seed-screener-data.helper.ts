@@ -11,7 +11,6 @@ interface SeederResult {
 }
 
 // Snake case property names match database schema
-/* eslint-disable @typescript-eslint/naming-convention -- Property names match database column names */
 interface ScreenerRecord {
   symbol: string;
   risk_group_id: string;
@@ -19,7 +18,6 @@ interface ScreenerRecord {
   distributions_per_year: number;
   last_price: number;
 }
-/* eslint-enable @typescript-eslint/naming-convention -- Re-enable naming convention */
 
 /**
  * Create test data array - compact format to meet line limit

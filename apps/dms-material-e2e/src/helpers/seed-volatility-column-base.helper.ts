@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention -- E2E test constants use UPPER_CASE for readability */
 import { buildMonthlyDates } from './build-monthly-dates.helper';
 import { buildUniverseCreateData } from './build-universe-create-data.helper';
 import { cleanupUniverseOnError } from './cleanup-universe-on-error.helper';

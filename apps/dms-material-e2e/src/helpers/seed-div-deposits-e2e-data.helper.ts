@@ -11,7 +11,6 @@ interface DivDepositsSeederResult extends SeederResultBase {
 /**
  * Get or create a divDepositType named "Dividend" and return its id.
  */
-/* eslint-disable @typescript-eslint/naming-convention -- E2E test constants use UPPER_CASE for readability */
 async function getOrCreateDivDepositType(
   prisma: PrismaClient,
 ): Promise<string> {

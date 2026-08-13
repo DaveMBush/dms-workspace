@@ -1,21 +1,21 @@
-import {
-  describe,
-  test,
-  expect,
-  beforeAll,
-  beforeEach,
-  afterAll,
-} from 'vitest';
-import { PrismaClient } from '@prisma/client';
-import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 import { existsSync, unlinkSync } from 'fs';
 import { join } from 'path';
+import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
+import { PrismaClient } from '@prisma/client';
 import fastify, { FastifyInstance } from 'fastify';
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  test,
+} from 'vitest';
 
 // Create a test-specific delete route handler that accepts prisma as a parameter
 function createTestDeleteRoute(testPrisma: PrismaClient) {
   return function handleDeleteUniverseRoute(
-    fastifyInstance: FastifyInstance
+    fastifyInstance: FastifyInstance,
   ): void {
     fastifyInstance.delete<{ Params: { id: string } }>(
       '/:id',
@@ -53,7 +53,7 @@ function createTestDeleteRoute(testPrisma: PrismaClient) {
           // Only allow deletion if there are no trades at all
           // OR if all trades are sold (have sell_date) and we delete them first
           const activeTrades = allTrades.filter(
-            (trade) => trade.sell_date === null
+            (trade) => trade.sell_date === null,
           );
 
           if (activeTrades.length > 0) {
@@ -66,7 +66,7 @@ function createTestDeleteRoute(testPrisma: PrismaClient) {
 
           // If there are only sold trades, delete them first to avoid foreign key constraint
           const soldTrades = allTrades.filter(
-            (trade) => trade.sell_date !== null
+            (trade) => trade.sell_date !== null,
           );
           if (soldTrades.length > 0) {
             await testPrisma.trades.deleteMany({
@@ -89,7 +89,7 @@ function createTestDeleteRoute(testPrisma: PrismaClient) {
             error: 'Internal server error',
           });
         }
-      }
+      },
     );
   };
 }
@@ -112,7 +112,16 @@ describe.skipIf(process.env.CI)('DELETE /universe/:id', () => {
 
     // Apply migrations to test database with isolated DATABASE_URL
     const { execSync } = await import('child_process');
-    execSync(`npx prisma migrate deploy --schema=./prisma/schema.prisma`, {
+    const { fileURLToPath } = await import('url');
+    const { dirname } = await import('path');
+    const fileName = fileURLToPath(import.meta.url);
+    const directoryName = dirname(fileName);
+    // apps/server/src/app/routes/universe -> ../../../../prisma/schema.prisma
+    const schemaPath = join(
+      directoryName,
+      '../../../../../../prisma/schema.prisma',
+    );
+    execSync(`npx prisma migrate deploy --schema=${schemaPath}`, {
       env: { ...process.env, DATABASE_URL: testDbUrl },
     });
 
@@ -145,7 +154,7 @@ describe.skipIf(process.env.CI)('DELETE /universe/:id', () => {
       async function universeRoutes(fastifyInstance) {
         await fastifyInstance.register(testDeleteRoute);
       },
-      { prefix: '/universe' }
+      { prefix: '/universe' },
     );
     await app.ready();
   });

@@ -129,7 +129,7 @@ describe('AccountComponentService', () => {
           divDeposits: [],
           months: [],
         },
-        mockComponent.top['1'],
+        mockComponent.top,
       );
     });
 
