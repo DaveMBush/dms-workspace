@@ -17,9 +17,10 @@ interface UniverseSwapOptions {
  *
  * Used by: Universe — account-change describe block.
  */
+
 export async function swapUniverseAccount(
   page: Page,
-  options: UniverseSwapOptions = {}
+  options: UniverseSwapOptions = {},
 ): Promise<void> {
   const {
     accountSelectSelector = '.account-select mat-select',

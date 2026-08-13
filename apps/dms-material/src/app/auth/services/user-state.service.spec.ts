@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import {
-  UserStateService,
-  UserProfile,
   SessionMetadata,
+  UserProfile,
+  UserStateService,
 } from './user-state.service';
 
 // Mock console methods
@@ -40,14 +40,16 @@ class MockStorageEvent extends Event {
     type: string,
     public key: string | null,
     public newValue: string | null,
-    public oldValue: string | null = null
+    public oldValue: string | null = null,
   ) {
     super(type);
   }
 }
 
 // Add to global window object
-(global as any).StorageEvent = MockStorageEvent;
+// eslint-disable-next-line @typescript-eslint/naming-convention -- this is what is is called
+(global as unknown as { StorageEvent: typeof MockStorageEvent }).StorageEvent =
+  MockStorageEvent;
 
 describe('UserStateService', () => {
   let service: UserStateService;
@@ -129,7 +131,7 @@ describe('UserStateService', () => {
 
       expect(newService.profile()).toEqual(mockUserProfile);
       expect(newService.session()?.sessionId).toBe(
-        mockSessionMetadata.sessionId
+        mockSessionMetadata.sessionId,
       );
       expect(newService.isAuthenticated()).toBe(true);
     });
@@ -158,7 +160,7 @@ describe('UserStateService', () => {
       expect(service.isAuthenticated()).toBe(true);
       expect(sessionStorageMock.setItem).toHaveBeenCalledWith(
         'dms_user_profile',
-        JSON.stringify(mockUserProfile)
+        JSON.stringify(mockUserProfile),
       );
     });
 
@@ -187,7 +189,7 @@ describe('UserStateService', () => {
       expect(service.session()).toEqual(mockSessionMetadata);
       expect(sessionStorageMock.setItem).toHaveBeenCalledWith(
         'dms_session_metadata',
-        JSON.stringify(mockSessionMetadata)
+        JSON.stringify(mockSessionMetadata),
       );
     });
 
@@ -225,7 +227,7 @@ describe('UserStateService', () => {
       expect(service.session()?.rememberMe).toBe(true);
       expect(localStorageMock.setItem).toHaveBeenCalledWith(
         'dms_remember_me',
-        'true'
+        'true',
       );
     });
 
@@ -239,7 +241,7 @@ describe('UserStateService', () => {
       expect(session?.deviceId).toBeTruthy();
       expect(localStorageMock.setItem).toHaveBeenCalledWith(
         'dms_device_id',
-        expect.any(String)
+        expect.any(String),
       );
     });
   });
@@ -321,10 +323,10 @@ describe('UserStateService', () => {
       expect(service.session()).toBeNull();
       expect(service.isAuthenticated()).toBe(false);
       expect(sessionStorageMock.removeItem).toHaveBeenCalledWith(
-        'dms_user_profile'
+        'dms_user_profile',
       );
       expect(sessionStorageMock.removeItem).toHaveBeenCalledWith(
-        'dms_session_metadata'
+        'dms_session_metadata',
       );
     });
   });
@@ -423,7 +425,7 @@ describe('UserStateService', () => {
       const storageEvent = new MockStorageEvent(
         'storage',
         'dms_user_profile',
-        JSON.stringify(newProfile)
+        JSON.stringify(newProfile),
       );
 
       window.dispatchEvent(storageEvent);
@@ -439,7 +441,7 @@ describe('UserStateService', () => {
       const storageEvent = new MockStorageEvent(
         'storage',
         'dms_session_metadata',
-        JSON.stringify(newSession)
+        JSON.stringify(newSession),
       );
 
       window.dispatchEvent(storageEvent);
@@ -454,7 +456,7 @@ describe('UserStateService', () => {
       const storageEvent = new MockStorageEvent(
         'storage',
         'dms_user_profile',
-        null
+        null,
       );
 
       window.dispatchEvent(storageEvent);
@@ -467,7 +469,7 @@ describe('UserStateService', () => {
       const storageEvent = new MockStorageEvent(
         'storage',
         'other_key',
-        'value'
+        'value',
       );
 
       window.dispatchEvent(storageEvent);
@@ -492,7 +494,7 @@ describe('UserStateService', () => {
       const invalidStorageEvent = new MockStorageEvent(
         'storage',
         'dms_user_profile',
-        'invalid-json'
+        'invalid-json',
       );
 
       window.dispatchEvent(invalidStorageEvent);

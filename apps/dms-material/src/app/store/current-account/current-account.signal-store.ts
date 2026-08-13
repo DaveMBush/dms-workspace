@@ -6,15 +6,13 @@ import {
   withMethods,
   withState,
 } from '@ngrx/signals';
-
 import { selectAccounts } from '../accounts/selectors/select-accounts.function';
-import { CurrentAccount } from './current-account.interface';
 
 export const currentAccountSignalStore = signalStore(
   { providedIn: 'root' },
   withState({
     id: '',
-  } as CurrentAccount),
+  }),
   withMethods(function withMethodsFunction(store) {
     return {
       setCurrentAccountId: function setCurrentAccountId(id: string): void {
@@ -38,8 +36,8 @@ export const currentAccountSignalStore = signalStore(
             return accounts[0].id;
           }
           return '';
-        }
+        },
       ),
     };
-  })
+  }),
 );

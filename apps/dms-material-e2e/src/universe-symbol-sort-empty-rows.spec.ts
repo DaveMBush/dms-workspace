@@ -1,11 +1,11 @@
 import { expect, Page, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 import { seedUniverseE2eData } from './helpers/seed-universe-e2e-data.helper';
 
 /**
  * Helper: collect text content from all visible cells matching a selector.
  */
+
 async function getCellTexts(page: Page, selector: string): Promise<string[]> {
   const cells = page.locator(selector);
   const rawTexts = await cells.allTextContents();
@@ -27,7 +27,7 @@ async function setSymbolAscSort(page: Page): Promise<void> {
         universes: {
           sortColumns: [{ column: 'symbol', direction: 'asc' }],
         },
-      })
+      }),
     );
   });
 }
@@ -111,7 +111,7 @@ test.describe('Universe Screen - Empty Rows on Symbol Sort Bug (Story 56.1)', ()
     for (const symbolText of firstThree) {
       expect(
         symbolText,
-        `Expected first visible symbol cell to be non-empty but got: "${symbolText}"`
+        `Expected first visible symbol cell to be non-empty but got: "${symbolText}"`,
       ).not.toBe('');
     }
   });

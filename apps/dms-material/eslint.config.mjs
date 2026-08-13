@@ -40,4 +40,10 @@ export default [
       'sonarjs/todo-tag': 'off', // Allow TODO(E82) deferred-test annotations
     },
   },
+  {
+    files: ['.storybook/main.ts'],
+    rules: {
+      'import/no-default-export': 'off', // Storybook requires default export for main.ts
+    },
+  },
 ];

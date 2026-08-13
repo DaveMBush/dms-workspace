@@ -1,5 +1,4 @@
-import { test, expect } from 'playwright/test';
-
+import { expect, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 
 test.describe('Add Symbol Dialog', () => {
@@ -17,7 +16,7 @@ test.describe('Add Symbol Dialog', () => {
       await addButton.click();
 
       await expect(
-        page.getByRole('heading', { name: 'Add Symbol to Universe' })
+        page.getByRole('heading', { name: 'Add Symbol to Universe' }),
       ).toBeVisible();
     });
 
@@ -33,7 +32,7 @@ test.describe('Add Symbol Dialog', () => {
       await addButton.click();
 
       await expect(
-        page.locator('mat-form-field').filter({ hasText: 'Risk Group' })
+        page.locator('mat-form-field').filter({ hasText: 'Risk Group' }),
       ).toBeVisible();
     });
 
@@ -44,7 +43,7 @@ test.describe('Add Symbol Dialog', () => {
       await expect(
         page
           .locator('mat-dialog-actions button')
-          .filter({ hasText: 'Add Symbol' })
+          .filter({ hasText: 'Add Symbol' }),
       ).toBeVisible();
     });
 
@@ -53,7 +52,7 @@ test.describe('Add Symbol Dialog', () => {
       await addButton.click();
 
       await expect(
-        page.locator('mat-dialog-actions button').filter({ hasText: 'Cancel' })
+        page.locator('mat-dialog-actions button').filter({ hasText: 'Cancel' }),
       ).toBeVisible();
     });
 
@@ -64,7 +63,7 @@ test.describe('Add Symbol Dialog', () => {
       await expect(
         page
           .locator('mat-dialog-actions button')
-          .filter({ hasText: 'Add Symbol' })
+          .filter({ hasText: 'Add Symbol' }),
       ).toBeDisabled();
     });
 
@@ -78,7 +77,7 @@ test.describe('Add Symbol Dialog', () => {
         .click();
 
       await expect(
-        page.getByRole('heading', { name: 'Add Symbol to Universe' })
+        page.getByRole('heading', { name: 'Add Symbol to Universe' }),
       ).not.toBeVisible();
     });
 
@@ -89,7 +88,7 @@ test.describe('Add Symbol Dialog', () => {
       await page.keyboard.press('Escape');
 
       await expect(
-        page.getByRole('heading', { name: 'Add Symbol to Universe' })
+        page.getByRole('heading', { name: 'Add Symbol to Universe' }),
       ).not.toBeVisible();
     });
   });
@@ -102,7 +101,7 @@ test.describe('Add Symbol Dialog', () => {
       const input = page.locator('dms-symbol-autocomplete input');
       await expect(input).toHaveAttribute(
         'placeholder',
-        'Search for a symbol...'
+        'Search for a symbol...',
       );
     });
 
@@ -135,12 +134,12 @@ test.describe('Add Symbol Dialog', () => {
 
       // Wait for dialog to be fully rendered
       await expect(
-        page.getByRole('heading', { name: 'Add Symbol to Universe' })
+        page.getByRole('heading', { name: 'Add Symbol to Universe' }),
       ).toBeVisible();
 
       // Find the mat-select within dialog
       const riskGroupSelect = page.locator(
-        'mat-dialog-container mat-form-field mat-select'
+        'mat-dialog-container mat-form-field mat-select',
       );
       await expect(riskGroupSelect).toBeVisible();
 
@@ -157,7 +156,7 @@ test.describe('Add Symbol Dialog', () => {
           // TODO(E82): blocked — SmartNgRX store timing issue
           test.skip(
             true,
-            'Risk groups not loaded - SmartNgRX store timing issue'
+            'Risk groups not loaded - SmartNgRX store timing issue',
           );
           return;
         }
@@ -168,7 +167,7 @@ test.describe('Add Symbol Dialog', () => {
 
       // Wait for options to appear in the overlay
       await expect(
-        page.locator('.cdk-overlay-container mat-option').first()
+        page.locator('.cdk-overlay-container mat-option').first(),
       ).toBeVisible();
     });
 
@@ -178,11 +177,11 @@ test.describe('Add Symbol Dialog', () => {
 
       // Wait for dialog to be fully rendered
       await expect(
-        page.getByRole('heading', { name: 'Add Symbol to Universe' })
+        page.getByRole('heading', { name: 'Add Symbol to Universe' }),
       ).toBeVisible();
 
       const riskGroupSelect = page.locator(
-        'mat-dialog-container mat-form-field mat-select'
+        'mat-dialog-container mat-form-field mat-select',
       );
       await expect(riskGroupSelect).toBeVisible();
 
@@ -198,7 +197,7 @@ test.describe('Add Symbol Dialog', () => {
           // TODO(E82): blocked — SmartNgRX store timing issue
           test.skip(
             true,
-            'Risk groups not loaded - SmartNgRX store timing issue'
+            'Risk groups not loaded - SmartNgRX store timing issue',
           );
           return;
         }
@@ -252,12 +251,12 @@ test.describe('Add Symbol Dialog', () => {
 
       // Wait for dialog to load
       await expect(
-        page.getByRole('heading', { name: 'Add Symbol to Universe' })
+        page.getByRole('heading', { name: 'Add Symbol to Universe' }),
       ).toBeVisible();
 
       // Open risk group dropdown
       const riskGroupSelect = page.locator(
-        'mat-dialog-container mat-select[formcontrolname="riskGroupId"]'
+        'mat-dialog-container mat-select[formcontrolname="riskGroupId"]',
       );
       await riskGroupSelect.click();
 
@@ -275,7 +274,7 @@ test.describe('Add Symbol Dialog', () => {
       // Submit button should still be disabled (no symbol selected)
       // Use the primary button selector instead of text
       const submitButton = page.locator(
-        'mat-dialog-actions button[color="primary"]'
+        'mat-dialog-actions button[color="primary"]',
       );
       await expect(submitButton).toBeDisabled();
     });
@@ -306,7 +305,7 @@ test.describe('Add Symbol Dialog', () => {
 
       // Dialog should close
       await expect(
-        page.getByRole('heading', { name: 'Add Symbol to Universe' })
+        page.getByRole('heading', { name: 'Add Symbol to Universe' }),
       ).not.toBeVisible({ timeout: 3000 });
     });
   });
@@ -318,7 +317,7 @@ test.describe('Add Symbol Dialog', () => {
 
       // Check for label elements
       await expect(
-        page.locator('mat-form-field').filter({ hasText: 'Risk Group' })
+        page.locator('mat-form-field').filter({ hasText: 'Risk Group' }),
       ).toBeVisible();
     });
 
@@ -328,7 +327,7 @@ test.describe('Add Symbol Dialog', () => {
 
       // Wait for dialog to be fully rendered and focused
       await expect(
-        page.getByRole('heading', { name: 'Add Symbol to Universe' })
+        page.getByRole('heading', { name: 'Add Symbol to Universe' }),
       ).toBeVisible();
       await page.waitForTimeout(200);
 
@@ -341,7 +340,7 @@ test.describe('Add Symbol Dialog', () => {
 
       // Focus should still be within the dialog
       const focusedInDialog = await page.evaluate(
-        () => document.activeElement?.closest('mat-dialog-container') !== null
+        () => document.activeElement?.closest('mat-dialog-container') !== null,
       );
       expect(focusedInDialog).toBeTruthy();
     });
@@ -352,7 +351,7 @@ test.describe('Add Symbol Dialog', () => {
 
       // Wait for dialog to be fully rendered
       await expect(
-        page.getByRole('heading', { name: 'Add Symbol to Universe' })
+        page.getByRole('heading', { name: 'Add Symbol to Universe' }),
       ).toBeVisible();
       await page.waitForTimeout(200);
 
@@ -361,7 +360,7 @@ test.describe('Add Symbol Dialog', () => {
 
       // Verify focus is within the dialog
       const focusedElement = await page.evaluate(
-        () => document.activeElement?.closest('mat-dialog-container') !== null
+        () => document.activeElement?.closest('mat-dialog-container') !== null,
       );
       expect(focusedElement).toBeTruthy();
     });
@@ -377,14 +376,14 @@ test.describe('Add Symbol Dialog', () => {
       await expect(backdrop).toBeVisible();
 
       // Background button should be covered by backdrop (not clickable)
-      const backgroundButton = page.locator(
-        'button[mattooltip="Update Universe"]'
+      const _backgroundButton = page.locator(
+        'button[mattooltip="Update Universe"]',
       );
 
       // Verify the backdrop is in front by checking if dialog content is visible
       // while the backdrop exists - this proves background is blocked
       await expect(
-        page.getByRole('heading', { name: 'Add Symbol to Universe' })
+        page.getByRole('heading', { name: 'Add Symbol to Universe' }),
       ).toBeVisible();
       await expect(backdrop).toBeVisible();
     });
@@ -408,15 +407,15 @@ test.describe('Add Symbol Dialog', () => {
       await addButton.click();
 
       await expect(
-        page.getByRole('heading', { name: 'Add Symbol to Universe' })
+        page.getByRole('heading', { name: 'Add Symbol to Universe' }),
       ).toBeVisible();
 
       // Form fields should be visible
       await expect(page.locator('dms-symbol-autocomplete')).toBeVisible();
       await expect(
         page.locator(
-          'mat-dialog-container mat-select[formcontrolname="riskGroupId"]'
-        )
+          'mat-dialog-container mat-select[formcontrolname="riskGroupId"]',
+        ),
       ).toBeVisible();
     });
 
@@ -427,7 +426,7 @@ test.describe('Add Symbol Dialog', () => {
       await addButton.click();
 
       await expect(
-        page.getByRole('heading', { name: 'Add Symbol to Universe' })
+        page.getByRole('heading', { name: 'Add Symbol to Universe' }),
       ).toBeVisible();
 
       // Dialog should be properly sized
@@ -446,7 +445,7 @@ test.describe('Add Symbol Dialog', () => {
 
       // Dialog title should still be visible
       await expect(
-        page.getByRole('heading', { name: 'Add Symbol to Universe' })
+        page.getByRole('heading', { name: 'Add Symbol to Universe' }),
       ).toBeVisible();
     });
   });
@@ -484,7 +483,7 @@ test.describe('Add Symbol Dialog', () => {
       await addButton.click();
 
       let input = page.locator(
-        'mat-dialog-container dms-symbol-autocomplete input'
+        'mat-dialog-container dms-symbol-autocomplete input',
       );
       await input.fill('TEST123');
 
@@ -503,12 +502,12 @@ test.describe('Add Symbol Dialog', () => {
 
       // Wait for new dialog to be visible
       await expect(
-        page.getByRole('heading', { name: 'Add Symbol to Universe' })
+        page.getByRole('heading', { name: 'Add Symbol to Universe' }),
       ).toBeVisible();
 
       // Get input from the new dialog instance
       input = page.locator(
-        'mat-dialog-container dms-symbol-autocomplete input'
+        'mat-dialog-container dms-symbol-autocomplete input',
       );
 
       // Should be empty

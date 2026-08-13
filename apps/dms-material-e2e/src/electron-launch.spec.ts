@@ -1,6 +1,5 @@
 import fs from 'fs';
 import path from 'path';
-
 import {
   _electron as electron,
   ElectronApplication,
@@ -27,7 +26,7 @@ function expectSingleWindow(app: ElectronApplication): void {
 
 async function isVisibleWithinTimeout(
   locator: Locator,
-  timeout: number
+  timeout: number,
 ): Promise<boolean> {
   try {
     await locator.waitFor({ state: 'visible', timeout });
@@ -39,14 +38,14 @@ async function isVisibleWithinTimeout(
 
 async function expectPathname(
   window: Page,
-  pathnamePattern: RegExp
+  pathnamePattern: RegExp,
 ): Promise<void> {
   await expect
     .poll(
       function readPathname(): string {
         return new URL(window.url()).pathname;
       },
-      { timeout: 15000 }
+      { timeout: 15000 },
     )
     .toMatch(pathnamePattern);
 }
@@ -88,7 +87,7 @@ async function ensureAccountExists(window: Page): Promise<void> {
   await input.press('Enter');
 
   await expect(
-    window.getByTestId('account-item').filter({ hasText: accountName })
+    window.getByTestId('account-item').filter({ hasText: accountName }),
   ).toBeVisible({ timeout: 10000 });
 }
 
@@ -107,7 +106,7 @@ test.describe('Electron App Launch', () => {
       // TODO(E82): blocked — electron dist not built in test environment
       test.skip(
         true,
-        'Electron dist not built — run: pnpm nx run electron:build'
+        'Electron dist not built — run: pnpm nx run electron:build',
       );
       return;
     }
@@ -213,7 +212,7 @@ test.describe('Electron App Launch', () => {
             return g.electronTestExternalLog ?? [];
           });
         },
-        { timeout: 5000 }
+        { timeout: 5000 },
       )
       .toContain(new URL(externalUrl).toString());
 

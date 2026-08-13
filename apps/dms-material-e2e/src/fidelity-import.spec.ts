@@ -1,14 +1,20 @@
 import path from 'path';
 import { expect, Page, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 import { seedImportData } from './helpers/seed-import-data.helper';
 
-const FIXTURES_DIR = path.resolve(__dirname, '..', 'fixtures');
+// Resolve the fixtures directory relative to the workspace root.
+const _FIXTURES_DIR = path.resolve(
+  process.cwd(),
+  'apps',
+  'dms-material-e2e',
+  'fixtures',
+);
 
 /**
  * Navigate to the global universe page and wait for it to load
  */
+
 async function navigateToUniverse(page: Page): Promise<void> {
   await page.goto('/global/universe');
   await page.waitForLoadState('networkidle');
@@ -19,12 +25,12 @@ async function navigateToUniverse(page: Page): Promise<void> {
  */
 async function openImportDialog(page: Page): Promise<void> {
   const importButton = page.locator(
-    '[data-testid="import-transactions-button"]'
+    '[data-testid="import-transactions-button"]',
   );
   await expect(importButton).toBeVisible({ timeout: 10000 });
   await importButton.click();
   await expect(
-    page.getByRole('heading', { name: 'Import Fidelity Transactions' })
+    page.getByRole('heading', { name: 'Import Fidelity Transactions' }),
   ).toBeVisible({ timeout: 5000 });
 }
 
@@ -32,7 +38,16 @@ async function openImportDialog(page: Page): Promise<void> {
  * Upload a file through the import dialog
  */
 async function uploadFile(page: Page, filename: string): Promise<void> {
-  const filePath = path.join(FIXTURES_DIR, filename);
+  // Resolve fixture path relative to the workspace root. The Playwright test
+  // runner compiles specs into a `dist` folder, so using __dirname would
+  // point at the compiled location and miss the source fixtures.
+  const filePath = path.resolve(
+    process.cwd(),
+    'apps',
+    'dms-material-e2e',
+    'fixtures',
+    filename,
+  );
   const fileInput = page.locator('input[type="file"]');
   await fileInput.setInputFiles(filePath);
 }
@@ -66,7 +81,7 @@ test.describe('Fidelity Import E2E', () => {
     });
     if (!accountResponse.ok()) {
       throw new Error(
-        `Failed to create test account: ${accountResponse.status()}`
+        `Failed to create test account: ${accountResponse.status()}`,
       );
     }
     const accounts = (await accountResponse.json()) as Array<{ id: string }>;
@@ -101,13 +116,13 @@ test.describe('Fidelity Import E2E', () => {
       await openImportDialog(page);
 
       await expect(
-        page.getByRole('heading', { name: 'Import Fidelity Transactions' })
+        page.getByRole('heading', { name: 'Import Fidelity Transactions' }),
       ).toBeVisible();
       await expect(
-        page.getByText('Select a CSV file to import Fidelity transactions.')
+        page.getByText('Select a CSV file to import Fidelity transactions.'),
       ).toBeVisible();
       await expect(
-        page.locator('[data-testid="upload-button"]')
+        page.locator('[data-testid="upload-button"]'),
       ).toBeDisabled();
       await expect(page.locator('[data-testid="cancel-button"]')).toBeVisible();
     });
@@ -118,7 +133,7 @@ test.describe('Fidelity Import E2E', () => {
       await openImportDialog(page);
       await page.locator('[data-testid="cancel-button"]').click();
       await expect(
-        page.getByRole('heading', { name: 'Import Fidelity Transactions' })
+        page.getByRole('heading', { name: 'Import Fidelity Transactions' }),
       ).not.toBeVisible({ timeout: 5000 });
     });
 
@@ -137,11 +152,11 @@ test.describe('Fidelity Import E2E', () => {
     test('should import valid CSV and show success message', async ({
       page,
     }) => {
-      const responsePromise = page.waitForResponse(function matchImportApi(
-        response
-      ) {
-        return response.url().includes('/api/import/fidelity');
-      });
+      const responsePromise = page.waitForResponse(
+        function matchImportApi(response) {
+          return response.url().includes('/api/import/fidelity');
+        },
+      );
 
       await openImportDialog(page);
       await uploadFile(page, 'fidelity-valid.csv');
@@ -161,7 +176,7 @@ test.describe('Fidelity Import E2E', () => {
       await expect(
         page.getByRole('heading', {
           name: 'Import Fidelity Transactions',
-        })
+        }),
       ).not.toBeVisible({ timeout: 10000 });
     });
   });
@@ -175,7 +190,7 @@ test.describe('Fidelity Import E2E', () => {
 
       // Upload button should remain disabled because selectedFile is null
       await expect(
-        page.locator('[data-testid="upload-button"]')
+        page.locator('[data-testid="upload-button"]'),
       ).toBeDisabled();
     });
   });
@@ -184,11 +199,11 @@ test.describe('Fidelity Import E2E', () => {
     test('should auto-create account and succeed for non-existent account', async ({
       page,
     }) => {
-      const responsePromise = page.waitForResponse(function matchImportApi(
-        response
-      ) {
-        return response.url().includes('/api/import/fidelity');
-      });
+      const responsePromise = page.waitForResponse(
+        function matchImportApi(response) {
+          return response.url().includes('/api/import/fidelity');
+        },
+      );
 
       await openImportDialog(page);
       await uploadFile(page, 'fidelity-invalid-account.csv');
@@ -207,7 +222,7 @@ test.describe('Fidelity Import E2E', () => {
 
       // Dialog should close on success
       await expect(
-        page.getByRole('heading', { name: 'Import Fidelity Transactions' })
+        page.getByRole('heading', { name: 'Import Fidelity Transactions' }),
       ).not.toBeVisible({ timeout: 10000 });
     });
   });
@@ -228,7 +243,7 @@ test.describe('Fidelity Import E2E', () => {
 
       // Dialog should stay open
       await expect(
-        page.getByRole('heading', { name: 'Import Fidelity Transactions' })
+        page.getByRole('heading', { name: 'Import Fidelity Transactions' }),
       ).toBeVisible();
     });
   });
@@ -236,11 +251,11 @@ test.describe('Fidelity Import E2E', () => {
   test.describe('Duplicate Transactions', () => {
     test('should handle duplicate import gracefully', async ({ page }) => {
       // First import
-      const firstResponsePromise = page.waitForResponse(function matchFirst(
-        response
-      ) {
-        return response.url().includes('/api/import/fidelity');
-      });
+      const firstResponsePromise = page.waitForResponse(
+        function matchFirst(response) {
+          return response.url().includes('/api/import/fidelity');
+        },
+      );
       await openImportDialog(page);
       await uploadFile(page, 'fidelity-duplicates.csv');
       await clickUpload(page);
@@ -258,15 +273,15 @@ test.describe('Fidelity Import E2E', () => {
       await expect(
         page.getByRole('heading', {
           name: 'Import Fidelity Transactions',
-        })
+        }),
       ).not.toBeVisible({ timeout: 30000 });
 
       // Second import of same data
-      const secondResponsePromise = page.waitForResponse(function matchSecond(
-        response
-      ) {
-        return response.url().includes('/api/import/fidelity');
-      });
+      const secondResponsePromise = page.waitForResponse(
+        function matchSecond(response) {
+          return response.url().includes('/api/import/fidelity');
+        },
+      );
       await openImportDialog(page);
       await uploadFile(page, 'fidelity-duplicates.csv');
       await clickUpload(page);
@@ -288,11 +303,11 @@ test.describe('Fidelity Import E2E', () => {
     test('should report errors for invalid rows while importing valid ones', async ({
       page,
     }) => {
-      const responsePromise = page.waitForResponse(function matchImportApi(
-        response
-      ) {
-        return response.url().includes('/api/import/fidelity');
-      });
+      const responsePromise = page.waitForResponse(
+        function matchImportApi(response) {
+          return response.url().includes('/api/import/fidelity');
+        },
+      );
 
       await openImportDialog(page);
       await uploadFile(page, 'fidelity-mixed.csv');

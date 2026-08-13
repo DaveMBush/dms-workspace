@@ -13,7 +13,6 @@
  */
 
 import { expect, Locator, test } from 'playwright/test';
-
 import { assertStickyHeaderInvariant } from './helpers/assert-sticky-header-invariant.helper';
 import { assertVisibleRowsNonEmpty } from './helpers/assert-visible-rows-non-empty.helper';
 import { login } from './helpers/login.helper';
@@ -87,14 +86,14 @@ test.describe('Sold Positions Scrolling Regression — Story 87.3', () => {
       page,
       SYMBOL_CELL_SELECTOR,
       'Sold Positions: blank symbol cells detected after fast scroll to bottom. ' +
-        'Story 87.3 regression guard: SmartNgRX lazy-load placeholder rows should not produce blank cells.'
+        'Story 87.3 regression guard: SmartNgRX lazy-load placeholder rows should not produce blank cells.',
     );
 
     await assertVisibleRowsNonEmpty(
       page,
       SELL_CELL_SELECTOR,
       'Sold Positions: blank sell-price cells detected after fast scroll to bottom. ' +
-        'Story 87.3 regression guard: sell-price column must be non-empty at all scroll positions.'
+        'Story 87.3 regression guard: sell-price column must be non-empty at all scroll positions.',
     );
   });
 
@@ -114,14 +113,14 @@ test.describe('Sold Positions Scrolling Regression — Story 87.3', () => {
       page,
       SYMBOL_CELL_SELECTOR,
       'Sold Positions: blank symbol cells detected after oscillation scroll (bottom\u2192top\u2192bottom). ' +
-        'Story 87.3 regression guard: repeated isLoading cycles should not produce blank symbol cells.'
+        'Story 87.3 regression guard: repeated isLoading cycles should not produce blank symbol cells.',
     );
 
     await assertVisibleRowsNonEmpty(
       page,
       SELL_CELL_SELECTOR,
       'Sold Positions: blank sell-price cells detected after oscillation scroll. ' +
-        'Story 87.3 regression guard: sell-price column must remain non-empty across all oscillation cycles.'
+        'Story 87.3 regression guard: sell-price column must remain non-empty across all oscillation cycles.',
     );
   });
 
@@ -147,14 +146,14 @@ test.describe('Sold Positions Scrolling Regression — Story 87.3', () => {
       page,
       SYMBOL_CELL_SELECTOR,
       'Sold Positions: blank symbol cells detected after symbol filter + scroll to bottom. ' +
-        'Story 87.3 regression guard: filter-triggered isLoading window should not produce blank rows.'
+        'Story 87.3 regression guard: filter-triggered isLoading window should not produce blank rows.',
     );
 
     await assertVisibleRowsNonEmpty(
       page,
       SELL_CELL_SELECTOR,
       'Sold Positions: blank sell-price cells detected after symbol filter + scroll to bottom. ' +
-        'Story 87.3 regression guard: filter-triggered isLoading window should not produce blank sell cells.'
+        'Story 87.3 regression guard: filter-triggered isLoading window should not produce blank sell cells.',
     );
   });
 
@@ -181,14 +180,14 @@ test.describe('Sold Positions Scrolling Regression — Story 87.3', () => {
       page,
       SYMBOL_CELL_SELECTOR,
       'Sold Positions: blank symbol cells detected after sort change + scroll to bottom. ' +
-        'Story 87.3 regression guard: sort-triggered isLoading window should not produce blank rows.'
+        'Story 87.3 regression guard: sort-triggered isLoading window should not produce blank rows.',
     );
 
     await assertVisibleRowsNonEmpty(
       page,
       SELL_CELL_SELECTOR,
       'Sold Positions: blank sell-price cells detected after sort change + scroll to bottom. ' +
-        'Story 87.3 regression guard: sort-triggered isLoading window should not produce blank sell cells.'
+        'Story 87.3 regression guard: sort-triggered isLoading window should not produce blank sell cells.',
     );
   });
 });
@@ -234,7 +233,7 @@ test.describe('Sold Positions — Story 101.3 slow-scroll header-invariant regre
     await assertStickyHeaderInvariant(
       page,
       VIEWPORT_SELECTOR,
-      HEADER_ROW_SELECTOR
+      HEADER_ROW_SELECTOR,
     );
   });
 });

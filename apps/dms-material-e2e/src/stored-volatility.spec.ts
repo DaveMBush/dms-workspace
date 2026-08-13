@@ -1,10 +1,12 @@
 import { expect, Page, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 import { seedStoredVolatilityData } from './helpers/seed-stored-volatility-e2e-data.helper';
 import { seedStoredVolatilityUpdateData } from './helpers/seed-stored-volatility-update-e2e-data.helper';
 
-async function searchForSymbol(page: Page, symbol: string) {
+async function searchForSymbol(
+  page: Page,
+  symbol: string,
+): Promise<import('playwright').Locator> {
   const searchInput = page.locator('input[placeholder="Search Symbol"]');
   const row = page.locator('.dms-body-row[role="row"]').filter({
     has: page.locator('.dms-body-cell[data-column="symbol"]', {
@@ -15,7 +17,7 @@ async function searchForSymbol(page: Page, symbol: string) {
   await searchInput.fill(symbol);
   await expect(row).toHaveCount(1, { timeout: 15_000 });
   await expect(
-    row.locator('.dms-body-cell[data-column="symbol"]')
+    row.locator('.dms-body-cell[data-column="symbol"]'),
   ).toContainText(symbol);
 
   return row.first();
@@ -24,12 +26,14 @@ async function searchForSymbol(page: Page, symbol: string) {
 async function expectVolIconForSymbol(
   page: Page,
   symbol: string,
-  expectedCategory: string
+  expectedCategory: string,
 ): Promise<void> {
   const row = await searchForSymbol(page, symbol);
   const ariaLabel = `Volatility: ${expectedCategory}`;
   await expect(
-    row.locator(`.dms-body-cell[data-column="vol"] [aria-label="${ariaLabel}"]`)
+    row.locator(
+      `.dms-body-cell[data-column="vol"] [aria-label="${ariaLabel}"]`,
+    ),
   ).toBeVisible({ timeout: 10_000 });
 }
 
@@ -140,7 +144,7 @@ test.describe('Stored Volatility - icon updates after data-change trigger', func
             .locator('.dms-body-cell[data-column="vol"] mat-icon')
             .getAttribute('aria-label');
         },
-        { timeout: 15_000, intervals: [500, 1000, 2000] }
+        { timeout: 15_000, intervals: [500, 1000, 2000] },
       )
       .toBe('Volatility: volatile');
   });

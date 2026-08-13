@@ -1,5 +1,4 @@
 import type { PrismaClient } from '@prisma/client';
-
 import { buildMonthlyDates } from './build-monthly-dates.helper';
 import { generateUniqueId } from './generate-unique-id.helper';
 import { getOrCreateDivDepositTypeId } from './get-or-create-div-deposit-type-id.helper';
@@ -53,7 +52,7 @@ function suppressError(): undefined {
 async function seedHeldSymbol(
   ctx: SeedContext,
   symbol: string,
-  universeIds: string[]
+  universeIds: string[],
 ): Promise<void> {
   const { prisma, riskGroupId, accountId, divDepositTypeId } = ctx;
   const universe = await prisma.universe.create({
@@ -104,7 +103,7 @@ async function seedHeldSymbol(
 async function seedUnheldSymbol(
   ctx: SeedContext,
   symbol: string,
-  universeIds: string[]
+  universeIds: string[],
 ): Promise<void> {
   const { prisma, riskGroupId } = ctx;
   const universe = await prisma.universe.create({
@@ -130,7 +129,7 @@ async function seedUnheldSymbol(
 function buildCleanup(
   prisma: PrismaClient,
   universeIds: string[],
-  accountName: string
+  accountName: string,
 ): () => Promise<void> {
   return async function cleanupHeldAndUnheldData(): Promise<void> {
     try {

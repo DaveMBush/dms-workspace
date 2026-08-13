@@ -1,5 +1,4 @@
-import type { Decorator, Meta, StoryObj } from '@storybook/angular';
-
+import type { Decorator, Meta, StoryObj } from '@storybook/angular-vite';
 import { SplitterComponent } from './splitter.component';
 
 const splitterContainerDecorator: Decorator =

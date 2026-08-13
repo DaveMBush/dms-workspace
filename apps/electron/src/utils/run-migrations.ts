@@ -1,7 +1,7 @@
 import { ChildProcess, spawn } from 'child_process';
-import { app } from 'electron';
 import fs from 'fs';
 import path from 'path';
+import { app } from 'electron';
 
 /** Platform-specific schema-engine binary name (Prisma 7.x). */
 function getSchemaEngineBinaryName(): string {
@@ -20,7 +20,7 @@ function resolveSchemaEnginePath(): string {
   return path.join(
     process.resourcesPath,
     'prisma-migration-engine',
-    getSchemaEngineBinaryName()
+    getSchemaEngineBinaryName(),
   );
 }
 
@@ -52,7 +52,7 @@ function runMigrationsDev(): Promise<void> {
 
   return new Promise(function doRunMigrationsDev(
     resolve: () => void,
-    reject: (err: Error) => void
+    reject: (err: Error) => void,
   ): void {
     const child = spawn(
       prismaCliPath,
@@ -60,7 +60,7 @@ function runMigrationsDev(): Promise<void> {
       {
         env: { ...process.env },
         stdio: 'pipe',
-      }
+      },
     );
 
     const stderr: string[] = [];
@@ -83,17 +83,18 @@ function runMigrationsDev(): Promise<void> {
           new Error(
             `prisma migrate deploy exited with code ${
               code ?? 'null'
-            }${errDetail}`
-          )
+            }${errDetail}`,
+          ),
         );
       }
     });
   });
 }
 
-/** Build the JSON-RPC applyMigrations request payload. */
+/** Build the JSON-RPC applyMigrations request payload.
+ * Prisma 7 schema-engine expects params as an object with a migrationsList field. */
 function buildApplyMigrationsRequest(migrationsPath: string): string {
-  const migrationsList = fs
+  const migrationsList: string[] = fs
     .readdirSync(migrationsPath, { withFileTypes: true })
     .filter(function isMigrationDirectory(entry: fs.Dirent): boolean {
       return entry.isDirectory() && !entry.name.startsWith('.');
@@ -101,14 +102,8 @@ function buildApplyMigrationsRequest(migrationsPath: string): string {
     .sort(function sortByName(a: fs.Dirent, b: fs.Dirent): number {
       return a.name.localeCompare(b.name);
     })
-    .map(function toMigrationEntry(entry: fs.Dirent): {
-      migrationName: string;
-      migrationDirectoryPath: string;
-    } {
-      return {
-        migrationName: entry.name,
-        migrationDirectoryPath: path.join(migrationsPath, entry.name),
-      };
+    .map(function toMigrationName(entry: fs.Dirent): string {
+      return entry.name;
     });
   return (
     JSON.stringify({
@@ -147,7 +142,7 @@ function tryParseJsonRpcError(line: string): string | null {
  */
 function parseRpcResponse(
   responseText: string,
-  reject: (err: Error) => void
+  reject: (err: Error) => void,
 ): boolean {
   const lines = responseText.split('\n').filter(isNonEmptyLine);
   for (const line of lines) {
@@ -171,21 +166,23 @@ interface EngineHandlerConfig {
 
 /** Attach all event handlers to the schema-engine child process. */
 function attachEngineHandlers(config: EngineHandlerConfig): void {
+  // eslint-disable-next-line @typescript-eslint/unbound-method -- destructured from interface, not a standalone object
   const { child, stdout, stderr, resolve, reject, migrationsPath } = config;
 
-  child.stdout?.on('data', function onStdout(chunk: Buffer): void {
+  /* eslint-disable @smarttools/no-anonymous-functions -- arrow functions needed to preserve `this` context for destructured callbacks */
+  child.stdout?.on('data', (chunk: Buffer): void => {
     stdout.push(chunk.toString());
   });
 
-  child.stderr?.on('data', function onStderr(chunk: Buffer): void {
+  child.stderr?.on('data', (chunk: Buffer): void => {
     stderr.push(chunk.toString());
   });
 
-  child.on('error', function onError(err: Error): void {
+  child.on('error', (err: Error): void => {
     reject(new Error(`Failed to spawn schema-engine: ${err.message}`));
   });
 
-  child.on('spawn', function onSpawn(): void {
+  child.on('spawn', (): void => {
     try {
       const request = buildApplyMigrationsRequest(migrationsPath);
       child.stdin?.write(request);
@@ -207,8 +204,8 @@ function attachEngineHandlers(config: EngineHandlerConfig): void {
       const errDetail = errMsg.length > 0 ? `\n${errMsg}` : '';
       reject(
         new Error(
-          `schema-engine exited with code ${code ?? 'null'}${errDetail}`
-        )
+          `schema-engine exited with code ${code ?? 'null'}${errDetail}`,
+        ),
       );
     }
   });
@@ -227,7 +224,7 @@ function runMigrationsPackaged(): Promise<void> {
 
   return new Promise(function doRunMigrationsPackaged(
     resolve: () => void,
-    reject: (err: Error) => void
+    reject: (err: Error) => void,
   ): void {
     const child = spawn(
       enginePath,
@@ -235,7 +232,7 @@ function runMigrationsPackaged(): Promise<void> {
       {
         env: { ...process.env },
         stdio: 'pipe',
-      }
+      },
     );
 
     const stdout: string[] = [];

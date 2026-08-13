@@ -1,7 +1,5 @@
-import { expect, test } from 'playwright/test';
-// eslint-disable-next-line @typescript-eslint/naming-convention -- AxeBuilder is the upstream class name from @axe-core/playwright
 import AxeBuilder from '@axe-core/playwright';
-
+import { expect, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 
 // ─── Accessibility Tests (GREEN Phase - TDD) ────────────────────────────────
@@ -304,7 +302,7 @@ test.describe('Accessibility - Keyboard Navigation', () => {
       for (const indicator of focusIndicators) {
         expect(
           indicator.hasIndicator,
-          `Focus indicator missing on ${indicator.tag}`
+          `Focus indicator missing on ${indicator.tag}`,
         ).toBeTruthy();
       }
     });
@@ -366,7 +364,7 @@ test.describe('Accessibility - Keyboard Navigation', () => {
           function checkUrlChanged() {
             return page.url();
           },
-          { timeout: 10000 }
+          { timeout: 10000 },
         )
         .not.toBe(initialUrl);
     });
@@ -388,7 +386,7 @@ test.describe('Accessibility - Keyboard Navigation', () => {
       const addButton = page.locator('button', { hasText: /add/i });
       expect(
         await addButton.count(),
-        'Add button trigger must exist on universe page'
+        'Add button trigger must exist on universe page',
       ).toBeGreaterThan(0);
 
       await addButton.first().click();
@@ -418,7 +416,7 @@ test.describe('Accessibility - Keyboard Navigation', () => {
       const addButton = page.locator('button', { hasText: /add/i });
       expect(
         await addButton.count(),
-        'Add button trigger must exist on universe page'
+        'Add button trigger must exist on universe page',
       ).toBeGreaterThan(0);
 
       await addButton.first().click();
@@ -439,7 +437,7 @@ test.describe('Accessibility - Keyboard Navigation', () => {
       const addButton = page.locator('button', { hasText: /add/i });
       expect(
         await addButton.count(),
-        'Add button trigger must exist on universe page'
+        'Add button trigger must exist on universe page',
       ).toBeGreaterThan(0);
 
       await addButton.first().focus();
@@ -475,13 +473,13 @@ test.describe('Accessibility - Keyboard Navigation', () => {
       page,
     }) => {
       const headers = page.locator(
-        '.dms-header-cell[role="columnheader"].dms-header-cell--sortable'
+        '.dms-header-cell[role="columnheader"].dms-header-cell--sortable',
       );
       const headerCount = await headers.count();
 
       expect(
         headerCount,
-        'Sortable table headers must be present'
+        'Sortable table headers must be present',
       ).toBeGreaterThan(0);
 
       // Focus the first sortable header directly (tabindex="0" is set on sortable headers)
@@ -496,7 +494,7 @@ test.describe('Accessibility - Keyboard Navigation', () => {
       const sortAfter = await headers.first().getAttribute('aria-sort');
 
       expect(sortAfter, 'Sort state should change after Enter').not.toBe(
-        sortBefore
+        sortBefore,
       );
     });
 
@@ -512,7 +510,7 @@ test.describe('Accessibility - Keyboard Navigation', () => {
           function checkDisabledFocus(): boolean {
             const el = document.activeElement;
             return el instanceof HTMLElement && el.hasAttribute('disabled');
-          }
+          },
         );
         if (isDisabled) {
           focusedDisabledCount++;
@@ -618,7 +616,7 @@ test.describe('Accessibility - Screen Reader Support', () => {
 
     expect(
       describedBy,
-      'Email input missing aria-describedby for error message'
+      'Email input missing aria-describedby for error message',
     ).toBeTruthy();
   });
 
@@ -632,7 +630,7 @@ test.describe('Accessibility - Screen Reader Support', () => {
 
     expect(
       count,
-      'No aria-live regions found for notifications'
+      'No aria-live regions found for notifications',
     ).toBeGreaterThan(0);
   });
 
@@ -640,7 +638,7 @@ test.describe('Accessibility - Screen Reader Support', () => {
 
   test('should have skip navigation link', async ({ page }) => {
     const skipLink = page.locator(
-      'a[href="#main-content"], a[href="#main"], .skip-link, .skip-nav'
+      'a[href="#main-content"], a[href="#main"], .skip-link, .skip-nav',
     );
     const count = await skipLink.count();
 
@@ -718,7 +716,7 @@ test.describe('Accessibility - Visual Requirements', () => {
     for (const result of focusResults) {
       expect(
         result.hasIndicator,
-        `Focus indicator missing on ${result.tag}`
+        `Focus indicator missing on ${result.tag}`,
       ).toBeTruthy();
     }
   });
@@ -738,7 +736,7 @@ test.describe('Accessibility - Visual Requirements', () => {
     const bodyWidth = await page.evaluate(
       function getBodyScrollWidth(): number {
         return document.body.scrollWidth;
-      }
+      },
     );
     const viewportWidth = await page.evaluate(function getInnerWidth(): number {
       return window.innerWidth;
@@ -781,7 +779,7 @@ test.describe('Accessibility - Forms', () => {
 
       expect(
         required !== null,
-        'Email field not marked as required'
+        'Email field not marked as required',
       ).toBeTruthy();
     });
 

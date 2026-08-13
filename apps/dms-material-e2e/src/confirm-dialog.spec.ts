@@ -1,5 +1,4 @@
-import { test, expect } from 'playwright/test';
-
+import { expect, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 
 test.describe('Confirm Dialog Service', () => {
@@ -20,7 +19,7 @@ test.describe('Confirm Dialog Service', () => {
       // Verify dialog is visible with title and message
       await expect(page.getByText('Confirm Logout')).toBeVisible();
       await expect(
-        page.getByText('Are you sure you want to log out?')
+        page.getByText('Are you sure you want to log out?'),
       ).toBeVisible();
     });
 
@@ -33,10 +32,10 @@ test.describe('Confirm Dialog Service', () => {
 
       // Verify custom button labels
       await expect(
-        page.locator('mat-dialog-actions button', { hasText: 'Logout' })
+        page.locator('mat-dialog-actions button', { hasText: 'Logout' }),
       ).toBeVisible();
       await expect(
-        page.locator('mat-dialog-actions button', { hasText: 'Cancel' })
+        page.locator('mat-dialog-actions button', { hasText: 'Cancel' }),
       ).toBeVisible();
     });
 
@@ -200,7 +199,7 @@ test.describe('Confirm Dialog Service', () => {
 
       // Verify backdrop is visible (use dark backdrop specific to dialog)
       await expect(
-        page.locator('.cdk-overlay-backdrop.cdk-overlay-dark-backdrop')
+        page.locator('.cdk-overlay-backdrop.cdk-overlay-dark-backdrop'),
       ).toBeVisible();
     });
 
@@ -236,12 +235,12 @@ test.describe('Confirm Dialog Service', () => {
       await expect(page.getByText('Confirm Logout')).toBeVisible();
 
       // Try to click on the theme toggle (should be blocked by overlay)
-      const themeToggle = page.locator('button[aria-label="Toggle theme"]');
+      const _themeToggle = page.locator('button[aria-label="Toggle theme"]');
 
       // The button should not be interactable while dialog is open
       // (cdk-overlay-backdrop blocks clicks)
       await expect(
-        page.locator('.cdk-overlay-backdrop.cdk-overlay-dark-backdrop')
+        page.locator('.cdk-overlay-backdrop.cdk-overlay-dark-backdrop'),
       ).toBeVisible();
     });
   });
@@ -289,7 +288,7 @@ test.describe('Confirm Dialog Service', () => {
       if (titleBox && dialogBox) {
         expect(titleBox.x).toBeGreaterThanOrEqual(dialogBox.x);
         expect(titleBox.x + titleBox.width).toBeLessThanOrEqual(
-          dialogBox.x + dialogBox.width
+          dialogBox.x + dialogBox.width,
         );
       }
     });
@@ -313,7 +312,7 @@ test.describe('Confirm Dialog Service', () => {
       if (contentBox && dialogBox) {
         expect(contentBox.x).toBeGreaterThanOrEqual(dialogBox.x);
         expect(contentBox.x + contentBox.width).toBeLessThanOrEqual(
-          dialogBox.x + dialogBox.width
+          dialogBox.x + dialogBox.width,
         );
       }
     });
@@ -335,10 +334,10 @@ test.describe('Confirm Dialog Service', () => {
       // Dialog should still be visible and usable
       await expect(page.getByText('Confirm Logout')).toBeVisible();
       await expect(
-        page.locator('mat-dialog-actions button', { hasText: 'Cancel' })
+        page.locator('mat-dialog-actions button', { hasText: 'Cancel' }),
       ).toBeVisible();
       await expect(
-        page.locator('mat-dialog-actions button', { hasText: 'Logout' })
+        page.locator('mat-dialog-actions button', { hasText: 'Logout' }),
       ).toBeVisible();
     });
   });
@@ -401,7 +400,7 @@ test.describe('Confirm Dialog Service', () => {
 
       // The overlay pane should have a high z-index (use dialog-specific class)
       const overlayPane = page.locator(
-        '.cdk-overlay-pane.mat-mdc-dialog-panel'
+        '.cdk-overlay-pane.mat-mdc-dialog-panel',
       );
       await expect(overlayPane).toBeVisible();
     });
@@ -424,7 +423,7 @@ test.describe('Confirm Dialog Service', () => {
       // Verify dialog and backdrop are removed
       await expect(page.getByText('Confirm Logout')).not.toBeVisible();
       await expect(
-        page.locator('.cdk-overlay-backdrop.cdk-overlay-backdrop-showing')
+        page.locator('.cdk-overlay-backdrop.cdk-overlay-backdrop-showing'),
       ).not.toBeVisible();
     });
   });

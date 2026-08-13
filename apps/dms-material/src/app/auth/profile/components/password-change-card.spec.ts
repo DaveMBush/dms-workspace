@@ -1,7 +1,8 @@
+/* eslint-disable sonarjs/no-hardcoded-passwords -- just testing */
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { PasswordChangeCardComponent } from './password-change-card';
-import { ProfileService } from '../../services/profile.service';
 import { NotificationService } from '../../../shared/services/notification.service';
+import { ProfileService } from '../../services/profile.service';
+import { PasswordChangeCardComponent } from './password-change-card';
 
 describe('PasswordChangeCardComponent', () => {
   let component: PasswordChangeCardComponent;
@@ -59,7 +60,7 @@ describe('PasswordChangeCardComponent', () => {
     });
     await component.onSubmit();
     expect(mockNotification.error).toHaveBeenCalledWith(
-      'New passwords do not match'
+      'New passwords do not match',
     );
   });
 
@@ -73,7 +74,7 @@ describe('PasswordChangeCardComponent', () => {
     await component.onSubmit();
     expect(mockProfileService.changeUserPassword).toHaveBeenCalledWith(
       'current',
-      'newpassword123'
+      'newpassword123',
     );
   });
 
@@ -86,7 +87,7 @@ describe('PasswordChangeCardComponent', () => {
     });
     await component.onSubmit();
     expect(mockNotification.success).toHaveBeenCalledWith(
-      'Password changed successfully'
+      'Password changed successfully',
     );
   });
 
@@ -107,7 +108,7 @@ describe('PasswordChangeCardComponent', () => {
 
   it('should show error message on failed password change', async () => {
     mockProfileService.changeUserPassword.mockRejectedValue(
-      new Error('Wrong password')
+      new Error('Wrong password'),
     );
     component.passwordForm.patchValue({
       currentPassword: 'wrong',
@@ -116,7 +117,7 @@ describe('PasswordChangeCardComponent', () => {
     });
     await component.onSubmit();
     expect(mockNotification.error).toHaveBeenCalledWith(
-      'Failed to change password'
+      'Failed to change password',
     );
   });
 

@@ -1,3 +1,16 @@
+allowBuilds:
+  '@parcel/watcher': true
+  '@prisma/engines': true
+  '@swc/core': true
+  aws-sdk: true
+  better-sqlite3: true
+  esbuild: true
+  less: true
+  lmdb: true
+  msgpackr-extract: true
+  nx: true
+  prisma: true
+  unrs-resolver: true
 onlyBuiltDependencies:
   - '@parcel/watcher'
   - '@prisma/client'

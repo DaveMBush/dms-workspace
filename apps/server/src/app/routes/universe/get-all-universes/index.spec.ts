@@ -1,6 +1,5 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import fastify, { FastifyInstance } from 'fastify';
-
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import registerGetAllUniverses from './index';
 
 // Hoisted mocks
@@ -40,7 +39,7 @@ interface RowOverrides {
   risk_group?: { name: string };
 }
 
-function makeUniverseRow(overrides: RowOverrides) {
+function makeUniverseRow(overrides: RowOverrides): Record<string, unknown> {
   const result: Record<string, unknown> = {
     id: overrides.id ?? `id-${overrides.symbol}`,
     distribution: 0.1,
@@ -149,7 +148,7 @@ describe('GET /api/universe - expired-no-open filter (Story 109.3)', function fi
               ],
             },
           },
-        })
+        }),
       );
     });
 
@@ -370,7 +369,7 @@ describe('GET /api/universe - expired-no-open filter (Story 109.3)', function fi
       expect(
         rows.map(function getSymbol(row) {
           return row.symbol;
-        })
+        }),
       ).toEqual(['SECTOR_A', 'SECTOR_B']);
     });
 
@@ -402,7 +401,7 @@ describe('GET /api/universe - expired-no-open filter (Story 109.3)', function fi
       expect(
         rows.map(function getSymbol(row) {
           return row.symbol;
-        })
+        }),
       ).toEqual(['MARKET_CAP_HIGH', 'MARKET_CAP_LOW']);
     });
 

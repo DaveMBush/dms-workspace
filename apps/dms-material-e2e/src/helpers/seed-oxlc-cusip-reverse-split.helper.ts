@@ -1,5 +1,4 @@
 import type { PrismaClient } from '@prisma/client';
-
 import { initializePrismaClient } from './shared-prisma-client.helper';
 import { createRiskGroups } from './shared-risk-groups.helper';
 
@@ -27,7 +26,7 @@ async function cleanupExistingData(prisma: PrismaClient): Promise<void> {
 
 async function createUniverses(
   prisma: PrismaClient,
-  riskGroupId: string
+  riskGroupId: string,
 ): Promise<{ id: string }> {
   // Universe entry for the CUSIP symbol (where pre-split lots actually live)
   const cusipUniverse = await prisma.universe.create({
@@ -61,7 +60,7 @@ async function createUniverses(
 async function createPresplitLots(
   prisma: PrismaClient,
   cusipUniverseId: string,
-  accountId: string
+  accountId: string,
 ): Promise<void> {
   // Pre-split lots stored under CUSIP universe (simulating lots imported before CUSIP resolution)
   // After 1-for-5 reverse split: 300→60@$22.50, 150→30@$22.45, 500→100@$20.30, 580→116@$17.20
@@ -108,14 +107,14 @@ async function createPresplitLots(
 }
 
 async function createSeedData(
-  prisma: PrismaClient
+  prisma: PrismaClient,
 ): Promise<OxlcCusipSplitSeederResult> {
   const riskGroups = await createRiskGroups(prisma);
   await cleanupExistingData(prisma);
 
   const cusipUniverse = await createUniverses(
     prisma,
-    riskGroups.equitiesRiskGroup.id
+    riskGroups.equitiesRiskGroup.id,
   );
   const account = await prisma.accounts.create({
     data: { name: ACCOUNT_NAME },
@@ -166,6 +165,7 @@ async function createSeedData(
  * - 500 shares @ $4.06 → should become 100 @ $20.30
  * - 580 shares @ $3.44 → should become 116 @ $17.20
  */
+
 export async function seedOxlcCusipReverseSplitData(): Promise<OxlcCusipSplitSeederResult> {
   const prisma = await initializePrismaClient();
   try {

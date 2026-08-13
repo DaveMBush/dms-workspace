@@ -1,5 +1,4 @@
-import { test, expect } from 'playwright/test';
-
+import { expect, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 
 const ACCOUNT_UUID = '1677e04f-ef9b-4372-adb3-b740443088dc';
@@ -80,7 +79,7 @@ test.describe('Open Positions', () => {
 
     // Fill in the form - type partial symbol to get autocomplete results
     const symbolInput = page.locator(
-      '[data-testid="symbol-autocomplete"] input'
+      '[data-testid="symbol-autocomplete"] input',
     );
     await symbolInput.click();
     await symbolInput.fill('AA'); // Type partial symbol to trigger autocomplete
@@ -101,7 +100,7 @@ test.describe('Open Positions', () => {
 
     // Type date directly into the input
     const purchaseDateInput = page.locator(
-      '[data-testid="purchase-date-input"]'
+      '[data-testid="purchase-date-input"]',
     );
     await purchaseDateInput.fill('1/15/2024');
     await purchaseDateInput.blur(); // Trigger validation
@@ -136,7 +135,7 @@ test.describe('Open Positions', () => {
 
     // Fill only symbol and quantity
     const symbolInput = page.locator(
-      '[data-testid="symbol-autocomplete"] input'
+      '[data-testid="symbol-autocomplete"] input',
     );
     await symbolInput.fill('AAPL');
     await page.waitForTimeout(500);
@@ -219,7 +218,7 @@ test.describe('Open Positions', () => {
     await addButton.click();
 
     const symbolInput = page.locator(
-      '[data-testid="symbol-autocomplete"] input'
+      '[data-testid="symbol-autocomplete"] input',
     );
     await symbolInput.fill('MSFT');
     await page.waitForTimeout(500);
@@ -229,7 +228,7 @@ test.describe('Open Positions', () => {
     await page.locator('[data-testid="price-input"]').fill('200.00');
 
     const purchaseDateInput = page.locator(
-      '[data-testid="purchase-date-input"]'
+      '[data-testid="purchase-date-input"]',
     );
     await purchaseDateInput.click();
     await purchaseDateInput.fill('01/15/2024');
@@ -286,7 +285,7 @@ test.describe('Open Positions', () => {
     await addButton.click();
 
     const symbolInput = page.locator(
-      '[data-testid="symbol-autocomplete"] input'
+      '[data-testid="symbol-autocomplete"] input',
     );
     await symbolInput.fill('TSLA');
     await page.waitForTimeout(500);
@@ -296,7 +295,7 @@ test.describe('Open Positions', () => {
     await page.locator('[data-testid="price-input"]').fill('300.00');
 
     const purchaseDateInput = page.locator(
-      '[data-testid="purchase-date-input"]'
+      '[data-testid="purchase-date-input"]',
     );
     await purchaseDateInput.click();
     await purchaseDateInput.fill('01/15/2024');
@@ -349,7 +348,7 @@ test.describe('Open Positions', () => {
     await addButton.click();
 
     const symbolInput = page.locator(
-      '[data-testid="symbol-autocomplete"] input'
+      '[data-testid="symbol-autocomplete"] input',
     );
     await symbolInput.fill('GOOGL');
     await page.waitForTimeout(500);
@@ -359,7 +358,7 @@ test.describe('Open Positions', () => {
     await page.locator('[data-testid="price-input"]').fill('120.00');
 
     const purchaseDateInput = page.locator(
-      '[data-testid="purchase-date-input"]'
+      '[data-testid="purchase-date-input"]',
     );
     await purchaseDateInput.click();
     await purchaseDateInput.fill('01/15/2024');
@@ -412,7 +411,7 @@ test.describe('Open Positions', () => {
     await addButton.click();
 
     const symbolInput = page.locator(
-      '[data-testid="symbol-autocomplete"] input'
+      '[data-testid="symbol-autocomplete"] input',
     );
     await symbolInput.fill('AMZN');
     await page.waitForTimeout(500);
@@ -422,7 +421,7 @@ test.describe('Open Positions', () => {
     await page.locator('[data-testid="price-input"]').fill('140.00');
 
     const purchaseDateInput = page.locator(
-      '[data-testid="purchase-date-input"]'
+      '[data-testid="purchase-date-input"]',
     );
     await purchaseDateInput.click();
     await purchaseDateInput.fill('01/15/2024');
@@ -558,7 +557,7 @@ test.describe('Open Positions', () => {
     await addButton.click();
 
     const symbolInput = page.locator(
-      '[data-testid="symbol-autocomplete"] input'
+      '[data-testid="symbol-autocomplete"] input',
     );
     await symbolInput.fill('NFLX');
     await page.waitForTimeout(500);
@@ -568,7 +567,7 @@ test.describe('Open Positions', () => {
     await page.locator('[data-testid="price-input"]').fill('250.00');
 
     const purchaseDateInput = page.locator(
-      '[data-testid="purchase-date-input"]'
+      '[data-testid="purchase-date-input"]',
     );
     await purchaseDateInput.click();
     await purchaseDateInput.fill('01/15/2024');
@@ -615,7 +614,7 @@ test.describe('Open Positions', () => {
 
     // Verify column headers are present
     await expect(
-      page.getByRole('columnheader', { name: 'Symbol' })
+      page.getByRole('columnheader', { name: 'Symbol' }),
     ).toBeVisible();
   });
 

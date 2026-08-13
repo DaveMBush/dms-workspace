@@ -1,5 +1,5 @@
-import { TestBed } from '@angular/core/testing';
 import { NgZone } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
 import { ActivityTrackingService } from './activity-tracking.service';
 
 // Mock console methods
@@ -38,14 +38,11 @@ const mockNgZone = {
 
 describe('ActivityTrackingService', () => {
   let service: ActivityTrackingService;
-  let ngZone: NgZone;
   let addEventListenerSpy: ReturnType<typeof vi.spyOn>;
-  let removeEventListenerSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
     // Mock document event listeners
     addEventListenerSpy = vi.spyOn(document, 'addEventListener');
-    removeEventListenerSpy = vi.spyOn(document, 'removeEventListener');
 
     TestBed.configureTestingModule({
       providers: [
@@ -55,7 +52,6 @@ describe('ActivityTrackingService', () => {
     });
 
     service = TestBed.inject(ActivityTrackingService);
-    ngZone = TestBed.inject(NgZone);
 
     vi.clearAllMocks();
   });
@@ -100,22 +96,22 @@ describe('ActivityTrackingService', () => {
       expect(addEventListenerSpy).toHaveBeenCalledWith(
         'mousedown',
         expect.any(Function),
-        { passive: true }
+        { passive: true },
       );
       expect(addEventListenerSpy).toHaveBeenCalledWith(
         'mousemove',
         expect.any(Function),
-        { passive: true }
+        { passive: true },
       );
       expect(addEventListenerSpy).toHaveBeenCalledWith(
         'keypress',
         expect.any(Function),
-        { passive: true }
+        { passive: true },
       );
       expect(addEventListenerSpy).toHaveBeenCalledWith(
         'click',
         expect.any(Function),
-        { passive: true }
+        { passive: true },
       );
     });
 
@@ -171,7 +167,7 @@ describe('ActivityTrackingService', () => {
 
       const updatedActivity = service.getLastActivity();
       expect(updatedActivity.getTime()).toBeGreaterThan(
-        initialActivity.getTime()
+        initialActivity.getTime(),
       );
     });
 
@@ -267,7 +263,7 @@ describe('ActivityTrackingService', () => {
 
       const updatedStats = service.getActivityStats();
       expect(updatedStats.lastActivity.getTime()).toBeGreaterThan(
-        initialStats.lastActivity.getTime()
+        initialStats.lastActivity.getTime(),
       );
     });
   });
@@ -321,7 +317,7 @@ describe('ActivityTrackingService', () => {
 
       const updatedActivity = service.lastActivitySignal();
       expect(updatedActivity.getTime()).toBeGreaterThanOrEqual(
-        initialActivity.getTime()
+        initialActivity.getTime(),
       );
     });
   });

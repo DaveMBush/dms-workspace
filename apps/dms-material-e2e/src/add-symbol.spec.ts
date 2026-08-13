@@ -1,5 +1,4 @@
-import { test, expect } from 'playwright/test';
-
+import { expect, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 
 test.describe('Add Symbol Flow', () => {
@@ -12,7 +11,7 @@ test.describe('Add Symbol Flow', () => {
     test('should open add symbol dialog', async ({ page }) => {
       await page.click('[data-testid="add-symbol-button"]');
       await expect(
-        page.locator('[data-testid="add-symbol-dialog"]')
+        page.locator('[data-testid="add-symbol-dialog"]'),
       ).toBeVisible();
     });
 
@@ -20,7 +19,7 @@ test.describe('Add Symbol Flow', () => {
       await page.click('[data-testid="add-symbol-button"]');
       await page.click('[data-testid="cancel-button"]');
       await expect(
-        page.locator('[data-testid="add-symbol-dialog"]')
+        page.locator('[data-testid="add-symbol-dialog"]'),
       ).not.toBeVisible();
     });
   });
@@ -48,7 +47,7 @@ test.describe('Add Symbol Flow', () => {
 
       // Check for visible options (not the panel which has hidden class)
       const options = page.locator(
-        '.mat-option:visible, .mat-mdc-option:visible'
+        '.mat-option:visible, .mat-mdc-option:visible',
       );
       await expect(options.first()).toBeVisible({ timeout: 5000 });
       await expect(options.first()).toContainText('AAPL');
@@ -70,7 +69,7 @@ test.describe('Add Symbol Flow', () => {
 
       // Click on the autocomplete option
       const option = page.locator(
-        '.mat-option:has-text("AAPL"), .mat-mdc-option:has-text("AAPL")'
+        '.mat-option:has-text("AAPL"), .mat-mdc-option:has-text("AAPL")',
       );
       await option.waitFor({ state: 'visible', timeout: 5000 });
       await option.click();
@@ -98,7 +97,7 @@ test.describe('Add Symbol Flow', () => {
       await page.waitForTimeout(600);
 
       const option = page.locator(
-        '.mat-option:has-text("AAPL"), .mat-mdc-option:has-text("AAPL")'
+        '.mat-option:has-text("AAPL"), .mat-mdc-option:has-text("AAPL")',
       );
       await option.waitFor({ state: 'visible', timeout: 5000 });
       await option.click();
@@ -107,7 +106,7 @@ test.describe('Add Symbol Flow', () => {
       await page.click('mat-select[formcontrolname="riskGroupId"]');
       await page.waitForTimeout(300);
       const riskGroupOption = page.locator(
-        '.cdk-overlay-container .mat-option:first-child, .cdk-overlay-container .mat-mdc-option:first-child'
+        '.cdk-overlay-container .mat-option:first-child, .cdk-overlay-container .mat-mdc-option:first-child',
       );
       await riskGroupOption.click();
 
@@ -121,7 +120,7 @@ test.describe('Add Symbol Flow', () => {
       await page.waitForTimeout(500);
     });
 
-    test('should refresh universe table after addition', async ({ page }) => {
+    test('should refresh universe table after addition', async () => {
       // Test passes - table auto-refreshes through SmartNgRX store updates
     });
   });
@@ -133,7 +132,7 @@ test.describe('Add Symbol Flow', () => {
       await page.click('[data-testid="add-symbol-button"]');
       // Submit button should be disabled with no symbol selected
       await expect(
-        page.locator('[data-testid="submit-button"]')
+        page.locator('[data-testid="submit-button"]'),
       ).toBeDisabled();
     });
 
@@ -145,7 +144,7 @@ test.describe('Add Symbol Flow', () => {
       await input.fill('123');
       // Submit stays disabled because no symbol was selected from autocomplete
       await expect(
-        page.locator('[data-testid="submit-button"]')
+        page.locator('[data-testid="submit-button"]'),
       ).toBeDisabled();
     });
   });
@@ -165,7 +164,7 @@ test.describe('Add Symbol Flow', () => {
       // Check if duplicate validation message appears or submit is disabled
       // The validation might show "Symbol already in universe" or just keep submit disabled
       await expect(
-        page.locator('[data-testid="submit-button"]')
+        page.locator('[data-testid="submit-button"]'),
       ).toBeDisabled();
     });
 
@@ -187,7 +186,7 @@ test.describe('Add Symbol Flow', () => {
       await page.waitForTimeout(600);
 
       const option = page.locator(
-        '.mat-option:has-text("TEST"), .mat-mdc-option:has-text("TEST")'
+        '.mat-option:has-text("TEST"), .mat-mdc-option:has-text("TEST")',
       );
       await option.waitFor({ state: 'visible', timeout: 5000 });
       await option.click();
@@ -196,7 +195,7 @@ test.describe('Add Symbol Flow', () => {
       await page.click('mat-select[formcontrolname="riskGroupId"]');
       await page.waitForTimeout(300);
       const riskGroupOption = page.locator(
-        '.cdk-overlay-container .mat-option:first-child, .cdk-overlay-container .mat-mdc-option:first-child'
+        '.cdk-overlay-container .mat-option:first-child, .cdk-overlay-container .mat-mdc-option:first-child',
       );
       await riskGroupOption.click();
 

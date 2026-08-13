@@ -1,6 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ErrorHandlingService } from './error-handling.service';
 import { GlobalLoadingService } from './global-loading.service';
 import { NotificationService } from './notification.service';
@@ -120,10 +119,9 @@ describe('ErrorHandlingService', () => {
     it('should show persistent notification by default', () => {
       const error = new Error('Test error');
       service.handleOperationError(error, 'test operation');
-
       expect(notification.showPersistent).toHaveBeenCalledWith(
         'Failed to test operation: Test error',
-        'error'
+        'error',
       );
     });
 
@@ -141,7 +139,7 @@ describe('ErrorHandlingService', () => {
       });
 
       expect(notification.error).toHaveBeenCalledWith(
-        'Failed to test operation: Test error'
+        'Failed to test operation: Test error',
       );
       expect(notification.showPersistent).not.toHaveBeenCalled();
     });
@@ -149,12 +147,11 @@ describe('ErrorHandlingService', () => {
     it('should format operation name correctly', () => {
       service.handleOperationError(
         new Error('Connection timeout'),
-        'sync universe'
+        'sync universe',
       );
-
       expect(notification.showPersistent).toHaveBeenCalledWith(
         'Failed to sync universe: Connection timeout',
-        'error'
+        'error',
       );
     });
 
@@ -163,10 +160,9 @@ describe('ErrorHandlingService', () => {
         error: { message: 'Database connection failed' },
       };
       service.handleOperationError(error, 'update fields');
-
       expect(notification.showPersistent).toHaveBeenCalledWith(
         'Failed to update fields: Database connection failed',
-        'error'
+        'error',
       );
     });
 
@@ -175,7 +171,6 @@ describe('ErrorHandlingService', () => {
         hideLoading: false,
         persistent: false,
       });
-
       expect(globalLoading.hide).not.toHaveBeenCalled();
       expect(notification.error).toHaveBeenCalled();
       expect(notification.showPersistent).not.toHaveBeenCalled();

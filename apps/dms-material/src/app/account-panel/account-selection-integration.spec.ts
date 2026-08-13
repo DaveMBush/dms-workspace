@@ -1,8 +1,7 @@
 import { TestBed } from '@angular/core/testing';
-
 import { Account } from '../store/accounts/account.interface';
-import { Trade } from '../store/trades/trade.interface';
 import { DivDeposit } from '../store/div-deposits/div-deposit.interface';
+import { Trade } from '../store/trades/trade.interface';
 
 // ── Hoisted mocks ────────────────────────────────────────────────────────
 // These must be declared before vi.mock() calls so they are in scope.
@@ -22,7 +21,7 @@ vi.mock(
   '../store/trades/selectors/select-account-children.function',
   function mockSelectAccountChildrenModule() {
     return { selectAccountChildren: hoistedSelectAccountChildren };
-  }
+  },
 );
 
 vi.mock(
@@ -33,7 +32,7 @@ vi.mock(
         return [];
       }),
     };
-  }
+  },
 );
 
 vi.mock(
@@ -44,7 +43,7 @@ vi.mock(
         return {};
       }),
     };
-  }
+  },
 );
 
 vi.mock(
@@ -55,7 +54,7 @@ vi.mock(
         return [];
       }),
     };
-  }
+  },
 );
 
 vi.mock(
@@ -66,7 +65,7 @@ vi.mock(
         return [];
       }),
     };
-  }
+  },
 );
 
 vi.mock(
@@ -77,7 +76,7 @@ vi.mock(
         return {};
       }),
     };
-  }
+  },
 );
 
 vi.mock(
@@ -88,7 +87,7 @@ vi.mock(
         return {};
       }),
     };
-  }
+  },
 );
 
 vi.mock(
@@ -99,7 +98,7 @@ vi.mock(
         return {};
       }),
     };
-  }
+  },
 );
 
 vi.mock(
@@ -110,7 +109,7 @@ vi.mock(
         return [];
       }),
     };
-  }
+  },
 );
 
 vi.mock(
@@ -121,7 +120,7 @@ vi.mock(
         return [];
       }),
     };
-  }
+  },
 );
 
 vi.mock(
@@ -132,7 +131,7 @@ vi.mock(
         return [];
       }),
     };
-  }
+  },
 );
 
 // ── Dynamic imports (after mocks are registered) ─────────────────────────
@@ -152,7 +151,7 @@ function createAccount(id: string, name: string): Account {
     name,
     openTrades: [] as Trade[],
     soldTrades: [] as Trade[],
-    divDeposits: [] as unknown as Account['divDeposits'],
+    divDeposits: [],
     months: [],
   };
 }
@@ -203,14 +202,12 @@ describe('Account Selection Integration', () => {
 
   beforeEach(async function setupTestBed() {
     // Dynamic import so vi.mock() is applied first
-    const storeMod = await import(
-      '../store/current-account/current-account.signal-store'
-    );
+    const storeMod =
+      await import('../store/current-account/current-account.signal-store');
     currentAccountSignalStore = storeMod.currentAccountSignalStore;
 
-    const signalMod = await import(
-      '../store/current-account/select-current-account.signal'
-    );
+    const signalMod =
+      await import('../store/current-account/select-current-account.signal');
     selectCurrentAccountSignal = signalMod.selectCurrentAccountSignal;
 
     // Seed two accounts
@@ -218,9 +215,7 @@ describe('Account Selection Integration', () => {
       'account-1': {
         ...createAccount('account-1', 'Brokerage'),
         openTrades: [createTrade({ id: 't-1', accountId: 'account-1' })],
-        divDeposits: [
-          createDivDeposit({ id: 'd-1', accountId: 'account-1' }),
-        ] as unknown as Account['divDeposits'],
+        divDeposits: [createDivDeposit({ id: 'd-1', accountId: 'account-1' })],
       },
       'account-2': {
         ...createAccount('account-2', 'Retirement'),
@@ -233,7 +228,7 @@ describe('Account Selection Integration', () => {
             accountId: 'account-2',
             amount: 75,
           }),
-        ] as unknown as Account['divDeposits'],
+        ],
       },
     });
 
@@ -611,7 +606,7 @@ describe('Account Selection Integration', () => {
           name: 'No Trades',
           openTrades: undefined as unknown as Trade[],
           soldTrades: undefined as unknown as Trade[],
-          divDeposits: [] as unknown as Account['divDeposits'],
+          divDeposits: [],
           months: [],
         },
       });

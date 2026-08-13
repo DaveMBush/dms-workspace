@@ -24,6 +24,7 @@ interface GlobalFilterOptions {
  * during BaseTableComponent re-render; Playwright's locator.click() cannot
  * handle the detach-and-recreate cycle within its retry window.
  */
+
 async function pollClearOption({
   text,
   timeout,
@@ -38,7 +39,7 @@ async function pollClearOption({
     const opt = Array.from(document.querySelectorAll(selectorStr)).find(
       function findMatchingOption(el: Element): boolean {
         return (el as HTMLElement).textContent?.trim() === text;
-      }
+      },
     ) as HTMLElement | undefined;
     if (opt?.isConnected) {
       opt.click();
@@ -66,7 +67,7 @@ async function pollClearOption({
  */
 export async function applyAndClearGlobalFilter(
   page: Page,
-  options: GlobalFilterOptions
+  options: GlobalFilterOptions,
 ): Promise<void> {
   const {
     filterSelector,
@@ -102,7 +103,7 @@ export async function applyAndClearGlobalFilter(
   });
   if (!cleared) {
     throw new Error(
-      `mat-option '${clearOptionText}' not found or not connected within 10 s`
+      `mat-option '${clearOptionText}' not found or not connected within 10 s`,
     );
   }
   await expect(page.locator(rowSelector).first()).toBeVisible({

@@ -28,7 +28,6 @@
  */
 
 import { expect, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 
 /** Standard E2E seed symbol guaranteed to be in the test database. */
@@ -56,7 +55,7 @@ test.describe('Dist/Year Weekly Acceptance — Epic 78 / Story 78.1', () => {
     await expect(
       page.locator('.dms-body-row[role="row"]', {
         has: page.locator(`text=${TEST_SYMBOL}`),
-      })
+      }),
     ).toBeVisible({ timeout: 10000 });
   });
 
@@ -78,7 +77,7 @@ test.describe('Dist/Year Weekly Acceptance — Epic 78 / Story 78.1', () => {
 
     // Click the Dist/Year display value to enter edit mode.
     const distPerYearTd = row.locator(
-      '.dms-body-cell[data-column="distributions_per_year"]'
+      '.dms-body-cell[data-column="distributions_per_year"]',
     );
     const distPerYearDisplay = distPerYearTd.locator('.display-value');
     await distPerYearDisplay.click();
@@ -108,7 +107,7 @@ test.describe('Dist/Year Weekly Acceptance — Epic 78 / Story 78.1', () => {
 
     // Click the Dist/Year display value to enter edit mode.
     const distPerYearTd = row.locator(
-      '.dms-body-cell[data-column="distributions_per_year"]'
+      '.dms-body-cell[data-column="distributions_per_year"]',
     );
     const distPerYearDisplay = distPerYearTd.locator('.display-value');
     await distPerYearDisplay.click();

@@ -9,7 +9,6 @@ interface SeederResult {
 
 const ROW_COUNT = 60;
 
-/* eslint-disable @typescript-eslint/naming-convention -- Property names match database column names */
 interface ScreenerRecord {
   symbol: string;
   risk_group_id: string;
@@ -17,14 +16,13 @@ interface ScreenerRecord {
   distributions_per_year: number;
   last_price: number;
 }
-/* eslint-enable @typescript-eslint/naming-convention -- Re-enable naming convention */
 
 /**
  * Generate many screener records for scroll testing
  */
 function createBulkRecords(
   symbols: string[],
-  riskGroupId: string
+  riskGroupId: string,
 ): ScreenerRecord[] {
   return symbols.map(function mapSymbol(symbol): ScreenerRecord {
     return {
@@ -48,7 +46,7 @@ export async function seedScrollScreenerData(): Promise<SeederResult> {
     { length: ROW_COUNT },
     function generateSymbol(_: unknown, i: number): string {
       return `SSCRL${String(i).padStart(2, '0')}-${uniqueId}`;
-    }
+    },
   );
 
   try {

@@ -1,5 +1,4 @@
 import { TestBed } from '@angular/core/testing';
-
 import { ThemeService } from './theme.service';
 
 describe('ThemeService', () => {
@@ -14,7 +13,7 @@ describe('ThemeService', () => {
 
     // Mock matchMedia
     matchMediaSpy = vi.spyOn(window, 'matchMedia');
-    matchMediaSpy.mockReturnValue({ matches: false } as MediaQueryList);
+    matchMediaSpy.mockReturnValue({ matches: false });
 
     TestBed.configureTestingModule({});
   });
@@ -27,7 +26,7 @@ describe('ThemeService', () => {
   describe('initialization', () => {
     it('should load light theme when localStorage is empty and system prefers light', () => {
       localStorageSpy.mockReturnValue(null);
-      matchMediaSpy.mockReturnValue({ matches: false } as MediaQueryList);
+      matchMediaSpy.mockReturnValue({ matches: false });
 
       service = TestBed.inject(ThemeService);
 
@@ -54,7 +53,7 @@ describe('ThemeService', () => {
 
     it('should respect system preference when no localStorage value', () => {
       localStorageSpy.mockReturnValue(null);
-      matchMediaSpy.mockReturnValue({ matches: true } as MediaQueryList);
+      matchMediaSpy.mockReturnValue({ matches: true });
 
       service = TestBed.inject(ThemeService);
 
@@ -115,7 +114,7 @@ describe('ThemeService', () => {
 
     it('should handle matchMedia not available', () => {
       localStorageSpy.mockReturnValue(null);
-      matchMediaSpy.mockReturnValue(undefined as unknown as MediaQueryList);
+      matchMediaSpy.mockReturnValue(undefined);
 
       expect(() => TestBed.inject(ThemeService)).not.toThrow();
     });

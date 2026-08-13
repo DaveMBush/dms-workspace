@@ -26,8 +26,8 @@ Implementation (story development and debugging) MUST be delegated to a speciali
 
 1. **Discover Stories for Epic ${epic}**
 
-   - Search for all story files matching: `_bmad-output/implementation-artifacts/${epic}-*.md`.
-   - Parse story numbers from filenames (e.g., 1-1, 1-2, 1-3).
+   - Search for all story files matching: `_bmad-output/implementation-artifacts/${epic}.*.md`.
+   - Parse story numbers from filenames (e.g., 1.1, 1.2, 1.3).
    - Sort stories by numeric value (1, 2, 3, ...).
    - If no stories found: call `ask()` with: `No stories found for epic ${epic}. Reply with stop, continue, or instructions.`
 

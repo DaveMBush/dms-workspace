@@ -1,6 +1,5 @@
-import { PrismaClient } from '@prisma/client';
 import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
-
+import { PrismaClient } from '@prisma/client';
 import { databasePerformanceService } from './database-performance.service';
 
 describe('DatabasePerformanceService', () => {
@@ -109,9 +108,8 @@ describe('DatabasePerformanceService', () => {
 
   describe('profileConnectionOverhead', () => {
     it('should measure database connection time', async () => {
-      const result = await databasePerformanceService.profileConnectionOverhead(
-        testClient
-      );
+      const result =
+        await databasePerformanceService.profileConnectionOverhead(testClient);
 
       expect(result.connectionTime).toBeGreaterThan(0);
       expect(result.connectionCount).toBeGreaterThanOrEqual(1);
@@ -126,7 +124,7 @@ describe('DatabasePerformanceService', () => {
 
         const result =
           await databasePerformanceService.profileConnectionOverhead(
-            testClient
+            testClient,
           );
 
         // SQLite can't run pg_stat_activity, so getPostgresConnectionCount
@@ -146,19 +144,19 @@ describe('DatabasePerformanceService', () => {
         // Mock client where pg_stat_activity query succeeds
         let callCount = 0;
         const pgMockClient = {
-          $queryRaw: vi.fn().mockImplementation(() => {
+          $queryRaw: vi.fn().mockImplementation(async () => {
             callCount++;
             // First call is SELECT 1 connectivity check, second is pg_stat_activity
             if (callCount === 1) {
-              return Promise.resolve([{ '1': 1 }]);
+              return { '1': 1 };
             }
-            return Promise.resolve([{ count: BigInt(5) }]);
+            return [{ count: BigInt(5) }];
           }),
         } as unknown as PrismaClient;
 
         const result =
           await databasePerformanceService.profileConnectionOverhead(
-            pgMockClient
+            pgMockClient,
           );
 
         expect(result.connectionCount).toBe(5);
@@ -174,17 +172,16 @@ describe('DatabasePerformanceService', () => {
       } as unknown as PrismaClient;
 
       await expect(
-        databasePerformanceService.profileConnectionOverhead(brokenClient)
+        databasePerformanceService.profileConnectionOverhead(brokenClient),
       ).rejects.toThrow(
-        'Database connection profiling failed: Error: connection refused'
+        'Database connection profiling failed: Error: connection refused',
       );
     });
 
     it('should complete connection profiling within reasonable time', async () => {
       const startTime = Date.now();
-      const result = await databasePerformanceService.profileConnectionOverhead(
-        testClient
-      );
+      const result =
+        await databasePerformanceService.profileConnectionOverhead(testClient);
       const duration = Date.now() - startTime;
 
       expect(duration).toBeLessThan(5000); // Should complete within 5 seconds
@@ -200,7 +197,7 @@ describe('DatabasePerformanceService', () => {
         await databasePerformanceService.measureQueryPerformance(
           mockQuery,
           'test-query',
-          ['param1', 'param2']
+          ['param1', 'param2'],
         );
 
       expect(result).toEqual({ test: 'data' });
@@ -216,15 +213,15 @@ describe('DatabasePerformanceService', () => {
       const slowQuery = vi
         .fn()
         .mockImplementation(
-          () =>
+          async () =>
             new Promise((resolve) =>
-              setTimeout(() => resolve({ slow: 'data' }), 100)
-            )
+              setTimeout(() => resolve({ slow: 'data' }), 100),
+            ),
         );
 
       await databasePerformanceService.measureQueryPerformance(
         slowQuery,
-        'slow-test-query'
+        'slow-test-query',
       );
 
       const slowQueries = databasePerformanceService.getRecentSlowQueries();
@@ -241,14 +238,14 @@ describe('DatabasePerformanceService', () => {
       await expect(
         databasePerformanceService.measureQueryPerformance(
           errorQuery,
-          'error-query'
-        )
+          'error-query',
+        ),
       ).rejects.toThrow('Test error');
 
       // Error should still be recorded as a slow query for analysis
       const slowQueries = databasePerformanceService.getRecentSlowQueries();
       const errorRecord = slowQueries.find((q) =>
-        q.query.includes('error-query (FAILED)')
+        q.query.includes('error-query (FAILED)'),
       );
       expect(errorRecord).toBeDefined();
     });
@@ -258,14 +255,14 @@ describe('DatabasePerformanceService', () => {
     it('should profile authentication-related database operations', async () => {
       const result =
         await databasePerformanceService.profileAuthenticationQueries(
-          testClient
+          testClient,
         );
 
       expect(result.userLookupTime).toBeGreaterThan(0);
       expect(result.sessionDataTime).toBeGreaterThan(0);
       expect(result.totalAuthDbTime).toBeGreaterThan(0);
       expect(result.totalAuthDbTime).toBeGreaterThanOrEqual(
-        result.userLookupTime + result.sessionDataTime
+        result.userLookupTime + result.sessionDataTime,
       );
     });
 
@@ -273,7 +270,7 @@ describe('DatabasePerformanceService', () => {
       const startTime = Date.now();
       const result =
         await databasePerformanceService.profileAuthenticationQueries(
-          testClient
+          testClient,
         );
       const duration = Date.now() - startTime;
 
@@ -287,9 +284,8 @@ describe('DatabasePerformanceService', () => {
 
   describe('getPerformanceMetrics', () => {
     it('should return comprehensive performance metrics', async () => {
-      const metrics = await databasePerformanceService.getPerformanceMetrics(
-        testClient
-      );
+      const metrics =
+        await databasePerformanceService.getPerformanceMetrics(testClient);
 
       expect(metrics.connectionTime).toBeGreaterThan(0);
       expect(metrics.queryTime).toBeGreaterThan(0);
@@ -299,9 +295,8 @@ describe('DatabasePerformanceService', () => {
     });
 
     it('should provide metrics that meet performance requirements', async () => {
-      const metrics = await databasePerformanceService.getPerformanceMetrics(
-        testClient
-      );
+      const metrics =
+        await databasePerformanceService.getPerformanceMetrics(testClient);
 
       // Performance targets for optimized database operations
       expect(metrics.connectionTime).toBeLessThan(50); // Connection under 50ms
@@ -315,12 +310,12 @@ describe('DatabasePerformanceService', () => {
       const benchmark =
         await databasePerformanceService.benchmarkPerformanceImprovement(
           testClient,
-          5 // Fewer iterations for test speed
+          5, // Fewer iterations for test speed
         );
 
       expect(benchmark.improvementPercentage).toBeGreaterThanOrEqual(30);
       expect(benchmark.baseline.totalTime).toBeGreaterThan(
-        benchmark.optimized.totalTime
+        benchmark.optimized.totalTime,
       );
       expect(benchmark.baseline.connectionTime).toBeGreaterThan(0);
       expect(benchmark.optimized.connectionTime).toBeGreaterThan(0);
@@ -338,7 +333,7 @@ describe('DatabasePerformanceService', () => {
         const benchmark =
           await databasePerformanceService.benchmarkPerformanceImprovement(
             testClient,
-            1
+            1,
           );
 
         // With 100ms durations, slow queries should be recorded and filtered
@@ -354,17 +349,17 @@ describe('DatabasePerformanceService', () => {
       const benchmark1 =
         await databasePerformanceService.benchmarkPerformanceImprovement(
           testClient,
-          3
+          3,
         );
       const benchmark2 =
         await databasePerformanceService.benchmarkPerformanceImprovement(
           testClient,
-          3
+          3,
         );
 
       // Results should be reasonably consistent (within 20% variance)
       const variance = Math.abs(
-        benchmark1.improvementPercentage - benchmark2.improvementPercentage
+        benchmark1.improvementPercentage - benchmark2.improvementPercentage,
       );
       expect(variance).toBeLessThan(20);
     });
@@ -385,7 +380,7 @@ describe('DatabasePerformanceService', () => {
         const benchmark =
           await databasePerformanceService.benchmarkPerformanceImprovement(
             testClient,
-            1
+            1,
           );
 
         // poolUtilization should default to 0 via ?? operator
@@ -401,16 +396,16 @@ describe('DatabasePerformanceService', () => {
     beforeEach(async () => {
       // Generate some query data
       await databasePerformanceService.measureQueryPerformance(
-        () => testClient.accounts.findMany({ take: 1 }),
-        'test-query-1'
+        async () => testClient.accounts.findMany({ take: 1 }),
+        'test-query-1',
       );
       await databasePerformanceService.measureQueryPerformance(
-        () => testClient.accounts.findMany({ take: 1 }),
-        'test-query-1'
+        async () => testClient.accounts.findMany({ take: 1 }),
+        'test-query-1',
       );
       await databasePerformanceService.measureQueryPerformance(
-        () => testClient.accounts.findMany({ take: 2 }),
-        'test-query-2'
+        async () => testClient.accounts.findMany({ take: 2 }),
+        'test-query-2',
       );
     });
 
@@ -425,7 +420,7 @@ describe('DatabasePerformanceService', () => {
       expect(query1Stats!.averageDuration).toBeGreaterThan(0);
       expect(query1Stats!.minDuration).toBeGreaterThan(0);
       expect(query1Stats!.maxDuration).toBeGreaterThanOrEqual(
-        query1Stats!.minDuration
+        query1Stats!.minDuration,
       );
     });
 
@@ -443,8 +438,8 @@ describe('DatabasePerformanceService', () => {
     it('should clear all performance metrics', async () => {
       // Generate some metrics
       await databasePerformanceService.measureQueryPerformance(
-        () => Promise.resolve('test'),
-        'test-clear'
+        async () => 'test',
+        'test-clear',
       );
 
       let slowQueries = databasePerformanceService.getRecentSlowQueries();

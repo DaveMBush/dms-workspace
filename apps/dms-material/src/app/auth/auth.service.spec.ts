@@ -1,15 +1,14 @@
-import { TestBed } from '@angular/core/testing';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import {
+  fetchAuthSession,
+  getCurrentUser,
   signIn,
   signOut,
-  getCurrentUser,
-  fetchAuthSession,
 } from '@aws-amplify/auth';
-import { describe, it, expect, beforeEach, vi, Mock } from 'vitest';
-
+import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 import { AuthService } from './auth.service';
 import { AuthErrorCode, SignInRequest } from './auth.types';
 
@@ -110,6 +109,7 @@ describe('AuthService', () => {
   describe('Sign In', () => {
     const validCredentials: SignInRequest = {
       username: 'testuser@example.com',
+      // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- not real
       password: 'ValidPassword123!',
     };
 
@@ -148,7 +148,7 @@ describe('AuthService', () => {
       await expect(service.signIn(validCredentials)).rejects.toThrow();
       expect(service.isAuthenticated()).toBe(false);
       expect(service.error()).toBe(
-        'Incorrect email or password. Please try again.'
+        'Incorrect email or password. Please try again.',
       );
       expect(service.isLoading()).toBe(false);
     });
@@ -164,7 +164,7 @@ describe('AuthService', () => {
       // Act & Assert
       await expect(service.signIn(validCredentials)).rejects.toThrow();
       expect(service.error()).toBe(
-        'Please check your email and confirm your account before signing in.'
+        'Please check your email and confirm your account before signing in.',
       );
     });
 
@@ -179,14 +179,14 @@ describe('AuthService', () => {
       // Act & Assert
       await expect(service.signIn(validCredentials)).rejects.toThrow();
       expect(service.error()).toBe(
-        'Too many login attempts. Please wait a few minutes before trying again.'
+        'Too many login attempts. Please wait a few minutes before trying again.',
       );
     });
 
     it('should set loading state during sign in process', async () => {
       // Arrange
       let loadingDuringSignIn = false;
-      mockSignIn.mockImplementation(() => {
+      mockSignIn.mockImplementation(async () => {
         loadingDuringSignIn = service.isLoading();
         return Promise.resolve({ isSignedIn: true });
       });
@@ -210,6 +210,7 @@ describe('AuthService', () => {
       mockFetchAuthSession.mockResolvedValue(mockSession);
       await service.signIn({
         username: 'test@example.com',
+        // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- not real
         password: 'password',
       });
     });
@@ -250,6 +251,7 @@ describe('AuthService', () => {
       mockFetchAuthSession.mockResolvedValue(mockSession);
       await service.signIn({
         username: 'test@example.com',
+        // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- not real
         password: 'password',
       });
     });
@@ -327,6 +329,7 @@ describe('AuthService', () => {
       mockSignIn.mockRejectedValue(authError);
 
       // Act
+      // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- not real
       service.signIn({ username: 'test', password: 'test' }).catch(() => {
         // Expected to fail
       });
@@ -355,6 +358,7 @@ describe('AuthService', () => {
 
       await service.signIn({
         username: 'test@example.com',
+        // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- not real
         password: 'password',
       });
 

@@ -1,5 +1,4 @@
 import type { PrismaClient } from '@prisma/client';
-
 import { buildMonthlyDates } from './build-monthly-dates.helper';
 import { generateUniqueId } from './generate-unique-id.helper';
 import { getOrCreateDivDepositTypeId } from './get-or-create-div-deposit-type-id.helper';
@@ -74,7 +73,7 @@ async function seedFlatSymbol(ctx: SeedFlatContext): Promise<string> {
 function buildUniverseRecord(
   universeId: string,
   symbol: string,
-  riskGroupId: string
+  riskGroupId: string,
 ): Record<string, unknown> {
   return {
     id: universeId,
@@ -99,7 +98,7 @@ function buildUpdateToVolatile(
   prisma: PrismaClient,
   universeId: string,
   accountId: string,
-  divDepositTypeId: string
+  divDepositTypeId: string,
 ): () => Promise<void> {
   return async function updateToVolatile(): Promise<void> {
     await prisma.divDeposits.deleteMany({ where: { universeId } });
@@ -145,6 +144,7 @@ async function performCleanup(ctx: CleanupContext): Promise<void> {
  * Seeds one universe symbol with flat divDeposit history (volatility_long = 'flat').
  * Returns helpers for the trigger-update AC#2 test.
  */
+
 export async function seedStoredVolatilityUpdateData(): Promise<StoredVolatilityUpdateSeederResult> {
   const prisma = await initializePrismaClient();
   const uniqueId = generateUniqueId();
@@ -175,7 +175,7 @@ export async function seedStoredVolatilityUpdateData(): Promise<StoredVolatility
         prisma,
         universeId,
         accountId,
-        divDepositTypeId
+        divDepositTypeId,
       ),
       cleanup: async function cleanup(): Promise<void> {
         try {

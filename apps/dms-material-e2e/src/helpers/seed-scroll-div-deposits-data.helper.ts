@@ -1,5 +1,4 @@
 import type { PrismaClient } from '@prisma/client';
-
 import { generateUniqueId } from './generate-unique-id.helper';
 import { initializePrismaClient } from './shared-prisma-client.helper';
 
@@ -13,6 +12,7 @@ const ROW_COUNT = 60;
 /**
  * Get or create a divDepositType named "Deposit" and return its id.
  */
+
 async function getOrCreateDepositType(prisma: PrismaClient): Promise<string> {
   const existing = await prisma.divDepositType.findFirst({
     where: { name: 'Deposit' },
@@ -40,7 +40,7 @@ async function getOrCreateDepositType(prisma: PrismaClient): Promise<string> {
 /* eslint-disable @typescript-eslint/no-explicit-any -- Prisma createMany requires untyped batch data */
 function createBulkDeposits(
   accountId: string,
-  divDepositTypeId: string
+  divDepositTypeId: string,
 ): any[] {
   return Array.from(
     { length: ROW_COUNT },
@@ -52,7 +52,7 @@ function createBulkDeposits(
         date: new Date(2025, 0, (i % 28) + 1),
         amount: 10.0 + i,
       };
-    }
+    },
   );
 }
 /* eslint-enable @typescript-eslint/no-explicit-any -- Re-enable */

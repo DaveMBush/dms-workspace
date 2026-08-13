@@ -1,5 +1,4 @@
 import type { PrismaClient } from '@prisma/client';
-
 import { initializePrismaClient } from './shared-prisma-client.helper';
 import { createRiskGroups } from './shared-risk-groups.helper';
 
@@ -31,7 +30,7 @@ async function cleanupExistingData(prisma: PrismaClient): Promise<void> {
 }
 
 async function createSeedData(
-  prisma: PrismaClient
+  prisma: PrismaClient,
 ): Promise<MultiSymbolSeederResult> {
   const riskGroups = await createRiskGroups(prisma);
   await cleanupExistingData(prisma);
@@ -98,6 +97,7 @@ async function createSeedData(
  *   - Line 3 (buy):    07/15/2025 TSTX YOU BOUGHT 500 @ $4.00
  *   - Line 4 (buy):    06/01/2025 ABCD YOU BOUGHT 100 @ $10.00
  */
+
 export async function seedMultiSymbolE2eData(): Promise<MultiSymbolSeederResult> {
   const prisma = await initializePrismaClient();
   try {

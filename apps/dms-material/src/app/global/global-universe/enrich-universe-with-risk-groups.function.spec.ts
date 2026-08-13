@@ -1,5 +1,4 @@
-import { describe, it, expect } from 'vitest';
-
+import { describe, expect, it } from 'vitest';
 import { RiskGroup } from '../../store/risk-group/risk-group.interface';
 import { Universe } from '../../store/universe/universe.interface';
 import { enrichUniverseWithRiskGroups } from './enrich-universe-with-risk-groups.function';
@@ -69,7 +68,7 @@ describe('enrichUniverseWithRiskGroups', () => {
 
     const result = enrichUniverseWithRiskGroups(
       universeWithUnknownRiskGroup,
-      mockRiskGroups
+      mockRiskGroups,
     );
 
     expect(result[0].risk_group).toBe('unknown');
@@ -84,7 +83,10 @@ describe('enrichUniverseWithRiskGroups', () => {
   });
 
   it('should handle null risk groups', () => {
-    const result = enrichUniverseWithRiskGroups(mockUniverses, null as any);
+    const result = enrichUniverseWithRiskGroups(
+      mockUniverses,
+      null as unknown as RiskGroup[],
+    );
 
     expect(result).toHaveLength(2);
     expect(result[0].risk_group).toBe('rg1');
@@ -101,7 +103,7 @@ describe('enrichUniverseWithRiskGroups', () => {
     expect(enriched.symbol).toBe(original.symbol);
     expect(enriched.distribution).toBe(original.distribution);
     expect(enriched.distributions_per_year).toBe(
-      original.distributions_per_year
+      original.distributions_per_year,
     );
     expect(enriched.last_price).toBe(original.last_price);
     expect(enriched.ex_date).toBe(original.ex_date);
@@ -111,7 +113,7 @@ describe('enrichUniverseWithRiskGroups', () => {
     expect(enriched.name).toBe(original.name);
     expect(enriched.position).toBe(original.position);
     expect(enriched.avg_purchase_yield_percent).toBe(
-      original.avg_purchase_yield_percent
+      original.avg_purchase_yield_percent,
     );
     expect(enriched.volatilityLong).toBe(original.volatilityLong);
     expect(enriched.volatilityShort).toBe(original.volatilityShort);

@@ -1,16 +1,14 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { signal } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatDialog } from '@angular/material/dialog';
 import { provideSmartNgRX } from '@smarttools/smart-signals';
 import { of } from 'rxjs';
-
 import { NotificationService } from '../../shared/services/notification.service';
 import { UniverseSyncService } from '../../shared/services/universe-sync.service';
 import { Universe } from '../../store/universe/universe.interface';
+import { ImportDialogComponent } from '../import-dialog/import-dialog.component';
 import { GlobalUniverseComponent } from './global-universe.component';
 import { UniverseService } from './services/universe.service';
-
-import { ImportDialogComponent } from '../import-dialog/import-dialog.component';
 
 // Mock SmartNgRX selectors
 vi.mock('../../store/universe/selectors/select-universes.function', () => ({
@@ -36,14 +34,14 @@ vi.mock(
   '../../store/risk-group/selectors/select-risk-group-entities.function',
   () => ({
     selectRiskGroupEntities: vi.fn().mockReturnValue({ entities: {}, ids: [] }),
-  })
+  }),
 );
 
 vi.mock(
   '../../store/risk-group/selectors/select-risk-group-entity.function',
   () => ({
     selectRiskGroupEntity: vi.fn().mockReturnValue({ id: '', name: '' }),
-  })
+  }),
 );
 
 vi.mock('../../store/screen/selectors/select-screen.function', () => ({
@@ -115,7 +113,7 @@ describe('GlobalUniverseComponent - Import Integration', () => {
     it('should have an "Import Transactions" button in the toolbar', () => {
       const compiled = fixture.nativeElement as HTMLElement;
       const importButton = compiled.querySelector(
-        '[data-testid="import-transactions-button"]'
+        '[data-testid="import-transactions-button"]',
       );
       expect(importButton).toBeTruthy();
     });
@@ -123,7 +121,7 @@ describe('GlobalUniverseComponent - Import Integration', () => {
     it('should display import icon on the button', () => {
       const compiled = fixture.nativeElement as HTMLElement;
       const importButton = compiled.querySelector(
-        '[data-testid="import-transactions-button"]'
+        '[data-testid="import-transactions-button"]',
       )!;
       const icon = importButton.querySelector('mat-icon')!;
       expect(icon.textContent.trim()).toBe('upload_file');
@@ -132,10 +130,10 @@ describe('GlobalUniverseComponent - Import Integration', () => {
     it('should have tooltip text "Import Fidelity CSV"', () => {
       const compiled = fixture.nativeElement as HTMLElement;
       const importButton = compiled.querySelector(
-        '[data-testid="import-transactions-button"]'
+        '[data-testid="import-transactions-button"]',
       )!;
       expect(importButton.getAttribute('aria-label')).toBe(
-        'Import Fidelity CSV'
+        'Import Fidelity CSV',
       );
     });
   });
@@ -144,7 +142,7 @@ describe('GlobalUniverseComponent - Import Integration', () => {
     it('should open ImportDialogComponent when import button is clicked', () => {
       const compiled = fixture.nativeElement as HTMLElement;
       const importButton = compiled.querySelector(
-        '[data-testid="import-transactions-button"]'
+        '[data-testid="import-transactions-button"]',
       )!;
       importButton.click();
       fixture.detectChanges();
@@ -154,14 +152,14 @@ describe('GlobalUniverseComponent - Import Integration', () => {
         expect.objectContaining({
           width: expect.any(String),
           disableClose: false,
-        })
+        }),
       );
     });
 
     it('should pass dialog configuration with appropriate width', () => {
       const compiled = fixture.nativeElement as HTMLElement;
       const importButton = compiled.querySelector(
-        '[data-testid="import-transactions-button"]'
+        '[data-testid="import-transactions-button"]',
       )!;
       importButton.click();
       fixture.detectChanges();
@@ -170,7 +168,7 @@ describe('GlobalUniverseComponent - Import Integration', () => {
         expect.anything(),
         expect.objectContaining({
           width: expect.stringContaining('px'),
-        })
+        }),
       );
     });
   });
@@ -182,7 +180,7 @@ describe('GlobalUniverseComponent - Import Integration', () => {
 
       const compiled = fixture.nativeElement as HTMLElement;
       const importButton = compiled.querySelector(
-        '[data-testid="import-transactions-button"]'
+        '[data-testid="import-transactions-button"]',
       )!;
       importButton.click();
       fixture.detectChanges();
@@ -193,14 +191,14 @@ describe('GlobalUniverseComponent - Import Integration', () => {
           data: expect.objectContaining({
             accountFilter: 'account-456',
           }),
-        })
+        }),
       );
     });
 
     it('should pass "all" as account filter when no specific account selected', () => {
       const compiled = fixture.nativeElement as HTMLElement;
       const importButton = compiled.querySelector(
-        '[data-testid="import-transactions-button"]'
+        '[data-testid="import-transactions-button"]',
       )!;
       importButton.click();
       fixture.detectChanges();
@@ -211,7 +209,7 @@ describe('GlobalUniverseComponent - Import Integration', () => {
           data: expect.objectContaining({
             accountFilter: 'all',
           }),
-        })
+        }),
       );
     });
   });
@@ -220,7 +218,7 @@ describe('GlobalUniverseComponent - Import Integration', () => {
     it('should show success notification after dialog closes with success', () => {
       const compiled = fixture.nativeElement as HTMLElement;
       const importButton = compiled.querySelector(
-        '[data-testid="import-transactions-button"]'
+        '[data-testid="import-transactions-button"]',
       )!;
       importButton.click();
       fixture.detectChanges();
@@ -228,7 +226,7 @@ describe('GlobalUniverseComponent - Import Integration', () => {
       // Dialog was opened and afterClosed returns success
       // The component should trigger a data refresh
       expect(mockNotification.success).toHaveBeenCalledWith(
-        expect.stringMatching(/import|transaction/i)
+        expect.stringMatching(/import|transaction/i),
       );
     });
 
@@ -238,13 +236,11 @@ describe('GlobalUniverseComponent - Import Integration', () => {
         afterClosed: vi.fn().mockReturnValue(of(undefined)),
         close: vi.fn(),
       };
-      mockDialog.open.mockReturnValue(
-        cancelDialogRef as unknown as MatDialogRef<unknown>
-      );
+      mockDialog.open.mockReturnValue(cancelDialogRef);
 
       const compiled = fixture.nativeElement as HTMLElement;
       const importButton = compiled.querySelector(
-        '[data-testid="import-transactions-button"]'
+        '[data-testid="import-transactions-button"]',
       )!;
       importButton.click();
       fixture.detectChanges();
@@ -260,19 +256,17 @@ describe('GlobalUniverseComponent - Import Integration', () => {
           .mockReturnValue(of({ success: true, imported: 12 })),
         close: vi.fn(),
       };
-      mockDialog.open.mockReturnValue(
-        successDialogRef as unknown as MatDialogRef<unknown>
-      );
+      mockDialog.open.mockReturnValue(successDialogRef);
 
       const compiled = fixture.nativeElement as HTMLElement;
       const importButton = compiled.querySelector(
-        '[data-testid="import-transactions-button"]'
+        '[data-testid="import-transactions-button"]',
       )!;
       importButton.click();
       fixture.detectChanges();
 
       expect(mockNotification.success).toHaveBeenCalledWith(
-        expect.stringContaining('12')
+        expect.stringContaining('12'),
       );
     });
   });

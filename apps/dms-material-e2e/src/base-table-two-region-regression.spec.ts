@@ -27,8 +27,7 @@
  * Assertion (c) uses an if-guard (not test.skip) so the skip-check script stays clean.
  */
 
-import { expect, type Page, test } from 'playwright/test';
-
+import { expect, test, type Page } from 'playwright/test';
 import { applyAndClearGlobalFilter } from './helpers/apply-and-clear-global-filter.helper';
 import { login } from './helpers/login.helper';
 import { seedScrollDivDepositsWithSymbolsData } from './helpers/seed-scroll-div-deposits-with-symbols-data.helper';
@@ -93,7 +92,7 @@ async function assertHeaderNotSticky(page: Page): Promise<void> {
     position,
     'Header region computed position must not be "sticky". ' +
       'Epic 111 (Story 111.2) removed position:sticky by introducing the two-region layout. ' +
-      'Re-introducing sticky would re-enable the scroll jank artifacts this epic exists to prevent.'
+      'Re-introducing sticky would re-enable the scroll jank artifacts this epic exists to prevent.',
   ).not.toBe('sticky');
 }
 
@@ -137,7 +136,7 @@ async function assertColumnWidthParity(page: Page): Promise<void> {
       }
       const bodyCells = Array.from(bodyRow.querySelectorAll(bodyCellSel));
       const headerRow = headerCells[0]?.closest<HTMLElement>(
-        '.dms-column-header-row'
+        '.dms-column-header-row',
       );
       const violations: string[] = [];
       for (let i = 0; i < headerCells.length; i++) {
@@ -159,9 +158,9 @@ async function assertColumnWidthParity(page: Page): Promise<void> {
         if (Math.abs(headerWidth - bodyWidth) > 1) {
           violations.push(
             `col[${i}]: header=${headerWidth.toFixed(
-              2
+              2,
             )}px body=${bodyWidth.toFixed(2)}px ` +
-              `delta=${(headerWidth - bodyWidth).toFixed(2)}px`
+              `delta=${(headerWidth - bodyWidth).toFixed(2)}px`,
           );
         }
       }
@@ -191,9 +190,9 @@ async function assertColumnWidthParity(page: Page): Promise<void> {
       if (viewportDiff > 2) {
         violations.push(
           `viewport: header=${headerViewportWidth.toFixed(
-            2
+            2,
           )}px body=${bodyViewportWidth.toFixed(2)}px ` +
-            `delta=${viewportDiff.toFixed(2)}px`
+            `delta=${viewportDiff.toFixed(2)}px`,
         );
       }
 
@@ -204,7 +203,7 @@ async function assertColumnWidthParity(page: Page): Promise<void> {
       if (rowDiff > 1) {
         violations.push(
           `row: header=${headerRowWidth.toFixed(2)}px ` +
-            `body=${bodyRowWidth.toFixed(2)}px delta=${rowDiff.toFixed(2)}px`
+            `body=${bodyRowWidth.toFixed(2)}px delta=${rowDiff.toFixed(2)}px`,
         );
       }
 
@@ -219,13 +218,13 @@ async function assertColumnWidthParity(page: Page): Promise<void> {
       bodyCellSel: BODY_CELL_SEL,
       headerViewportSel: HEADER_VIEWPORT_SEL,
       bodyViewportSel: SCROLL_CONTAINER_SEL,
-    }
+    },
   );
   expect(
     result.ok,
     `Column width parity violation (tolerance: 1px):\n${result.message}\n` +
       'Header/body cells must share fixed widths from ColumnDef.width, and the ' +
-      'detached header/body regions must preserve matching visible and content widths.'
+      'detached header/body regions must preserve matching visible and content widths.',
   ).toBe(true);
 }
 
@@ -258,7 +257,7 @@ async function assertHorizontalScrollSync(page: Page): Promise<void> {
   }
 
   const result = await page.evaluate(
-    function checkHScrollSync(arg: {
+    async function checkHScrollSync(arg: {
       containerSel: string;
       headerCellSel: string;
       bodyCellSel: string;
@@ -279,12 +278,12 @@ async function assertHorizontalScrollSync(page: Page): Promise<void> {
           bDelta: number;
           syncDiff: number;
           resetDiff: number;
-        }) => void
+        }) => void,
       ): void {
         const container = document.querySelector<HTMLElement>(containerSel);
         const headerCell = document.querySelector<HTMLElement>(headerCellSel);
         const bodyRow = document.querySelector<HTMLElement>(
-          '.dms-body-row[role="row"]'
+          '.dms-body-row[role="row"]',
         );
         const bodyCell = bodyRow?.querySelector<HTMLElement>(bodyCellSel);
 
@@ -332,17 +331,17 @@ async function assertHorizontalScrollSync(page: Page): Promise<void> {
             const bReset = bodyCell.getBoundingClientRect().left;
             const resetDiff = Math.max(
               Math.abs(hReset - hBefore),
-              Math.abs(bReset - bBefore)
+              Math.abs(bReset - bBefore),
             );
 
             const ok = syncDiff <= 1 && resetDiff <= 1;
             const message =
               `scrollTarget=${targetScroll}px — ` +
               `header shifted ${hDelta.toFixed(
-                2
+                2,
               )}px, body shifted ${bDelta.toFixed(2)}px; ` +
               `syncDiff=${syncDiff.toFixed(2)}px, resetDiff=${resetDiff.toFixed(
-                2
+                2,
               )}px`;
             resolve({ ok, message, hDelta, bDelta, syncDiff, resetDiff });
           });
@@ -353,14 +352,14 @@ async function assertHorizontalScrollSync(page: Page): Promise<void> {
       containerSel: SCROLL_CONTAINER_SEL,
       headerCellSel: COLUMN_HEADER_CELLS_SEL,
       bodyCellSel: BODY_CELL_SEL,
-    }
+    },
   );
 
   expect(
     result.ok,
     `Horizontal scroll synchronization failed: ${result.message}. ` +
       'Header and body must shift by equal deltas (≤1px difference) — ' +
-      'body owns horizontal scroll and header must mirror that offset.'
+      'body owns horizontal scroll and header must mirror that offset.',
   ).toBe(true);
 }
 
@@ -380,7 +379,7 @@ async function assertHorizontalScrollSync(page: Page): Promise<void> {
  */
 async function assertPostContextChangeInvariant(
   page: Page,
-  contextChange: () => Promise<void>
+  contextChange: () => Promise<void>,
 ): Promise<void> {
   // Trigger the in-place data-context change.
   await contextChange();
@@ -389,7 +388,7 @@ async function assertPostContextChangeInvariant(
   await page.waitForSelector(BODY_ROW_SEL, { timeout: 15000 });
 
   const result = await page.evaluate(
-    function slowScrollAndCheckHeaderPosition(arg: {
+    async function slowScrollAndCheckHeaderPosition(arg: {
       viewportSel: string;
       headerSel: string;
       shellSel: string;
@@ -402,7 +401,7 @@ async function assertPostContextChangeInvariant(
           ok: boolean;
           violations: string[];
           frames: number;
-        }) => void
+        }) => void,
       ): void {
         const viewport = document.querySelector<HTMLElement>(viewportSel);
         const header = document.querySelector<HTMLElement>(headerSel);
@@ -460,9 +459,9 @@ async function assertPostContextChangeInvariant(
               violations.push(
                 `scrollTop=${viewport.scrollTop}: ` +
                   `headerTop=${headerTop.toFixed(
-                    2
+                    2,
                   )} shellTop=${shellTop.toFixed(2)} ` +
-                  `diff=${diff.toFixed(2)}`
+                  `diff=${diff.toFixed(2)}`,
               );
             }
 
@@ -484,7 +483,7 @@ async function assertPostContextChangeInvariant(
       shellSel: TABLE_SHELL_SEL,
       scrollMs: 3000,
       stepPx: 4,
-    }
+    },
   );
 
   expect(
@@ -493,7 +492,7 @@ async function assertPostContextChangeInvariant(
       `(${result.violations.length} violation(s) across ${result.frames} frames):\n` +
       result.violations.join('\n') +
       '\nThe two-region header must remain outside the outer vertical scroller — ' +
-      'it must never shift during body scrolling.'
+      'it must never shift during body scrolling.',
   ).toBe(true);
 }
 
@@ -502,7 +501,7 @@ async function assertPostContextChangeInvariant(
  */
 async function runTwoRegionInvariants(
   page: Page,
-  contextChange: () => Promise<void>
+  contextChange: () => Promise<void>,
 ): Promise<void> {
   await assertHeaderNotSticky(page);
   await assertColumnWidthParity(page);
@@ -553,7 +552,7 @@ test.describe('Universe — two-region layout regression', () => {
         // GlobalUniverseComponent.onAccountChange() triggers an in-place CDK data swap.
         await swapUniverseAccount(page);
       });
-    }
+    },
   );
 });
 
@@ -595,7 +594,7 @@ test.describe('Screener — two-region layout regression', () => {
           clearOptionText: 'All',
         });
       });
-    }
+    },
   );
 });
 
@@ -646,7 +645,7 @@ test.describe('Open Positions — two-region layout regression', () => {
           routeSuffix: 'open',
         });
       });
-    }
+    },
   );
 });
 
@@ -693,7 +692,7 @@ test.describe('Sold Positions — two-region layout regression', () => {
           routeSuffix: 'sold',
         });
       });
-    }
+    },
   );
 });
 
@@ -741,6 +740,6 @@ test.describe('Dividend Deposits — two-region layout regression', () => {
           routeSuffix: 'div-dep',
         });
       });
-    }
+    },
   );
 });

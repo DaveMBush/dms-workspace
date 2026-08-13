@@ -1,6 +1,5 @@
 import path from 'path';
 import { expect, Page, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 import { seedMultiSymbolE2eData } from './helpers/seed-multi-symbol-e2e-data.helper';
 import { initializePrismaClient } from './helpers/shared-prisma-client.helper';
@@ -20,7 +19,15 @@ import { initializePrismaClient } from './helpers/shared-prisma-client.helper';
 //   TSTX: 1 open lot of 100 shares (500 / 5), buy price = $20 (4.00 × 5)
 //   ABCD: 1 open lot of 100 shares, buy price = $10.00 (unchanged)
 
-const FIXTURES_DIR = path.resolve(__dirname, '..', 'fixtures');
+// Resolve the fixtures directory relative to the workspace root. The
+// compiled test files live in a `dist` folder; using __dirname would point
+// at that compiled location and miss the source fixtures.
+const _FIXTURES_DIR = path.resolve(
+  process.cwd(),
+  'apps',
+  'dms-material-e2e',
+  'fixtures',
+);
 const TSTX_SYMBOL = 'TSTX';
 const ABCD_SYMBOL = 'ABCD';
 
@@ -31,17 +38,26 @@ async function navigateToUniverse(page: Page): Promise<void> {
 
 async function openImportDialog(page: Page): Promise<void> {
   const importButton = page.locator(
-    '[data-testid="import-transactions-button"]'
+    '[data-testid="import-transactions-button"]',
   );
   await expect(importButton).toBeVisible({ timeout: 10000 });
   await importButton.click();
   await expect(
-    page.getByRole('heading', { name: 'Import Fidelity Transactions' })
+    page.getByRole('heading', { name: 'Import Fidelity Transactions' }),
   ).toBeVisible({ timeout: 5000 });
 }
 
 async function uploadFile(page: Page, filename: string): Promise<void> {
-  const filePath = path.join(FIXTURES_DIR, filename);
+  // Resolve the fixture path relative to the workspace root. The Playwright
+  // test runner compiles spec files into a `dist` folder, so using __dirname
+  // would point at that compiled location and miss the source fixtures.
+  const filePath = path.resolve(
+    process.cwd(),
+    'apps',
+    'dms-material-e2e',
+    'fixtures',
+    filename,
+  );
   const fileInput = page.locator('input[type="file"]');
   await fileInput.setInputFiles(filePath);
 }
@@ -84,20 +100,21 @@ test.describe('Multi-Symbol Split Import (Story 63.3)', () => {
    *   - TSTX: 1 open lot of 100 shares (500 ÷ 5 reverse split)
    *   - ABCD: 1 open lot of 100 shares (unchanged — no split applied)
    */
+
   test('should only adjust lots for the symbol with a split row', async ({
     page,
   }) => {
     await navigateToUniverse(page);
 
-    const responsePromise = page.waitForResponse(function isImportResponse(
-      response
-    ) {
-      return (
-        response.url().includes('/api/import/fidelity') &&
-        response.request().method() === 'POST' &&
-        response.status() === 200
-      );
-    });
+    const responsePromise = page.waitForResponse(
+      function isImportResponse(response) {
+        return (
+          response.url().includes('/api/import/fidelity') &&
+          response.request().method() === 'POST' &&
+          response.status() === 200
+        );
+      },
+    );
 
     await openImportDialog(page);
     await uploadFile(page, 'fidelity-split-multi-symbol.csv');
@@ -115,7 +132,7 @@ test.describe('Multi-Symbol Split Import (Story 63.3)', () => {
     expect(body.errors).toHaveLength(0);
 
     await expect(
-      page.getByRole('heading', { name: 'Import Fidelity Transactions' })
+      page.getByRole('heading', { name: 'Import Fidelity Transactions' }),
     ).not.toBeVisible({ timeout: 10000 });
 
     const prisma = await initializePrismaClient();

@@ -3,6 +3,9 @@ import baseConfig from '../../eslint.config.mjs';
 export default [
   ...baseConfig,
   {
+    ignores: ['dist/**', 'eslint.config.mjs', 'scripts/**', 'vitest.config.ts'],
+  },
+  {
     files: ['**/*.ts'],
     rules: {
       'import/no-default-export': 'off',

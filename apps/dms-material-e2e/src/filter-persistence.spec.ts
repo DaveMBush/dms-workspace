@@ -1,5 +1,4 @@
 import { expect, Page, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 
 const ACCOUNT_UUID = '1677e04f-ef9b-4372-adb3-b740443088dc';
@@ -7,9 +6,10 @@ const ACCOUNT_UUID = '1677e04f-ef9b-4372-adb3-b740443088dc';
 /**
  * Helper: read filter state from localStorage.
  */
+
 async function getFilterState(
   page: Page,
-  table: string
+  table: string,
 ): Promise<Record<string, unknown> | null> {
   return page.evaluate(function readFilterState(t: string) {
     const raw = localStorage.getItem('dms-sort-filter-state');

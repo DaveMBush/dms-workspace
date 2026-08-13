@@ -10,7 +10,6 @@
  */
 
 import { expect, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 import { seedSvolColumnE2eData } from './helpers/seed-svol-column-e2e-data.helper';
 
@@ -38,7 +37,7 @@ test.describe('SVol Column', function describeSvolColumn() {
     await page.goto('/global/universe');
     // Wait for the header row to be visible instead of networkidle
     await expect(
-      page.locator(HEADER_ROW).locator(COLUMN_HEADER).first()
+      page.locator(HEADER_ROW).locator(COLUMN_HEADER).first(),
     ).toBeVisible({ timeout: 15000 });
   });
 
@@ -56,7 +55,7 @@ test.describe('SVol Column', function describeSvolColumn() {
     const svolHeader = page.getByRole('columnheader', { name: 'SVol' });
     await svolHeader.hover();
     await expect(page.locator('.mat-mdc-tooltip')).toContainText(
-      'Short-Term Volatility'
+      'Short-Term Volatility',
     );
   });
 
@@ -66,7 +65,7 @@ test.describe('SVol Column', function describeSvolColumn() {
     const searchInput = page.locator('input[placeholder="Search Symbol"]');
     await searchInput.fill(symbol);
     await expect(
-      page.locator('.dms-body-cell[data-column="svol"] mat-icon').first()
+      page.locator('.dms-body-cell[data-column="svol"] mat-icon').first(),
     ).toBeVisible({ timeout: 10000 });
     const ariaLabel = await page
       .locator('.dms-body-cell[data-column="svol"] mat-icon')

@@ -1,6 +1,5 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import fastify, { FastifyInstance } from 'fastify';
-
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { recalculateUniverseVolatility } from '../../volatility/recalculate-universe-volatility.function';
 import registerUniverseRoutes from './index';
 
@@ -74,8 +73,8 @@ function makeUniverseRow(
       sell_date: Date | null;
     }>;
     risk_group: { name: string };
-  }> = {}
-) {
+  }> = {},
+): Record<string, unknown> {
   return {
     id: 'u1',
     distribution: 0.1,
@@ -381,7 +380,7 @@ describe('POST /api/universe - avg_purchase_yield_percent (regression: AS.9 Bug 
     expect(mockPrimsaDivDeposits.findMany).not.toHaveBeenCalled();
     expect(mockRecalculateUniverseVolatility).toHaveBeenCalledWith(
       'u1',
-      externalHistory
+      externalHistory,
     );
   });
 });

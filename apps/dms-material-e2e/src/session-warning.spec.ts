@@ -1,4 +1,4 @@
-import { test, expect } from 'playwright/test';
+import { expect, test } from 'playwright/test';
 
 // FIX: These tests require a mechanism to trigger the session warning dialog
 // Currently, the dialog is only shown automatically before session timeout,
@@ -34,7 +34,7 @@ test.describe.skip('Session Warning Dialog', () => {
 
     // Verify title
     await expect(
-      dialog.locator('h2').filter({ hasText: 'Session Expiring Soon' })
+      dialog.locator('h2').filter({ hasText: 'Session Expiring Soon' }),
     ).toBeVisible();
 
     // Verify warning icon
@@ -47,7 +47,7 @@ test.describe.skip('Session Warning Dialog', () => {
     // Verify time is displayed in format like "1:00" or "0:45"
     // Simple regex - matches one or more digits, colon, exactly 2 digits
     await expect(dialog.locator('.warning-message strong')).toContainText(
-      /\d:\d\d/
+      /\d:\d\d/,
     );
   });
 
@@ -123,7 +123,7 @@ test.describe.skip('Session Warning Dialog', () => {
     await expect(dialog).toBeVisible();
   });
 
-  test('should auto-logout when timer reaches zero', ({ page }) => {
+  test('should auto-logout when timer reaches zero', () => {
     // This test would need to wait for the full countdown
     // or use a way to fast-forward time
 
@@ -157,9 +157,9 @@ test.describe.skip('Session Warning Dialog', () => {
 
     // Focus should stay within dialog
     const focusedElement = await page.evaluate(
-      () => document.activeElement?.tagName
+      () => document.activeElement?.tagName,
     );
-    const dialogContainsFocus = await dialog.evaluate((node, focusedTag) => {
+    const dialogContainsFocus = await dialog.evaluate((node, _focusedTag) => {
       const activeEl = document.activeElement;
       return activeEl !== null && node.contains(activeEl);
     }, focusedElement);
@@ -193,7 +193,7 @@ test.describe.skip('Session Warning Dialog', () => {
 
     // Verify icon exists
     await expect(
-      extendButton.locator('mat-icon:has-text("refresh")')
+      extendButton.locator('mat-icon:has-text("refresh")'),
     ).toBeVisible();
   });
 
@@ -205,7 +205,7 @@ test.describe.skip('Session Warning Dialog', () => {
 
     // Verify icon exists
     await expect(
-      logoutButton.locator('mat-icon:has-text("logout")')
+      logoutButton.locator('mat-icon:has-text("logout")'),
     ).toBeVisible();
   });
 });

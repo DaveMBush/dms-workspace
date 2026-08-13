@@ -1,11 +1,13 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialogRef } from '@angular/material/dialog';
-import { provideSmartNgRX } from '@smarttools/smart-signals';
 import { provideHttpClient } from '@angular/common/http';
 import {
   HttpTestingController,
   provideHttpClientTesting,
 } from '@angular/common/http/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatDialogRef } from '@angular/material/dialog';
+import { provideSmartNgRX } from '@smarttools/smart-signals';
+import { NotificationService } from '../../shared/services/notification.service';
+import { AddSymbolDialogComponent } from './add-symbol-dialog';
 
 // Declare mock array before vi.mock calls
 const mockUniverseArray: Array<{ symbol: string }> = [];
@@ -24,9 +26,6 @@ vi.mock('../../store/risk-group/selectors/select-risk-group.function', () => ({
     { id: 'rg2', name: 'Risk Group 2' },
   ]),
 }));
-
-import { AddSymbolDialogComponent } from './add-symbol-dialog';
-import { NotificationService } from '../../shared/services/notification.service';
 
 describe('AddSymbolDialogComponent', () => {
   let component: AddSymbolDialogComponent;
@@ -91,7 +90,7 @@ describe('AddSymbolDialogComponent', () => {
     it('should require riskGroupId', () => {
       component.form.get('riskGroupId')?.markAsTouched();
       expect(component.form.get('riskGroupId')?.hasError('required')).toBe(
-        true
+        true,
       );
     });
 
@@ -109,13 +108,13 @@ describe('AddSymbolDialogComponent', () => {
   describe('onSymbolSelected', () => {
     it('should set selectedSymbol signal', () => {
       const symbol = { symbol: 'AAPL', name: 'Apple Inc.' };
-      component.onSymbolSelected(symbol as any);
+      component.onSymbolSelected(symbol);
       expect(component.selectedSymbol()).toEqual(symbol);
     });
 
     it('should patch form with symbol value', () => {
       const symbol = { symbol: 'AAPL', name: 'Apple Inc.' };
-      component.onSymbolSelected(symbol as any);
+      component.onSymbolSelected(symbol);
       expect(component.form.get('symbol')?.value).toBe('AAPL');
     });
   });
@@ -138,7 +137,7 @@ describe('AddSymbolDialogComponent', () => {
       component.selectedSymbol.set({
         symbol: 'AAPL',
         name: 'Apple Inc.',
-      } as any);
+      });
       component.onSubmit();
 
       const req = httpMock.expectOne('./api/universe/add');
@@ -153,14 +152,14 @@ describe('AddSymbolDialogComponent', () => {
       component.selectedSymbol.set({
         symbol: 'AAPL',
         name: 'Apple Inc.',
-      } as any);
+      });
       component.onSubmit();
 
       const req = httpMock.expectOne('./api/universe/add');
       req.flush({});
 
       expect(mockDialogRef.close).toHaveBeenCalledWith(
-        expect.objectContaining({ symbol: 'AAPL', riskGroupId: 'rg1' })
+        expect.objectContaining({ symbol: 'AAPL', riskGroupId: 'rg1' }),
       );
     });
 
@@ -169,7 +168,7 @@ describe('AddSymbolDialogComponent', () => {
       component.selectedSymbol.set({
         symbol: 'AAPL',
         name: 'Apple Inc.',
-      } as any);
+      });
       component.onSubmit();
 
       const req = httpMock.expectOne('./api/universe/add');
@@ -183,7 +182,7 @@ describe('AddSymbolDialogComponent', () => {
       component.selectedSymbol.set({
         symbol: 'AAPL',
         name: 'Apple Inc.',
-      } as any);
+      });
       component.onSubmit();
 
       const req = httpMock.expectOne('./api/universe/add');
@@ -307,7 +306,7 @@ describe('AddSymbolDialogComponent', () => {
       // This test will fail until template has autocomplete dropdown
       fixture.detectChanges();
       const autocomplete = fixture.nativeElement.querySelector(
-        'dms-symbol-autocomplete'
+        'dms-symbol-autocomplete',
       );
       expect(autocomplete).toBeTruthy();
     });
@@ -326,7 +325,7 @@ describe('AddSymbolDialogComponent', () => {
     it('should populate form when autocomplete option selected', () => {
       // This test will fail until onSymbolSelected properly handles form population
       const symbol = { symbol: 'AAPL', name: 'Apple Inc.' };
-      component.onSymbolSelected(symbol as any);
+      component.onSymbolSelected(symbol);
 
       expect(component.form.get('symbol')?.value).toBe('AAPL');
       expect(component.selectedSymbol()).toEqual(symbol);
@@ -335,7 +334,7 @@ describe('AddSymbolDialogComponent', () => {
 
     it('should show "no results" message when search returns empty', async () => {
       const query = 'NONEXISTENT';
-      const mockResults: any[] = [];
+      const mockResults: unknown[] = [];
 
       const promise = component.searchSymbols(query);
 
@@ -350,7 +349,7 @@ describe('AddSymbolDialogComponent', () => {
     it('should clear autocomplete when form is reset', () => {
       // This test will fail until reset functionality is implemented
       const symbol = { symbol: 'AAPL', name: 'Apple Inc.' };
-      component.onSymbolSelected(symbol as any);
+      component.onSymbolSelected(symbol);
       component.form.reset();
       component.onFormReset();
 
@@ -369,7 +368,7 @@ describe('AddSymbolDialogComponent', () => {
 
       // Flush all pending requests
       const requests = httpMock.match((request) =>
-        request.url.includes('/api/symbol/search')
+        request.url.includes('/api/symbol/search'),
       );
       requests.forEach((req) => req.flush([]));
 
@@ -392,7 +391,7 @@ describe('AddSymbolDialogComponent', () => {
       expect(component.isSubmitDisabled()).toBe(false);
 
       // Selecting via autocomplete also keeps submit enabled
-      component.onSymbolSelected({ symbol: 'AAPL', name: 'Apple Inc.' } as any);
+      component.onSymbolSelected({ symbol: 'AAPL', name: 'Apple Inc.' });
       expect(component.isSubmitDisabled()).toBe(false);
     });
 
@@ -430,9 +429,9 @@ describe('AddSymbolDialogComponent', () => {
 
       const results = await promise;
       const allMatch = results.every(
-        (result: any) =>
+        (result) =>
           result.symbol.includes(query.toUpperCase()) ||
-          result.name.toLowerCase().includes(query.toLowerCase())
+          result.name.toLowerCase().includes(query.toLowerCase()),
       );
       expect(allMatch).toBe(true);
     });
@@ -457,12 +456,9 @@ describe('AddSymbolDialogComponent', () => {
       // This test will fail until template displays both fields
       fixture.detectChanges();
       const symbol = { symbol: 'AAPL', name: 'Apple Inc.' };
-      component.onSymbolSelected(symbol as any);
+      component.onSymbolSelected(symbol);
 
       fixture.detectChanges();
-      const autocompleteOption = fixture.nativeElement.querySelector(
-        '.autocomplete-option'
-      );
       // Template doesn't yet render autocomplete options — verify selection was processed
       expect(component.selectedSymbol()).toEqual(symbol);
     });
@@ -484,13 +480,13 @@ describe('AddSymbolDialogComponent', () => {
       const results1 = await promise2;
 
       // Should only contain MSFT results, not AAPL
-      expect(results1.every((r: any) => r.symbol.includes('MSFT'))).toBe(true);
+      expect(results1.every((r) => r.symbol.includes('MSFT'))).toBe(true);
     });
 
     it('should maintain selected symbol when clicking outside autocomplete', () => {
       // This test will fail until blur handling is implemented
       const symbol = { symbol: 'AAPL', name: 'Apple Inc.' };
-      component.onSymbolSelected(symbol as any);
+      component.onSymbolSelected(symbol);
 
       // Simulate blur event
       // component.onAutocompleteBlur();
@@ -524,7 +520,7 @@ describe('AddSymbolDialogComponent', () => {
         component.selectedSymbol.set({
           symbol: existingSymbol,
           name: 'Apple Inc.',
-        } as any);
+        });
 
         // Then: Should show duplicate error before submission
         expect(component.form.get('symbol')?.hasError('duplicate')).toBe(true);
@@ -548,7 +544,7 @@ describe('AddSymbolDialogComponent', () => {
         component.selectedSymbol.set({
           symbol: existingSymbol,
           name: 'Apple Inc.',
-        } as any);
+        });
 
         // When: User attempts to submit
         component.onSubmit();
@@ -638,7 +634,7 @@ describe('AddSymbolDialogComponent', () => {
 
         // Then: Should show required error
         expect(component.form.get('riskGroupId')?.hasError('required')).toBe(
-          true
+          true,
         );
       });
     });
@@ -717,7 +713,7 @@ describe('AddSymbolDialogComponent', () => {
       component.selectedSymbol.set({
         symbol: 'AAPL',
         name: 'Apple Inc.',
-      } as any);
+      });
       component.onSubmit();
     }
 
@@ -734,7 +730,7 @@ describe('AddSymbolDialogComponent', () => {
 
         // Then: Should show appropriate error message
         expect(notifyErrorSpy).toHaveBeenCalledWith(
-          'Symbol already exists in universe'
+          'Symbol already exists in universe',
         );
       });
 
@@ -773,7 +769,7 @@ describe('AddSymbolDialogComponent', () => {
           statusText: 'Internal Server Error',
         });
         expect(notifyErrorSpy).toHaveBeenCalledWith(
-          'Server error. Please try again later.'
+          'Server error. Please try again later.',
         );
       });
 
@@ -804,7 +800,7 @@ describe('AddSymbolDialogComponent', () => {
           .expectOne('./api/universe/add')
           .flush('Timeout', { status: 0, statusText: 'Unknown Error' });
         expect(notifyErrorSpy).toHaveBeenCalledWith(
-          'Failed to add symbol. Please try again.'
+          'Failed to add symbol. Please try again.',
         );
       });
 
@@ -816,7 +812,7 @@ describe('AddSymbolDialogComponent', () => {
           statusText: 'Unknown Error',
         });
         expect(notifyErrorSpy).toHaveBeenCalledWith(
-          'Failed to add symbol. Please try again.'
+          'Failed to add symbol. Please try again.',
         );
       });
 
@@ -838,7 +834,7 @@ describe('AddSymbolDialogComponent', () => {
           .expectOne('./api/universe/add')
           .flush('Conflict', { status: 409, statusText: 'Conflict' });
         expect(notifyErrorSpy).toHaveBeenCalledWith(
-          'Symbol already exists in universe'
+          'Symbol already exists in universe',
         );
       });
 
@@ -849,7 +845,7 @@ describe('AddSymbolDialogComponent', () => {
           .expectOne('./api/universe/add')
           .flush('Unknown', { status: 400, statusText: 'Bad Request' });
         expect(notifyErrorSpy).toHaveBeenCalledWith(
-          'Failed to add symbol. Please try again.'
+          'Failed to add symbol. Please try again.',
         );
       });
 

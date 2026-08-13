@@ -1,14 +1,14 @@
 import { expect, Page, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 import { seedUniverseE2eData } from './helpers/seed-universe-e2e-data.helper';
 
 /**
  * Helper: collect text content from all visible cells in a given column index (1-based).
  */
+
 async function getColumnTexts(page: Page, colIndex: number): Promise<string[]> {
   const cells = page.locator(
-    `.dms-body-row[role="row"] .dms-body-cell:nth-child(${colIndex})`
+    `.dms-body-row[role="row"] .dms-body-cell:nth-child(${colIndex})`,
   );
   const count = await cells.count();
   const texts: string[] = [];
@@ -170,7 +170,7 @@ test.describe('Universe Screen - Multi-Column Sort Row Ordering & Refresh Persis
     // Capture symbol order before reload — this is the ground truth.
     const symbolsBefore = await getColumnTexts(
       page,
-      UNIVERSE_COLUMN_INDEX.symbol
+      UNIVERSE_COLUMN_INDEX.symbol,
     );
     expect(symbolsBefore.length).toBe(5);
 
@@ -191,7 +191,7 @@ test.describe('Universe Screen - Multi-Column Sort Row Ordering & Refresh Persis
     // This confirms the server honoured the restored sort columns.
     const symbolsAfter = await getColumnTexts(
       page,
-      UNIVERSE_COLUMN_INDEX.symbol
+      UNIVERSE_COLUMN_INDEX.symbol,
     );
     expect(symbolsAfter.length).toBe(5);
     expect(symbolsAfter).toEqual(symbolsBefore);
@@ -236,7 +236,7 @@ test.describe('Universe Screen - Multi-Column Sort Row Ordering & Refresh Persis
     // Collect all displayed symbol values in DOM order
     const symbolValues = await getColumnTexts(
       page,
-      UNIVERSE_COLUMN_INDEX.symbol
+      UNIVERSE_COLUMN_INDEX.symbol,
     );
     expect(symbolValues.length).toBe(5);
 

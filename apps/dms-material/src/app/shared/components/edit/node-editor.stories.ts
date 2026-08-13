@@ -1,5 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/angular';
-
+import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { NodeEditorComponent } from './node-editor.component';
 
 const meta: Meta<NodeEditorComponent> = {

@@ -1,11 +1,13 @@
 /* eslint-disable vitest/no-conditional-expect -- Pre-existing: catch-block assertions verify error properties */
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { AwsConfigManager, validateEnvironmentVariables } from './aws-config';
-import { vi, beforeEach, afterEach, describe, it, expect } from 'vitest';
 
 // Mock AWS SDK with factory functions to avoid hoisting issues
 const { mockSend, mockSSMClient, mockGetParametersCommand } = vi.hoisted(() => {
   const mockSend = vi.fn();
-  const mockSSMClient = vi.fn().mockImplementation(function (this: any) {
+  const mockSSMClient = vi.fn().mockImplementation(function (
+    this: Record<string, unknown>,
+  ) {
     this.send = mockSend;
   });
   const mockGetParametersCommand = vi.fn();
@@ -48,7 +50,7 @@ describe('AWS Configuration', () => {
       delete process.env.NODE_ENV;
 
       expect(() => validateEnvironmentVariables()).toThrow(
-        'Missing required environment variables: NODE_ENV'
+        'Missing required environment variables: NODE_ENV',
       );
     });
 
@@ -63,7 +65,7 @@ describe('AWS Configuration', () => {
       validateEnvironmentVariables();
 
       expect(consoleSpy).toHaveBeenCalledWith(
-        '⚠️ DATABASE_URL not set, will attempt to fetch from Parameter Store'
+        '⚠️ DATABASE_URL not set, will attempt to fetch from Parameter Store',
       );
 
       consoleSpy.mockRestore();
@@ -207,7 +209,7 @@ describe('AWS Configuration', () => {
         delete process.env.COGNITO_JWT_ISSUER;
 
         await expect(awsConfig.getCognitoConfig()).rejects.toThrow(
-          'Unable to get Cognito configuration from Parameter Store or environment variables'
+          'Unable to get Cognito configuration from Parameter Store or environment variables',
         );
       });
 
@@ -271,7 +273,7 @@ describe('AWS Configuration', () => {
       const config = await awsConfig.getCognitoConfig();
 
       expect(config.jwtIssuer).toMatch(
-        /^https:\/\/cognito-idp\.us-east-1\.amazonaws\.com\/us-east-1_[A-Za-z0-9]+$/
+        /^https:\/\/cognito-idp\.us-east-1\.amazonaws\.com\/us-east-1_[A-Za-z0-9]+$/,
       );
     });
 
@@ -327,10 +329,11 @@ describe('AWS Configuration', () => {
 
       try {
         await awsConfig.getCognitoConfig();
-      } catch (error: any) {
-        expect(error.message).not.toContain('secret');
-        expect(error.message).not.toContain('password');
-        expect(error.message).not.toContain('token');
+      } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : String(error);
+        expect(message).not.toContain('secret');
+        expect(message).not.toContain('password');
+        expect(message).not.toContain('token');
       }
 
       consoleSpy.mockRestore();

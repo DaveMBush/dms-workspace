@@ -3,6 +3,14 @@ import baseConfig from '../../eslint.config.mjs';
 export default [
   ...baseConfig,
   {
+    ignores: [
+      'vitest.config.ts',
+      'vitest.teardown.ts',
+      'coverage/**',
+      'eslint.config.mjs',
+    ],
+  },
+  {
     files: ['**/*.ts'],
     rules: {
       'import/no-default-export': 'off',
@@ -90,6 +98,7 @@ export default [
   {
     files: ['**/*.spec.ts', '**/*.test.ts'],
     rules: {
+      'no-console': 'off',
       'sonarjs/no-duplicate-string': 'off',
       'sonarjs/no-ignored-exceptions': 'off',
       'sonarjs/todo-tag': 'off', // Allow TODO(E82) deferred-test annotations

@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { Router, provideRouter } from '@angular/router';
+import { NavigationExtras, Router, provideRouter } from '@angular/router';
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { Location } from '@angular/common';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
@@ -42,7 +42,10 @@ describe('Authentication Integration', () => {
   let httpMock: HttpTestingController;
 
   // Helper function to wait for navigation to complete
-  const navigateAndWait = async (commands: any[], extras?: any) => {
+  const navigateAndWait = async (
+    commands: unknown[],
+    extras?: NavigationExtras,
+  ): Promise<void> => {
     await router.navigate(commands, extras);
     // Wait for microtasks to resolve
     await new Promise((resolve) => setTimeout(resolve, 0));
@@ -173,10 +176,10 @@ describe('Authentication Integration', () => {
       });
 
       const expectedReturnUrl = encodeURIComponent(
-        '/protected?tab=details&filter=active#section1'
+        '/protected?tab=details&filter=active#section1',
       );
       expect(location.path()).toBe(
-        `/auth/login?returnUrl=${expectedReturnUrl}`
+        `/auth/login?returnUrl=${expectedReturnUrl}`,
       );
     });
 
@@ -286,7 +289,7 @@ describe('Authentication Integration', () => {
       const originalNavigate = router.navigate.bind(router);
       const navigateSpy = vi
         .spyOn(router, 'navigate')
-        .mockImplementation((commands, extras) => {
+        .mockImplementation(async (commands, extras) => {
           // If it's the login redirect from the guard, fail
           if (Array.isArray(commands) && commands[0] === '/auth/login') {
             return Promise.reject(new Error('Navigation failed'));
@@ -309,7 +312,7 @@ describe('Authentication Integration', () => {
     it('should handle authentication state changes across guard checks', async () => {
       let isAuthenticated = false;
       vi.spyOn(authService, 'isAuthenticated').mockImplementation(
-        () => isAuthenticated
+        () => isAuthenticated,
       );
       vi.spyOn(authService, 'isSessionValid').mockResolvedValue(true);
 

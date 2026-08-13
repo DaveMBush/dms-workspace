@@ -1,9 +1,11 @@
 import { expect, Page, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 import { seedVolatilityNewCategoriesData } from './helpers/seed-volatility-new-categories.helper';
 
-async function searchForSymbol(page: Page, symbol: string) {
+async function searchForSymbol(
+  page: Page,
+  symbol: string,
+): Promise<import('playwright').Locator> {
   const searchInput = page.locator('input[placeholder="Search Symbol"]');
   const row = page.locator('.dms-body-row[role="row"]').filter({
     has: page.locator('.dms-body-cell[data-column="symbol"]', {
@@ -14,7 +16,7 @@ async function searchForSymbol(page: Page, symbol: string) {
   await searchInput.fill(symbol);
   await expect(row).toHaveCount(1, { timeout: 10_000 });
   await expect(
-    row.locator('.dms-body-cell[data-column="symbol"]')
+    row.locator('.dms-body-cell[data-column="symbol"]'),
   ).toContainText(symbol);
 
   return row.first();
@@ -23,15 +25,17 @@ async function searchForSymbol(page: Page, symbol: string) {
 async function expectVolatilityIconForSymbol(
   page: Page,
   symbol: string,
-  ariaLabel: string
-) {
+  ariaLabel: string,
+): Promise<void> {
   const row = await searchForSymbol(page, symbol);
 
   await expect(
-    row.locator('.dms-body-cell[data-column="position"]')
+    row.locator('.dms-body-cell[data-column="position"]'),
   ).toContainText('0.00');
   await expect(
-    row.locator(`.dms-body-cell[data-column="vol"] [aria-label="${ariaLabel}"]`)
+    row.locator(
+      `.dms-body-cell[data-column="vol"] [aria-label="${ariaLabel}"]`,
+    ),
   ).toBeVisible({ timeout: 10_000 });
 }
 
@@ -73,7 +77,7 @@ test.describe('Volatility - new icon categories', function describeNewCategories
     await expectVolatilityIconForSymbol(
       page,
       upThenDownSymbol,
-      'Volatility: up-then-down'
+      'Volatility: up-then-down',
     );
   });
 
@@ -83,7 +87,7 @@ test.describe('Volatility - new icon categories', function describeNewCategories
     await expectVolatilityIconForSymbol(
       page,
       downThenUpSymbol,
-      'Volatility: down-then-up'
+      'Volatility: down-then-up',
     );
   });
 });

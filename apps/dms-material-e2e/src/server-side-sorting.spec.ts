@@ -1,5 +1,4 @@
 import { expect, Page, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 
 const ACCOUNT_UUID = '1677e04f-ef9b-4372-adb3-b740443088dc';
@@ -7,11 +6,12 @@ const ACCOUNT_UUID = '1677e04f-ef9b-4372-adb3-b740443088dc';
 /**
  * Helper: set sort state in localStorage so the interceptor picks it up.
  */
+
 async function setSortState(
   page: Page,
   table: string,
   field: string,
-  order: 'asc' | 'desc'
+  order: 'asc' | 'desc',
 ): Promise<void> {
   await page.evaluate(
     function persistSortState({
@@ -31,7 +31,7 @@ async function setSortState(
       state[t].sort = { field: f, order: o };
       localStorage.setItem('dms-sort-filter-state', JSON.stringify(state));
     },
-    { table, field, order }
+    { table, field, order },
   );
 }
 
@@ -40,7 +40,7 @@ async function setSortState(
  */
 async function getSortState(
   page: Page,
-  table: string
+  table: string,
 ): Promise<{ field: string; order: string } | null> {
   return page.evaluate(function readSortState(t: string) {
     const raw = localStorage.getItem('dms-sort-filter-state');
@@ -57,7 +57,7 @@ async function getSortState(
  */
 async function getSortColumnsState(
   page: Page,
-  table: string
+  table: string,
 ): Promise<{ column: string; direction: string }[] | null> {
   return page.evaluate(function readSortColumnsState(t: string) {
     const raw = localStorage.getItem('dms-sort-filter-state');
@@ -83,7 +83,7 @@ async function clearSortState(page: Page): Promise<void> {
 /**
  * Helper: collect sortBy/sortOrder from intercepted requests.
  */
-function extractSortParams(url: string): {
+function _extractSortParams(url: string): {
   sortBy: string | null;
   sortOrder: string | null;
 } {
@@ -261,7 +261,7 @@ test.describe('Universe Sort Persistence', () => {
 
     // Verify the Symbol sort header has the active sort rank indicator
     const symbolSortIndicator = page.locator(
-      '.dms-header-cell[data-column="symbol"] [data-testid="sort-rank"]'
+      '.dms-header-cell[data-column="symbol"] [data-testid="sort-rank"]',
     );
     await expect(symbolSortIndicator).toBeVisible();
   });
@@ -331,7 +331,7 @@ test.describe('Open Positions - Sort Interceptor', () => {
 
     // Sort indicator should appear
     const sortIndicator = page.locator(
-      '.dms-header-cell[data-column="buyDate"] .sort-rank-indicator'
+      '.dms-header-cell[data-column="buyDate"] .sort-rank-indicator',
     );
     await expect(sortIndicator).toBeVisible();
   });
@@ -387,7 +387,7 @@ test.describe('Closed Positions - Sort Interceptor', () => {
 
     // Sort indicator should appear
     const sortIndicator = page.locator(
-      '.dms-header-cell[data-column="sell_date"] .sort-rank-indicator'
+      '.dms-header-cell[data-column="sell_date"] .sort-rank-indicator',
     );
     await expect(sortIndicator).toBeVisible();
   });

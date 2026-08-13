@@ -1,4 +1,4 @@
-export const EXPIRED_OPTIONS = [
+export const expiredOptions = [
   { label: 'Yes', value: true },
   { label: 'No', value: false },
 ];

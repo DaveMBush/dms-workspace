@@ -3,8 +3,8 @@
  * Tests for health check endpoints
  */
 
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import fastify, { FastifyInstance } from 'fastify';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import healthRoutes from './index';
 
 describe('Health Check Endpoints', () => {
@@ -23,7 +23,7 @@ describe('Health Check Endpoints', () => {
         timestamp: new Date().toISOString(),
       };
     });
-    app.get('/live', async (request, reply) => {
+    app.get('/live', async (_, __) => {
       return {
         alive: true,
         timestamp: new Date().toISOString(),

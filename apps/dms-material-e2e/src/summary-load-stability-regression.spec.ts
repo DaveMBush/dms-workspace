@@ -1,5 +1,4 @@
-import { test, expect } from 'playwright/test';
-
+import { expect, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 
 const ACCOUNT_UUID = '1677e04f-ef9b-4372-adb3-b740443088dc';
@@ -13,6 +12,7 @@ const ACCOUNT_UUID = '1677e04f-ef9b-4372-adb3-b740443088dc';
  *
  * Covers AC1, AC2, AC3, AC4 from Story 116.3.
  */
+
 test.describe('Summary Load Stability Regression', () => {
   test.beforeEach(async ({ page }) => {
     await login(page);
@@ -56,7 +56,7 @@ test.describe('Summary Load Stability Regression', () => {
 
       // Wait for summary card to be visible
       const summaryCard = page.locator(
-        '[data-testid="account-summary-container"]'
+        '[data-testid="account-summary-container"]',
       );
       await expect(summaryCard).toBeVisible({ timeout: 15000 });
 
@@ -88,7 +88,7 @@ test.describe('Summary Load Stability Regression', () => {
               { month: '2025-02', label: 'February 2025' },
             ]),
           });
-        }
+        },
       );
 
       await page.route(
@@ -106,7 +106,7 @@ test.describe('Summary Load Stability Regression', () => {
               tax_free_income: 10000,
             }),
           });
-        }
+        },
       );
 
       await page.route(
@@ -130,7 +130,7 @@ test.describe('Summary Load Stability Regression', () => {
               },
             ]),
           });
-        }
+        },
       );
 
       // Navigate to account summary
@@ -192,7 +192,7 @@ test.describe('Summary Load Stability Regression', () => {
             contentType: 'application/json',
             body: JSON.stringify([2025, 2024, 2023]),
           });
-        }
+        },
       );
 
       await page.route(
@@ -206,7 +206,7 @@ test.describe('Summary Load Stability Regression', () => {
               { month: '2025-02', label: 'February 2025' },
             ]),
           });
-        }
+        },
       );
 
       await page.route(
@@ -230,7 +230,7 @@ test.describe('Summary Load Stability Regression', () => {
               },
             ]),
           });
-        }
+        },
       );
 
       await page.route(
@@ -248,7 +248,7 @@ test.describe('Summary Load Stability Regression', () => {
               tax_free_income: 10000,
             }),
           });
-        }
+        },
       );
 
       // Navigate to account summary
@@ -303,7 +303,7 @@ test.describe('Summary Load Stability Regression', () => {
 
       // Wait for summary card to be visible
       const summaryCard = page.locator(
-        '[data-testid="account-summary-container"]'
+        '[data-testid="account-summary-container"]',
       );
       await expect(summaryCard).toBeVisible({ timeout: 15000 });
 
@@ -334,7 +334,7 @@ test.describe('Summary Load Stability Regression', () => {
               { month: '2025-02', label: 'February 2025' },
             ]),
           });
-        }
+        },
       );
 
       await page.route(
@@ -352,7 +352,7 @@ test.describe('Summary Load Stability Regression', () => {
               tax_free_income: 10000,
             }),
           });
-        }
+        },
       );
 
       // Navigate to account summary
@@ -377,7 +377,7 @@ test.describe('Summary Load Stability Regression', () => {
 
         // Assert: Screen remains stable after month change
         const summaryCard = page.locator(
-          '[data-testid="account-summary-container"]'
+          '[data-testid="account-summary-container"]',
         );
         const statsGrid = page.locator('[data-testid="stats-grid"]');
 
@@ -415,7 +415,7 @@ test.describe('Summary Load Stability Regression', () => {
 
       // Wait for summary card to be visible
       const summaryCard = page.locator(
-        '[data-testid="global-summary-container"]'
+        '[data-testid="global-summary-container"]',
       );
       await expect(summaryCard).toBeVisible({ timeout: 15000 });
 

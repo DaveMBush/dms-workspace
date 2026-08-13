@@ -1,15 +1,16 @@
 import { expect, Page, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
-import { seedFillerUniverseSymbols } from './helpers/seed-filler-universe-symbols.helper';
 import { seedUniverseE2eData } from './helpers/seed-universe-e2e-data.helper';
 
 /**
  * Helper: collect text content from all visible cells in a given column index (1-based).
  */
-async function getColumnTexts(page: Page, colIndex: number): Promise<string[]> {
+async function _getColumnTexts(
+  page: Page,
+  colIndex: number,
+): Promise<string[]> {
   const cells = page.locator(
-    `.dms-body-row[role="row"] .dms-body-cell:nth-child(${colIndex})`
+    `.dms-body-row[role="row"] .dms-body-cell:nth-child(${colIndex})`,
   );
   const rawTexts = await cells.allTextContents();
   return rawTexts.map((text) => text.trim());
@@ -110,13 +111,13 @@ test.describe('Universe Screen - Duplicate Symbols Bug (Story 55.1)', () => {
     // This is more reliable than DOM inspection with CDK virtual scroll, which
     // only renders ~30 rows in the viewport and cannot show stale rows at position 50+.
     const avgYieldHeader = page.locator(
-      '.dms-header-cell[data-column="avg_purchase_yield_percent"]'
+      '.dms-header-cell[data-column="avg_purchase_yield_percent"]',
     );
 
     // First click (ascending) — capture the response.
     const [ascResponse] = await Promise.all([
       page.waitForResponse(
-        (r) => r.url().includes('/api/top') && r.status() === 200
+        (r) => r.url().includes('/api/top') && r.status() === 200,
       ),
       avgYieldHeader.click(),
     ]);
@@ -124,7 +125,7 @@ test.describe('Universe Screen - Duplicate Symbols Bug (Story 55.1)', () => {
     // Second click (descending) — capture the response.
     const [descResponse] = await Promise.all([
       page.waitForResponse(
-        (r) => r.url().includes('/api/top') && r.status() === 200
+        (r) => r.url().includes('/api/top') && r.status() === 200,
       ),
       avgYieldHeader.click(),
     ]);

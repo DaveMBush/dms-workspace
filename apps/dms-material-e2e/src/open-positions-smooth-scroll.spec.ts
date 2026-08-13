@@ -1,5 +1,4 @@
 import { expect, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 import { seedScrollOpenPositionsData } from './helpers/seed-scroll-open-positions-data.helper';
 import { verifyMonotonicScroll } from './helpers/verify-smooth-scroll';
@@ -28,7 +27,7 @@ test.describe('Open Positions Smooth Scroll', () => {
     await login(page);
     await page.goto(`/account/${accountId}/open`);
     await expect(
-      page.locator('[data-testid="open-positions-table"]')
+      page.locator('[data-testid="open-positions-table"]'),
     ).toBeVisible({ timeout: 15000 });
     await page.waitForSelector('.dms-body-row[role="row"]', { timeout: 15000 });
   });

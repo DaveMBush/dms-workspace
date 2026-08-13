@@ -1,5 +1,4 @@
-import { test, expect } from 'playwright/test';
-
+import { expect, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 
 const ACCOUNT_UUID = '1677e04f-ef9b-4372-adb3-b740443088dc';
@@ -17,7 +16,7 @@ test.describe('Account Summary', () => {
       page,
     }) => {
       const summaryCard = page.locator(
-        '[data-testid="account-summary-container"]'
+        '[data-testid="account-summary-container"]',
       );
       await expect(summaryCard).toBeVisible();
     });
@@ -37,7 +36,7 @@ test.describe('Account Summary', () => {
       // Verify account summary URL (no sub-path, summary is default)
       await expect(page).toHaveURL(new RegExp(`/account/${ACCOUNT_UUID}$`));
       const summaryCard = page.locator(
-        '[data-testid="account-summary-container"]'
+        '[data-testid="account-summary-container"]',
       );
       await expect(summaryCard).toBeVisible();
     });
@@ -53,7 +52,7 @@ test.describe('Account Summary', () => {
 
       // Account summary should be visible again
       const summaryCard = page.locator(
-        '[data-testid="account-summary-container"]'
+        '[data-testid="account-summary-container"]',
       );
       await expect(summaryCard).toBeVisible();
     });
@@ -62,7 +61,7 @@ test.describe('Account Summary', () => {
   test.describe('Data Display', () => {
     test('should display page title', async ({ page }) => {
       await expect(
-        page.getByRole('heading', { name: 'Account Summary' })
+        page.getByRole('heading', { name: 'Account Summary' }),
       ).toBeVisible();
     });
 
@@ -91,7 +90,7 @@ test.describe('Account Summary', () => {
       page,
     }) => {
       const capitalGainValue = page.locator(
-        '[data-testid="capital-gain-value"]'
+        '[data-testid="capital-gain-value"]',
       );
       await expect(capitalGainValue).toBeVisible();
       await expect(capitalGainValue).toContainText('$');
@@ -99,7 +98,7 @@ test.describe('Account Summary', () => {
 
     test('should display percent increase value', async ({ page }) => {
       const percentValue = page.locator(
-        '[data-testid="percent-increase-value"]'
+        '[data-testid="percent-increase-value"]',
       );
       await expect(percentValue).toBeVisible();
       await expect(percentValue).toContainText('%');
@@ -140,7 +139,7 @@ test.describe('Account Summary', () => {
 
     test('performance line chart displays over time', async ({ page }) => {
       const performanceChart = page.locator(
-        '[data-testid="performance-chart"]'
+        '[data-testid="performance-chart"]',
       );
       await expect(performanceChart).toBeVisible();
       await expect(performanceChart.locator('canvas')).toBeVisible({
@@ -194,7 +193,7 @@ test.describe('Account Summary', () => {
               { month: '2025-02', label: 'February 2025' },
             ]),
           });
-        }
+        },
       );
       await page.route(
         /\/api\/summary\?/,
@@ -211,7 +210,7 @@ test.describe('Account Summary', () => {
               tax_free_income: 10000,
             }),
           });
-        }
+        },
       );
       await page.goto(`/account/${ACCOUNT_UUID}`);
       await page.waitForLoadState('networkidle');
@@ -247,7 +246,7 @@ test.describe('Account Summary', () => {
               { month: '2025-02', label: 'February 2025' },
             ]),
           });
-        }
+        },
       );
       await page.route(
         /\/api\/summary\?/,
@@ -267,7 +266,7 @@ test.describe('Account Summary', () => {
               tax_free_income: 10000,
             }),
           });
-        }
+        },
       );
       await page.goto(`/account/${ACCOUNT_UUID}`);
       await page.waitForLoadState('networkidle');
@@ -288,22 +287,22 @@ test.describe('Account Summary', () => {
 
       if (count > 1) {
         // Capture the refresh request to prove data updates
-        const refreshRequest = page.waitForRequest(function isMonthRefresh(
-          request
-        ) {
-          const url = new URL(request.url());
-          return (
-            url.pathname === '/api/summary' &&
-            url.searchParams.get('month') === '2025-02'
-          );
-        });
+        const refreshRequest = page.waitForRequest(
+          function isMonthRefresh(request) {
+            const url = new URL(request.url());
+            return (
+              url.pathname === '/api/summary' &&
+              url.searchParams.get('month') === '2025-02'
+            );
+          },
+        );
         // Select the second option (February 2025)
         await options.nth(1).click();
         await refreshRequest;
         await page.waitForLoadState('networkidle');
         // Verify the dividends value updated to match February data
         await expect(
-          page.locator('[data-testid="dividends-value"]')
+          page.locator('[data-testid="dividends-value"]'),
         ).toContainText('2,200');
       } else {
         // Only one month available - just verify the selector is functional
@@ -331,7 +330,7 @@ test.describe('Account Summary', () => {
             contentType: 'application/json',
             body: JSON.stringify([2025, 2024]),
           });
-        }
+        },
       );
       await page.route(
         /\/api\/summary\?/,
@@ -348,7 +347,7 @@ test.describe('Account Summary', () => {
               tax_free_income: 10000,
             }),
           });
-        }
+        },
       );
       await page.goto(`/account/${ACCOUNT_UUID}`);
       await page.waitForLoadState('networkidle');
@@ -381,7 +380,7 @@ test.describe('Account Summary', () => {
             contentType: 'application/json',
             body: JSON.stringify([2025, 2024]),
           });
-        }
+        },
       );
       await page.route(
         /\/api\/summary\?/,
@@ -398,7 +397,7 @@ test.describe('Account Summary', () => {
               tax_free_income: 10000,
             }),
           });
-        }
+        },
       );
       await page.route(
         '**/api/summary/graph*',
@@ -425,10 +424,10 @@ test.describe('Account Summary', () => {
                       dividends: 300,
                       capitalGains: 500,
                     },
-                  ]
+                  ],
             ),
           });
-        }
+        },
       );
       await page.goto(`/account/${ACCOUNT_UUID}`);
       await page.waitForLoadState('networkidle');
@@ -448,21 +447,21 @@ test.describe('Account Summary', () => {
 
       if (count > 1) {
         // Capture the graph refresh request to validate year-specific refresh
-        const graphRefresh = page.waitForRequest(function isYearRefresh(
-          request
-        ) {
-          const url = new URL(request.url());
-          return (
-            url.pathname === '/api/summary/graph' &&
-            url.searchParams.get('year') === '2024'
-          );
-        });
+        const graphRefresh = page.waitForRequest(
+          function isYearRefresh(request) {
+            const url = new URL(request.url());
+            return (
+              url.pathname === '/api/summary/graph' &&
+              url.searchParams.get('year') === '2024'
+            );
+          },
+        );
         await options.nth(1).click();
         await graphRefresh;
         await page.waitForLoadState('networkidle');
         // Verify performance chart is still visible after year change
         const performanceChart = page.locator(
-          '[data-testid="performance-chart"]'
+          '[data-testid="performance-chart"]',
         );
         await expect(performanceChart).toBeVisible();
       } else {
@@ -477,40 +476,47 @@ test.describe('Account Summary', () => {
       // Reload and hold ALL summary API calls so loadingSignal stays true.
       let intercepting = true;
       const pendingRoutes: Array<() => Promise<void>> = [];
-      await page.route(/\/api\/summary/, function holdSummaryRoutes(route) {
-        const url = route.request().url();
-        if (!intercepting || url.includes('/graph') || url.includes('/years')) {
-          return route.continue();
-        }
-        return new Promise<void>(function deferRoute(resolve) {
-          pendingRoutes.push(async function releasePendingRoute() {
-            if (url.includes('/months')) {
-              await route.fulfill({
-                status: 200,
-                contentType: 'application/json',
-                body: JSON.stringify([
-                  { month: '2025-03', label: 'March 2025' },
-                  { month: '2025-02', label: 'February 2025' },
-                ]),
-              });
-            } else {
-              await route.fulfill({
-                status: 200,
-                contentType: 'application/json',
-                body: JSON.stringify({
-                  deposits: 100000,
-                  dividends: 2500,
-                  capitalGains: 5000,
-                  equities: 50000,
-                  income: 30000,
-                  tax_free_income: 20000,
-                }),
-              });
-            }
-            resolve();
+      await page.route(
+        /\/api\/summary/,
+        async function holdSummaryRoutes(route) {
+          const url = route.request().url();
+          if (
+            !intercepting ||
+            url.includes('/graph') ||
+            url.includes('/years')
+          ) {
+            return route.continue();
+          }
+          return new Promise<void>(function deferRoute(resolve) {
+            pendingRoutes.push(async function releasePendingRoute() {
+              if (url.includes('/months')) {
+                await route.fulfill({
+                  status: 200,
+                  contentType: 'application/json',
+                  body: JSON.stringify([
+                    { month: '2025-03', label: 'March 2025' },
+                    { month: '2025-02', label: 'February 2025' },
+                  ]),
+                });
+              } else {
+                await route.fulfill({
+                  status: 200,
+                  contentType: 'application/json',
+                  body: JSON.stringify({
+                    deposits: 100000,
+                    dividends: 2500,
+                    capitalGains: 5000,
+                    equities: 50000,
+                    income: 30000,
+                    tax_free_income: 20000,
+                  }),
+                });
+              }
+              resolve();
+            });
           });
-        });
-      });
+        },
+      );
 
       const spinner = page.locator('[data-testid="loading-spinner"]');
 
@@ -524,7 +530,7 @@ test.describe('Account Summary', () => {
             document.querySelector('[data-testid="loading-spinner"]') !== null
           );
         },
-        { timeout: 10000 }
+        { timeout: 10000 },
       );
 
       // Spinner confirmed in DOM; assert it is visible
@@ -535,9 +541,9 @@ test.describe('Account Summary', () => {
 
       // Release all held routes with fulfilled mock data
       await Promise.all(
-        pendingRoutes.map(function invokeRelease(release) {
+        pendingRoutes.map(async function invokeRelease(release) {
           return release();
-        })
+        }),
       );
 
       // After data loads, spinner should be gone
@@ -552,7 +558,7 @@ test.describe('Account Summary', () => {
       await expect(allocationChart).toBeVisible();
 
       const performanceChart = page.locator(
-        '[data-testid="performance-chart"]'
+        '[data-testid="performance-chart"]',
       );
       await expect(performanceChart).toBeVisible();
     });
@@ -563,7 +569,7 @@ test.describe('Account Summary', () => {
       page,
     }) => {
       // Intercept summary API calls to simulate a 500 server error
-      await page.route('**/api/summary*', function failSummary(route) {
+      await page.route('**/api/summary*', async function failSummary(route) {
         return route.fulfill({
           status: 500,
           contentType: 'application/json',
@@ -597,7 +603,7 @@ test.describe('Account Summary', () => {
               tax_free_income: 10000,
             }),
           });
-        }
+        },
       );
       await page.route(
         '**/api/summary/months*',
@@ -607,7 +613,7 @@ test.describe('Account Summary', () => {
             contentType: 'application/json',
             body: JSON.stringify([{ month: '2025-03', label: 'March 2025' }]),
           });
-        }
+        },
       );
       await page.route(
         '**/api/summary/graph*',
@@ -624,7 +630,7 @@ test.describe('Account Summary', () => {
               },
             ]),
           });
-        }
+        },
       );
       await page.route(
         '**/api/summary/years*',
@@ -634,7 +640,7 @@ test.describe('Account Summary', () => {
             contentType: 'application/json',
             body: JSON.stringify([2025]),
           });
-        }
+        },
       );
 
       await page.goto(`/account/${ACCOUNT_UUID}`);

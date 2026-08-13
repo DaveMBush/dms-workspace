@@ -1,13 +1,12 @@
-import { TestBed } from '@angular/core/testing';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
-import { AuthService } from './auth.service';
-import { TokenCacheService } from './services/token-cache.service';
-import { SessionManagerService } from './services/session-manager.service';
-import { TokenRefreshService } from './services/token-refresh.service';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 import { fetchAuthSession } from '@aws-amplify/auth';
-
-import { vi, MockedFunction } from 'vitest';
+import { MockedFunction, vi } from 'vitest';
+import { AuthService } from './auth.service';
+import { SessionManagerService } from './services/session-manager.service';
+import { TokenCacheService } from './services/token-cache.service';
+import { TokenRefreshService } from './services/token-refresh.service';
 
 // Mock AWS Amplify
 vi.mock('@aws-amplify/auth', () => ({
@@ -76,7 +75,7 @@ describe('AuthService Performance Benchmarks', () => {
     tokenCacheService.clear();
 
     // Setup default mock response
-    mockFetchAuthSession.mockResolvedValue(mockSessionData as any);
+    mockFetchAuthSession.mockResolvedValue(mockSessionData);
   });
 
   describe('Token Retrieval Performance', () => {
@@ -86,10 +85,10 @@ describe('AuthService Performance Benchmarks', () => {
       // Simulate AWS delay (original problem: 6 seconds, we'll use 60ms for testing)
       const awsDelay = 60; // milliseconds
       mockFetchAuthSession.mockImplementation(
-        () =>
+        async () =>
           new Promise((resolve) => {
-            setTimeout(() => resolve(mockSessionData as any), awsDelay);
-          })
+            setTimeout(() => resolve(mockSessionData), awsDelay);
+          }),
       );
 
       // Benchmark without cache (first call)
@@ -125,12 +124,12 @@ describe('AuthService Performance Benchmarks', () => {
       // Only one AWS call should have been made
       expect(mockFetchAuthSession).toHaveBeenCalledTimes(1);
 
-      console.log(`Performance Benchmark Results:
-        - Uncached call time: ${uncachedTime.toFixed(2)}ms
-        - Average cached call time: ${averageCachedTime.toFixed(2)}ms
-        - Performance improvement: ${performanceImprovement.toFixed(1)}%
-        - Cache hit rate: ${(stats.hitRate * 100).toFixed(1)}%
-        - AWS API calls: ${mockFetchAuthSession.mock.calls.length}`);
+      // console.log(`Performance Benchmark Results:
+      //   - Uncached call time: ${uncachedTime.toFixed(2)}ms
+      //   - Average cached call time: ${averageCachedTime.toFixed(2)}ms
+      //   - Performance improvement: ${performanceImprovement.toFixed(1)}%
+      //   - Cache hit rate: ${(stats.hitRate * 100).toFixed(1)}%
+      //   - AWS API calls: ${mockFetchAuthSession.mock.calls.length}`);
     });
 
     it('should meet performance targets (<500ms for account operations)', async () => {
@@ -142,8 +141,8 @@ describe('AuthService Performance Benchmarks', () => {
 
       // Measure concurrent cache hits (simulating account operations)
       const startTime = performance.now();
-      const promises = Array.from({ length: concurrentRequests }, () =>
-        authService.getAccessToken()
+      const promises = Array.from({ length: concurrentRequests }, async () =>
+        authService.getAccessToken(),
       );
 
       await Promise.all(promises);
@@ -157,12 +156,12 @@ describe('AuthService Performance Benchmarks', () => {
       const stats = tokenCacheService.getStats();
       expect(stats.hitRate).toBeGreaterThan(0.9); // >90% hit rate target
 
-      console.log(`Account Operations Performance:
-        - Total time for ${concurrentRequests} operations: ${totalTime.toFixed(
-        2
-      )}ms
-        - Average time per operation: ${averageTime.toFixed(2)}ms
-        - Cache hit rate: ${(stats.hitRate * 100).toFixed(1)}%`);
+      // console.log(`Account Operations Performance:
+      //   - Total time for ${concurrentRequests} operations: ${totalTime.toFixed(
+      //   2
+      // )}ms
+      //   - Average time per operation: ${averageTime.toFixed(2)}ms
+      //   - Cache hit rate: ${(stats.hitRate * 100).toFixed(1)}%`);
     });
 
     it('should demonstrate interceptor performance improvement', async () => {
@@ -192,13 +191,13 @@ describe('AuthService Performance Benchmarks', () => {
       const stats = tokenCacheService.getStats();
       expect(stats.hits).toBe(requestCount - 1); // All but first should be hits
 
-      console.log(`Interceptor Performance Simulation:
-        - Average request time: ${averageRequestTime.toFixed(2)}ms
-        - Max request time: ${maxRequestTime.toFixed(2)}ms
-        - Cache efficiency: ${(
-          (stats.hits / stats.totalRequests) *
-          100
-        ).toFixed(1)}%`);
+      // console.log(`Interceptor Performance Simulation:
+      //   - Average request time: ${averageRequestTime.toFixed(2)}ms
+      //   - Max request time: ${maxRequestTime.toFixed(2)}ms
+      //   - Cache efficiency: ${(
+      //     (stats.hits / stats.totalRequests) *
+      //     100
+      //   ).toFixed(1)}%`);
     });
   });
 
@@ -212,8 +211,8 @@ describe('AuthService Performance Benchmarks', () => {
       const startTime = performance.now();
 
       // Make concurrent requests (these should all be cache hits)
-      const promises = Array.from({ length: concurrentRequests }, () =>
-        authService.getAccessToken()
+      const promises = Array.from({ length: concurrentRequests }, async () =>
+        authService.getAccessToken(),
       );
 
       await Promise.all(promises);
@@ -228,14 +227,14 @@ describe('AuthService Performance Benchmarks', () => {
       // Should have high hit rate (all but first request should be hits)
       expect(stats.hitRate).toBeGreaterThan(0.8); // Should maintain >80% hit rate
 
-      console.log(`Concurrent Load Test:
-        - ${concurrentRequests} concurrent requests
-        - Total time: ${totalTime.toFixed(2)}ms
-        - Average time per request: ${averageTimePerRequest.toFixed(2)}ms
-        - Cache hit rate: ${(stats.hitRate * 100).toFixed(1)}%
-        - Total requests: ${stats.totalRequests}
-        - Cache hits: ${stats.hits}
-        - Cache misses: ${stats.misses}`);
+      // console.log(`Concurrent Load Test:
+      //   - ${concurrentRequests} concurrent requests
+      //   - Total time: ${totalTime.toFixed(2)}ms
+      //   - Average time per request: ${averageTimePerRequest.toFixed(2)}ms
+      //   - Cache hit rate: ${(stats.hitRate * 100).toFixed(1)}%
+      //   - Total requests: ${stats.totalRequests}
+      //   - Cache hits: ${stats.hits}
+      //   - Cache misses: ${stats.misses}`);
     });
   });
 
@@ -261,9 +260,9 @@ describe('AuthService Performance Benchmarks', () => {
       stats = tokenCacheService.getStats();
       expect(stats.cacheSize).toBe(1); // Should only have the fresh token
 
-      console.log(`Memory Management Test:
-        - Cache cleaned up expired entries automatically
-        - Final cache size: ${stats.cacheSize}`);
+      // console.log(`Memory Management Test:
+      //   - Cache cleaned up expired entries automatically
+      //   - Final cache size: ${stats.cacheSize}`);
     });
   });
 });

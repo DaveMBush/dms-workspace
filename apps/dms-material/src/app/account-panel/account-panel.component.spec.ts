@@ -2,7 +2,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { provideRouter, Router } from '@angular/router';
 import { Subject } from 'rxjs';
-
 import { StatePersistenceService } from '../shared/services/state-persistence.service';
 import { AccountPanelComponent } from './account-panel.component';
 import { DividendDepositsComponentService } from './dividend-deposits/dividend-deposits-component.service';
@@ -57,7 +56,7 @@ vi.mock(
   '../store/div-deposit-types/selectors/select-div-deposit-types.function',
   () => ({
     selectDivDepositTypes: vi.fn().mockReturnValue([]),
-  })
+  }),
 );
 
 // Mock selectDivDepositTypeEntity to avoid SmartNgRX initialization
@@ -65,7 +64,7 @@ vi.mock(
   '../store/div-deposit-types/selectors/select-div-deposit-type-entity.function',
   () => ({
     selectDivDepositTypeEntity: vi.fn().mockReturnValue({}),
-  })
+  }),
 );
 
 describe('AccountPanelComponent', () => {
@@ -85,7 +84,7 @@ describe('AccountPanelComponent', () => {
   it('should render tab nav bar', () => {
     fixture.detectChanges();
     expect(
-      fixture.nativeElement.querySelector('[mat-tab-nav-bar]')
+      fixture.nativeElement.querySelector('[mat-tab-nav-bar]'),
     ).toBeTruthy();
   });
 
@@ -137,19 +136,15 @@ describe('AccountPanelComponent', () => {
         open: vi.fn().mockReturnValue(mockDialogRef),
       };
 
-      Object.defineProperty(
-        component,
-        'dialog' as keyof AccountPanelComponent,
-        {
-          get: () => mockDialog,
-          configurable: true,
-        }
-      );
+      Object.defineProperty(component, 'dialog', {
+        get: () => mockDialog,
+        configurable: true,
+      });
 
       addDivDepositSpy = vi
         .spyOn(
           TestBed.inject(DividendDepositsComponentService),
-          'addDivDeposit'
+          'addDivDeposit',
         )
         .mockImplementation(() => undefined);
     });
@@ -248,7 +243,7 @@ describe('AccountPanelComponent', () => {
 
       expect(mockStatePersistenceService.saveState).toHaveBeenCalledWith(
         'account-tab-account-1',
-        'open'
+        'open',
       );
     });
 
@@ -264,7 +259,7 @@ describe('AccountPanelComponent', () => {
 
       expect(mockStatePersistenceService.loadState).toHaveBeenCalledWith(
         'account-tab-account-1',
-        null
+        null,
       );
     });
 
@@ -284,7 +279,7 @@ describe('AccountPanelComponent', () => {
 
       // Should not navigate to a specific sub-tab - stays on summary (default)
       expect(routerSpy).not.toHaveBeenCalledWith(
-        expect.arrayContaining([expect.stringContaining('/open')])
+        expect.arrayContaining([expect.stringContaining('/open')]),
       );
     });
 
@@ -298,7 +293,7 @@ describe('AccountPanelComponent', () => {
             return 'sold';
           }
           return null;
-        }
+        },
       );
 
       // Switch to account-1 and verify it loads 'open'
@@ -310,7 +305,7 @@ describe('AccountPanelComponent', () => {
 
       expect(mockStatePersistenceService.loadState).toHaveBeenCalledWith(
         'account-tab-account-1',
-        null
+        null,
       );
     });
 

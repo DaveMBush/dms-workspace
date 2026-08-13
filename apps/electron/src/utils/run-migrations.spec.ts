@@ -1,5 +1,10 @@
+import { spawn } from 'child_process';
 import { EventEmitter } from 'events';
+import fs from 'fs';
+import path from 'path';
+import { app } from 'electron';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { runMigrations } from './run-migrations';
 
 // Mock electron app before importing the module under test
 vi.mock('electron', () => ({
@@ -12,14 +17,6 @@ vi.mock('electron', () => ({
 vi.mock('child_process', () => ({
   spawn: vi.fn(),
 }));
-
-import { spawn } from 'child_process';
-import fs from 'fs';
-import path from 'path';
-
-import { app } from 'electron';
-
-import { runMigrations } from './run-migrations';
 
 interface MockApp {
   isPackaged: boolean;
@@ -50,7 +47,7 @@ interface MockEngineProcess extends EventEmitter {
  */
 function makeMockEngineProcess(
   rpcResponse?: string,
-  exitCode: number = 0
+  exitCode: number = 0,
 ): MockEngineProcess {
   const proc = new EventEmitter() as MockEngineProcess;
   proc.stdin = { write: vi.fn(), end: vi.fn() };
@@ -78,9 +75,7 @@ describe('runMigrations', () => {
     vi.clearAllMocks();
     mockApp.isPackaged = false;
     savedResourcesPath = process.resourcesPath;
-    vi.spyOn(fs, 'readdirSync').mockReturnValue(
-      [] as unknown as fs.Dirent<Buffer>[]
-    );
+    vi.spyOn(fs, 'readdirSync').mockReturnValue([] as fs.Dirent<Buffer>[]);
   });
 
   afterEach(function teardown(): void {
@@ -102,7 +97,7 @@ describe('runMigrations', () => {
     mockSpawn.mockReturnValue(makeMockProcess(1));
 
     await expect(runMigrations()).rejects.toThrow(
-      /prisma migrate deploy exited with code 1/
+      /prisma migrate deploy exited with code 1/,
     );
   });
 
@@ -136,7 +131,7 @@ describe('runMigrations', () => {
     mockSpawn.mockReturnValue(proc);
 
     await expect(runMigrations()).rejects.toThrow(
-      'Failed to spawn Prisma CLI: ENOENT: file not found'
+      'Failed to spawn Prisma CLI: ENOENT: file not found',
     );
   });
 
@@ -161,7 +156,7 @@ describe('runMigrations', () => {
 
     const [binaryPath] = mockSpawn.mock.calls[0] as [string, string[], object];
     expect(binaryPath).toContain(
-      path.join('/mock/resources', 'prisma-migration-engine')
+      path.join('/mock/resources', 'prisma-migration-engine'),
     );
     expect(binaryPath).toContain('schema-engine-');
     expect(binaryPath).not.toContain('prisma-cli');
@@ -192,7 +187,7 @@ describe('runMigrations', () => {
     const datamodelsIdx = args.indexOf('--datamodels');
     expect(datamodelsIdx).not.toBe(-1);
     expect(args[datamodelsIdx + 1]).toBe(
-      '/mock/resources/prisma/schema.prisma'
+      '/mock/resources/prisma/schema.prisma',
     );
 
     const datasourceIdx = args.indexOf('--datasource');
@@ -227,15 +222,11 @@ describe('runMigrations', () => {
     const writtenArg = mockProc.stdin.write.mock.calls[0]?.[0] as string;
     const rpcMsg = JSON.parse(writtenArg.trim()) as {
       method?: string;
-      params?: {
-        migrationsList?: Array<{
-          migrationName: string;
-          migrationDirectoryPath: string;
-        }>;
-      };
+      params?: { migrationsList?: unknown };
     };
     expect(rpcMsg.method).toBe('applyMigrations');
-    expect(Array.isArray(rpcMsg.params?.migrationsList)).toBe(true);
+    expect(rpcMsg.params).toHaveProperty('migrationsList');
+    expect(Array.isArray(rpcMsg.params!.migrationsList)).toBe(true);
     expect(mockProc.stdin.end).toHaveBeenCalledOnce();
 
     (process as NodeJS.Process & { resourcesPath: string }).resourcesPath =
@@ -271,28 +262,11 @@ describe('runMigrations', () => {
 
     const writtenArg = mockProc.stdin.write.mock.calls[0]?.[0] as string;
     const rpcMsg = JSON.parse(writtenArg.trim()) as {
-      params: {
-        migrationsList: Array<{
-          migrationName: string;
-          migrationDirectoryPath: string;
-        }>;
-      };
+      params?: { migrationsList?: string[] };
     };
-    expect(rpcMsg.params.migrationsList).toHaveLength(2);
-    expect(rpcMsg.params.migrationsList[0]?.migrationName).toBe(
-      '20250101000000_init'
-    );
-    expect(rpcMsg.params.migrationsList[0]?.migrationDirectoryPath).toBe(
-      path.join(
-        '/mock/resources',
-        'prisma',
-        'migrations',
-        '20250101000000_init'
-      )
-    );
-    expect(rpcMsg.params.migrationsList[1]?.migrationName).toBe(
-      '20250201000000_add_user'
-    );
+    expect(rpcMsg.params!.migrationsList).toHaveLength(2);
+    expect(rpcMsg.params!.migrationsList![0]).toBe('20250101000000_init');
+    expect(rpcMsg.params!.migrationsList![1]).toBe('20250201000000_add_user');
 
     (process as NodeJS.Process & { resourcesPath: string }).resourcesPath =
       originalResourcesPath;
@@ -344,7 +318,7 @@ describe('runMigrations', () => {
     mockSpawn.mockReturnValue(makeMockEngineProcess(undefined, 1));
 
     await expect(runMigrations()).rejects.toThrow(
-      /schema-engine exited with code 1/
+      /schema-engine exited with code 1/,
     );
   });
 
@@ -361,7 +335,7 @@ describe('runMigrations', () => {
     mockSpawn.mockReturnValue(makeMockEngineProcess(errorResponse, 0));
 
     await expect(runMigrations()).rejects.toThrow(
-      /Migration failed: connection refused/
+      /Migration failed: connection refused/,
     );
   });
 
@@ -380,7 +354,7 @@ describe('runMigrations', () => {
     mockSpawn.mockReturnValue(proc);
 
     await expect(runMigrations()).rejects.toThrow(
-      /Failed to spawn schema-engine: ENOENT: binary not found/
+      /Failed to spawn schema-engine: ENOENT: binary not found/,
     );
   });
 });

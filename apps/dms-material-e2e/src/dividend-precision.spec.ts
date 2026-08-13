@@ -1,7 +1,6 @@
 import { expect, test } from 'playwright/test';
-
-import { login } from './helpers/login.helper';
 import { generateUniqueId } from './helpers/generate-unique-id.helper';
+import { login } from './helpers/login.helper';
 import { initializePrismaClient } from './helpers/shared-prisma-client.helper';
 import { createRiskGroups } from './helpers/shared-risk-groups.helper';
 
@@ -145,7 +144,7 @@ test.describe('Dividend Precision After Update', () => {
     // The editable-cell component uses data-testid="distribution-cell-0" for
     // row index 0, formatted with decimalFormat="1.4-4" (exactly 4 decimal places).
     const distributionCell = page.locator(
-      '[data-testid="distribution-cell-0"]'
+      '[data-testid="distribution-cell-0"]',
     );
     await expect(distributionCell).toBeVisible({ timeout: 10000 });
 
@@ -205,7 +204,7 @@ test.describe('Dividend Precision After Update', () => {
       await expect(firstRow).toContainText(baselineSymbol, { timeout: 10000 });
 
       const distributionCell = page.locator(
-        '[data-testid="distribution-cell-0"]'
+        '[data-testid="distribution-cell-0"]',
       );
       await expect(distributionCell).toBeVisible({ timeout: 10000 });
 
