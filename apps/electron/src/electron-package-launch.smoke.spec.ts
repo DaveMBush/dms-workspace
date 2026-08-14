@@ -14,14 +14,22 @@
  */
 
 // eslint-disable-next-line @typescript-eslint/naming-convention -- better-sqlite3 exports a PascalCase default that violates the rule
-import Database from 'better-sqlite3';
 import { ChildProcess, execFileSync, spawn } from 'child_process';
 import fs from 'fs';
 import http from 'http';
 import * as net from 'net';
 import os from 'os';
 import path from 'path';
-import { afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import Database from 'better-sqlite3';
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+} from 'vitest';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -32,7 +40,7 @@ function isCurrentPlatform(target: 'darwin' | 'linux' | 'win32'): boolean {
 function getFreePort(): Promise<number> {
   return new Promise(function allocatePort(
     resolve: (port: number) => void,
-    reject: (err: Error) => void
+    reject: (err: Error) => void,
   ): void {
     const srv = net.createServer();
     srv.listen(0, '127.0.0.1', function onListening(): void {
@@ -52,11 +60,11 @@ function pollHealth(
   port: number,
   getChild: () => ChildProcess | null,
   getLog: () => string,
-  timeoutMs: number
+  timeoutMs: number,
 ): Promise<void> {
   return new Promise(function doPolling(
     resolve: () => void,
-    reject: (err: Error) => void
+    reject: (err: Error) => void,
   ): void {
     const start = Date.now();
 
@@ -67,8 +75,8 @@ function pollHealth(
           new Error(
             `AppImage process exited with code ${
               proc.exitCode ?? 'null'
-            } before becoming healthy.\nLog:\n${getLog()}`
-          )
+            } before becoming healthy.\nLog:\n${getLog()}`,
+          ),
         );
         return;
       }
@@ -83,21 +91,21 @@ function pollHealth(
           } else if (Date.now() - start >= timeoutMs) {
             reject(
               new Error(
-                `Health check timed out after ${timeoutMs}ms. Log:\n${getLog()}`
-              )
+                `Health check timed out after ${timeoutMs}ms. Log:\n${getLog()}`,
+              ),
             );
           } else {
             setTimeout(attempt, 1000);
           }
-        }
+        },
       );
 
       req.on('error', function onError(): void {
         if (Date.now() - start >= timeoutMs) {
           reject(
             new Error(
-              `Health check timed out after ${timeoutMs}ms. Log:\n${getLog()}`
-            )
+              `Health check timed out after ${timeoutMs}ms. Log:\n${getLog()}`,
+            ),
           );
         } else {
           setTimeout(attempt, 1000);
@@ -117,7 +125,7 @@ interface HttpResult {
 function httpGet(url: string): Promise<HttpResult> {
   return new Promise(function doGet(
     resolve: (r: HttpResult) => void,
-    reject: (err: Error) => void
+    reject: (err: Error) => void,
   ): void {
     http
       .get(url, { timeout: 5000 }, function onResponse(res): void {
@@ -181,19 +189,19 @@ function killProcess(proc: ChildProcess): Promise<void> {
 function assertDbSchema(dbPath: string): void {
   const stat = fs.statSync(dbPath);
   expect(stat.size, `dms.db at ${dbPath} should be non-empty`).toBeGreaterThan(
-    0
+    0,
   );
 
   const db = new Database(dbPath, { readonly: true });
   try {
     const unfinished = db
       .prepare(
-        `SELECT count(*) as cnt FROM _prisma_migrations WHERE finished_at IS NULL`
+        `SELECT count(*) as cnt FROM _prisma_migrations WHERE finished_at IS NULL`,
       )
       .get() as { cnt: number };
     expect(
       unfinished.cnt,
-      'All migrations must have finished_at set (no partial migrations)'
+      'All migrations must have finished_at set (no partial migrations)',
     ).toBe(0);
 
     const total = db
@@ -201,7 +209,7 @@ function assertDbSchema(dbPath: string): void {
       .get() as { cnt: number };
     expect(
       total.cnt,
-      '_prisma_migrations must have at least one row'
+      '_prisma_migrations must have at least one row',
     ).toBeGreaterThanOrEqual(1);
 
     const expectedTables = parseSchemaModels();
@@ -227,6 +235,8 @@ describe('Packaged Electron launch — Linux AppImage', () => {
   let userDataDir = '';
   let tempHome = '';
   let port = 0;
+  let extractionDir = '';
+  let appRunPath = '';
 
   beforeAll(function locateAppImage(): void {
     if (!isCurrentPlatform('linux')) {
@@ -235,11 +245,11 @@ describe('Packaged Electron launch — Linux AppImage', () => {
 
     let entries: string[] = [];
     try {
-      entries = fs
-        .readdirSync(distDir)
-        .filter(function isAppImage(e: string): boolean {
-          return e.endsWith('.AppImage');
-        });
+      entries = fs.readdirSync(distDir).filter(function isAppImage(
+        e: string,
+      ): boolean {
+        return e.endsWith('.AppImage');
+      });
     } catch {
       // dist/electron-dist not found — smoke tests will be skipped gracefully
       return;
@@ -251,6 +261,30 @@ describe('Packaged Electron launch — Linux AppImage', () => {
     }
 
     appImagePath = path.join(distDir, entries[0]);
+    extractionDir = fs.mkdtempSync(path.join(os.tmpdir(), 'dms-smoke-app-'));
+    execFileSync(appImagePath, ['--appimage-extract'], {
+      cwd: extractionDir,
+      stdio: 'ignore',
+    });
+    const extractedRoot = path.join(extractionDir, 'squashfs-root');
+    const executable = fs
+      .readdirSync(extractedRoot)
+      .find(function isElectronBinary(entry: string): boolean {
+        return entry.startsWith('@') && !entry.endsWith('.desktop');
+      });
+    if (executable === undefined) {
+      throw new Error(
+        `Packaged Electron executable not found in ${extractedRoot}`,
+      );
+    }
+    appRunPath = path.join(extractedRoot, executable);
+  });
+
+  afterAll(function cleanupExtraction(): void {
+    if (extractionDir.length > 0) {
+      fs.rmSync(extractionDir, { recursive: true, force: true });
+      extractionDir = '';
+    }
   });
 
   beforeEach(async function setupLinux(): Promise<void> {
@@ -284,7 +318,7 @@ describe('Packaged Electron launch — Linux AppImage', () => {
    */
   async function launchLinuxAndPoll(): Promise<void> {
     // eslint-disable-next-line sonarjs/file-permissions -- AppImage must be executable; 0o755 is the standard permission for a packaged binary
-    fs.chmodSync(appImagePath, 0o755);
+    fs.chmodSync(appRunPath, 0o755);
 
     const electronArgs = ['--no-sandbox', `--user-data-dir=${userDataDir}`];
 
@@ -301,13 +335,13 @@ describe('Packaged Electron launch — Linux AppImage', () => {
       } catch {
         throw new Error(
           'xvfb-run is required on headless CI. ' +
-            'Install with: sudo apt-get install xvfb'
+            'Install with: sudo apt-get install xvfb',
         );
       }
       cmd = 'xvfb-run';
-      args = ['--auto-servernum', appImagePath, ...electronArgs];
+      args = ['--auto-servernum', appRunPath, ...electronArgs];
     } else {
-      cmd = appImagePath;
+      cmd = appRunPath;
       args = electronArgs;
     }
 
@@ -338,7 +372,7 @@ describe('Packaged Electron launch — Linux AppImage', () => {
       function getLog(): string {
         return logBuffer;
       },
-      30_000
+      30_000,
     );
   }
 
@@ -356,11 +390,11 @@ describe('Packaged Electron launch — Linux AppImage', () => {
       // AC1: process alive, no migration error
       expect(
         child!.exitCode,
-        'AppImage process must still be running'
+        'AppImage process must still be running',
       ).toBeNull();
       expect(logBuffer).not.toMatch(/missing field ['"`]migrationsList['"`]/);
       expect(logBuffer).not.toMatch(/Migration failed/);
-    }
+    },
   );
 
   it(
@@ -378,11 +412,11 @@ describe('Packaged Electron launch — Linux AppImage', () => {
       const dbPath = path.join(tempHome, '.dms', 'dms.db');
       expect(
         fs.existsSync(dbPath),
-        `dms.db not found at ${dbPath}. Logs:\n${logBuffer}`
+        `dms.db not found at ${dbPath}. Logs:\n${logBuffer}`,
       ).toBe(true);
 
       assertDbSchema(dbPath);
-    }
+    },
   );
 
   it(
@@ -403,7 +437,7 @@ describe('Packaged Electron launch — Linux AppImage', () => {
       expect(result.statusCode, `GET / should return 200`).toBe(200);
       expect(result.body).toContain('<dms-root');
       expect(result.body).toContain('Dividend Management System Material');
-    }
+    },
   );
 });
 
@@ -428,22 +462,22 @@ describe('Packaged Electron launch — macOS DMG', () => {
 
     let entries: string[] = [];
     try {
-      entries = fs
-        .readdirSync(distDir)
-        .filter(function isDmg(e: string): boolean {
-          return e.endsWith('.dmg');
-        });
+      entries = fs.readdirSync(distDir).filter(function isDmg(
+        e: string,
+      ): boolean {
+        return e.endsWith('.dmg');
+      });
     } catch {
       throw new Error(
         `dist/electron-dist directory not found at ${distDir}. ` +
-          `Run 'nx run electron:build:mac' first.`
+          `Run 'nx run electron:build:mac' first.`,
       );
     }
 
     if (entries.length === 0) {
       throw new Error(
         `No DMG found in ${distDir}. ` +
-          `Run 'nx run electron:build:mac' first.`
+          `Run 'nx run electron:build:mac' first.`,
       );
     }
 
@@ -506,11 +540,11 @@ describe('Packaged Electron launch — macOS DMG', () => {
       ]);
 
       // Find the .app bundle inside the mounted DMG
-      const appBundles = fs
-        .readdirSync(mountPoint)
-        .filter(function isApp(e: string): boolean {
-          return e.endsWith('.app');
-        });
+      const appBundles = fs.readdirSync(mountPoint).filter(function isApp(
+        e: string,
+      ): boolean {
+        return e.endsWith('.app');
+      });
 
       if (appBundles.length === 0) {
         throw new Error(`No .app bundle found in DMG at ${mountPoint}`);
@@ -545,7 +579,7 @@ describe('Packaged Electron launch — macOS DMG', () => {
             HOME: tempHome,
           },
           stdio: 'pipe',
-        }
+        },
       );
 
       child.stdout?.on('data', function onStdout(chunk: Buffer): void {
@@ -563,7 +597,7 @@ describe('Packaged Electron launch — macOS DMG', () => {
         function getLog(): string {
           return logBuffer;
         },
-        30_000
+        30_000,
       );
 
       // AC1 assertions (macOS)
@@ -575,7 +609,7 @@ describe('Packaged Electron launch — macOS DMG', () => {
       const dbPath = path.join(tempHome, '.dms', 'dms.db');
       expect(
         fs.existsSync(dbPath),
-        `dms.db not found at ${dbPath}. Logs:\n${logBuffer}`
+        `dms.db not found at ${dbPath}. Logs:\n${logBuffer}`,
       ).toBe(true);
       assertDbSchema(dbPath);
 
@@ -586,7 +620,7 @@ describe('Packaged Electron launch — macOS DMG', () => {
       expect(result.statusCode).toBe(200);
       expect(result.body).toContain('<dms-root');
       expect(result.body).toContain('Dividend Management System Material');
-    }
+    },
   );
 });
 
@@ -610,22 +644,22 @@ describe('Packaged Electron launch — Windows NSIS', () => {
 
     let entries: string[] = [];
     try {
-      entries = fs
-        .readdirSync(distDir)
-        .filter(function isExe(e: string): boolean {
-          return e.endsWith('.exe');
-        });
+      entries = fs.readdirSync(distDir).filter(function isExe(
+        e: string,
+      ): boolean {
+        return e.endsWith('.exe');
+      });
     } catch {
       throw new Error(
         `dist/electron-dist directory not found at ${distDir}. ` +
-          `Run 'nx run electron:build:win' first.`
+          `Run 'nx run electron:build:win' first.`,
       );
     }
 
     if (entries.length === 0) {
       throw new Error(
         `No EXE found in ${distDir}. ` +
-          `Run 'nx run electron:build:win' first.`
+          `Run 'nx run electron:build:win' first.`,
       );
     }
 
@@ -673,7 +707,7 @@ describe('Packaged Electron launch — Windows NSIS', () => {
       } catch {
         throw new Error(
           '7z (7-Zip) is required to extract the NSIS installer. ' +
-            'Install from https://www.7-zip.org/ and ensure 7z.exe is on PATH.'
+            'Install from https://www.7-zip.org/ and ensure 7z.exe is on PATH.',
         );
       }
 
@@ -684,7 +718,7 @@ describe('Packaged Electron launch — Windows NSIS', () => {
       const dmsExe = path.join(extractDir, 'DMS.exe');
       if (!fs.existsSync(dmsExe)) {
         throw new Error(
-          `DMS.exe not found in extracted NSIS package at ${extractDir}`
+          `DMS.exe not found in extracted NSIS package at ${extractDir}`,
         );
       }
 
@@ -717,13 +751,13 @@ describe('Packaged Electron launch — Windows NSIS', () => {
         function getLog(): string {
           return logBuffer;
         },
-        30_000
+        30_000,
       );
 
       // AC1 assertions (Windows)
       expect(
         child.exitCode,
-        'Windows process must still be running'
+        'Windows process must still be running',
       ).toBeNull();
       expect(logBuffer).not.toMatch(/missing field ['"`]migrationsList['"`]/);
       expect(logBuffer).not.toMatch(/Migration failed/);
@@ -733,7 +767,7 @@ describe('Packaged Electron launch — Windows NSIS', () => {
       const dbPath = path.join(tempHome, '.dms', 'dms.db');
       expect(
         fs.existsSync(dbPath),
-        `dms.db not found at ${dbPath}. Logs:\n${logBuffer}`
+        `dms.db not found at ${dbPath}. Logs:\n${logBuffer}`,
       ).toBe(true);
       assertDbSchema(dbPath);
 
@@ -744,6 +778,6 @@ describe('Packaged Electron launch — Windows NSIS', () => {
       expect(result.statusCode).toBe(200);
       expect(result.body).toContain('<dms-root');
       expect(result.body).toContain('Dividend Management System Material');
-    }
+    },
   );
 });

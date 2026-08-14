@@ -48,6 +48,7 @@ interface MockEngineProcess extends EventEmitter {
 function makeMockEngineProcess(
   rpcResponse?: string,
   exitCode: number = 0,
+  progressRequest?: string,
 ): MockEngineProcess {
   const proc = new EventEmitter() as MockEngineProcess;
   proc.stdin = { write: vi.fn(), end: vi.fn() };
@@ -56,6 +57,9 @@ function makeMockEngineProcess(
   setTimeout(function triggerSpawn(): void {
     proc.emit('spawn');
     setTimeout(function triggerClose(): void {
+      if (progressRequest !== undefined) {
+        proc.stdout.emit('data', Buffer.from(progressRequest + '\n'));
+      }
       if (rpcResponse !== undefined) {
         proc.stdout.emit('data', Buffer.from(rpcResponse + '\n'));
       }
@@ -76,6 +80,7 @@ describe('runMigrations', () => {
     mockApp.isPackaged = false;
     savedResourcesPath = process.resourcesPath;
     vi.spyOn(fs, 'readdirSync').mockReturnValue([] as fs.Dirent<Buffer>[]);
+    vi.spyOn(fs, 'readFileSync').mockReturnValue('provider = "sqlite"');
   });
 
   afterEach(function teardown(): void {
@@ -226,14 +231,21 @@ describe('runMigrations', () => {
     };
     expect(rpcMsg.method).toBe('applyMigrations');
     expect(rpcMsg.params).toHaveProperty('migrationsList');
-    expect(Array.isArray(rpcMsg.params!.migrationsList)).toBe(true);
+    expect(rpcMsg.params!.migrationsList).toEqual(
+      expect.objectContaining({
+        baseDir: expect.any(String),
+        lockfile: expect.any(Object),
+        migrationDirectories: expect.any(Array),
+        shadowDbInitScript: '',
+      }),
+    );
     expect(mockProc.stdin.end).toHaveBeenCalledOnce();
 
     (process as NodeJS.Process & { resourcesPath: string }).resourcesPath =
       originalResourcesPath;
   });
 
-  it('packaged: migrationsList entries have correct migrationName and migrationDirectoryPath', async () => {
+  it('packaged: sends Prisma 7.9 migration list with lockfile and SQL content', async () => {
     mockApp.isPackaged = true;
     const originalResourcesPath = process.resourcesPath;
     (process as NodeJS.Process & { resourcesPath: string }).resourcesPath =
@@ -262,11 +274,50 @@ describe('runMigrations', () => {
 
     const writtenArg = mockProc.stdin.write.mock.calls[0]?.[0] as string;
     const rpcMsg = JSON.parse(writtenArg.trim()) as {
-      params?: { migrationsList?: string[] };
+      params?: {
+        filters?: { externalEnums?: string[]; externalTables?: string[] };
+        migrationsList?: {
+          baseDir?: string;
+          lockfile?: { content?: string; path?: string };
+          migrationDirectories?: Array<{
+            migrationFile?: {
+              content?: { tag?: string; value?: string };
+              path?: string;
+            };
+            path?: string;
+          }>;
+          shadowDbInitScript?: string;
+        };
+      };
     };
-    expect(rpcMsg.params!.migrationsList).toHaveLength(2);
-    expect(rpcMsg.params!.migrationsList![0]).toBe('20250101000000_init');
-    expect(rpcMsg.params!.migrationsList![1]).toBe('20250201000000_add_user');
+    expect(rpcMsg.params!.filters).toEqual({
+      externalEnums: [],
+      externalTables: [],
+    });
+    const migrationsList = rpcMsg.params!.migrationsList!;
+    expect(migrationsList.baseDir).toBe('/mock/resources/prisma/migrations');
+    expect(migrationsList.lockfile).toEqual({
+      path: 'migration_lock.toml',
+      content: 'provider = "sqlite"',
+    });
+    expect(migrationsList.shadowDbInitScript).toBe('');
+    expect(migrationsList.migrationDirectories).toEqual([
+      {
+        path: '20250101000000_init',
+        migrationFile: {
+          path: 'migration.sql',
+          content: { tag: 'ok', value: 'provider = "sqlite"' },
+        },
+      },
+      {
+        path: '20250201000000_add_user',
+        migrationFile: {
+          path: 'migration.sql',
+          content: { tag: 'ok', value: 'provider = "sqlite"' },
+        },
+      },
+    ]);
+    expect(mockProc.stdin.end).toHaveBeenCalledOnce();
 
     (process as NodeJS.Process & { resourcesPath: string }).resourcesPath =
       originalResourcesPath;
@@ -286,6 +337,41 @@ describe('runMigrations', () => {
     mockSpawn.mockReturnValue(makeMockEngineProcess(noOpResponse, 0));
 
     await expect(runMigrations()).resolves.toBeUndefined();
+
+    (process as NodeJS.Process & { resourcesPath: string }).resourcesPath =
+      originalResourcesPath;
+  });
+
+  it('packaged: acknowledges schema-engine print requests before awaiting the migration result', async () => {
+    mockApp.isPackaged = true;
+    const originalResourcesPath = process.resourcesPath;
+    (process as NodeJS.Process & { resourcesPath: string }).resourcesPath =
+      '/mock/resources';
+
+    const noOpResponse = JSON.stringify({
+      jsonrpc: '2.0',
+      id: 1,
+      result: { appliedMigrationNames: [] },
+    });
+    const progressRequest = JSON.stringify({
+      jsonrpc: '2.0',
+      id: 0,
+      method: 'print',
+      params: { content: 'Applying migration `20250613192713_init`' },
+    });
+    const mockProc = makeMockEngineProcess(noOpResponse, 0, progressRequest);
+    mockSpawn.mockReturnValue(mockProc);
+
+    await runMigrations();
+
+    expect(mockProc.stdin.write).toHaveBeenCalledTimes(2);
+    expect(
+      JSON.parse(mockProc.stdin.write.mock.calls[1]?.[0] as string),
+    ).toEqual({
+      jsonrpc: '2.0',
+      id: 0,
+      result: {},
+    });
 
     (process as NodeJS.Process & { resourcesPath: string }).resourcesPath =
       originalResourcesPath;
