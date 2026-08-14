@@ -1,7 +1,8 @@
 import { ChildProcess, spawn } from 'child_process';
-import fs from 'fs';
 import path from 'path';
 import { app } from 'electron';
+
+import { buildMigrationRequest } from './build-migration-request';
 
 /** Platform-specific schema-engine binary name (Prisma 7.x). */
 function getSchemaEngineBinaryName(): string {
@@ -91,86 +92,6 @@ function runMigrationsDev(): Promise<void> {
   });
 }
 
-interface MigrationFileContent {
-  tag: 'error' | 'ok';
-  value: string;
-}
-
-interface MigrationDirectory {
-  migrationFile: {
-    content: MigrationFileContent;
-    path: string;
-  };
-  path: string;
-}
-
-/** Build the JSON-RPC applyMigrations request payload. */
-function buildApplyMigrationsRequest(migrationsPath: string): string {
-  const lockfilePath = path.join(migrationsPath, 'migration_lock.toml');
-  let lockfileContent: string | null = null;
-  try {
-    lockfileContent = fs.readFileSync(lockfilePath, 'utf8');
-  } catch {
-    // Prisma accepts a null lockfile content when no lockfile exists.
-  }
-
-  const migrationDirectories: MigrationDirectory[] = fs
-    .readdirSync(migrationsPath, { withFileTypes: true })
-    .filter(function isMigrationDirectory(entry: fs.Dirent): boolean {
-      return entry.isDirectory() && !entry.name.startsWith('.');
-    })
-    .sort(function sortByName(a: fs.Dirent, b: fs.Dirent): number {
-      return a.name.localeCompare(b.name);
-    })
-    .map(function toMigrationDirectory(entry: fs.Dirent): MigrationDirectory {
-      const migrationFilePath = path.join(
-        migrationsPath,
-        entry.name,
-        'migration.sql',
-      );
-      let content: MigrationFileContent;
-      try {
-        content = {
-          tag: 'ok',
-          value: fs.readFileSync(migrationFilePath, 'utf8'),
-        };
-      } catch (error) {
-        content = { tag: 'error', value: String(error) };
-      }
-
-      return {
-        path: entry.name,
-        migrationFile: {
-          path: 'migration.sql',
-          content,
-        },
-      };
-    });
-
-  return (
-    JSON.stringify({
-      jsonrpc: '2.0',
-      id: 1,
-      method: 'applyMigrations',
-      params: {
-        filters: {
-          externalEnums: [],
-          externalTables: [],
-        },
-        migrationsList: {
-          baseDir: migrationsPath,
-          lockfile: {
-            path: 'migration_lock.toml',
-            content: lockfileContent,
-          },
-          shadowDbInitScript: '',
-          migrationDirectories,
-        },
-      },
-    }) + '\n'
-  );
-}
-
 /** Returns true if the line is non-empty after trimming. */
 function isNonEmptyLine(l: string): boolean {
   return l.trim().length > 0;
@@ -216,24 +137,32 @@ function acknowledgeEngineRequests(
 ): void {
   const completeLines = responseText.split('\n').slice(0, -1);
   for (const line of completeLines) {
-    try {
-      const request = JSON.parse(line) as {
-        id?: number | string;
-        method?: string;
-      };
-      if (
-        request.method === 'print' &&
-        request.id !== undefined &&
-        !acknowledgedIds.has(request.id)
-      ) {
-        acknowledgedIds.add(request.id);
-        child.stdin?.write(
-          JSON.stringify({ jsonrpc: '2.0', id: request.id, result: {} }) + '\n',
-        );
-      }
-    } catch {
-      // Schema-engine stdout may contain non-JSON diagnostic lines.
+    acknowledgePrintRequest(line, child, acknowledgedIds);
+  }
+}
+
+function acknowledgePrintRequest(
+  line: string,
+  child: ChildProcess,
+  acknowledgedIds: Set<number | string>,
+): void {
+  try {
+    const request = JSON.parse(line) as {
+      id?: number | string;
+      method?: string;
+    };
+    if (request.method !== 'print' || request.id === undefined) {
+      return;
     }
+    if (acknowledgedIds.has(request.id)) {
+      return;
+    }
+    acknowledgedIds.add(request.id);
+    child.stdin?.write(
+      JSON.stringify({ jsonrpc: '2.0', id: request.id, result: {} }) + '\n',
+    );
+  } catch {
+    // Schema-engine stdout may contain non-JSON diagnostic lines.
   }
 }
 
@@ -294,7 +223,7 @@ function attachEngineHandlers(config: EngineHandlerConfig): void {
 
   child.on('spawn', (): void => {
     try {
-      const request = buildApplyMigrationsRequest(migrationsPath);
+      const request = buildMigrationRequest(migrationsPath);
       child.stdin?.write(request);
     } catch (err) {
       reject(err instanceof Error ? err : new Error(String(err)));

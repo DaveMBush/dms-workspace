@@ -13,14 +13,13 @@
  * is not triggered (see scripts/check-no-skipped-tests.sh).
  */
 
-// eslint-disable-next-line @typescript-eslint/naming-convention -- better-sqlite3 exports a PascalCase default that violates the rule
 import { ChildProcess, execFileSync, spawn } from 'child_process';
 import fs from 'fs';
 import http from 'http';
 import * as net from 'net';
 import os from 'os';
 import path from 'path';
-import Database from 'better-sqlite3';
+import betterSqlite3 from 'better-sqlite3';
 import {
   afterAll,
   afterEach,
@@ -192,7 +191,7 @@ function assertDbSchema(dbPath: string): void {
     0,
   );
 
-  const db = new Database(dbPath, { readonly: true });
+  const db = new betterSqlite3(dbPath, { readonly: true });
   try {
     const unfinished = db
       .prepare(

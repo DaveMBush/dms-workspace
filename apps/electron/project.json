@@ -6,7 +6,9 @@
   "targets": {
     "build": {
       "executor": "nx:run-commands",
-      "outputs": ["{workspaceRoot}/apps/electron/dist"],
+      "outputs": [
+        "{workspaceRoot}/apps/electron/dist"
+      ],
       "options": {
         "command": "../../node_modules/.bin/tsc -p tsconfig.json",
         "cwd": "apps/electron"
@@ -24,11 +26,15 @@
       "dependsOn": [
         "build",
         {
-          "projects": ["server"],
+          "projects": [
+            "server"
+          ],
           "target": "build"
         },
         {
-          "projects": ["dms-material"],
+          "projects": [
+            "dms-material"
+          ],
           "target": "build"
         }
       ],
@@ -39,26 +45,34 @@
     },
     "build:linux": {
       "executor": "nx:run-commands",
-      "outputs": ["{workspaceRoot}/dist/electron-dist"],
+      "outputs": [
+        "{workspaceRoot}/dist/electron-dist"
+      ],
       "options": {
-        "command": "../../node_modules/.bin/electron-builder --config electron-builder.yml --linux",
+        "command": "pnpm --dir ../../dist/apps/server install --prod --offline --ignore-workspace || true; node scripts/prepare-server-runtime.js && ../../node_modules/.bin/electron-builder --config electron-builder.yml --linux",
         "cwd": "apps/electron"
       },
       "dependsOn": [
         "build",
         {
-          "projects": ["server"],
+          "projects": [
+            "server"
+          ],
           "target": "build"
         },
         {
-          "projects": ["dms-material"],
+          "projects": [
+            "dms-material"
+          ],
           "target": "build"
         }
       ]
     },
     "build:mac": {
       "executor": "nx:run-commands",
-      "outputs": ["{workspaceRoot}/dist/electron-dist"],
+      "outputs": [
+        "{workspaceRoot}/dist/electron-dist"
+      ],
       "options": {
         "command": "../../node_modules/.bin/electron-builder --config electron-builder.yml --mac",
         "cwd": "apps/electron"
@@ -66,18 +80,24 @@
       "dependsOn": [
         "build",
         {
-          "projects": ["server"],
+          "projects": [
+            "server"
+          ],
           "target": "build"
         },
         {
-          "projects": ["dms-material"],
+          "projects": [
+            "dms-material"
+          ],
           "target": "build"
         }
       ]
     },
     "build:win": {
       "executor": "nx:run-commands",
-      "outputs": ["{workspaceRoot}/dist/electron-dist"],
+      "outputs": [
+        "{workspaceRoot}/dist/electron-dist"
+      ],
       "options": {
         "command": "../../node_modules/.bin/electron-builder --config electron-builder.yml --win",
         "cwd": "apps/electron"
@@ -85,18 +105,24 @@
       "dependsOn": [
         "build",
         {
-          "projects": ["server"],
+          "projects": [
+            "server"
+          ],
           "target": "build"
         },
         {
-          "projects": ["dms-material"],
+          "projects": [
+            "dms-material"
+          ],
           "target": "build"
         }
       ]
     },
     "package": {
       "executor": "nx:run-commands",
-      "outputs": ["{workspaceRoot}/dist/electron-dist"],
+      "outputs": [
+        "{workspaceRoot}/dist/electron-dist"
+      ],
       "options": {
         "commands": [
           "nx run electron:build:linux || true",
@@ -112,7 +138,9 @@
       "options": {
         "command": "bash apps/electron/scripts/smoke-test.sh"
       },
-      "dependsOn": ["build:linux"]
+      "dependsOn": [
+        "build:linux"
+      ]
     }
   }
 }
