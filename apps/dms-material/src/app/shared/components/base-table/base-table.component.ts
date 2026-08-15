@@ -243,8 +243,8 @@ export class BaseTableComponent<
   dataSource = computed(
     // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for computed signal
     () => {
-      const rows = [...this.data()];
-      const columns = this.sortColumns();
+      const rows = [...(this.data() ?? [])];
+      const columns = this.sortColumns() ?? [];
       if (columns.length === 0) {
         return rows;
       }
@@ -272,7 +272,7 @@ export class BaseTableComponent<
   displayedColumns = computed(
     // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for computed signal
     () => {
-      const cols = this.columns().map(function getField(c) {
+      const cols = (this.columns() ?? []).map(function getField(c) {
         return c.field;
       });
       if (this.selectable()) {
@@ -285,7 +285,7 @@ export class BaseTableComponent<
   filterColumns = computed(
     // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for computed signal
     () => {
-      const cols = this.columns().map(function getFilterField(c) {
+      const cols = (this.columns() ?? []).map(function getFilterField(c) {
         return c.field + 'Filter';
       });
       if (this.selectable()) {
