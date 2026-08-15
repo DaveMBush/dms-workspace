@@ -68,7 +68,17 @@ export class AddSymbolDialogComponent implements OnInit {
   private symbolSearchService = inject(SymbolSearchService);
   private http = inject(HttpClient);
 
-  topEntities = selectTopEntities().entities;
+  private readonly topStateSignal = computed(() => {
+    const entityState = selectTopEntities();
+    const ids = entityState.ids;
+    if (ids.length === 0) return undefined;
+    return entityState.entities[ids[0]];
+  });
+
+  get topEntities(): Record<string, any> | undefined {
+    const state = this.topStateSignal();
+    return state ? { [state.id]: state } : undefined;
+  }
 
   private readonly existingSymbolsSignal = signal<string[]>([]);
   // All existing universe symbols, loaded directly from the server on dialog open.

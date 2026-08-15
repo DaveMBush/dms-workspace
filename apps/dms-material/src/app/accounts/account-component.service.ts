@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { ChangeDetectorRef, inject, Injectable } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RowProxyDelete } from '@smarttools/smart-signals';
 
@@ -11,6 +11,7 @@ import { AccountComponent } from './account';
 export class AccountComponentService {
   private component!: AccountComponent;
   private confirmDialogService = inject(ConfirmDialogService);
+  private cdr = inject(ChangeDetectorRef);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
 
@@ -21,10 +22,10 @@ export class AccountComponentService {
   addAccount(): void {
     this.component.addingNode = 'new';
     this.component.editingContent = 'New Account';
-    const accounts = this.component.accounts$() as unknown as {
-      addToStore(data: unknown, top: unknown): void;
-    };
-    accounts.addToStore(
+    const accounts = this.component.accounts$();
+    const parentRow = this.component.top();
+    if (!parentRow) return;
+    (accounts as any).addToStore(
       {
         name: 'New Account',
         id: 'new',
@@ -33,8 +34,9 @@ export class AccountComponentService {
         divDeposits: [],
         months: [],
       },
-      this.component.top,
+      parentRow,
     );
+    this.cdr.detectChanges();
   }
 
   editAccount(item: AccountInterface): void {
@@ -47,10 +49,10 @@ export class AccountComponentService {
 
   cancelEdit(item: AccountInterface): void {
     if (this.component.addingNode.length > 0) {
-      const accounts = this.component.accounts$() as unknown as {
-        removeFromStore(item: unknown, top: unknown): void;
-      };
-      accounts.removeFromStore(item, this.component.top['1']!);
+      const accounts = this.component.accounts$();
+      const parentRow = this.component.top();
+      if (!parentRow) return;
+      (accounts as any).removeFromStore(item, parentRow);
     }
     this.component.addingNode = '';
     this.component.editingNode = '';

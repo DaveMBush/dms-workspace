@@ -66,6 +66,8 @@ describe('AccountComponentService', () => {
       },
     ];
 
+    const mockTopRow = { id: '1', name: 'Top 1' } as Partial<Top>;
+
     // Create mock component with necessary properties
     const createMockAccountsSignal = (): AccountInterface[] & {
       addToStore: typeof mockAddToStore;
@@ -85,9 +87,7 @@ describe('AccountComponentService', () => {
       editingContent: '',
       accounts$: () => createMockAccountsSignal(),
       accountsArray$: () => [...mockAccounts],
-      top: {
-        '1': { id: '1', name: 'Top 1' } as Partial<Top>,
-      },
+      top: () => mockTopRow,
     } as unknown as AccountComponent;
   });
 
@@ -129,7 +129,7 @@ describe('AccountComponentService', () => {
           divDeposits: [],
           months: [],
         },
-        mockComponent.top,
+        mockTopRow,
       );
     });
 
@@ -186,7 +186,7 @@ describe('AccountComponentService', () => {
 
       expect(mockRemoveFromStore).toHaveBeenCalledWith(
         testAccount,
-        mockComponent.top['1'],
+        mockTopRow,
       );
     });
 

@@ -46,7 +46,12 @@ export class AccountComponent implements OnInit {
 
   accounts$ = selectAccounts;
 
-  top = selectTopEntities().entities;
+  top = computed(() => {
+    const entityState = selectTopEntities();
+    const ids = entityState.ids;
+    if (ids.length === 0) return undefined;
+    return entityState.entities[ids[0]];
+  });
 
   ngOnInit(): void {
     this.accountService.init(this);

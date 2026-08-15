@@ -1,5 +1,6 @@
 import { expect, Page, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
+import { seedFillerUniverseSymbols } from './helpers/seed-filler-universe-symbols.helper';
 import { seedUniverseE2eData } from './helpers/seed-universe-e2e-data.helper';
 
 /**
