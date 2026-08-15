@@ -144,7 +144,7 @@ export default defineConfig({
             command: `pnpm nx run dms-material:storybook --port ${String(
               storybookPort
             )}`,
-            url: `http://localhost:${String(storybookPort)}`,
+            url: `http://localhost:${String(storybookPort)}/favicon.ico`,
             reuseExistingServer,
             cwd: workspaceRoot,
             timeout: 300000,
