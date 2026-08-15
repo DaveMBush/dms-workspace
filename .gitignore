@@ -66,3 +66,5 @@ apps/server/coverage
 .nx/self-healing
 
 .nx/migrate-runs
+.agents
+skills-lock.json

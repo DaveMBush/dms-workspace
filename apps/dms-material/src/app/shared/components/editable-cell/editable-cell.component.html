@@ -13,7 +13,7 @@
       [ngModel]="rawEditValue$()"
       (ngModelChange)="onValueChange($event)"
       (keydown.enter)="saveEdit()"
-      (keydown.escape)="cancelEdit()"
+      (keydown.escape)="$event.preventDefault(); cancelEdit()"
       (blur)="saveEdit()"
       [min]="min$()"
       [max]="max$()"

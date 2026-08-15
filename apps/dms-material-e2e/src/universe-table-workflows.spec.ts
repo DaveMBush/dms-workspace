@@ -244,7 +244,7 @@ test.describe('Universe Table Workflows', () => {
 
       const input = page.locator('input[data-testid="distribution-input"]');
       await input.fill('999.99');
-      await input.press('Escape');
+      await page.keyboard.press('Escape');
 
       // Input should hide
       await expect(input).not.toBeVisible();
@@ -362,11 +362,11 @@ test.describe('Universe Table Workflows', () => {
 
       const dateInput = page.locator('[data-testid="ex-date-picker"]');
       await expect(dateInput).toBeVisible();
-      await dateInput.press('Escape');
+      await page.keyboard.press('Escape');
 
-      // Datepicker should close without saving
+      // Wait for datepicker to close after cancel
       const datepicker = page.locator('mat-datepicker-content');
-      await expect(datepicker).not.toBeVisible();
+      await expect(datepicker).not.toBeVisible({ timeout: 3000 });
 
       const currentValue = await exDateCell.textContent();
       expect(currentValue).toBe(originalValue);
@@ -397,7 +397,7 @@ test.describe('Universe Table Workflows', () => {
 
       // Wait for datepicker to close (ensures save operation completes)
       const datepicker = page.locator('mat-datepicker-content');
-      await expect(datepicker).not.toBeVisible();
+      await expect(datepicker).not.toBeVisible({ timeout: 5000 });
 
       const expiredIndicator = row.locator(
         '.dms-body-cell[data-column="expired"] .expired-indicator',

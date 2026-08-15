@@ -147,7 +147,9 @@ test.describe('Account CRUD Operations', () => {
       await addButton.click();
 
       const input = page.locator('[data-testid="node-editor-input"]');
-      await input.fill('');
+      // Wait for the input to be visible and focused before filling
+      await expect(input).toBeVisible({ timeout: 5000 });
+      await input.clear();
 
       // Try to save with Enter
       await input.press('Enter');
