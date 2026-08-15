@@ -145,7 +145,7 @@ export default defineConfig({
               storybookPort
             )}`,
             url: `http://localhost:${String(storybookPort)}/favicon.ico`,
-            reuseExistingServer,
+            reuseExistingServer: false,
             cwd: workspaceRoot,
             timeout: 300000,
           },
