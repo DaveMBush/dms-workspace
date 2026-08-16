@@ -141,11 +141,11 @@ export default defineConfig({
     ...(requiresStorybook
       ? [
           {
-            command: `pnpm nx run dms-material:storybook --port ${String(
+            command: `pnpm nx run dms-material:static-storybook --port ${String(
               storybookPort
             )}`,
-            url: `http://localhost:${String(storybookPort)}/favicon.ico`,
-            reuseExistingServer: false,
+            url: `http://localhost:${String(storybookPort)}`,
+            reuseExistingServer,
             cwd: workspaceRoot,
             timeout: 300000,
           },
