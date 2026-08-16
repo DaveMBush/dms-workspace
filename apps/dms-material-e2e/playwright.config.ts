@@ -141,7 +141,7 @@ export default defineConfig({
     ...(requiresStorybook
       ? [
           {
-            command: `pnpm nx run dms-material:storybook --port ${String(
+            command: `nohup pnpm nx run dms-material:storybook --port ${String(
               storybookPort
             )} > /tmp/storybook-e2e.log 2>&1 &`,
             url: `http://localhost:${String(storybookPort)}`,
