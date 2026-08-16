@@ -24,9 +24,16 @@ export async function captureStoryInBothThemes(
   await page.locator('#storybook-root').waitFor({ state: 'attached' });
   await expect(page).toHaveScreenshot(`${storyId}-light.png`);
 
-  // Dark theme
+  // Dark theme — apply .dark-theme on #storybook-root so Angular component
+  // CSS custom property overrides cascade into the rendered template.
+  // withThemeByClassName only sets body.classList, but Storybook's Angular
+  // components render inside #storybook-root; body-level selectors never
+  // reach them.
   await page.goto(`${baseUrl}&globals=theme:Dark`);
   await page.waitForLoadState('load');
   await page.locator('#storybook-root').waitFor({ state: 'attached' });
+  await page.evaluate(() => {
+    document.getElementById('storybook-root')?.classList.add('dark-theme');
+  });
   await expect(page).toHaveScreenshot(`${storyId}-dark.png`);
 }

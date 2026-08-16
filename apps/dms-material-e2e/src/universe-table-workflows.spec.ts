@@ -360,8 +360,10 @@ test.describe('Universe Table Workflows', () => {
       const originalValue = await exDateCell.textContent();
       await exDateCell.click();
 
+      // Wait for edit field to appear and focus the input so keydown.escape fires
       const dateInput = page.locator('[data-testid="ex-date-picker"]');
       await expect(dateInput).toBeVisible();
+      await dateInput.focus();
       await page.keyboard.press('Escape');
 
       // Wait for datepicker to close after cancel

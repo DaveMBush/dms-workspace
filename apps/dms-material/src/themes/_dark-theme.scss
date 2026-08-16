@@ -14,7 +14,9 @@ $dark-theme: mat.define-theme(
 );
 
 // Dark theme specific CSS custom properties
-.dark-theme {
+// Apply on body (normal app) or #storybook-root (Storybook e2e tests)
+.dark-theme,
+#storybook-root.dark-theme {
   --dms-background: #111827;
   --dms-surface: #1f2937;
   --dms-text-primary: #f9fafb;

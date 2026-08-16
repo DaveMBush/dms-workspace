@@ -45,7 +45,8 @@
   }
 
   // Apply dark theme when .dark-theme class is present
-  .dark-theme {
+  .dark-theme,
+  #storybook-root.dark-theme {
     @include mat.all-component-themes(dark.$dark-theme);
 
     // Button color variants for dark theme
@@ -174,7 +175,8 @@ mat-form-field .mat-mdc-form-field-error {
   color: #8b1c1c !important;
 }
 
-.dark-theme mat-form-field {
+.dark-theme mat-form-field,
+#storybook-root.dark-theme mat-form-field {
   --mat-form-field-outlined-input-text-placeholder-color: rgba(
     255,
     255,
@@ -185,7 +187,9 @@ mat-form-field .mat-mdc-form-field-error {
 }
 
 .dark-theme mat-form-field mat-error,
-.dark-theme mat-form-field .mat-mdc-form-field-error {
+#storybook-root.dark-theme mat-form-field mat-error,
+.dark-theme mat-form-field .mat-mdc-form-field-error,
+#storybook-root.dark-theme mat-form-field .mat-mdc-form-field-error {
   color: #ff8a80 !important;
 }
 
@@ -203,11 +207,13 @@ body:not(.dark-theme) .mat-mdc-dialog-container {
   --mdc-dialog-container-color: #ffffff;
 }
 
-.dark-theme .mat-mdc-dialog-surface {
+.dark-theme .mat-mdc-dialog-surface,
+#storybook-root.dark-theme .mat-mdc-dialog-surface {
   background-color: #424242 !important;
 }
 
-.dark-theme .mat-mdc-dialog-container {
+.dark-theme .mat-mdc-dialog-container,
+#storybook-root.dark-theme .mat-mdc-dialog-container {
   --mdc-dialog-container-color: #424242;
 }
 
@@ -227,15 +233,19 @@ textarea:focus-visible,
   outline-offset: 2px !important;
 }
 
-.dark-theme {
-  button:focus-visible,
-  a:focus-visible,
-  input:focus-visible,
-  select:focus-visible,
-  textarea:focus-visible,
-  [tabindex]:focus-visible {
-    outline-color: #90caf9;
-  }
+.dark-theme button:focus-visible,
+#storybook-root.dark-theme button:focus-visible,
+.dark-theme a:focus-visible,
+#storybook-root.dark-theme a:focus-visible,
+.dark-theme input:focus-visible,
+#storybook-root.dark-theme input:focus-visible,
+.dark-theme select:focus-visible,
+#storybook-root.dark-theme select:focus-visible,
+.dark-theme textarea:focus-visible,
+#storybook-root.dark-theme textarea:focus-visible,
+.dark-theme [tabindex]:focus-visible,
+#storybook-root.dark-theme [tabindex]:focus-visible {
+  outline-color: #90caf9;
 }
 
 /* CDK overlay panel styles (outside component scope, must be global) */
