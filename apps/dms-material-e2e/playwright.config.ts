@@ -141,9 +141,9 @@ export default defineConfig({
     ...(requiresStorybook
       ? [
           {
-            command: `nohup pnpm nx run dms-material:storybook --port ${String(
+            command: `bash -c 'pnpm nx run dms-material:storybook --port ${String(
               storybookPort
-            )} > /tmp/storybook-e2e.log 2>&1 &`,
+            )} > /tmp/storybook-e2e.log 2>&1 &'`,
             url: `http://localhost:${String(storybookPort)}`,
             reuseExistingServer,
             cwd: workspaceRoot,
