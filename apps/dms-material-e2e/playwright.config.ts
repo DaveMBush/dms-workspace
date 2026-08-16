@@ -148,6 +148,7 @@ export default defineConfig({
             reuseExistingServer,
             cwd: workspaceRoot,
             timeout: 300000,
+            shell: 'bash',
           },
         ]
       : []),
