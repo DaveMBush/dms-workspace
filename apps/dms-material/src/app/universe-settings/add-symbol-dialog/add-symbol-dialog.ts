@@ -36,14 +36,6 @@ import { RiskGroup } from '../../store/risk-group/risk-group.interface';
 import { selectRiskGroup } from '../../store/risk-group/selectors/select-risk-group.function';
 import { selectTopEntities } from '../../store/top/selectors/select-top-entities.function';
 
-function extractSymbol(r: { symbol?: string }): string {
-  return r.symbol ?? '';
-}
-
-function keepValidSymbol(s: string): boolean {
-  return s.length > 0 && s !== '\u2026';
-}
-
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'dms-add-symbol-dialog',
@@ -67,26 +59,11 @@ export class AddSymbolDialogComponent implements OnInit {
   private notification = inject(NotificationService);
   private symbolSearchService = inject(SymbolSearchService);
   private http = inject(HttpClient);
-
-  private readonly topStateSignal = computed(() => {
-    const entityState = selectTopEntities();
-    const ids = entityState.ids;
-    if (ids.length === 0) return undefined;
-    return entityState.entities[ids[0]];
-  });
-
-  get topEntities(): Record<string, any> | undefined {
-    const state = this.topStateSignal();
-    return state ? { [state.id]: state } : undefined;
-  }
-
   private readonly existingSymbolsSignal = signal<string[]>([]);
-  // All existing universe symbols, loaded directly from the server on dialog open.
   existingSymbols = this.existingSymbolsSignal.asReadonly();
 
   private readonly symbolAutocomplete = viewChild(SymbolAutocompleteComponent);
   private readonly destroyRef = inject(DestroyRef);
-
   isLoading = signal(true);
   selectedSymbol = signal<SymbolOption | null>(null);
 
@@ -102,23 +79,13 @@ export class AddSymbolDialogComponent implements OnInit {
     riskGroupId: ['', Validators.required],
   });
 
-  // Effect to revalidate symbol when universe data changes
   private revalidateSymbolEffect = effect(
     function revalidateSymbol(this: AddSymbolDialogComponent) {
-      // Read existingSymbols to track changes
       this.existingSymbols();
-      // Revalidate the symbol control when universe data updates
       this.form.get('symbol')?.updateValueAndValidity();
-    }.bind(this)
+    }.bind(this),
   );
 
-  // Load all existing universe symbols from the server on dialog open.
-  // Uses a direct HTTP GET to bypass SmartNgRX lazy-loading complexity and
-  // guarantee all symbols (including recently created ones) are available for
-  // duplicate detection before the user finishes typing.
-  // isLoading starts as true (set above) so the submit button stays disabled
-  // until this GET completes — prevents the race where the user types a
-  // duplicate symbol before _existingSymbols is populated.
   ngOnInit(): void {
     this.http
       .get<Array<{ symbol?: string }>>('/api/universe')
@@ -126,10 +93,16 @@ export class AddSymbolDialogComponent implements OnInit {
       .subscribe({
         next: function handleExistingSymbolsLoaded(
           this: AddSymbolDialogComponent,
-          rows: Array<{ symbol?: string }>
+          rows: Array<{ symbol?: string }>,
         ) {
-          const symbols = rows.map(extractSymbol).filter(keepValidSymbol);
-          this.existingSymbolsSignal.set(symbols);
+          const validSymbols = rows
+            .map(function getSymbol(r) {
+              return r.symbol ?? '';
+            })
+            .filter(function isValid(s) {
+              return s.length > 0 && s !== '\u2026';
+            });
+          this.existingSymbolsSignal.set(validSymbols);
           this.isLoading.set(false);
         }.bind(this),
         error: function handleGetUniverseError(this: AddSymbolDialogComponent) {
@@ -138,38 +111,31 @@ export class AddSymbolDialogComponent implements OnInit {
       });
   }
 
-  // Computed signals for template
   symbolValue = computed(
     function symbolValue(this: AddSymbolDialogComponent) {
       return this.selectedSymbol()?.symbol;
-    }.bind(this)
+    }.bind(this),
   );
 
   symbolName = computed(
     function symbolName(this: AddSymbolDialogComponent) {
       return this.selectedSymbol()?.name;
-    }.bind(this)
+    }.bind(this),
   );
 
   hasSelectedSymbol = computed(
     function hasSelectedSymbol(this: AddSymbolDialogComponent) {
       return !!this.selectedSymbol();
-    }.bind(this)
-  );
-
-  riskGroupIdControl = computed(
-    function riskGroupIdControl(this: AddSymbolDialogComponent) {
-      return this.form.get('riskGroupId');
-    }.bind(this)
+    }.bind(this),
   );
 
   riskGroupIdHasError = computed(
     function riskGroupIdHasError(this: AddSymbolDialogComponent) {
       const c = this.form.get('riskGroupId');
       return Boolean(
-        (c?.hasError('required') ?? false) && (c?.touched ?? false)
+        (c?.hasError('required') ?? false) && (c?.touched ?? false),
       );
-    }.bind(this)
+    }.bind(this),
   );
 
   private readonly formStatus = toSignal(this.form.statusChanges, {
@@ -178,88 +144,69 @@ export class AddSymbolDialogComponent implements OnInit {
 
   private readonly symbolControlStatus = toSignal(
     this.form.get('symbol')!.statusChanges,
-    { initialValue: this.form.get('symbol')!.status }
+    { initialValue: this.form.get('symbol')!.status },
   );
-
-  private readonly symbolFormValue = toSignal(
-    this.form.get('symbol')!.valueChanges,
-    { initialValue: this.form.get('symbol')!.value! }
-  );
-
-  private readonly symbolTouched = signal(false);
 
   isSubmitDisabled = computed(
     function isSubmitDisabled(this: AddSymbolDialogComponent) {
-      const sv = this.symbolFormValue() ?? '';
-      // Unconditionally read existingSymbols() so it is always a tracked
-      // reactive dependency — avoids &&-short-circuit dropping the dep when sv is empty.
+      const sv = this.form.get('symbol')?.value ?? '';
       const existingSymbols = this.existingSymbols();
       return (
         this.isLoading() ||
         (sv.length > 0 && existingSymbols.includes(sv)) ||
         this.formStatus() === 'INVALID'
       );
-    }.bind(this)
+    }.bind(this),
   );
 
-  // Computed signals for validation error display
   showSymbolErrors = computed(
     function showSymbolErrors(this: AddSymbolDialogComponent) {
-      if (!this.symbolTouched()) {
+      const ctrl = this.form.get('symbol');
+      if (!ctrl?.touched) {
         return false;
       }
-      // Show errors when the control is INVALID (required/pattern validators)
-      // OR when a duplicate is detected via direct signal dependency
-      // (avoids waiting for revalidateSymbolEffect → updateValueAndValidity cycle)
       return (
         this.symbolDuplicateError() || this.symbolControlStatus() === 'INVALID'
       );
-    }.bind(this)
+    }.bind(this),
   );
 
   symbolRequiredError = computed(
     function symbolRequiredError(this: AddSymbolDialogComponent) {
       this.symbolControlStatus();
       return Boolean(this.form.get('symbol')?.hasError('required'));
-    }.bind(this)
+    }.bind(this),
   );
 
   symbolPatternError = computed(
     function symbolPatternError(this: AddSymbolDialogComponent) {
       this.symbolControlStatus();
       return Boolean(this.form.get('symbol')?.hasError('pattern'));
-    }.bind(this)
+    }.bind(this),
   );
 
   symbolDuplicateError = computed(
     function symbolDuplicateError(this: AddSymbolDialogComponent) {
-      const sv = this.symbolFormValue() ?? '';
+      const sv = this.form.get('symbol')?.value ?? '';
       return sv.length > 0 && this.existingSymbols().includes(sv);
-    }.bind(this)
+    }.bind(this),
   );
 
   boundSearchSymbols = this.searchSymbols.bind(this);
-
   get riskGroups(): RiskGroup[] {
     return selectRiskGroup();
   }
 
-  // Polarity: returns error when symbol IS already in the Universe (must NOT be in Universe).
-  // Sibling validator with opposite polarity lives in:
-  //   apps/dms-material/src/app/account-panel/open-positions/add-position-dialog/add-position-dialog.component.ts
-  //   → symbolExistsValidator() (returns error when symbol is NOT in the Universe)
   duplicateSymbolValidator(): ValidatorFn {
-    // Capture existingSymbols at validator creation time
     const symbols = this.existingSymbols;
     return function duplicateValidator(
-      control: AbstractControl
+      control: AbstractControl,
     ): ValidationErrors | null {
       const symbol = control.value as string;
       if (!symbol || symbol.length === 0) {
         return null;
       }
-      const existingSymbols: string[] = symbols();
-      if (existingSymbols.includes(symbol)) {
+      if (symbols().includes(symbol)) {
         return { duplicate: { value: symbol } };
       }
       return null;
@@ -268,38 +215,38 @@ export class AddSymbolDialogComponent implements OnInit {
 
   private readonly syncSearchToFormEffect = effect(
     function syncSearchControlToFormSymbol(
-      this: AddSymbolDialogComponent
+      this: AddSymbolDialogComponent,
     ): void {
       const autocomplete = this.symbolAutocomplete();
       if (autocomplete === undefined) {
         return;
       }
       const self = this;
-      function onSearchValueChange(value: unknown): void {
+      const onSearchValueChange = function handleSearchValueChange(
+        value: unknown,
+      ): void {
         if (typeof value === 'string') {
-          self.form.get('symbol')?.setValue(value);
-          self.form.get('symbol')?.markAsTouched();
-          self.symbolTouched.set(true);
+          const ctrl = self.form.get('symbol');
+          ctrl?.setValue(value);
+          ctrl?.markAsTouched();
         }
-      }
+      };
       autocomplete.searchControl.valueChanges
         .pipe(takeUntilDestroyed(self.destroyRef))
         .subscribe(onSearchValueChange);
-      // Sync current value in case fill() fired before this subscription was established
-      const currentSearchValue = autocomplete.searchControl.value;
-      onSearchValueChange(currentSearchValue);
-    }.bind(this)
+      // Sync current value in case fill() fired before subscription established
+      onSearchValueChange(autocomplete.searchControl.value);
+    }.bind(this),
   );
 
   async searchSymbols(query: string): Promise<SymbolOption[]> {
     if (!query || query.trim().length === 0) {
       return [];
     }
-
     try {
       // eslint-disable-next-line no-restricted-syntax -- SymbolAutocompleteComponent requires Promise<SymbolOption[]> return type
       return await firstValueFrom(
-        this.symbolSearchService.searchSymbols(query)
+        this.symbolSearchService.searchSymbols(query),
       );
     } catch {
       return [];
@@ -316,7 +263,6 @@ export class AddSymbolDialogComponent implements OnInit {
       this.form.markAllAsTouched();
       return;
     }
-
     const { symbol, riskGroupId } = this.form.value;
     if (
       typeof symbol === 'string' &&
@@ -338,17 +284,16 @@ export class AddSymbolDialogComponent implements OnInit {
 
   private addSymbolToUniverse(symbol: string, riskGroupId: string): void {
     this.isLoading.set(true);
-    const data: Record<string, string> = { symbol, risk_group_id: riskGroupId };
+    const data = { symbol, risk_group_id: riskGroupId };
     this.http.post<unknown>('./api/universe/add', data).subscribe({
       next: function handleAddSuccess(this: AddSymbolDialogComponent) {
+        const topFacade = facadeRegistry.register('app', 'top');
         const topState = selectTopEntities();
-        const topIds = topState.ids as string[];
-        if (topIds.length > 0) {
-          const topFacade = facadeRegistry.register('app', 'top');
+        if (topState.ids.length > 0) {
           topFacade.updateMany(
-            topIds.map(function markTopDirty(id) {
+            (topState.ids as string[]).map(function markTopDirty(id) {
               return { id, changes: { isDirty: true } };
-            })
+            }),
           );
         }
         this.notification.success(`Added ${symbol} to universe`);

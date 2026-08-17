@@ -24,8 +24,14 @@ export class AccountComponentService {
     this.component.editingContent = 'New Account';
     const accounts = this.component.accounts$();
     const parentRow = this.component.top();
-    if (!parentRow) return;
-    (accounts as any).addToStore(
+    if (!parentRow) {
+      return;
+    }
+    (
+      accounts as unknown as {
+        addToStore(args: unknown, parentRow: unknown): void;
+      }
+    ).addToStore(
       {
         name: 'New Account',
         id: 'new',
@@ -51,8 +57,14 @@ export class AccountComponentService {
     if (this.component.addingNode.length > 0) {
       const accounts = this.component.accounts$();
       const parentRow = this.component.top();
-      if (!parentRow) return;
-      (accounts as any).removeFromStore(item, parentRow);
+      if (!parentRow) {
+        return;
+      }
+      (
+        accounts as unknown as {
+          removeFromStore(item: unknown, parentRow: unknown): void;
+        }
+      ).removeFromStore(item, parentRow);
     }
     this.component.addingNode = '';
     this.component.editingNode = '';

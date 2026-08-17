@@ -46,10 +46,12 @@ export class AccountComponent implements OnInit {
 
   accounts$ = selectAccounts;
 
-  top = computed(() => {
+  top = computed(function computeTop() {
     const entityState = selectTopEntities();
     const ids = entityState.ids;
-    if (ids.length === 0) return undefined;
+    if (ids.length === 0) {
+      return undefined;
+    }
     return entityState.entities[ids[0]];
   });
 
@@ -70,7 +72,7 @@ export class AccountComponent implements OnInit {
       const context = this;
       void context.router
         .navigate(['/account', savedAccount])
-        .catch(function handleNavigationError() {
+        .catch(function onNavigateError() {
           // Navigation errors are handled by router
         });
     }

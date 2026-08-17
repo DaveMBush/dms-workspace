@@ -1,4 +1,4 @@
-import { signal } from '@angular/core';
+import { ChangeDetectorRef, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
 import { of } from 'rxjs';
@@ -17,6 +17,8 @@ describe('AccountComponentService', () => {
   let mockRouter: { navigate: ReturnType<typeof vi.fn> };
   let mockActivatedRoute: { snapshot: { params: Record<string, string> } };
   let mockConfirmDialogService: { confirm: ReturnType<typeof vi.fn> };
+  let mockCdr: { detectChanges: ReturnType<typeof vi.fn> };
+  let mockTopRow: Partial<Top>;
 
   beforeEach(() => {
     mockRouter = {
@@ -33,12 +35,19 @@ describe('AccountComponentService', () => {
       confirm: vi.fn().mockReturnValue(of(false)),
     };
 
+    mockCdr = {
+      detectChanges: vi.fn(),
+    };
+
+    mockTopRow = { id: '1', name: 'Top 1' };
+
     TestBed.configureTestingModule({
       providers: [
         AccountComponentService,
         { provide: Router, useValue: mockRouter },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: ConfirmDialogService, useValue: mockConfirmDialogService },
+        { provide: ChangeDetectorRef, useValue: mockCdr },
       ],
     });
 
@@ -66,9 +75,6 @@ describe('AccountComponentService', () => {
       },
     ];
 
-    const mockTopRow = { id: '1', name: 'Top 1' } as Partial<Top>;
-
-    // Create mock component with necessary properties
     const createMockAccountsSignal = (): AccountInterface[] & {
       addToStore: typeof mockAddToStore;
       removeFromStore: typeof mockRemoveFromStore;
@@ -82,12 +88,14 @@ describe('AccountComponentService', () => {
       return arr;
     };
 
+    const topRow = mockTopRow;
+
     mockComponent = {
       addingNode: '',
       editingContent: '',
       accounts$: () => createMockAccountsSignal(),
       accountsArray$: () => [...mockAccounts],
-      top: () => mockTopRow,
+      top: () => topRow,
     } as unknown as AccountComponent;
   });
 
@@ -184,10 +192,7 @@ describe('AccountComponentService', () => {
 
       service.cancelEdit(testAccount);
 
-      expect(mockRemoveFromStore).toHaveBeenCalledWith(
-        testAccount,
-        mockTopRow,
-      );
+      expect(mockRemoveFromStore).toHaveBeenCalledWith(testAccount, mockTopRow);
     });
 
     it('should not remove account from store when addingNode is empty', () => {
