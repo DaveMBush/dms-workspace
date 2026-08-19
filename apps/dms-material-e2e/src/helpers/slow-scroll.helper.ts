@@ -84,7 +84,7 @@ export async function slowScrollToBottom(
     options?: { stepPx?: number; scrollMs?: number };
     /** Optional — when provided each `FrameSample.rows` will be populated. */
     rowSelector?: string;
-  }
+  },
 ): Promise<FrameSample[]> {
   const {
     containerSelector,
@@ -125,7 +125,7 @@ async function captureScrollFrames({
     return Array.from(document.querySelectorAll<HTMLElement>(rowSel)).map(
       function toSnapshot(el: HTMLElement, i: number): RowSnapshot {
         return { rowIndex: i, top: el.getBoundingClientRect().top };
-      }
+      },
     );
   }
   // eslint-disable-next-line no-restricted-syntax -- requestAnimationFrame requires a Promise wrapper; no RxJS equivalent in a serialised browser-side evaluate callback
@@ -166,7 +166,7 @@ async function captureScrollFrames({
 
 async function runSlowScroll(
   page: Page,
-  arg: ScrollEvalArg
+  arg: ScrollEvalArg,
 ): Promise<FrameSample[]> {
   return page.evaluate<FrameSample[], ScrollEvalArg>(captureScrollFrames, arg);
 }

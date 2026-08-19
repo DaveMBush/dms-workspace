@@ -5,7 +5,7 @@ export function createUniverseRecords(
   symbols: string[],
   riskGroups: RiskGroups,
   prices: [number, number, number],
-  exDates: [Date, Date, Date]
+  exDates: [Date, Date, Date],
 ): UniverseRecord[] {
   const eq = riskGroups.equitiesRiskGroup.id;
   const inc = riskGroups.incomeRiskGroup.id;

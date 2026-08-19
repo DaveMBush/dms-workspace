@@ -1,5 +1,4 @@
 import { expect, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 import { seedVolColumnE2eData } from './helpers/seed-vol-column-e2e-data.helper';
 
@@ -31,7 +30,7 @@ test.describe('Volatility Column', function describeVolColumn() {
     await expect(
       page
         .locator('.dms-column-header-row[role="row"] [role="columnheader"]')
-        .first()
+        .first(),
     ).toContainText('Vol');
   });
 
@@ -52,7 +51,7 @@ test.describe('Volatility Column', function describeVolColumn() {
     const searchInput = page.locator('input[placeholder="Search Symbol"]');
     await searchInput.fill(symbol);
     await expect(
-      page.locator('.dms-body-cell[data-column="vol"] mat-icon').first()
+      page.locator('.dms-body-cell[data-column="vol"] mat-icon').first(),
     ).toBeVisible({ timeout: 10000 });
   });
 });

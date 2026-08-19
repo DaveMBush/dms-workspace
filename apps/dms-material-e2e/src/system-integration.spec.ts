@@ -92,7 +92,7 @@ test.describe.serial('System Integration — Epic 75', () => {
       unknown
     >[];
 
-    const bySymbol = Object.fromEntries(universes.map((u) => [u.symbol, u]));
+    const bySymbol = Object.fromEntries(universes.map((u) => [u['symbol'], u]));
     for (const sym of TARGET_SYMBOLS) {
       expect(bySymbol[sym], `${sym} not found in universe`).toBeDefined();
       expect(

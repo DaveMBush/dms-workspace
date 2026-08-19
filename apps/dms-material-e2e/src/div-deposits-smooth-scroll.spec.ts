@@ -3,7 +3,7 @@ import { login } from './helpers/login.helper';
 import { seedScrollDivDepositsData } from './helpers/seed-scroll-div-deposits-data.helper';
 import { verifyMonotonicScroll } from './helpers/verify-smooth-scroll';
 
-const VIEWPORT_SELECTOR = '.dms-outer-scroller';
+const viewportSelector = '.dms-outer-scroller';
 
 // ─── Dividend Deposits Smooth Scroll Tests ────────────────────────────────────
 
@@ -35,10 +35,10 @@ test.describe('Dividend Deposits Smooth Scroll', () => {
   test('scrolling dividend deposits table should be monotonically non-decreasing', async ({
     page,
   }) => {
-    const viewport = page.locator(VIEWPORT_SELECTOR);
+    const viewport = page.locator(viewportSelector);
     await expect(viewport).toBeVisible({ timeout: 10000 });
 
-    const finalScrollTop = await verifyMonotonicScroll(page, VIEWPORT_SELECTOR);
+    const finalScrollTop = await verifyMonotonicScroll(page, viewportSelector);
 
     expect(finalScrollTop).toBeGreaterThan(0);
   });

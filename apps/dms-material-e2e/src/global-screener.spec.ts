@@ -1,5 +1,4 @@
-import { test, expect } from 'playwright/test';
-
+import { expect, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 
 test.describe('Global Screener Component', () => {
@@ -13,7 +12,7 @@ test.describe('Global Screener Component', () => {
     test('should display screener page with toolbar', async ({ page }) => {
       await expect(page.locator('.screener-toolbar')).toBeVisible();
       await expect(
-        page.locator('.screener-toolbar').getByText('Screener')
+        page.locator('.screener-toolbar').getByText('Screener'),
       ).toBeVisible();
     });
 
@@ -41,13 +40,13 @@ test.describe('Global Screener Component', () => {
 
     test('should display Symbol column header', async ({ page }) => {
       await expect(
-        page.getByRole('columnheader', { name: 'Symbol' })
+        page.getByRole('columnheader', { name: 'Symbol' }),
       ).toBeVisible();
     });
 
     test('should display Risk Group column header', async ({ page }) => {
       await expect(
-        page.getByRole('columnheader', { name: 'Risk Group' })
+        page.getByRole('columnheader', { name: 'Risk Group' }),
       ).toBeVisible();
     });
   });
@@ -55,7 +54,7 @@ test.describe('Global Screener Component', () => {
   test.describe('Risk Group Filter', () => {
     test('should display risk group filter dropdown', async ({ page }) => {
       await expect(
-        page.locator('.header-filter mat-select').first()
+        page.locator('.header-filter mat-select').first(),
       ).toBeVisible();
     });
 
@@ -67,21 +66,21 @@ test.describe('Global Screener Component', () => {
     test('should show Equities option', async ({ page }) => {
       await page.locator('.header-filter mat-select').first().click();
       await expect(
-        page.getByRole('option', { name: 'Equities' })
+        page.getByRole('option', { name: 'Equities' }),
       ).toBeVisible();
     });
 
     test('should show Income option', async ({ page }) => {
       await page.locator('.header-filter mat-select').first().click();
       await expect(
-        page.getByRole('option', { name: 'Income', exact: true })
+        page.getByRole('option', { name: 'Income', exact: true }),
       ).toBeVisible();
     });
 
     test('should show Tax Free Income option', async ({ page }) => {
       await page.locator('.header-filter mat-select').first().click();
       await expect(
-        page.getByRole('option', { name: 'Tax Free Income' })
+        page.getByRole('option', { name: 'Tax Free Income' }),
       ).toBeVisible();
     });
 
@@ -91,7 +90,7 @@ test.describe('Global Screener Component', () => {
       await page.getByRole('option', { name: 'Equities' }).click();
       // Filter should be applied - verify the dropdown shows the selected value
       await expect(filterSelect.locator('.mat-mdc-select-value')).toContainText(
-        'Equities'
+        'Equities',
       );
     });
 
@@ -130,7 +129,7 @@ test.describe('Global Screener Component', () => {
     test('should display correctly at desktop viewport', async ({ page }) => {
       await page.setViewportSize({ width: 1920, height: 1080 });
       await expect(
-        page.locator('[data-testid="screener-container"]')
+        page.locator('[data-testid="screener-container"]'),
       ).toBeVisible();
       await expect(page.locator('.screener-toolbar')).toBeVisible();
     });
@@ -138,14 +137,14 @@ test.describe('Global Screener Component', () => {
     test('should display correctly at tablet viewport', async ({ page }) => {
       await page.setViewportSize({ width: 768, height: 1024 });
       await expect(
-        page.locator('[data-testid="screener-container"]')
+        page.locator('[data-testid="screener-container"]'),
       ).toBeVisible();
     });
 
     test('should display correctly at mobile viewport', async ({ page }) => {
       await page.setViewportSize({ width: 375, height: 667 });
       await expect(
-        page.locator('[data-testid="screener-container"]')
+        page.locator('[data-testid="screener-container"]'),
       ).toBeVisible();
     });
   });
@@ -170,7 +169,7 @@ test.describe('Global Screener Component', () => {
       await refreshButton.click();
       // Should not crash - verify page is still functional
       await expect(
-        page.locator('[data-testid="screener-container"]')
+        page.locator('[data-testid="screener-container"]'),
       ).toBeVisible();
     });
 
@@ -195,7 +194,7 @@ test.describe('Global Screener Component', () => {
 
       // Component should still be functional
       await expect(
-        page.locator('[data-testid="screener-container"]')
+        page.locator('[data-testid="screener-container"]'),
       ).toBeVisible();
     });
   });

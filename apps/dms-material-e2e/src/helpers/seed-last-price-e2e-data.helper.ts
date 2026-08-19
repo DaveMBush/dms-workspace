@@ -1,5 +1,4 @@
 import type { PrismaClient } from '@prisma/client';
-
 import { generateUniqueId } from './generate-unique-id.helper';
 import { initializePrismaClient } from './shared-prisma-client.helper';
 import { createRiskGroups } from './shared-risk-groups.helper';
@@ -24,7 +23,7 @@ async function createSymbolUniverses(
   prisma: PrismaClient,
   symbolA: string,
   symbolB: string,
-  riskGroupId: string
+  riskGroupId: string,
 ): Promise<{ universeAId: string; universeBId: string }> {
   const universeA = await prisma.universe.create({
     data: {
@@ -61,7 +60,7 @@ async function createSymbolTrades(
   prisma: PrismaClient,
   universeAId: string,
   universeBId: string,
-  accountId: string
+  accountId: string,
 ): Promise<{ tradeIdA: string; tradeIdB: string }> {
   const tradeA = await prisma.trades.create({
     data: {
@@ -91,7 +90,7 @@ async function createSymbolTrades(
 function buildCleanup(
   prisma: PrismaClient,
   accountId: string,
-  symbols: string[]
+  symbols: string[],
 ): () => Promise<void> {
   return async function cleanupLastPriceData(): Promise<void> {
     try {
@@ -136,7 +135,7 @@ export async function seedLastPriceE2eData(): Promise<LastPriceSeederResult> {
       prisma,
       symbolA,
       symbolB,
-      riskGroupId
+      riskGroupId,
     );
     const account = await prisma.accounts.create({
       data: { name: accountName },
@@ -146,7 +145,7 @@ export async function seedLastPriceE2eData(): Promise<LastPriceSeederResult> {
       prisma,
       universeIds.universeAId,
       universeIds.universeBId,
-      accountId
+      accountId,
     );
     tradeIdA = tradeIds.tradeIdA;
     tradeIdB = tradeIds.tradeIdB;

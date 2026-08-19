@@ -8,9 +8,9 @@ import {
 } from 'playwright';
 import { expect, test } from 'playwright/test';
 
-const ELECTRON_MAIN_PATH = path.join(__dirname, '../../electron/dist/main.js');
+const electronMainPath = path.join(__dirname, '../../electron/dist/main.js');
 
-const distExists = fs.existsSync(ELECTRON_MAIN_PATH);
+const distExists = fs.existsSync(electronMainPath);
 const electronEnv = {
   ...process.env,
   DMS_NODE_EXEC_PATH: process.execPath,
@@ -103,7 +103,6 @@ test.describe('Electron App Launch', () => {
       // Mark all tests in this block as skipped and bail out of beforeAll.
       // test.skip() called in beforeAll skips all enclosed tests and
       // immediately halts the beforeAll hook.
-      // TODO(E82): blocked — electron dist not built in test environment
       test.skip(
         true,
         'Electron dist not built — run: pnpm nx run electron:build',
@@ -111,7 +110,7 @@ test.describe('Electron App Launch', () => {
       return;
     }
     app = await electron.launch({
-      args: [ELECTRON_MAIN_PATH],
+      args: [electronMainPath],
       env: electronEnv,
       timeout: 30000,
     });

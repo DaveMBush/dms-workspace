@@ -1,5 +1,4 @@
 import type { PrismaClient } from '@prisma/client';
-
 import { generateUniqueId } from './generate-unique-id.helper';
 import type { RiskGroups } from './risk-groups.types';
 import { fetchUniverseIds } from './shared-fetch-universe-ids.helper';
@@ -41,7 +40,7 @@ function createFirstBatch(
   symbols: string[],
   eq: string,
   inc: string,
-  tf: string
+  tf: string,
 ): UniverseRecord[] {
   return [
     createRecord({
@@ -76,7 +75,7 @@ function createFirstBatch(
 
 function createSecondBatch(
   symbols: string[],
-  riskGroups: { eq: string; inc: string }
+  riskGroups: { eq: string; inc: string },
 ): UniverseRecord[] {
   return [
     createRecord({
@@ -107,7 +106,7 @@ function createSecondBatch(
 
 function createUniverseRecords(
   symbols: string[],
-  riskGroups: RiskGroups
+  riskGroups: RiskGroups,
 ): UniverseRecord[] {
   const eq = riskGroups.equitiesRiskGroup.id;
   const inc = riskGroups.incomeRiskGroup.id;
@@ -123,7 +122,7 @@ function buildTradeData(
   acctId: string,
   uId: string,
   prices: [number, number],
-  meta: [string, number, string | null]
+  meta: [string, number, string | null],
 ): Record<string, unknown> {
   return {
     universeId: uId,
@@ -139,7 +138,7 @@ function buildTradeData(
 async function createAllTrades(
   prisma: PrismaClient,
   accts: string[],
-  uIds: string[]
+  uIds: string[],
 ): Promise<void> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Prisma createMany requires untyped batch data
   const data: any[] = [
@@ -148,7 +147,7 @@ async function createAllTrades(
       accts[0],
       uIds[0],
       [85, 90],
-      ['2025-03-01', 5, '2026-01-15']
+      ['2025-03-01', 5, '2026-01-15'],
     ),
     buildTradeData(accts[0], uIds[1], [20, 0], ['2025-09-01', 50, null]),
     // UDDD is expired=true with an open trade, so it is visible in the default
@@ -159,13 +158,13 @@ async function createAllTrades(
       accts[1],
       uIds[0],
       [100, 110],
-      ['2025-05-01', 2, '2026-02-20']
+      ['2025-05-01', 2, '2026-02-20'],
     ),
     buildTradeData(
       accts[1],
       uIds[1],
       [22, 30],
-      ['2025-07-01', 20, '2026-01-10']
+      ['2025-07-01', 20, '2026-01-10'],
     ),
   ];
   await prisma.trades.createMany({ data });
@@ -174,7 +173,7 @@ async function createAllTrades(
 async function createAccountsAndTrades(
   prisma: PrismaClient,
   universeIds: string[],
-  accountNames: string[]
+  accountNames: string[],
 ): Promise<{ accountIds: string[] }> {
   const account1 = await prisma.accounts.create({
     data: { name: accountNames[0] },
@@ -217,7 +216,7 @@ export async function seedUniverseE2eData(): Promise<SeederResult> {
     const result = await createAccountsAndTrades(
       prisma,
       universeIds,
-      accountNames
+      accountNames,
     );
     accountIds = result.accountIds;
   } catch (error) {

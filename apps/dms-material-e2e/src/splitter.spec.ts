@@ -1,5 +1,4 @@
-import { test, expect } from 'playwright/test';
-
+import { expect, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 
 test.describe('Splitter', () => {
@@ -46,7 +45,7 @@ test.describe('Splitter', () => {
 
     // Check localStorage value is clamped to minimum
     const stored = await page.evaluate(() =>
-      localStorage.getItem('dms-main-splitter')
+      localStorage.getItem('dms-main-splitter'),
     );
     expect(stored).toBeTruthy();
     const percentage = parseFloat(stored!);
@@ -65,7 +64,7 @@ test.describe('Splitter', () => {
     await page.mouse.down();
     await page.mouse.move(
       containerBox!.x + containerBox!.width - 10,
-      containerBox!.y
+      containerBox!.y,
     );
     await page.mouse.up();
 
@@ -73,7 +72,7 @@ test.describe('Splitter', () => {
 
     // Check localStorage value is clamped to maximum
     const stored = await page.evaluate(() =>
-      localStorage.getItem('dms-main-splitter')
+      localStorage.getItem('dms-main-splitter'),
     );
     expect(stored).toBeTruthy();
     const percentage = parseFloat(stored!);
@@ -138,7 +137,7 @@ test.describe('Splitter', () => {
 
     // Check localStorage
     const stored = await page.evaluate(() =>
-      localStorage.getItem('dms-main-splitter')
+      localStorage.getItem('dms-main-splitter'),
     );
     expect(stored).toBeTruthy();
     const percentage = parseFloat(stored!);
@@ -163,7 +162,7 @@ test.describe('Splitter', () => {
 
     // Get the stored value before reload
     const storedBefore = await page.evaluate(() =>
-      localStorage.getItem('dms-main-splitter')
+      localStorage.getItem('dms-main-splitter'),
     );
 
     // Reload page
@@ -172,7 +171,7 @@ test.describe('Splitter', () => {
 
     // Check the stored value after reload matches
     const storedAfter = await page.evaluate(() =>
-      localStorage.getItem('dms-main-splitter')
+      localStorage.getItem('dms-main-splitter'),
     );
 
     expect(storedAfter).toBe(storedBefore);
@@ -222,7 +221,7 @@ test.describe('Splitter', () => {
 
     // Visual position should be restored (allow 2% variance)
     expect(
-      Math.abs(afterRestartPercentage - beforeRestartPercentage)
+      Math.abs(afterRestartPercentage - beforeRestartPercentage),
     ).toBeLessThan(2);
   });
 
@@ -303,7 +302,7 @@ test.describe('Splitter', () => {
 
     // Should have a valid stored value
     const stored = await page.evaluate(() =>
-      localStorage.getItem('dms-main-splitter')
+      localStorage.getItem('dms-main-splitter'),
     );
     expect(stored).toBeTruthy();
     const percentage = parseFloat(stored!);

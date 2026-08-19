@@ -1,5 +1,4 @@
 import { expect, Page, test } from 'playwright/test';
-
 import { generateUniqueId } from './helpers/generate-unique-id.helper';
 import { getOrCreateDivDepositTypeId } from './helpers/get-or-create-div-deposit-type-id.helper';
 import { login } from './helpers/login.helper';
@@ -51,7 +50,7 @@ async function filterBySymbol(page: Page, symbol: string): Promise<void> {
  */
 async function selectUniverseAccount(
   page: Page,
-  accountName: string
+  accountName: string,
 ): Promise<void> {
   const accountSelect = page.locator('.account-select mat-select');
   await accountSelect.click();
@@ -197,7 +196,7 @@ test.describe('Universe Delete-Button Gating (Story 110.3)', () => {
       .filter({ hasText: symUnused });
     await expect(unusedRow).toBeVisible({ timeout: 15000 });
     await expect(
-      unusedRow.locator('[aria-label="Delete unused symbol"]')
+      unusedRow.locator('[aria-label="Delete unused symbol"]'),
     ).toBeVisible({ timeout: 10000 });
 
     // Verify symTrades row does NOT show the delete button
@@ -207,7 +206,7 @@ test.describe('Universe Delete-Button Gating (Story 110.3)', () => {
       .filter({ hasText: symTrades });
     await expect(tradesRow).toBeVisible({ timeout: 15000 });
     await expect(
-      tradesRow.locator('[aria-label="Delete unused symbol"]')
+      tradesRow.locator('[aria-label="Delete unused symbol"]'),
     ).not.toBeVisible({ timeout: 5000 });
 
     // Verify symDivs row does NOT show the delete button
@@ -217,7 +216,7 @@ test.describe('Universe Delete-Button Gating (Story 110.3)', () => {
       .filter({ hasText: symDivs });
     await expect(divsRow).toBeVisible({ timeout: 15000 });
     await expect(
-      divsRow.locator('[aria-label="Delete unused symbol"]')
+      divsRow.locator('[aria-label="Delete unused symbol"]'),
     ).not.toBeVisible({ timeout: 5000 });
   });
 
@@ -234,12 +233,12 @@ test.describe('Universe Delete-Button Gating (Story 110.3)', () => {
       .filter({ hasText: symUnused });
     await expect(unusedRow).toBeVisible({ timeout: 15000 });
     await expect(
-      unusedRow.locator('[aria-label="Delete unused symbol"]')
+      unusedRow.locator('[aria-label="Delete unused symbol"]'),
     ).not.toBeVisible({ timeout: 5000 });
 
     // No delete buttons on page at all
     await expect(
-      page.locator('[aria-label="Delete unused symbol"]')
+      page.locator('[aria-label="Delete unused symbol"]'),
     ).toHaveCount(0, { timeout: 5000 });
   });
 });

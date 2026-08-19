@@ -1,4 +1,4 @@
-import { test, expect } from 'playwright/test';
+import { expect, test } from 'playwright/test';
 
 test.describe('Summary Display Component (Charts)', () => {
   test.beforeEach(async ({ page }) => {
@@ -41,7 +41,7 @@ test.describe('Summary Display Component (Charts)', () => {
         // Hover over a slice of the pie chart (offset from center)
         await page.mouse.move(
           box.x + box.width * 0.3,
-          box.y + box.height * 0.4
+          box.y + box.height * 0.4,
         );
         await page.waitForTimeout(500);
 
@@ -82,7 +82,7 @@ test.describe('Summary Display Component (Charts)', () => {
             const box = await pieChart.boundingBox();
             return box?.width;
           },
-          { timeout: 5000 }
+          { timeout: 5000 },
         )
         .not.toBe(initialBox?.width);
     });
@@ -114,7 +114,7 @@ test.describe('Summary Display Component (Charts)', () => {
 
     test('single data point renders correctly', async ({ page }) => {
       const singlePointChart = page.locator(
-        '[data-testid="single-point-chart"]'
+        '[data-testid="single-point-chart"]',
       );
       await expect(singlePointChart).toBeVisible();
 
@@ -124,7 +124,7 @@ test.describe('Summary Display Component (Charts)', () => {
 
     test('large dataset (100+ points) renders', async ({ page }) => {
       const largeDatasetChart = page.locator(
-        '[data-testid="large-dataset-chart"]'
+        '[data-testid="large-dataset-chart"]',
       );
       await expect(largeDatasetChart).toBeVisible();
 
@@ -134,7 +134,7 @@ test.describe('Summary Display Component (Charts)', () => {
 
     test('very small values displayed correctly', async ({ page }) => {
       const smallValuesChart = page.locator(
-        '[data-testid="small-values-chart"]'
+        '[data-testid="small-values-chart"]',
       );
       await expect(smallValuesChart).toBeVisible();
 
@@ -144,7 +144,7 @@ test.describe('Summary Display Component (Charts)', () => {
 
     test('very large values displayed correctly', async ({ page }) => {
       const largeValuesChart = page.locator(
-        '[data-testid="large-values-chart"]'
+        '[data-testid="large-values-chart"]',
       );
       await expect(largeValuesChart).toBeVisible();
 
@@ -154,7 +154,7 @@ test.describe('Summary Display Component (Charts)', () => {
 
     test('negative values handled correctly in charts', async ({ page }) => {
       const negativeValuesChart = page.locator(
-        '[data-testid="negative-values-chart"]'
+        '[data-testid="negative-values-chart"]',
       );
       await expect(negativeValuesChart).toBeVisible();
 

@@ -3,8 +3,8 @@ import type { SeederResultBase } from './seeder-result-base.types';
 import { initializePrismaClient } from './shared-prisma-client.helper';
 import { createRiskGroups } from './shared-risk-groups.helper';
 
-const ACCOUNT_NAME = 'E2E OXLC Joint Brokerage';
-const OXLC_SYMBOL = 'OXLC';
+const accountName = 'E2E OXLC Joint Brokerage';
+const oxlcSymbol = 'OXLC';
 
 interface OxlcJointBrokerageSeederResult extends SeederResultBase {
   accountName: string;
@@ -18,7 +18,7 @@ async function cleanupOxlcData(
   try {
     await prisma.trades.deleteMany({ where: { accountId } });
     await prisma.divDeposits.deleteMany({ where: { accountId } });
-    await prisma.accounts.deleteMany({ where: { name: ACCOUNT_NAME } });
+    await prisma.accounts.deleteMany({ where: { name: accountName } });
     if (oxlcUniverseId !== null) {
       await prisma.trades.deleteMany({ where: { universeId: oxlcUniverseId } });
       await prisma.divDeposits.deleteMany({
@@ -53,7 +53,7 @@ export async function seedOxlcJointBrokerageData(): Promise<OxlcJointBrokerageSe
     // If it does not exist, the BUY row in the CSV will auto-create it and we
     // must clean it up after the test.
     const existingOxlc = await prisma.universe.findFirst({
-      where: { symbol: OXLC_SYMBOL },
+      where: { symbol: oxlcSymbol },
     });
     if (existingOxlc === null) {
       // Mark sentinel: we will capture the created universe id after the import
@@ -66,18 +66,18 @@ export async function seedOxlcJointBrokerageData(): Promise<OxlcJointBrokerageSe
   }
 
   return {
-    accountName: ACCOUNT_NAME,
-    symbols: [OXLC_SYMBOL],
+    accountName,
+    symbols: [oxlcSymbol],
     cleanup: async function cleanupOxlcJointBrokerageData(): Promise<void> {
       const account = await prisma.accounts.findFirst({
-        where: { name: ACCOUNT_NAME },
+        where: { name: accountName },
       });
       const accountId = account?.id ?? '';
 
       let resolvedOxlcUniverseId: string | null = null;
       if (oxlcUniverseIdToDelete === '__pending__') {
         const oxlcEntry = await prisma.universe.findFirst({
-          where: { symbol: OXLC_SYMBOL },
+          where: { symbol: oxlcSymbol },
         });
         resolvedOxlcUniverseId = oxlcEntry?.id ?? null;
       }

@@ -1,13 +1,13 @@
 import { expect, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 
-const ACCOUNT_UUID = '1677e04f-ef9b-4372-adb3-b740443088dc';
+const accountUuid = '1677e04f-ef9b-4372-adb3-b740443088dc';
 
 test.describe('Account Summary', () => {
   test.beforeEach(async ({ page }) => {
     await login(page);
     // Navigate to a specific account (summary is default tab)
-    await page.goto(`/account/${ACCOUNT_UUID}`);
+    await page.goto(`/account/${accountUuid}`);
     await page.waitForLoadState('networkidle');
   });
 
@@ -34,7 +34,7 @@ test.describe('Account Summary', () => {
       await page.waitForLoadState('networkidle');
 
       // Verify account summary URL (no sub-path, summary is default)
-      await expect(page).toHaveURL(new RegExp(`/account/${ACCOUNT_UUID}$`));
+      await expect(page).toHaveURL(new RegExp(`/account/${accountUuid}$`));
       const summaryCard = page.locator(
         '[data-testid="account-summary-container"]',
       );
@@ -43,7 +43,7 @@ test.describe('Account Summary', () => {
 
     test('should handle browser back button', async ({ page }) => {
       // Navigate away to open positions tab
-      await page.goto(`/account/${ACCOUNT_UUID}/open`);
+      await page.goto(`/account/${accountUuid}/open`);
       await page.waitForLoadState('networkidle');
 
       // Go back
@@ -212,7 +212,7 @@ test.describe('Account Summary', () => {
           });
         },
       );
-      await page.goto(`/account/${ACCOUNT_UUID}`);
+      await page.goto(`/account/${accountUuid}`);
       await page.waitForLoadState('networkidle');
 
       const monthSelector = page.locator('[data-testid="month-selector"]');
@@ -268,7 +268,7 @@ test.describe('Account Summary', () => {
           });
         },
       );
-      await page.goto(`/account/${ACCOUNT_UUID}`);
+      await page.goto(`/account/${accountUuid}`);
       await page.waitForLoadState('networkidle');
 
       const monthSelector = page.locator('[data-testid="month-selector"]');
@@ -349,7 +349,7 @@ test.describe('Account Summary', () => {
           });
         },
       );
-      await page.goto(`/account/${ACCOUNT_UUID}`);
+      await page.goto(`/account/${accountUuid}`);
       await page.waitForLoadState('networkidle');
 
       const yearSelector = page.locator('[data-testid="year-selector"]');
@@ -429,7 +429,7 @@ test.describe('Account Summary', () => {
           });
         },
       );
-      await page.goto(`/account/${ACCOUNT_UUID}`);
+      await page.goto(`/account/${accountUuid}`);
       await page.waitForLoadState('networkidle');
 
       const yearSelector = page.locator('[data-testid="year-selector"]');
@@ -577,7 +577,7 @@ test.describe('Account Summary', () => {
         });
       });
 
-      await page.goto(`/account/${ACCOUNT_UUID}`);
+      await page.goto(`/account/${accountUuid}`);
 
       // Wait for the error message to appear (driven by error signal)
       const errorMessage = page.locator('[data-testid="error-message"]');
@@ -643,7 +643,7 @@ test.describe('Account Summary', () => {
         },
       );
 
-      await page.goto(`/account/${ACCOUNT_UUID}`);
+      await page.goto(`/account/${accountUuid}`);
       await page.waitForLoadState('networkidle');
 
       const errorMessage = page.locator('[data-testid="error-message"]');
@@ -671,7 +671,7 @@ test.describe('Account Summary', () => {
         });
       });
 
-      await page.goto(`/account/${ACCOUNT_UUID}`);
+      await page.goto(`/account/${accountUuid}`);
       await page.waitForLoadState('networkidle');
 
       // No-data message should be visible (all allocation values are zero)
@@ -695,7 +695,7 @@ test.describe('Account Summary', () => {
       await page.waitForLoadState('networkidle');
 
       // Navigate back to account summary
-      await page.goto(`/account/${ACCOUNT_UUID}`);
+      await page.goto(`/account/${accountUuid}`);
       await page.waitForLoadState('networkidle');
 
       // Verify charts are still visible
@@ -775,7 +775,7 @@ test.describe('Account Summary', () => {
 
     test('should have navigation context', ({ page }) => {
       const currentUrl = page.url();
-      expect(currentUrl).toContain(`/account/${ACCOUNT_UUID}`);
+      expect(currentUrl).toContain(`/account/${accountUuid}`);
     });
   });
 });

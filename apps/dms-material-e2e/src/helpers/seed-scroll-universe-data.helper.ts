@@ -9,7 +9,7 @@ interface SeederResult {
   symbols: string[];
 }
 
-const ROW_COUNT = 60;
+const rowCount = 60;
 
 /**
  * Generate many universe records for scroll testing
@@ -45,7 +45,7 @@ export async function seedScrollUniverseData(): Promise<SeederResult> {
   const prisma = await initializePrismaClient();
   const uniqueId = generateUniqueId();
   const symbols = Array.from(
-    { length: ROW_COUNT },
+    { length: rowCount },
     function generateSymbol(_: unknown, i: number): string {
       return `USCRL${String(i).padStart(2, '0')}-${uniqueId}`;
     },

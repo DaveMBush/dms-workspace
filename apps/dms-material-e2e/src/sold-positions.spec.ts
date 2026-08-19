@@ -1,5 +1,4 @@
-import { test, expect } from 'playwright/test';
-
+import { expect, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 
 test.describe('Sold Positions', () => {
@@ -18,31 +17,31 @@ test.describe('Sold Positions', () => {
     test('should display all required columns', async ({ page }) => {
       // Check for all 9 column headers
       await expect(
-        page.getByRole('columnheader', { name: 'Symbol', exact: true })
+        page.getByRole('columnheader', { name: 'Symbol', exact: true }),
       ).toBeVisible();
       await expect(
-        page.getByRole('columnheader', { name: 'Buy', exact: true })
+        page.getByRole('columnheader', { name: 'Buy', exact: true }),
       ).toBeVisible();
       await expect(
-        page.getByRole('columnheader', { name: 'Buy Date', exact: true })
+        page.getByRole('columnheader', { name: 'Buy Date', exact: true }),
       ).toBeVisible();
       await expect(
-        page.getByRole('columnheader', { name: 'Quantity', exact: true })
+        page.getByRole('columnheader', { name: 'Quantity', exact: true }),
       ).toBeVisible();
       await expect(
-        page.getByRole('columnheader', { name: 'Sell', exact: true })
+        page.getByRole('columnheader', { name: 'Sell', exact: true }),
       ).toBeVisible();
       await expect(
-        page.getByRole('columnheader', { name: 'Sell Date', exact: true })
+        page.getByRole('columnheader', { name: 'Sell Date', exact: true }),
       ).toBeVisible();
       await expect(
-        page.getByRole('columnheader', { name: 'Days Held', exact: true })
+        page.getByRole('columnheader', { name: 'Days Held', exact: true }),
       ).toBeVisible();
       await expect(
-        page.getByRole('columnheader', { name: 'Cap Gains$', exact: true })
+        page.getByRole('columnheader', { name: 'Cap Gains$', exact: true }),
       ).toBeVisible();
       await expect(
-        page.getByRole('columnheader', { name: 'Cap Gains%', exact: true })
+        page.getByRole('columnheader', { name: 'Cap Gains%', exact: true }),
       ).toBeVisible();
     });
 
@@ -143,13 +142,13 @@ test.describe('Sold Positions', () => {
     test('should handle very old positions correctly', async ({ page }) => {
       // Verify all date and calculation columns exist
       await expect(
-        page.getByRole('columnheader', { name: 'Buy Date' })
+        page.getByRole('columnheader', { name: 'Buy Date' }),
       ).toBeVisible();
       await expect(
-        page.getByRole('columnheader', { name: 'Sell Date' })
+        page.getByRole('columnheader', { name: 'Sell Date' }),
       ).toBeVisible();
       await expect(
-        page.getByRole('columnheader', { name: 'Days Held' })
+        page.getByRole('columnheader', { name: 'Days Held' }),
       ).toBeVisible();
     });
 
@@ -178,7 +177,7 @@ test.describe('Sold Positions', () => {
 
       // All column headers should still be present
       await expect(
-        page.getByRole('columnheader', { name: 'Symbol' })
+        page.getByRole('columnheader', { name: 'Symbol' }),
       ).toBeVisible();
     });
 
@@ -187,23 +186,23 @@ test.describe('Sold Positions', () => {
     }) => {
       // Verify currency columns exist
       await expect(
-        page.getByRole('columnheader', { name: 'Buy', exact: true })
+        page.getByRole('columnheader', { name: 'Buy', exact: true }),
       ).toBeVisible();
       await expect(
-        page.getByRole('columnheader', { name: 'Sell', exact: true })
+        page.getByRole('columnheader', { name: 'Sell', exact: true }),
       ).toBeVisible();
       await expect(
-        page.getByRole('columnheader', { name: 'Cap Gains$', exact: true })
+        page.getByRole('columnheader', { name: 'Cap Gains$', exact: true }),
       ).toBeVisible();
     });
 
     test('should display dates in correct format', async ({ page }) => {
       // Verify date columns exist
       await expect(
-        page.getByRole('columnheader', { name: 'Buy Date' })
+        page.getByRole('columnheader', { name: 'Buy Date' }),
       ).toBeVisible();
       await expect(
-        page.getByRole('columnheader', { name: 'Sell Date' })
+        page.getByRole('columnheader', { name: 'Sell Date' }),
       ).toBeVisible();
     });
 

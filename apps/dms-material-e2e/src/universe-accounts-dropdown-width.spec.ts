@@ -1,5 +1,4 @@
 import { expect, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 
 /**
@@ -30,7 +29,7 @@ test.describe('Universe Accounts Filter Dropdown Width', () => {
   }) => {
     // Account filter mat-select uses panelWidth="" (content width) — Story 52.1 fix
     const accountSelect = page.locator(
-      '.universe-toolbar mat-form-field.account-select mat-select'
+      '.universe-toolbar mat-form-field.account-select mat-select',
     );
     await expect(accountSelect).toHaveCount(1);
     await expect(accountSelect).toBeVisible({ timeout: 10000 });
@@ -45,11 +44,11 @@ test.describe('Universe Accounts Filter Dropdown Width', () => {
     // Assert no mat-option element has horizontal text overflow
     const hasOverflow = await page.evaluate(() => {
       const options = document.querySelectorAll(
-        '.mat-mdc-select-panel mat-option'
+        '.mat-mdc-select-panel mat-option',
       );
       return Array.from(options).some(
         (el) =>
-          (el as HTMLElement).scrollWidth > (el as HTMLElement).clientWidth
+          (el as HTMLElement).scrollWidth > (el as HTMLElement).clientWidth,
       );
     });
     expect(hasOverflow).toBe(false);
@@ -63,7 +62,7 @@ test.describe('Universe Accounts Filter Dropdown Width', () => {
   }) => {
     // panelWidth="" means the panel grows to fit the widest option label
     const accountSelect = page.locator(
-      '.universe-toolbar mat-form-field.account-select mat-select'
+      '.universe-toolbar mat-form-field.account-select mat-select',
     );
     await expect(accountSelect).toHaveCount(1);
     await expect(accountSelect).toBeVisible({ timeout: 10000 });
@@ -82,7 +81,7 @@ test.describe('Universe Accounts Filter Dropdown Width', () => {
     // Measure the widest option label's rendered width
     const widestOptionLabelWidth = await page.evaluate(() => {
       const options = document.querySelectorAll(
-        '.mat-mdc-select-panel mat-option'
+        '.mat-mdc-select-panel mat-option',
       );
       let maxWidth = 0;
       options.forEach((el) => {

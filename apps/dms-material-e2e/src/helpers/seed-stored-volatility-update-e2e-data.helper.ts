@@ -6,18 +6,18 @@ import { getOrCreateRiskGroupId } from './get-or-create-risk-group-id.helper';
 import type { SeederResultBase } from './seeder-result-base.types';
 import { initializePrismaClient } from './shared-prisma-client.helper';
 
-const DISTRIBUTIONS_PER_YEAR = 12;
-const LAST_PRICE = 10.0;
+const distributionsPerYear = 12;
+const lastPrice = 10.0;
 
 // Flat: all equal → CV = 0% → 'flat' category
-const FLAT_AMOUNTS = [
+const flatAmounts = [
   1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 ];
 
 // Volatile: near-palindrome pattern → CV >> 10%, slope = 0, not up-then-down/down-then-up
 // Pattern: [2.0, 0.5, 2.0, 0.5, 2.0, 0.5, 0.5, 2.0, 0.5, 2.0, 0.5, 2.0]
 // mean=1.25, CV=0.6, normalizedSlope=0 → 'volatile' (mirrors the unit test pattern)
-const VOLATILE_AMOUNTS = [
+const volatileAmounts = [
   2.0, 0.5, 2.0, 0.5, 2.0, 0.5, 0.5, 2.0, 0.5, 2.0, 0.5, 2.0,
 ];
 
@@ -41,9 +41,9 @@ async function seedFlatSymbol(ctx: SeedFlatContext): Promise<string> {
     data: {
       symbol: ctx.symbol,
       risk_group_id: ctx.riskGroupId,
-      distribution: FLAT_AMOUNTS[FLAT_AMOUNTS.length - 1],
-      distributions_per_year: DISTRIBUTIONS_PER_YEAR,
-      last_price: LAST_PRICE,
+      distribution: flatAmounts[flatAmounts.length - 1],
+      distributions_per_year: distributionsPerYear,
+      last_price: lastPrice,
       ex_date: null,
       most_recent_sell_date: null,
       most_recent_sell_price: null,
@@ -54,12 +54,12 @@ async function seedFlatSymbol(ctx: SeedFlatContext): Promise<string> {
     },
   });
 
-  const dates = buildMonthlyDates(FLAT_AMOUNTS.length);
+  const dates = buildMonthlyDates(flatAmounts.length);
   await ctx.prisma.divDeposits.createMany({
     data: dates.map(function buildDeposit(date: Date, i: number) {
       return {
         date,
-        amount: FLAT_AMOUNTS[i],
+        amount: flatAmounts[i],
         accountId: ctx.accountId,
         divDepositTypeId: ctx.divDepositTypeId,
         universeId: universe.id,
@@ -78,9 +78,9 @@ function buildUniverseRecord(
   return {
     id: universeId,
     symbol,
-    distribution: FLAT_AMOUNTS[FLAT_AMOUNTS.length - 1],
-    distributions_per_year: DISTRIBUTIONS_PER_YEAR,
-    last_price: LAST_PRICE,
+    distribution: flatAmounts[flatAmounts.length - 1],
+    distributions_per_year: distributionsPerYear,
+    last_price: lastPrice,
     most_recent_sell_date: null,
     most_recent_sell_price: null,
     ex_date: null,
@@ -102,12 +102,12 @@ function buildUpdateToVolatile(
 ): () => Promise<void> {
   return async function updateToVolatile(): Promise<void> {
     await prisma.divDeposits.deleteMany({ where: { universeId } });
-    const dates = buildMonthlyDates(VOLATILE_AMOUNTS.length);
+    const dates = buildMonthlyDates(volatileAmounts.length);
     await prisma.divDeposits.createMany({
       data: dates.map(function buildVolatileDeposit(date: Date, i: number) {
         return {
           date,
-          amount: VOLATILE_AMOUNTS[i],
+          amount: volatileAmounts[i],
           accountId,
           divDepositTypeId,
           universeId,

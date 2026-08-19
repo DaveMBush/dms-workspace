@@ -35,7 +35,7 @@ function createBulkSoldTrades(accountId: string, universeIds: string[]): any[] {
  * the seeded trades, not the pre-existing account.
  */
 export async function seedScrollSoldPositionsData(
-  targetAccountId?: string
+  targetAccountId?: string,
 ): Promise<SeederResult> {
   const prisma = await initializePrismaClient();
   const uniqueId = generateUniqueId();
@@ -48,7 +48,7 @@ export async function seedScrollSoldPositionsData(
       prisma,
       accountName,
       createBulkSoldTrades,
-      targetAccountId
+      targetAccountId,
     );
     accountId = result.accountId;
     isNewAccount = result.isNewAccount;

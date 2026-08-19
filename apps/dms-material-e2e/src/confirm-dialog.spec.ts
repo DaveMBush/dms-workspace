@@ -235,8 +235,6 @@ test.describe('Confirm Dialog Service', () => {
       await expect(page.getByText('Confirm Logout')).toBeVisible();
 
       // Try to click on the theme toggle (should be blocked by overlay)
-      const _themeToggle = page.locator('button[aria-label="Toggle theme"]');
-
       // The button should not be interactable while dialog is open
       // (cdk-overlay-backdrop blocks clicks)
       await expect(

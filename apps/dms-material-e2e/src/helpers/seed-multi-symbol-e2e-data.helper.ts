@@ -8,13 +8,13 @@ interface MultiSymbolSeederResult {
   cleanup(): Promise<void>;
 }
 
-const TSTX_SYMBOL = 'TSTX';
-const ABCD_SYMBOL = 'ABCD';
-const ACCOUNT_NAME = 'Multi Symbol Test Account';
+const tstxSymbol = 'TSTX';
+const abcdSymbol = 'ABCD';
+const accountName = 'Multi Symbol Test Account';
 
 async function cleanupExistingData(prisma: PrismaClient): Promise<void> {
   const existingUniverses = await prisma.universe.findMany({
-    where: { symbol: { in: [TSTX_SYMBOL, ABCD_SYMBOL] } },
+    where: { symbol: { in: [tstxSymbol, abcdSymbol] } },
     select: { id: true },
   });
   const universeIds = existingUniverses.map(function getId(u: { id: string }) {
@@ -26,7 +26,7 @@ async function cleanupExistingData(prisma: PrismaClient): Promise<void> {
     });
     await prisma.universe.deleteMany({ where: { id: { in: universeIds } } });
   }
-  await prisma.accounts.deleteMany({ where: { name: ACCOUNT_NAME } });
+  await prisma.accounts.deleteMany({ where: { name: accountName } });
 }
 
 async function createSeedData(
@@ -37,7 +37,7 @@ async function createSeedData(
 
   const tstxUniverse = await prisma.universe.create({
     data: {
-      symbol: TSTX_SYMBOL,
+      symbol: tstxSymbol,
       risk_group_id: riskGroups.incomeRiskGroup.id,
       distribution: 0.0,
       distributions_per_year: 12,
@@ -50,7 +50,7 @@ async function createSeedData(
 
   const abcdUniverse = await prisma.universe.create({
     data: {
-      symbol: ABCD_SYMBOL,
+      symbol: abcdSymbol,
       risk_group_id: riskGroups.equitiesRiskGroup.id,
       distribution: 0.0,
       distributions_per_year: 0,
@@ -62,7 +62,7 @@ async function createSeedData(
 
   // Account is created by the import itself; we just ensure it doesn't
   // pre-exist to avoid confusion. No pre-seeded trades for either symbol.
-  await prisma.accounts.deleteMany({ where: { name: ACCOUNT_NAME } });
+  await prisma.accounts.deleteMany({ where: { name: accountName } });
 
   return {
     tstxUniverseId: tstxUniverse.id,
@@ -75,7 +75,7 @@ async function createSeedData(
         await prisma.trades.deleteMany({
           where: { universeId: abcdUniverse.id },
         });
-        await prisma.accounts.deleteMany({ where: { name: ACCOUNT_NAME } });
+        await prisma.accounts.deleteMany({ where: { name: accountName } });
         await prisma.universe.deleteMany({
           where: { id: { in: [tstxUniverse.id, abcdUniverse.id] } },
         });

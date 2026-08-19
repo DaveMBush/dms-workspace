@@ -20,7 +20,7 @@ interface RouteNavigationOptions {
  */
 export async function swapActiveAccountViaNavigation(
   page: Page,
-  options: RouteNavigationOptions
+  options: RouteNavigationOptions,
 ): Promise<void> {
   const { toAccountId, routeSuffix } = options;
   await page.goto(`/account/${toAccountId}/${routeSuffix}`);

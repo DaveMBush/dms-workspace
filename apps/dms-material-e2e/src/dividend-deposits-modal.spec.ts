@@ -1,5 +1,4 @@
 import { expect, Page, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 
 // Account UUID is set in beforeAll by creating a fresh test account via API
@@ -31,7 +30,7 @@ async function openAddDialog(page: Page): Promise<void> {
 async function addDeposit(
   page: Page,
   date = '01/15/2025',
-  amount = '75.50'
+  amount = '75.50',
 ): Promise<void> {
   await openAddDialog(page);
   await page.locator('input[formControlName="date"]').fill(date);
@@ -44,7 +43,7 @@ async function addDeposit(
     .click();
   await page.locator('input[formControlName="amount"]').fill(amount);
   const submitBtn = page.locator(
-    'mat-dialog-actions button[mat-raised-button]'
+    'mat-dialog-actions button[mat-raised-button]',
   );
   await submitBtn.click();
   await expect(page.locator('dms-div-dep-modal')).not.toBeVisible({
@@ -58,7 +57,7 @@ async function addDeposit(
     page
       .locator('.dms-body-row[role="row"]')
       .filter({ hasText: `$${amount}` })
-      .first()
+      .first(),
   ).toBeVisible({ timeout: 10000 });
 }
 
@@ -89,16 +88,16 @@ test.describe('Dividend Deposits', () => {
   test.describe('Table Display', () => {
     test('should display correct column headers', async ({ page }) => {
       await expect(
-        page.getByRole('columnheader', { name: 'Symbol' })
+        page.getByRole('columnheader', { name: 'Symbol' }),
       ).toBeVisible({ timeout: 5000 });
       await expect(
-        page.getByRole('columnheader', { name: 'Date' })
+        page.getByRole('columnheader', { name: 'Date' }),
       ).toBeVisible();
       await expect(
-        page.getByRole('columnheader', { name: 'Amount' })
+        page.getByRole('columnheader', { name: 'Amount' }),
       ).toBeVisible();
       await expect(
-        page.getByRole('columnheader', { name: 'Type' })
+        page.getByRole('columnheader', { name: 'Type' }),
       ).toBeVisible();
     });
 
@@ -116,7 +115,7 @@ test.describe('Dividend Deposits', () => {
     test('should open add dialog when + button clicked', async ({ page }) => {
       await openAddDialog(page);
       await expect(
-        page.locator('h2').filter({ hasText: 'New Dividend or Deposit' })
+        page.locator('h2').filter({ hasText: 'New Dividend or Deposit' }),
       ).toBeVisible();
     });
 
@@ -125,16 +124,16 @@ test.describe('Dividend Deposits', () => {
     }) => {
       await openAddDialog(page);
       await expect(
-        page.locator('mat-label').filter({ hasText: 'Symbol' })
+        page.locator('mat-label').filter({ hasText: 'Symbol' }),
       ).toBeVisible();
       await expect(
-        page.locator('mat-label').filter({ hasText: 'Date' })
+        page.locator('mat-label').filter({ hasText: 'Date' }),
       ).toBeVisible();
       await expect(
-        page.locator('mat-label').filter({ hasText: 'Amount' })
+        page.locator('mat-label').filter({ hasText: 'Amount' }),
       ).toBeVisible();
       await expect(
-        page.locator('mat-label').filter({ hasText: 'Type' })
+        page.locator('mat-label').filter({ hasText: 'Type' }),
       ).toBeVisible();
       // Add mode shows autocomplete input (not a readonly symbol input)
       await expect(page.locator('[data-testid="symbol-input"]')).toBeVisible();
@@ -158,7 +157,7 @@ test.describe('Dividend Deposits', () => {
       await page.locator('input[formControlName="date"]').click();
       await page.locator('input[formControlName="date"]').blur();
       await expect(
-        page.locator('mat-error').filter({ hasText: 'Date is required' })
+        page.locator('mat-error').filter({ hasText: 'Date is required' }),
       ).toBeVisible({ timeout: 3000 });
     });
 
@@ -182,7 +181,7 @@ test.describe('Dividend Deposits', () => {
       await expect(
         page
           .locator('.validation-error')
-          .filter({ hasText: 'Symbol is required' })
+          .filter({ hasText: 'Symbol is required' }),
       ).toBeVisible({ timeout: 3000 });
     });
 
@@ -202,7 +201,7 @@ test.describe('Dividend Deposits', () => {
       await expect(
         page
           .locator('.validation-error')
-          .filter({ hasText: 'Symbol is required' })
+          .filter({ hasText: 'Symbol is required' }),
       ).not.toBeVisible({ timeout: 2000 });
     });
 
@@ -222,7 +221,7 @@ test.describe('Dividend Deposits', () => {
         .click();
       await page.locator('input[formControlName="amount"]').fill('123.45');
       const submitBtn = page.locator(
-        'mat-dialog-actions button[mat-raised-button]'
+        'mat-dialog-actions button[mat-raised-button]',
       );
       await expect(submitBtn).toBeEnabled();
       await submitBtn.click();
@@ -248,7 +247,7 @@ test.describe('Dividend Deposits', () => {
         timeout: 5000,
       });
       await expect(
-        page.locator('h2').filter({ hasText: 'Edit Dividend or Deposit' })
+        page.locator('h2').filter({ hasText: 'Edit Dividend or Deposit' }),
       ).toBeVisible();
     });
 
@@ -266,7 +265,7 @@ test.describe('Dividend Deposits', () => {
       });
       // Edit mode shows readonly symbol input
       await expect(
-        page.locator('input[formControlName="symbol"]')
+        page.locator('input[formControlName="symbol"]'),
       ).toBeVisible();
       // Amount should be pre-populated
       const amountInput = page.locator('input[formControlName="amount"]');
@@ -297,7 +296,7 @@ test.describe('Dividend Deposits', () => {
         page
           .locator('.dms-body-row[role="row"]')
           .filter({ hasText: '$22.22' })
-          .first()
+          .first(),
       ).toBeVisible();
     });
 
@@ -314,7 +313,7 @@ test.describe('Dividend Deposits', () => {
       const amountInput = page.locator('input[formControlName="amount"]');
       await amountInput.fill('99.99');
       const submitBtn = page.locator(
-        'mat-dialog-actions button[mat-raised-button]'
+        'mat-dialog-actions button[mat-raised-button]',
       );
       await expect(submitBtn).toBeEnabled();
       await submitBtn.click();
@@ -327,7 +326,7 @@ test.describe('Dividend Deposits', () => {
         page
           .locator('.mat-mdc-snack-bar-label')
           .filter({ hasText: 'Dividend updated successfully' })
-          .first()
+          .first(),
       ).toBeVisible({ timeout: 5000 });
     });
   });
@@ -355,12 +354,12 @@ test.describe('Dividend Deposits', () => {
         .first();
       await row.locator('[data-testid="delete-dividend-button"]').click();
       await expect(
-        page.locator('h2').filter({ hasText: 'Delete Dividend' })
+        page.locator('h2').filter({ hasText: 'Delete Dividend' }),
       ).toBeVisible({ timeout: 5000 });
       await expect(
-        page
-          .locator('mat-dialog-content p')
-          .filter({ hasText: 'Are you sure you want to delete this dividend?' })
+        page.locator('mat-dialog-content p').filter({
+          hasText: 'Are you sure you want to delete this dividend?',
+        }),
       ).toBeVisible();
     });
 
@@ -374,7 +373,7 @@ test.describe('Dividend Deposits', () => {
         .first();
       await row.locator('[data-testid="delete-dividend-button"]').click();
       await expect(
-        page.locator('h2').filter({ hasText: 'Delete Dividend' })
+        page.locator('h2').filter({ hasText: 'Delete Dividend' }),
       ).toBeVisible({ timeout: 5000 });
       // Click Cancel in confirm dialog
       await page
@@ -383,14 +382,14 @@ test.describe('Dividend Deposits', () => {
         .click();
       // Confirm dialog should close
       await expect(
-        page.locator('h2').filter({ hasText: 'Delete Dividend' })
+        page.locator('h2').filter({ hasText: 'Delete Dividend' }),
       ).not.toBeVisible({ timeout: 3000 });
       // Row should still be in the table
       await expect(
         page
           .locator('.dms-body-row[role="row"]')
           .filter({ hasText: '$66.66' })
-          .first()
+          .first(),
       ).toBeVisible();
     });
 
@@ -402,7 +401,7 @@ test.describe('Dividend Deposits', () => {
         .first();
       await row.locator('[data-testid="delete-dividend-button"]').click();
       await expect(
-        page.locator('h2').filter({ hasText: 'Delete Dividend' })
+        page.locator('h2').filter({ hasText: 'Delete Dividend' }),
       ).toBeVisible({ timeout: 5000 });
       // Click Delete to confirm
       await page
@@ -413,12 +412,12 @@ test.describe('Dividend Deposits', () => {
         page
           .locator('.mat-mdc-snack-bar-label')
           .filter({ hasText: 'Dividend deleted' })
-          .first()
+          .first(),
       ).toBeVisible({ timeout: 5000 });
       // Row should no longer be visible
       await page.waitForTimeout(1000);
       await expect(
-        page.locator('.dms-body-row[role="row"]').filter({ hasText: '$77.77' })
+        page.locator('.dms-body-row[role="row"]').filter({ hasText: '$77.77' }),
       ).toHaveCount(0);
     });
   });

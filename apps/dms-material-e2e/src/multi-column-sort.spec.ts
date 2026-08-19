@@ -1,5 +1,4 @@
 import { expect, Page, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 
 /**
@@ -7,7 +6,7 @@ import { login } from './helpers/login.helper';
  */
 async function getSortColumnsState(
   page: Page,
-  table: string
+  table: string,
 ): Promise<{ column: string; direction: string }[] | null> {
   return page.evaluate(function readSortColumnsState(t: string) {
     const raw = localStorage.getItem('dms-sort-filter-state');

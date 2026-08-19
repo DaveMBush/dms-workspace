@@ -7,14 +7,14 @@ interface SeederResult {
   symbols: string[];
 }
 
-const ROW_COUNT = 60;
+const rowCount = 60;
 
 interface ScreenerRecord {
   symbol: string;
-  risk_group_id: string;
+  riskGroupId: string;
   distribution: number;
-  distributions_per_year: number;
-  last_price: number;
+  distributionsPerYear: number;
+  lastPrice: number;
 }
 
 /**
@@ -27,10 +27,10 @@ function createBulkRecords(
   return symbols.map(function mapSymbol(symbol): ScreenerRecord {
     return {
       symbol,
-      risk_group_id: riskGroupId,
+      riskGroupId,
       distribution: 1.0,
-      distributions_per_year: 4,
-      last_price: 50.0,
+      distributionsPerYear: 4,
+      lastPrice: 50.0,
     };
   });
 }
@@ -43,7 +43,7 @@ export async function seedScrollScreenerData(): Promise<SeederResult> {
 
   const uniqueId = generateUniqueId();
   const symbols = Array.from(
-    { length: ROW_COUNT },
+    { length: rowCount },
     function generateSymbol(_: unknown, i: number): string {
       return `SSCRL${String(i).padStart(2, '0')}-${uniqueId}`;
     },

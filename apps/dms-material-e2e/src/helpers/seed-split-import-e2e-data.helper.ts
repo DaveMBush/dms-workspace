@@ -8,8 +8,8 @@ interface SplitImportSeederResult {
   cleanup(): Promise<void>;
 }
 
-const OXLC_SYMBOL = 'OXLC';
-const ACCOUNT_NAME = 'OXLC Split Test Account';
+const oxlcSymbol = 'OXLC';
+const accountName = 'OXLC Split Test Account';
 
 async function createPresplitLots(
   prisma: PrismaClient,
@@ -51,7 +51,7 @@ async function createPresplitLots(
 
 async function cleanupExistingOxlcData(prisma: PrismaClient): Promise<void> {
   const existingUniverse = await prisma.universe.findFirst({
-    where: { symbol: OXLC_SYMBOL },
+    where: { symbol: oxlcSymbol },
   });
   if (existingUniverse) {
     await prisma.trades.deleteMany({
@@ -59,7 +59,7 @@ async function cleanupExistingOxlcData(prisma: PrismaClient): Promise<void> {
     });
     await prisma.universe.delete({ where: { id: existingUniverse.id } });
   }
-  await prisma.accounts.deleteMany({ where: { name: ACCOUNT_NAME } });
+  await prisma.accounts.deleteMany({ where: { name: accountName } });
 }
 
 async function createOxlcSeedData(
@@ -70,7 +70,7 @@ async function createOxlcSeedData(
 
   const universe = await prisma.universe.create({
     data: {
-      symbol: OXLC_SYMBOL,
+      symbol: oxlcSymbol,
       risk_group_id: riskGroups.equitiesRiskGroup.id,
       distribution: 1.0,
       distributions_per_year: 12,
@@ -82,7 +82,7 @@ async function createOxlcSeedData(
   });
 
   const account = await prisma.accounts.create({
-    data: { name: ACCOUNT_NAME },
+    data: { name: accountName },
   });
 
   // Pre-split lots: 500 + 500 + 530 = 1530 total shares

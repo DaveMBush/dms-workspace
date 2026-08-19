@@ -8,12 +8,12 @@ interface NoOpenLotsSeederResult {
   cleanup(): Promise<void>;
 }
 
-const TSTX_SYMBOL = 'TSTX';
-const ACCOUNT_NAME = 'No Open Lots Test Account';
+const tstxSymbol = 'TSTX';
+const accountName = 'No Open Lots Test Account';
 
 async function cleanupExistingTstxData(prisma: PrismaClient): Promise<void> {
   const existingUniverse = await prisma.universe.findFirst({
-    where: { symbol: TSTX_SYMBOL },
+    where: { symbol: tstxSymbol },
   });
   if (existingUniverse) {
     await prisma.trades.deleteMany({
@@ -21,7 +21,7 @@ async function cleanupExistingTstxData(prisma: PrismaClient): Promise<void> {
     });
     await prisma.universe.delete({ where: { id: existingUniverse.id } });
   }
-  await prisma.accounts.deleteMany({ where: { name: ACCOUNT_NAME } });
+  await prisma.accounts.deleteMany({ where: { name: accountName } });
 }
 
 async function createTstxSeedData(
@@ -34,7 +34,7 @@ async function createTstxSeedData(
   // The buy lots must come entirely from the CSV import.
   const universe = await prisma.universe.create({
     data: {
-      symbol: TSTX_SYMBOL,
+      symbol: tstxSymbol,
       risk_group_id: riskGroups.incomeRiskGroup.id,
       distribution: 0.0,
       distributions_per_year: 12,
@@ -46,7 +46,7 @@ async function createTstxSeedData(
   });
 
   const account = await prisma.accounts.create({
-    data: { name: ACCOUNT_NAME },
+    data: { name: accountName },
   });
 
   return {

@@ -9,7 +9,7 @@ interface FillerSeederResult {
 
 function buildFillerRecord(
   symbol: string,
-  riskGroupId: string
+  riskGroupId: string,
 ): UniverseRecord {
   return {
     symbol,
@@ -31,7 +31,7 @@ function buildFillerRecord(
  * and tagged with a unique run ID so cleanup is isolated.
  */
 export async function seedFillerUniverseSymbols(
-  count: number
+  count: number,
 ): Promise<FillerSeederResult> {
   const prisma = await initializePrismaClient();
   const uniqueId = generateUniqueId();

@@ -7,7 +7,7 @@ interface SeederResult {
   cleanup(): Promise<void>;
 }
 
-const ROW_COUNT = 60;
+const rowCount = 60;
 
 /**
  * Get or create a divDepositType named "Deposit" and return its id.
@@ -43,7 +43,7 @@ function createBulkDeposits(
   divDepositTypeId: string,
 ): any[] {
   return Array.from(
-    { length: ROW_COUNT },
+    { length: rowCount },
     function makeDeposit(_: unknown, i: number) {
       return {
         accountId,

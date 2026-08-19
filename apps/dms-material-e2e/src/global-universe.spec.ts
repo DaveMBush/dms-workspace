@@ -1,5 +1,4 @@
-import { test, expect } from 'playwright/test';
-
+import { expect, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 
 test.describe('Global Universe Component', () => {
@@ -13,7 +12,7 @@ test.describe('Global Universe Component', () => {
     test('should display universe page with toolbar', async ({ page }) => {
       await expect(page.locator('.universe-toolbar')).toBeVisible();
       await expect(
-        page.locator('.universe-toolbar').getByText('Universe')
+        page.locator('.universe-toolbar').getByText('Universe'),
       ).toBeVisible();
     });
 
@@ -23,7 +22,7 @@ test.describe('Global Universe Component', () => {
 
     test('should display account selector in toolbar', async ({ page }) => {
       await expect(
-        page.locator('.universe-toolbar mat-form-field mat-select')
+        page.locator('.universe-toolbar mat-form-field mat-select'),
       ).toBeVisible();
     });
   });
@@ -66,37 +65,37 @@ test.describe('Global Universe Component', () => {
 
     test('should display Symbol column header', async ({ page }) => {
       await expect(
-        page.getByRole('columnheader', { name: 'Symbol' })
+        page.getByRole('columnheader', { name: 'Symbol' }),
       ).toBeVisible();
     });
 
     test('should display Risk Group column header', async ({ page }) => {
       await expect(
-        page.getByRole('columnheader', { name: 'Risk Group' })
+        page.getByRole('columnheader', { name: 'Risk Group' }),
       ).toBeVisible();
     });
 
     test('should display Distribution column header', async ({ page }) => {
       await expect(
-        page.getByRole('columnheader', { name: 'Distribution' })
+        page.getByRole('columnheader', { name: 'Distribution' }),
       ).toBeVisible();
     });
 
     test('should display Yield column header', async ({ page }) => {
       await expect(
-        page.getByRole('columnheader', { name: 'Yield %', exact: true })
+        page.getByRole('columnheader', { name: 'Yield %', exact: true }),
       ).toBeVisible();
     });
 
     test('should display Ex-Date column header', async ({ page }) => {
       await expect(
-        page.getByRole('columnheader', { name: 'Ex-Date' })
+        page.getByRole('columnheader', { name: 'Ex-Date' }),
       ).toBeVisible();
     });
 
     test('should display Actions column header', async ({ page }) => {
       await expect(
-        page.getByRole('columnheader', { name: 'Actions' })
+        page.getByRole('columnheader', { name: 'Actions' }),
       ).toBeVisible();
     });
   });
@@ -104,7 +103,7 @@ test.describe('Global Universe Component', () => {
   test.describe('Filter Row in Header', () => {
     test('should display symbol filter input in header', async ({ page }) => {
       await expect(
-        page.locator('input[placeholder="Search Symbol"]')
+        page.locator('input[placeholder="Search Symbol"]'),
       ).toBeVisible();
     });
 
@@ -112,7 +111,7 @@ test.describe('Global Universe Component', () => {
       page,
     }) => {
       await expect(
-        page.locator('input[placeholder="Min Yield %"]')
+        page.locator('input[placeholder="Min Yield %"]'),
       ).toBeVisible();
     });
 
@@ -132,7 +131,7 @@ test.describe('Global Universe Component', () => {
     test('should show All Accounts option', async ({ page }) => {
       await page.locator('.universe-toolbar mat-form-field mat-select').click();
       await expect(
-        page.getByRole('option', { name: 'All Accounts' })
+        page.getByRole('option', { name: 'All Accounts' }),
       ).toBeVisible();
     });
   });
@@ -148,7 +147,7 @@ test.describe('Global Universe Component', () => {
       const riskGroupSelect = page.locator('.header-filter mat-select').first();
       await riskGroupSelect.dispatchEvent('click');
       await expect(
-        page.getByRole('option', { name: 'Equities' })
+        page.getByRole('option', { name: 'Equities' }),
       ).toBeVisible();
     });
 
@@ -156,7 +155,7 @@ test.describe('Global Universe Component', () => {
       const riskGroupSelect = page.locator('.header-filter mat-select').first();
       await riskGroupSelect.dispatchEvent('click');
       await expect(
-        page.getByRole('option', { name: 'Income', exact: true })
+        page.getByRole('option', { name: 'Income', exact: true }),
       ).toBeVisible();
     });
   });
@@ -202,13 +201,13 @@ test.describe('Global Universe Component', () => {
 
     test('should have accessible buttons with tooltips', async ({ page }) => {
       await expect(
-        page.locator('button[mattooltip="Add Symbol"]')
+        page.locator('button[mattooltip="Add Symbol"]'),
       ).toBeVisible();
       await expect(
-        page.locator('button[mattooltip="Update Universe"]')
+        page.locator('button[mattooltip="Update Universe"]'),
       ).toBeVisible();
       await expect(
-        page.locator('button[mattooltip="Update Fields"]')
+        page.locator('button[mattooltip="Update Fields"]'),
       ).toBeVisible();
     });
   });

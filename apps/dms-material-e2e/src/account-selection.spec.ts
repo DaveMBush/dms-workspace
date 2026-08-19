@@ -1,5 +1,4 @@
 import { expect, Page, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 
 // Created by beforeAll — a fresh account so we never depend on pre-existing data.
@@ -36,7 +35,7 @@ async function waitForAccountsPanel(page: Page): Promise<void> {
 async function navigateToAccountTab(
   page: Page,
   accountId: string,
-  tab: '' | 'div-dep' | 'open' | 'sold' = ''
+  tab: '' | 'div-dep' | 'open' | 'sold' = '',
 ): Promise<void> {
   const path = tab ? `/account/${accountId}/${tab}` : `/account/${accountId}`;
   await page.goto(path);
@@ -48,7 +47,7 @@ async function navigateToAccountTab(
  */
 async function selectAccountByName(
   page: Page,
-  accountName: string
+  accountName: string,
 ): Promise<void> {
   const accountLink = page
     .locator('[data-testid="account-item"]')
@@ -74,7 +73,7 @@ test.describe('Account Selection', () => {
     });
     if (!res1.ok()) {
       throw new Error(
-        `Failed to create primary test account: ${res1.status()}`
+        `Failed to create primary test account: ${res1.status()}`,
       );
     }
     const accounts1 = (await res1.json()) as Array<{
@@ -92,7 +91,7 @@ test.describe('Account Selection', () => {
     });
     if (!res2.ok()) {
       throw new Error(
-        `Failed to create secondary test account: ${res2.status()}`
+        `Failed to create secondary test account: ${res2.status()}`,
       );
     }
     const accounts2 = (await res2.json()) as Array<{
@@ -148,13 +147,13 @@ test.describe('Account Selection', () => {
       // Verify all tabs are present
       await expect(page.getByRole('tab', { name: 'Summary' })).toBeVisible();
       await expect(
-        page.getByRole('tab', { name: 'Open Positions' })
+        page.getByRole('tab', { name: 'Open Positions' }),
       ).toBeVisible();
       await expect(
-        page.getByRole('tab', { name: 'Sold Positions' })
+        page.getByRole('tab', { name: 'Sold Positions' }),
       ).toBeVisible();
       await expect(
-        page.getByRole('tab', { name: 'Dividend Deposits' })
+        page.getByRole('tab', { name: 'Dividend Deposits' }),
       ).toBeVisible();
     });
   });
@@ -166,7 +165,7 @@ test.describe('Account Selection', () => {
       await navigateToAccountTab(page, testAccountId);
 
       const summaryCard = page.locator(
-        '[data-testid="account-summary-container"]'
+        '[data-testid="account-summary-container"]',
       );
       await expect(summaryCard).toBeVisible({ timeout: 10000 });
     });
@@ -175,7 +174,7 @@ test.describe('Account Selection', () => {
       await navigateToAccountTab(page, testAccountId);
 
       await expect(
-        page.getByRole('heading', { name: 'Account Summary' })
+        page.getByRole('heading', { name: 'Account Summary' }),
       ).toBeVisible();
     });
 
@@ -190,7 +189,7 @@ test.describe('Account Selection', () => {
       // Navigate to first account summary
       await navigateToAccountTab(page, testAccountId);
       const summaryCard = page.locator(
-        '[data-testid="account-summary-container"]'
+        '[data-testid="account-summary-container"]',
       );
       await expect(summaryCard).toBeVisible({ timeout: 10000 });
 
@@ -240,7 +239,7 @@ test.describe('Account Selection', () => {
       // Table should still be visible for the new account
       await expect(table).toBeVisible({ timeout: 10000 });
       await expect(page).toHaveURL(
-        new RegExp(`/account/${secondAccountId}/open`)
+        new RegExp(`/account/${secondAccountId}/open`),
       );
     });
   });
@@ -261,13 +260,13 @@ test.describe('Account Selection', () => {
       await navigateToAccountTab(page, testAccountId, 'sold');
 
       await expect(
-        page.getByRole('columnheader', { name: 'Symbol', exact: true })
+        page.getByRole('columnheader', { name: 'Symbol', exact: true }),
       ).toBeVisible();
       await expect(
-        page.getByRole('columnheader', { name: 'Buy', exact: true })
+        page.getByRole('columnheader', { name: 'Buy', exact: true }),
       ).toBeVisible();
       await expect(
-        page.getByRole('columnheader', { name: 'Sell', exact: true })
+        page.getByRole('columnheader', { name: 'Sell', exact: true }),
       ).toBeVisible();
     });
 
@@ -289,7 +288,7 @@ test.describe('Account Selection', () => {
       // Table should still be visible for the new account
       await expect(table).toBeVisible({ timeout: 10000 });
       await expect(page).toHaveURL(
-        new RegExp(`/account/${secondAccountId}/sold`)
+        new RegExp(`/account/${secondAccountId}/sold`),
       );
     });
   });
@@ -302,7 +301,7 @@ test.describe('Account Selection', () => {
 
       // Dividend deposits uses dms-base-table or column headers
       await expect(
-        page.getByRole('columnheader', { name: 'Symbol' })
+        page.getByRole('columnheader', { name: 'Symbol' }),
       ).toBeVisible({ timeout: 10000 });
     });
 
@@ -310,13 +309,13 @@ test.describe('Account Selection', () => {
       await navigateToAccountTab(page, testAccountId, 'div-dep');
 
       await expect(
-        page.getByRole('columnheader', { name: 'Date' })
+        page.getByRole('columnheader', { name: 'Date' }),
       ).toBeVisible({ timeout: 10000 });
       await expect(
-        page.getByRole('columnheader', { name: 'Amount' })
+        page.getByRole('columnheader', { name: 'Amount' }),
       ).toBeVisible();
       await expect(
-        page.getByRole('columnheader', { name: 'Type' })
+        page.getByRole('columnheader', { name: 'Type' }),
       ).toBeVisible();
     });
 
@@ -326,7 +325,7 @@ test.describe('Account Selection', () => {
       // Go to first account dividends
       await navigateToAccountTab(page, testAccountId, 'div-dep');
       await expect(
-        page.getByRole('columnheader', { name: 'Symbol' })
+        page.getByRole('columnheader', { name: 'Symbol' }),
       ).toBeVisible({ timeout: 10000 });
 
       // Switch to second account via sidebar
@@ -338,10 +337,10 @@ test.describe('Account Selection', () => {
 
       // Column headers should still be visible for the new account
       await expect(
-        page.getByRole('columnheader', { name: 'Symbol' })
+        page.getByRole('columnheader', { name: 'Symbol' }),
       ).toBeVisible({ timeout: 10000 });
       await expect(page).toHaveURL(
-        new RegExp(`/account/${secondAccountId}/div-dep`)
+        new RegExp(`/account/${secondAccountId}/div-dep`),
       );
     });
   });
@@ -356,7 +355,7 @@ test.describe('Account Selection', () => {
 
       // Verify summary is shown
       const summaryCard = page.locator(
-        '[data-testid="account-summary-container"]'
+        '[data-testid="account-summary-container"]',
       );
       await expect(summaryCard).toBeVisible({ timeout: 10000 });
 
@@ -368,7 +367,7 @@ test.describe('Account Selection', () => {
       const table = page.locator('[data-testid="open-positions-table"]');
       await expect(table).toBeVisible({ timeout: 10000 });
       await expect(page).toHaveURL(
-        new RegExp(`/account/${testAccountId}/open`)
+        new RegExp(`/account/${testAccountId}/open`),
       );
     });
 
@@ -387,7 +386,7 @@ test.describe('Account Selection', () => {
       const soldTable = page.locator('dms-base-table');
       await expect(soldTable).toBeVisible({ timeout: 10000 });
       await expect(page).toHaveURL(
-        new RegExp(`/account/${testAccountId}/sold`)
+        new RegExp(`/account/${testAccountId}/sold`),
       );
     });
 
@@ -404,10 +403,10 @@ test.describe('Account Selection', () => {
       await page.waitForLoadState('networkidle');
 
       await expect(
-        page.getByRole('columnheader', { name: 'Symbol' })
+        page.getByRole('columnheader', { name: 'Symbol' }),
       ).toBeVisible({ timeout: 10000 });
       await expect(page).toHaveURL(
-        new RegExp(`/account/${testAccountId}/div-dep`)
+        new RegExp(`/account/${testAccountId}/div-dep`),
       );
     });
 
@@ -425,7 +424,7 @@ test.describe('Account Selection', () => {
       // Should navigate to the second account (default tab = summary)
       await expect(page).toHaveURL(new RegExp(`/account/${secondAccountId}`));
       const summaryCard = page.locator(
-        '[data-testid="account-summary-container"]'
+        '[data-testid="account-summary-container"]',
       );
       await expect(summaryCard).toBeVisible({ timeout: 10000 });
     });
@@ -435,7 +434,7 @@ test.describe('Account Selection', () => {
 
       // Summary
       const summaryCard = page.locator(
-        '[data-testid="account-summary-container"]'
+        '[data-testid="account-summary-container"]',
       );
       await expect(summaryCard).toBeVisible({ timeout: 10000 });
 
@@ -443,7 +442,7 @@ test.describe('Account Selection', () => {
       await page.getByRole('tab', { name: 'Open Positions' }).click();
       await page.waitForLoadState('networkidle');
       await expect(
-        page.locator('[data-testid="open-positions-table"]')
+        page.locator('[data-testid="open-positions-table"]'),
       ).toBeVisible({ timeout: 10000 });
 
       // Sold Positions
@@ -457,7 +456,7 @@ test.describe('Account Selection', () => {
       await page.getByRole('tab', { name: 'Dividend Deposits' }).click();
       await page.waitForLoadState('networkidle');
       await expect(
-        page.getByRole('columnheader', { name: 'Symbol' })
+        page.getByRole('columnheader', { name: 'Symbol' }),
       ).toBeVisible({ timeout: 10000 });
     });
   });
@@ -470,7 +469,7 @@ test.describe('Account Selection', () => {
     }) => {
       await navigateToAccountTab(page, testAccountId);
       const summaryCard = page.locator(
-        '[data-testid="account-summary-container"]'
+        '[data-testid="account-summary-container"]',
       );
       await expect(summaryCard).toBeVisible({ timeout: 10000 });
 
@@ -496,7 +495,7 @@ test.describe('Account Selection', () => {
 
       await expect(table).toBeVisible({ timeout: 10000 });
       await expect(page).toHaveURL(
-        new RegExp(`/account/${testAccountId}/open`)
+        new RegExp(`/account/${testAccountId}/open`),
       );
     });
 
@@ -513,7 +512,7 @@ test.describe('Account Selection', () => {
 
       await expect(table).toBeVisible({ timeout: 10000 });
       await expect(page).toHaveURL(
-        new RegExp(`/account/${testAccountId}/sold`)
+        new RegExp(`/account/${testAccountId}/sold`),
       );
     });
 
@@ -522,7 +521,7 @@ test.describe('Account Selection', () => {
     }) => {
       await navigateToAccountTab(page, testAccountId, 'div-dep');
       await expect(
-        page.getByRole('columnheader', { name: 'Symbol' })
+        page.getByRole('columnheader', { name: 'Symbol' }),
       ).toBeVisible({ timeout: 10000 });
 
       // Refresh the page
@@ -530,10 +529,10 @@ test.describe('Account Selection', () => {
       await page.waitForLoadState('networkidle');
 
       await expect(
-        page.getByRole('columnheader', { name: 'Symbol' })
+        page.getByRole('columnheader', { name: 'Symbol' }),
       ).toBeVisible({ timeout: 10000 });
       await expect(page).toHaveURL(
-        new RegExp(`/account/${testAccountId}/div-dep`)
+        new RegExp(`/account/${testAccountId}/div-dep`),
       );
     });
   });
@@ -546,7 +545,7 @@ test.describe('Account Selection', () => {
       await page.waitForLoadState('networkidle');
 
       const summaryCard = page.locator(
-        '[data-testid="account-summary-container"]'
+        '[data-testid="account-summary-container"]',
       );
       await expect(summaryCard).toBeVisible({ timeout: 10000 });
     });
@@ -572,7 +571,7 @@ test.describe('Account Selection', () => {
       await page.waitForLoadState('networkidle');
 
       await expect(
-        page.getByRole('columnheader', { name: 'Symbol' })
+        page.getByRole('columnheader', { name: 'Symbol' }),
       ).toBeVisible({ timeout: 10000 });
     });
 
@@ -615,7 +614,7 @@ test.describe('Account Selection', () => {
       // (loading may be too fast to catch consistently, so we just verify
       // the final state is correct)
       const summaryCard = page.locator(
-        '[data-testid="account-summary-container"]'
+        '[data-testid="account-summary-container"]',
       );
       await expect(summaryCard).toBeVisible({ timeout: 15000 });
     });
@@ -625,7 +624,7 @@ test.describe('Account Selection', () => {
     }) => {
       await navigateToAccountTab(page, testAccountId);
       const summaryCard = page.locator(
-        '[data-testid="account-summary-container"]'
+        '[data-testid="account-summary-container"]',
       );
       await expect(summaryCard).toBeVisible({ timeout: 10000 });
 
@@ -662,7 +661,7 @@ test.describe('Account Selection', () => {
       await page.waitForLoadState('networkidle');
 
       const summaryCard = page.locator(
-        '[data-testid="account-summary-container"]'
+        '[data-testid="account-summary-container"]',
       );
       await expect(summaryCard).toBeVisible({ timeout: 10000 });
     });
@@ -678,7 +677,7 @@ test.describe('Account Selection', () => {
       // Final state should be first account summary
       await expect(page).toHaveURL(new RegExp(`/account/${testAccountId}`));
       const summaryCard = page.locator(
-        '[data-testid="account-summary-container"]'
+        '[data-testid="account-summary-container"]',
       );
       await expect(summaryCard).toBeVisible({ timeout: 10000 });
     });

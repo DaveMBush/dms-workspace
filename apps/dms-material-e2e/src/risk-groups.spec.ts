@@ -1,5 +1,4 @@
-import { test, expect } from 'playwright/test';
-
+import { expect, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 
 test.describe('Risk Group Initialization', () => {
@@ -19,10 +18,10 @@ test.describe('Risk Group Initialization', () => {
     // Verify all three risk groups are available
     await expect(page.getByRole('option', { name: 'Equities' })).toBeVisible();
     await expect(
-      page.getByRole('option', { name: 'Income', exact: true })
+      page.getByRole('option', { name: 'Income', exact: true }),
     ).toBeVisible();
     await expect(
-      page.getByRole('option', { name: 'Tax Free Income' })
+      page.getByRole('option', { name: 'Tax Free Income' }),
     ).toBeVisible();
   });
 
@@ -40,7 +39,7 @@ test.describe('Risk Group Initialization', () => {
     // Verify all groups present
     await expect(page.getByRole('option', { name: 'Equities' })).toBeVisible();
     await expect(
-      page.getByRole('option', { name: 'Income', exact: true })
+      page.getByRole('option', { name: 'Income', exact: true }),
     ).toBeVisible();
     // Note: Universe filter may not have all risk groups displayed - just verify it has filters
   });

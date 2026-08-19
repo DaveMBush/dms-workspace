@@ -28,6 +28,16 @@ const eslintConfig = async () => {
 
   return [
     {
+      ignores: [
+        'dist/**',
+        '.angular/**',
+        'coverage/**',
+        '.nx/cache/**',
+        '.nx/workspace-data/**',
+        'tmp/**',
+      ],
+    },
+    {
       files: ['libs/**/*.ts'],
       ignores: ['**/test-setup.ts'],
       ...jsdoc.configs['flat/recommended-typescript-error'],
@@ -763,6 +773,27 @@ const eslintConfig = async () => {
         '@typescript-eslint/no-unsafe-call': 'off',
         '@typescript-eslint/no-unsafe-member-access': 'off',
         '@typescript-eslint/no-unsafe-return': 'off',
+      },
+    },
+    {
+      // Playwright e2e suites (dms-material-e2e): relax test-inappropriate rules.
+      // E2E specs use SCREAMING_SNAKE_CASE fixture/selector constants,
+      // console.log for debugging, live TODO markers, and leading-underscore
+      // locals by convention. Renaming them would break real API field names
+      // (e.g. `last_price`) and destroy tracked TODOs, so relax here rather
+      // than across the whole repo.
+      files: ['apps/dms-material-e2e/**/*.ts'],
+      rules: {
+        '@typescript-eslint/naming-convention': 'off',
+        'no-underscore-dangle': 'off',
+        'no-console': 'off',
+        'sonarjs/todo-tag': 'off',
+        'sonarjs/no-unused-vars': 'off',
+        // Same tsconfig.app.json parser limitation as **/*.spec.ts above:
+        // helper types (Angular/Vitest) resolve to `error` and trip no-unsafe-*.
+        '@typescript-eslint/no-unsafe-argument': 'off',
+        '@typescript-eslint/no-unsafe-assignment': 'off',
+        '@typescript-eslint/no-unsafe-member-access': 'off',
       },
     },
     {

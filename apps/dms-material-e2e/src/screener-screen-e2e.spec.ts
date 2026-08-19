@@ -1,5 +1,4 @@
 import { expect, Page, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 import { seedScreenerData } from './helpers/seed-screener-data.helper';
 
@@ -8,7 +7,7 @@ import { seedScreenerData } from './helpers/seed-screener-data.helper';
  */
 async function getSortState(
   page: Page,
-  table: string
+  table: string,
 ): Promise<{ field: string; order: string } | null> {
   return page.evaluate(function readSortFilterState(t: string) {
     const raw = localStorage.getItem('dms-sort-filter-state');
@@ -48,7 +47,7 @@ async function waitForTableRows(page: Page): Promise<void> {
  */
 async function getColumnTexts(page: Page, colIndex: number): Promise<string[]> {
   const cells = page.locator(
-    `.dms-body-row[role="row"] .dms-body-cell:nth-child(${colIndex})`
+    `.dms-body-row[role="row"] .dms-body-cell:nth-child(${colIndex})`,
   );
   const count = await cells.count();
   const texts: string[] = [];

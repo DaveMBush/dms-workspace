@@ -30,7 +30,7 @@ interface SeederResult {
 function createButtonRows(
   symbols: string[],
   riskGroups: RiskGroups,
-  futureDate: Date
+  futureDate: Date,
 ): UniverseRecord[] {
   const equitiesId = riskGroups.equitiesRiskGroup.id;
   const incomeId = riskGroups.incomeRiskGroup.id;
@@ -78,7 +78,7 @@ function createButtonRows(
 function createNoButtonRows(
   symbols: string[],
   riskGroups: RiskGroups,
-  futureDate: Date
+  futureDate: Date,
 ): UniverseRecord[] {
   const equitiesId = riskGroups.equitiesRiskGroup.id;
   const incomeId = riskGroups.incomeRiskGroup.id;
@@ -124,7 +124,7 @@ function createNoButtonRows(
 
 function createRowHeightRecords(
   symbols: string[],
-  riskGroups: RiskGroups
+  riskGroups: RiskGroups,
 ): UniverseRecord[] {
   const { futureDate } = createTestDates();
   return [

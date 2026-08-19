@@ -3,7 +3,7 @@ import type { PrismaClient } from '@prisma/client';
 export async function cleanupUniverseOnError(
   prisma: PrismaClient,
   universeId: string,
-  accountId: string
+  accountId: string,
 ): Promise<void> {
   function suppressError(): undefined {
     return undefined;

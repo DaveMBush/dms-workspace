@@ -38,13 +38,13 @@ test.describe('Summary Load Stability Regression', () => {
           !url.includes('/months') &&
           !url.includes('/years')
         ) {
-          requestCounts.summary++;
+          requestCounts['summary']++;
         } else if (url.includes('/api/summary/graph')) {
-          requestCounts.graph++;
+          requestCounts['graph']++;
         } else if (url.includes('/api/summary/months')) {
-          requestCounts.months++;
+          requestCounts['months']++;
         } else if (url.includes('/api/summary/years')) {
-          requestCounts.years++;
+          requestCounts['years']++;
         }
       });
 
@@ -67,10 +67,10 @@ test.describe('Summary Load Stability Regression', () => {
       await page.waitForTimeout(5000);
 
       // Assert: No additional summary requests during idle period
-      expect(requestCounts.summary).toBe(initialCounts.summary);
-      expect(requestCounts.graph).toBe(initialCounts.graph);
-      expect(requestCounts.months).toBe(initialCounts.months);
-      expect(requestCounts.years).toBe(initialCounts.years);
+      expect(requestCounts['summary']).toBe(initialCounts['summary']);
+      expect(requestCounts['graph']).toBe(initialCounts['graph']);
+      expect(requestCounts['months']).toBe(initialCounts['months']);
+      expect(requestCounts['years']).toBe(initialCounts['years']);
     });
 
     test('AC2: should issue only one summary and one graph request per month change', async ({

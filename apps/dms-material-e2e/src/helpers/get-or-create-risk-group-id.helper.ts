@@ -1,7 +1,7 @@
 import type { PrismaClient } from '@prisma/client';
 
 export async function getOrCreateRiskGroupId(
-  prisma: PrismaClient
+  prisma: PrismaClient,
 ): Promise<string> {
   const rg = await prisma.risk_group.upsert({
     where: { name: 'Equities' },

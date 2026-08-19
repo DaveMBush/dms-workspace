@@ -534,9 +534,7 @@ describe('AddSymbolDialogComponent', () => {
 
         // Set existing symbols directly via the internal signal (avoid recreating component
         // which leaves stale effects bound to old `this` interfering with the new instance)
-        component['existingSymbolsSignal'].set([existingSymbol]);
-
-        // When: User tries to add the same symbol
+        component.existingSymbolsSignal.set([existingSymbol]);
         component.form.patchValue({
           symbol: existingSymbol,
           riskGroupId: 'rg1',
@@ -555,7 +553,7 @@ describe('AddSymbolDialogComponent', () => {
         const existingSymbol = 'AAPL';
 
         // Set existing symbols directly via the internal signal
-        component['existingSymbolsSignal'].set([existingSymbol]);
+        component.existingSymbolsSignal.set([existingSymbol]);
 
         component.form.patchValue({
           symbol: existingSymbol,

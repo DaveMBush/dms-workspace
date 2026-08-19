@@ -19,17 +19,8 @@ import { initializePrismaClient } from './helpers/shared-prisma-client.helper';
 //   TSTX: 1 open lot of 100 shares (500 / 5), buy price = $20 (4.00 × 5)
 //   ABCD: 1 open lot of 100 shares, buy price = $10.00 (unchanged)
 
-// Resolve the fixtures directory relative to the workspace root. The
-// compiled test files live in a `dist` folder; using __dirname would point
-// at that compiled location and miss the source fixtures.
-const _FIXTURES_DIR = path.resolve(
-  process.cwd(),
-  'apps',
-  'dms-material-e2e',
-  'fixtures',
-);
-const TSTX_SYMBOL = 'TSTX';
-const ABCD_SYMBOL = 'ABCD';
+const tstxSymbol = 'TSTX';
+const abcdSymbol = 'ABCD';
 
 async function navigateToUniverse(page: Page): Promise<void> {
   await page.goto('/global/universe');
@@ -167,16 +158,16 @@ test.describe('Multi-Symbol Split Import (Story 63.3)', () => {
     await navigateToUniverse(page);
     await page.waitForSelector('.dms-body-row[role="row"]', { timeout: 15000 });
 
-    await page.getByPlaceholder('Search Symbol').fill(TSTX_SYMBOL);
+    await page.getByPlaceholder('Search Symbol').fill(tstxSymbol);
     const tstxRow = page
       .locator('.dms-body-row[role="row"]')
-      .filter({ hasText: TSTX_SYMBOL });
+      .filter({ hasText: tstxSymbol });
     await expect(tstxRow).toHaveCount(1, { timeout: 10000 });
 
-    await page.getByPlaceholder('Search Symbol').fill(ABCD_SYMBOL);
+    await page.getByPlaceholder('Search Symbol').fill(abcdSymbol);
     const abcdRow = page
       .locator('.dms-body-row[role="row"]')
-      .filter({ hasText: ABCD_SYMBOL });
+      .filter({ hasText: abcdSymbol });
     await expect(abcdRow).toHaveCount(1, { timeout: 10000 });
   });
 });

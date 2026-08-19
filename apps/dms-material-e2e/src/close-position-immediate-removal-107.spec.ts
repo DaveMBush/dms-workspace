@@ -1,5 +1,4 @@
 import { expect, Page, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 import { seedClosePositionE2eData } from './helpers/seed-close-position-e2e-data.helper';
 
@@ -8,7 +7,7 @@ import { seedClosePositionE2eData } from './helpers/seed-close-position-e2e-data
  */
 async function waitForOpenPositionsTable(page: Page): Promise<void> {
   await expect(
-    page.locator('[data-testid="open-positions-table"]')
+    page.locator('[data-testid="open-positions-table"]'),
   ).toBeVisible({ timeout: 15000 });
   await page.waitForSelector('.dms-body-row[role="row"]', { timeout: 15000 });
 }
@@ -65,7 +64,7 @@ test.describe('Close Position — Immediate Removal (Epic 107)', () => {
     const sellDateCell = row.locator('[data-testid="editable-sell-date"]');
     await sellDateCell.click();
     const sellDatePicker = page.locator(
-      '[data-testid="editable-sell-date-picker"]'
+      '[data-testid="editable-sell-date-picker"]',
     );
     await sellDatePicker.waitFor({ state: 'visible', timeout: 5000 });
     await sellDatePicker.fill('06/15/2026');
@@ -98,7 +97,7 @@ test.describe('Close Position — Immediate Removal (Epic 107)', () => {
     const sellPutResponse = page.waitForResponse(
       (resp) =>
         resp.url().includes('/api/trades') && resp.request().method() === 'PUT',
-      { timeout: 5000 }
+      { timeout: 5000 },
     );
 
     await page.keyboard.press('Enter');
@@ -114,7 +113,7 @@ test.describe('Close Position — Immediate Removal (Epic 107)', () => {
     // Table itself must still be visible — row vanished because the store
     // dropped it, not because the entire screen re-rendered.
     await expect(
-      page.locator('[data-testid="open-positions-table"]')
+      page.locator('[data-testid="open-positions-table"]'),
     ).toBeVisible();
 
     // ── AC2: Navigate to Sold Positions and assert the closed row appears ─
@@ -128,7 +127,7 @@ test.describe('Close Position — Immediate Removal (Epic 107)', () => {
       (resp) =>
         resp.url().includes('/api/accounts') &&
         resp.request().method() === 'POST',
-      { timeout: 15000 }
+      { timeout: 15000 },
     );
 
     await page.reload();
@@ -143,8 +142,8 @@ test.describe('Close Position — Immediate Removal (Epic 107)', () => {
     expect(
       cpAccount?.soldTrades?.length,
       `Server returned soldTrades.length=${String(
-        cpAccount?.soldTrades?.length
-      )} for account ${accountId}. PUT may not have set both sell and sell_date.`
+        cpAccount?.soldTrades?.length,
+      )} for account ${accountId}. PUT may not have set both sell and sell_date.`,
     ).toBeGreaterThan(0);
 
     await expect(page.locator('dms-base-table')).toBeVisible({

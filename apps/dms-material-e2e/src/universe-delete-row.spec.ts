@@ -1,9 +1,8 @@
 import { expect, Page, test } from 'playwright/test';
-
 import { generateUniqueId } from './helpers/generate-unique-id.helper';
 import { login } from './helpers/login.helper';
-import { createRiskGroups } from './helpers/shared-risk-groups.helper';
 import { initializePrismaClient } from './helpers/shared-prisma-client.helper';
+import { createRiskGroups } from './helpers/shared-risk-groups.helper';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -125,7 +124,7 @@ test.describe('Universe Row Delete (Story 100.2)', () => {
 
     // Row must still be absent after reload (AC 2)
     await expect(
-      page.locator('.dms-body-row[role="row"]').filter({ hasText: symbol1 })
+      page.locator('.dms-body-row[role="row"]').filter({ hasText: symbol1 }),
     ).not.toBeVisible({ timeout: 10000 });
   });
 

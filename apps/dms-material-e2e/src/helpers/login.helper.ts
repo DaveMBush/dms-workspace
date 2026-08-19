@@ -7,7 +7,7 @@ import { Page } from 'playwright/test';
 export async function login(
   page: Page,
   email = 'test@example.com',
-  password = 'password123'
+  password = 'password123',
 ): Promise<void> {
   await page.goto('/auth/login', {
     waitUntil: 'domcontentloaded',

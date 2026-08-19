@@ -1,5 +1,4 @@
-import { test, expect } from 'playwright/test';
-
+import { expect, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 import { navigateToProfile } from './helpers/navigate-to-profile.helper';
 
@@ -28,29 +27,29 @@ test.describe('Profile', () => {
 
     await expect(page.locator('.profile-title')).toContainText('User Profile');
     await expect(
-      page.locator('mat-card-title', { hasText: 'User Information' })
+      page.locator('mat-card-title', { hasText: 'User Information' }),
     ).toBeVisible();
     await expect(
-      page.locator('.field-label', { hasText: 'Username' })
+      page.locator('.field-label', { hasText: 'Username' }),
     ).toBeVisible();
     await expect(
-      page.locator('.field-label', { hasText: 'Email Address' })
+      page.locator('.field-label', { hasText: 'Email Address' }),
     ).toBeVisible();
   });
 
   test('should render password change card', async ({ page }) => {
     await navigateToProfile(page);
     await expect(
-      page.locator('mat-card-title', { hasText: 'Change Password' })
+      page.locator('mat-card-title', { hasText: 'Change Password' }),
     ).toBeVisible();
     await expect(
-      page.locator('input[formControlName="currentPassword"]')
+      page.locator('input[formControlName="currentPassword"]'),
     ).toBeVisible();
     await expect(
-      page.locator('input[formControlName="newPassword"]')
+      page.locator('input[formControlName="newPassword"]'),
     ).toBeVisible();
     await expect(
-      page.locator('input[formControlName="confirmPassword"]')
+      page.locator('input[formControlName="confirmPassword"]'),
     ).toBeVisible();
   });
 
@@ -58,13 +57,13 @@ test.describe('Profile', () => {
     await navigateToProfile(page);
 
     await expect(
-      page.locator('mat-card-title', { hasText: 'Change Email' })
+      page.locator('mat-card-title', { hasText: 'Change Email' }),
     ).toBeVisible();
     await expect(page.locator('.current-email')).toContainText(
-      'Current Email:'
+      'Current Email:',
     );
     await expect(
-      page.locator('input[formControlName="newEmail"]')
+      page.locator('input[formControlName="newEmail"]'),
     ).toBeVisible();
   });
 
@@ -86,7 +85,7 @@ test.describe('Profile', () => {
     await page.locator('input[formControlName="confirmPassword"]').click();
 
     await expect(
-      page.getByText('Password must be at least 8 characters')
+      page.getByText('Password must be at least 8 characters'),
     ).toBeVisible();
   });
 
@@ -94,7 +93,7 @@ test.describe('Profile', () => {
     await navigateToProfile(page);
 
     const currentPasswordInput = page.locator(
-      'input[formControlName="currentPassword"]'
+      'input[formControlName="currentPassword"]',
     );
     const toggleButton = page
       .locator('dms-password-change-card button[matSuffix]')
@@ -102,13 +101,13 @@ test.describe('Profile', () => {
 
     await expect(currentPasswordInput).toHaveAttribute('type', 'password');
     await expect(
-      page.locator('mat-icon', { hasText: 'visibility_off' }).first()
+      page.locator('mat-icon', { hasText: 'visibility_off' }).first(),
     ).toBeVisible();
 
     await toggleButton.click();
     await expect(currentPasswordInput).toHaveAttribute('type', 'text');
     await expect(
-      page.locator('mat-icon', { hasText: 'visibility' }).first()
+      page.locator('mat-icon', { hasText: 'visibility' }).first(),
     ).toBeVisible();
   });
 
@@ -119,7 +118,7 @@ test.describe('Profile', () => {
     await page.locator('dms-email-change-card button[type="submit"]').click();
 
     await expect(
-      page.getByText('Please enter a valid email address')
+      page.getByText('Please enter a valid email address'),
     ).toBeVisible();
   });
 
@@ -133,7 +132,7 @@ test.describe('Profile', () => {
     await expect(
       page.locator('mat-error', {
         hasText: 'Please enter a valid email address',
-      })
+      }),
     ).not.toBeVisible();
   });
 
@@ -153,7 +152,7 @@ test.describe('Profile', () => {
       .fill('newpass123');
 
     const submitButton = page.locator(
-      'dms-password-change-card button[type="submit"]'
+      'dms-password-change-card button[type="submit"]',
     );
     await submitButton.click();
 
@@ -169,7 +168,7 @@ test.describe('Profile', () => {
       .fill('new@example.com');
 
     const submitButton = page.locator(
-      'dms-email-change-card button[type="submit"]'
+      'dms-email-change-card button[type="submit"]',
     );
     await submitButton.click();
 
@@ -188,7 +187,7 @@ test.describe('Profile', () => {
     await expect(
       page.locator('mat-error', {
         hasText: 'Password must be at least 8 characters',
-      })
+      }),
     ).not.toBeVisible();
   });
 
@@ -203,7 +202,7 @@ test.describe('Profile', () => {
     await expect(
       page.locator('mat-error', {
         hasText: 'Password must be at least 8 characters',
-      })
+      }),
     ).not.toBeVisible();
   });
 
@@ -218,12 +217,12 @@ test.describe('Profile', () => {
       .fill('newpass123');
 
     const submitButton = page.locator(
-      'dms-password-change-card button[type="submit"]'
+      'dms-password-change-card button[type="submit"]',
     );
     await submitButton.click();
 
     await expect(
-      page.getByText('Please confirm your new password')
+      page.getByText('Please confirm your new password'),
     ).toBeVisible();
   });
 
@@ -236,7 +235,7 @@ test.describe('Profile', () => {
     await page.locator('input[formControlName="confirmPassword"]').click();
 
     await expect(
-      page.getByText('Password must be at least 8 characters')
+      page.getByText('Password must be at least 8 characters'),
     ).toBeVisible();
 
     await page.locator('input[formControlName="newPassword"]').clear();
@@ -248,7 +247,7 @@ test.describe('Profile', () => {
     await expect(
       page.locator('mat-error', {
         hasText: 'Password must be at least 8 characters',
-      })
+      }),
     ).not.toBeVisible();
   });
 
@@ -261,7 +260,7 @@ test.describe('Profile', () => {
     await page.locator('dms-email-change-card button[type="submit"]').click();
 
     await expect(
-      page.getByText('Please enter a valid email address')
+      page.getByText('Please enter a valid email address'),
     ).toBeVisible();
 
     await page.locator('input[formControlName="newEmail"]').clear();
@@ -272,7 +271,7 @@ test.describe('Profile', () => {
     await expect(
       page.locator('mat-error', {
         hasText: 'Please enter a valid email address',
-      })
+      }),
     ).not.toBeVisible();
   });
 

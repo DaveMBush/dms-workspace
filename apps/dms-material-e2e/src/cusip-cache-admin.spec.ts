@@ -1,17 +1,17 @@
 import { expect, Page, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 
-const BASE_API = `${
+const baseApi = `${
   process.env['E2E_API_BASE_URL'] ?? 'http://localhost:3001/api'
 }/admin/cusip-cache`;
-const TEST_CUSIP = 'E2ETEST01';
-const TEST_SYMBOL = 'E2ETEST';
+const testCusip = 'E2ETEST01';
+const testSymbol = 'E2ETEST';
 
 async function seedTestMapping(page: Page): Promise<void> {
-  const response = await page.request.post(`${BASE_API}/add`, {
+  const response = await page.request.post(`${baseApi}/add`, {
     data: {
-      cusip: TEST_CUSIP,
-      symbol: TEST_SYMBOL,
+      cusip: testCusip,
+      symbol: testSymbol,
       source: 'THIRTEENF',
       reason: 'E2E test seed',
     },
@@ -23,7 +23,7 @@ async function seedTestMapping(page: Page): Promise<void> {
 
 async function cleanupTestMapping(page: Page): Promise<void> {
   const searchResponse = await page.request.get(
-    `${BASE_API}/search?cusip=${TEST_CUSIP}`,
+    `${baseApi}/search?cusip=${testCusip}`,
   );
   if (!searchResponse.ok()) {
     throw new Error(
@@ -34,7 +34,7 @@ async function cleanupTestMapping(page: Page): Promise<void> {
     entries: Array<{ id: string }>;
   };
   for (const entry of searchData.entries) {
-    const deleteResponse = await page.request.delete(`${BASE_API}/${entry.id}`);
+    const deleteResponse = await page.request.delete(`${baseApi}/${entry.id}`);
     if (!deleteResponse.ok()) {
       throw new Error(
         `Failed to delete test mapping ${entry.id}: ${deleteResponse.status()}`,
@@ -124,7 +124,7 @@ test.describe('CUSIP Cache Admin UI', function describeCusipCache() {
     test('should search by CUSIP and find results', async function shouldSearchCusip({
       page,
     }) {
-      await page.locator('[data-testid="search-input"]').fill(TEST_CUSIP);
+      await page.locator('[data-testid="search-input"]').fill(testCusip);
       await page.locator('[data-testid="search-button"]').click();
 
       await expect(
@@ -134,7 +134,7 @@ test.describe('CUSIP Cache Admin UI', function describeCusipCache() {
       const firstRow = page.locator(
         '[data-testid="search-results-table"] tr.mat-mdc-row',
       );
-      await expect(firstRow.first()).toContainText(TEST_CUSIP);
+      await expect(firstRow.first()).toContainText(testCusip);
     });
 
     test('should show no results for non-existent CUSIP', async function shouldShowNoResults({
@@ -155,7 +155,7 @@ test.describe('CUSIP Cache Admin UI', function describeCusipCache() {
       await typeSelect.click();
       await page.locator('mat-option:has-text("Symbol")').click();
 
-      await page.locator('[data-testid="search-input"]').fill(TEST_SYMBOL);
+      await page.locator('[data-testid="search-input"]').fill(testSymbol);
       await page.locator('[data-testid="search-button"]').click();
 
       await expect(
@@ -166,7 +166,7 @@ test.describe('CUSIP Cache Admin UI', function describeCusipCache() {
     test('should clear search results', async function shouldClearSearch({
       page,
     }) {
-      await page.locator('[data-testid="search-input"]').fill(TEST_CUSIP);
+      await page.locator('[data-testid="search-input"]').fill(testCusip);
       await page.locator('[data-testid="search-button"]').click();
 
       await expect(
@@ -201,11 +201,11 @@ test.describe('CUSIP Cache Admin UI', function describeCusipCache() {
       const submitButton = page.locator('[data-testid="dialog-submit-button"]');
 
       await expect(cusipInput).toBeVisible({ timeout: 5000 });
-      await cusipInput.fill(TEST_CUSIP);
-      await expect(cusipInput).toHaveValue(TEST_CUSIP);
+      await cusipInput.fill(testCusip);
+      await expect(cusipInput).toHaveValue(testCusip);
 
-      await symbolInput.fill(TEST_SYMBOL);
-      await expect(symbolInput).toHaveValue(TEST_SYMBOL);
+      await symbolInput.fill(testSymbol);
+      await expect(symbolInput).toHaveValue(testSymbol);
 
       // The dialog defaults source to THIRTEENF; avoid opening the overlay in
       // this happy-path test because it is not part of the behavior under test.
@@ -223,7 +223,7 @@ test.describe('CUSIP Cache Admin UI', function describeCusipCache() {
       ).not.toBeVisible({ timeout: 5000 });
 
       // Verify the entry was actually created by searching for it
-      await page.locator('[data-testid="search-input"]').fill(TEST_CUSIP);
+      await page.locator('[data-testid="search-input"]').fill(testCusip);
       await page.locator('[data-testid="search-button"]').click();
 
       await expect(
@@ -233,7 +233,7 @@ test.describe('CUSIP Cache Admin UI', function describeCusipCache() {
       const firstRow = page.locator(
         '[data-testid="search-results-table"] tr.mat-mdc-row',
       );
-      await expect(firstRow.first()).toContainText(TEST_CUSIP);
+      await expect(firstRow.first()).toContainText(testCusip);
     });
 
     test('should validate CUSIP format', async function shouldValidateCusip({
@@ -279,7 +279,7 @@ test.describe('CUSIP Cache Admin UI', function describeCusipCache() {
       page,
     }) {
       // Search for the entry first
-      await page.locator('[data-testid="search-input"]').fill(TEST_CUSIP);
+      await page.locator('[data-testid="search-input"]').fill(testCusip);
       await page.locator('[data-testid="search-button"]').click();
 
       await expect(
@@ -310,7 +310,7 @@ test.describe('CUSIP Cache Admin UI', function describeCusipCache() {
     test('should show confirmation and delete entry', async function shouldConfirm({
       page,
     }) {
-      await page.locator('[data-testid="search-input"]').fill(TEST_CUSIP);
+      await page.locator('[data-testid="search-input"]').fill(testCusip);
       await page.locator('[data-testid="search-button"]').click();
 
       await expect(
@@ -332,7 +332,7 @@ test.describe('CUSIP Cache Admin UI', function describeCusipCache() {
 
       // Verify the entry is removed by searching again
       await page.waitForTimeout(500);
-      await page.locator('[data-testid="search-input"]').fill(TEST_CUSIP);
+      await page.locator('[data-testid="search-input"]').fill(testCusip);
       await page.locator('[data-testid="search-button"]').click();
 
       await expect(page.locator('[data-testid="no-results"]')).toBeVisible({

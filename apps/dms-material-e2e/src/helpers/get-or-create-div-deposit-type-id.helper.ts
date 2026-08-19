@@ -1,7 +1,7 @@
 import type { PrismaClient } from '@prisma/client';
 
 export async function getOrCreateDivDepositTypeId(
-  prisma: PrismaClient
+  prisma: PrismaClient,
 ): Promise<string> {
   const existing = await prisma.divDepositType.findFirst({
     where: { name: 'Dividend' },

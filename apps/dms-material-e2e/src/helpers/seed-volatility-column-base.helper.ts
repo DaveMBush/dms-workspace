@@ -7,9 +7,9 @@ import { getOrCreateRiskGroupId } from './get-or-create-risk-group-id.helper';
 import type { SeederResultBase } from './seeder-result-base.types';
 import { initializePrismaClient } from './shared-prisma-client.helper';
 
-const STEADY_AMOUNT = 1.0;
-const MONTHS_TO_SEED = 12;
-const STORED_VOLATILITY = 'steady';
+const steadyAmount = 1.0;
+const monthsToSeed = 12;
+const storedVolatility = 'steady';
 
 interface VolatilityColumnSeederResult extends SeederResultBase {
   symbol: string;
@@ -26,12 +26,12 @@ function buildDepositData(
   divDepositTypeId: string;
   universeId: string;
 }> {
-  return buildMonthlyDates(MONTHS_TO_SEED).map(function buildDepositRecord(
+  return buildMonthlyDates(monthsToSeed).map(function buildDepositRecord(
     date: Date,
   ) {
     return {
       date,
-      amount: STEADY_AMOUNT,
+      amount: steadyAmount,
       accountId,
       divDepositTypeId,
       universeId,
@@ -54,7 +54,7 @@ export async function seedVolatilityColumnE2eData(
     const riskGroupId = await getOrCreateRiskGroupId(prisma);
     const divDepositTypeId = await getOrCreateDivDepositTypeId(prisma);
     const universe = await prisma.universe.create({
-      data: buildUniverseCreateData(symbol, riskGroupId, STORED_VOLATILITY),
+      data: buildUniverseCreateData(symbol, riskGroupId, storedVolatility),
     });
     universeId = universe.id;
     const account = await prisma.accounts.create({

@@ -1,7 +1,7 @@
-import { nxE2EPreset } from '@nx/playwright/preset';
-import { defineConfig, devices } from '@playwright/test';
 import { execSync } from 'child_process';
 import * as path from 'path';
+import { nxE2EPreset } from '@nx/playwright/preset';
+import { defineConfig, devices } from '@playwright/test';
 
 const localWorkspaceRoot = path.resolve(__dirname, '../..');
 
@@ -23,8 +23,8 @@ function computeWorktreePortOffset(workspaceRoot: string): number {
  * See https://playwright.dev/docs/test-configuration.
  */
 // Unset DISPLAY in WSL to prevent headless browser issues
-if (process.env.WSL_DISTRO_NAME && !process.env.CI) {
-  delete process.env.DISPLAY;
+if (process.env['WSL_DISTRO_NAME'] && !process.env['CI']) {
+  delete process.env['DISPLAY'];
 }
 
 let isGitWorktree = false;
@@ -58,7 +58,7 @@ const portOffset = isGitWorktree
 const serverPort = Number(process.env['E2E_SERVER_PORT'] ?? 3001 + portOffset);
 const appPort = Number(process.env['E2E_APP_PORT'] ?? 4301 + portOffset);
 const storybookPort = Number(
-  process.env['E2E_STORYBOOK_PORT'] ?? 6006 + portOffset
+  process.env['E2E_STORYBOOK_PORT'] ?? 6006 + portOffset,
 );
 const baseURL =
   process.env['BASE_URL'] ?? `http://localhost:${String(appPort)}`;
@@ -71,7 +71,7 @@ const apiBaseUrl =
   `http://localhost:${String(serverPort)}/api`;
 const reuseExistingServer = !isGitWorktree;
 const hasExplicitTestPath = process.argv.some(
-  (argument) => argument.endsWith('.spec.ts') || argument.includes('/src/')
+  (argument) => argument.endsWith('.spec.ts') || argument.includes('/src/'),
 );
 const requiresStorybook =
   process.argv.some((argument) => argument.includes('storybook')) ||
@@ -84,10 +84,10 @@ process.env['E2E_API_BASE_URL'] = apiBaseUrl;
 export default defineConfig({
   ...nxE2EPreset(__filename, { testDir: './src' }),
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
-  timeout: process.env.CI ? 90000 : 60000,
-  reporter: process.env.CI ? [['github']] : [['list']],
+  timeout: process.env['CI'] ? 90000 : 60000,
+  reporter: process.env['CI'] ? [['github']] : [['list']],
   /* Retry failed tests to handle flaky tests */
-  retries: process.env.CI ? 3 : 2,
+  retries: process.env['CI'] ? 3 : 2,
   /* Run tests serially to avoid database conflicts with shared SQLite test database */
   workers: 1,
   fullyParallel: false,
@@ -118,7 +118,7 @@ export default defineConfig({
       env: {
         ...process.env,
         DATABASE_URL: 'file:./test-database.db',
-        NODE_ENV: process.env.CI ? 'local' : 'development',
+        NODE_ENV: process.env['CI'] ? 'local' : 'development',
         PORT: String(serverPort),
         AWS_ENDPOINT_URL: 'http://localhost:4566',
         SKIP_AWS_AUTH: 'true',
@@ -142,7 +142,7 @@ export default defineConfig({
       ? [
           {
             command: `pnpm nx run dms-material:build-storybook && npx http-server dist/storybook/dms-material -p ${String(
-              storybookPort
+              storybookPort,
             )} -s -c-1`,
             url: `http://localhost:${String(storybookPort)}`,
             reuseExistingServer,

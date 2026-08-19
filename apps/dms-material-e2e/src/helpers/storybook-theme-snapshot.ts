@@ -1,6 +1,6 @@
 import { expect, Page } from 'playwright/test';
 
-const STORYBOOK_BASE_URL =
+const storybookBaseUrl =
   process.env['STORYBOOK_BASE_URL'] ??
   'http://localhost:6006/iframe.html?viewMode=story&id=';
 
@@ -16,7 +16,7 @@ export async function captureStoryInBothThemes(
   page: Page,
   storyId: string,
 ): Promise<void> {
-  const baseUrl = `${STORYBOOK_BASE_URL}${storyId}`;
+  const baseUrl = `${storybookBaseUrl}${storyId}`;
 
   // Light theme
   await page.goto(`${baseUrl}&globals=theme:Light`);
@@ -32,7 +32,7 @@ export async function captureStoryInBothThemes(
   await page.goto(`${baseUrl}&globals=theme:Dark`);
   await page.waitForLoadState('load');
   await page.locator('#storybook-root').waitFor({ state: 'attached' });
-  await page.evaluate(() => {
+  await page.evaluate(function applyDarkTheme() {
     document.getElementById('storybook-root')?.classList.add('dark-theme');
   });
   await expect(page).toHaveScreenshot(`${storyId}-dark.png`);

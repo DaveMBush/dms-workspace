@@ -13,20 +13,11 @@ import { login } from './helpers/login.helper';
 import { initializePrismaClient } from './helpers/shared-prisma-client.helper';
 import { createRiskGroups } from './helpers/shared-risk-groups.helper';
 
-// Resolve the fixtures directory relative to the workspace root. The
-// compiled test files are emitted into a `dist` folder, so using
-// __dirname would point at that location and miss the source fixtures.
-const _FIXTURES_DIR = path.resolve(
-  process.cwd(),
-  'apps',
-  'dms-material-e2e',
-  'fixtures',
-);
-const CEF_SYMBOL_BUTTON = 'OXLC';
-const CEF_SYMBOL_CSV = 'ECC';
-const EQUITY_SYMBOL = 'AAPL';
-const TEST_SYMBOLS = [CEF_SYMBOL_BUTTON, CEF_SYMBOL_CSV, EQUITY_SYMBOL];
-const CEF_IMPORT_ACCOUNT = 'CEF Import Test Account';
+const cefSymbolButton = 'OXLC';
+const cefSymbolCsv = 'ECC';
+const equitySymbol = 'AAPL';
+const testSymbols = [cefSymbolButton, cefSymbolCsv, equitySymbol];
+const cefImportAccount = 'CEF Import Test Account';
 
 async function navigateToUniverse(page: Page): Promise<void> {
   await page.goto('/global/universe');
@@ -55,10 +46,10 @@ async function deleteSymbol(
 async function cleanupTestData(): Promise<void> {
   const prisma = await initializePrismaClient();
   try {
-    for (const symbol of TEST_SYMBOLS) {
+    for (const symbol of testSymbols) {
       await deleteSymbol(symbol, prisma);
     }
-    await prisma.accounts.deleteMany({ where: { name: CEF_IMPORT_ACCOUNT } });
+    await prisma.accounts.deleteMany({ where: { name: cefImportAccount } });
   } finally {
     await prisma.$disconnect();
   }
@@ -69,10 +60,10 @@ async function seedTestData(): Promise<void> {
   try {
     await createRiskGroups(prisma);
     const existing = await prisma.accounts.findFirst({
-      where: { name: CEF_IMPORT_ACCOUNT },
+      where: { name: cefImportAccount },
     });
     if (!existing) {
-      await prisma.accounts.create({ data: { name: CEF_IMPORT_ACCOUNT } });
+      await prisma.accounts.create({ data: { name: cefImportAccount } });
     }
   } finally {
     await prisma.$disconnect();
@@ -212,8 +203,8 @@ test.describe('CEF Classification on Symbol Add', () => {
     page,
   }) => {
     await navigateToUniverse(page);
-    await addSymbolViaButton(page, CEF_SYMBOL_BUTTON);
-    const riskGroup = await getRiskGroupForSymbol(page, CEF_SYMBOL_BUTTON);
+    await addSymbolViaButton(page, cefSymbolButton);
+    const riskGroup = await getRiskGroupForSymbol(page, cefSymbolButton);
     expect(riskGroup.trim()).toContain('Income');
   });
 
@@ -222,7 +213,7 @@ test.describe('CEF Classification on Symbol Add', () => {
   }) => {
     await navigateToUniverse(page);
     await importCsvFile(page, 'fidelity-cef-ecc.csv');
-    const riskGroup = await getRiskGroupForSymbol(page, CEF_SYMBOL_CSV);
+    const riskGroup = await getRiskGroupForSymbol(page, cefSymbolCsv);
     expect(riskGroup.trim()).toContain('Income');
   });
 
@@ -230,8 +221,8 @@ test.describe('CEF Classification on Symbol Add', () => {
     page,
   }) => {
     await navigateToUniverse(page);
-    await addSymbolViaButton(page, EQUITY_SYMBOL);
-    const riskGroup = await getRiskGroupForSymbol(page, EQUITY_SYMBOL);
+    await addSymbolViaButton(page, equitySymbol);
+    const riskGroup = await getRiskGroupForSymbol(page, equitySymbol);
     expect(riskGroup.trim()).toContain('Equities');
   });
 });

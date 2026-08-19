@@ -11,13 +11,13 @@ import { login } from './helpers/login.helper';
 import { initializePrismaClient } from './helpers/shared-prisma-client.helper';
 import { createRiskGroups } from './helpers/shared-risk-groups.helper';
 
-const CEF_SYMBOL = 'PDI';
+const cefSymbol = 'PDI';
 
 async function cleanupTestData(): Promise<void> {
   const prisma = await initializePrismaClient();
   try {
     const existing = await prisma.universe.findFirst({
-      where: { symbol: CEF_SYMBOL },
+      where: { symbol: cefSymbol },
     });
     if (existing) {
       await prisma.trades.deleteMany({ where: { universeId: existing.id } });
@@ -110,7 +110,7 @@ test.describe('CEF Symbol Added is Flagged Expired', () => {
     );
 
     // Type CEF symbol and select from autocomplete
-    await typeSymbolAndSelectAutocomplete(page, CEF_SYMBOL);
+    await typeSymbolAndSelectAutocomplete(page, cefSymbol);
     await selectRiskGroupInDialog(page, 'Equities');
 
     // Register response listener BEFORE submit to avoid race condition

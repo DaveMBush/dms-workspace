@@ -2,7 +2,7 @@ import type { PrismaClient } from '@prisma/client';
 
 export async function fetchUniverseIds(
   prisma: PrismaClient,
-  symbols: string[]
+  symbols: string[],
 ): Promise<string[]> {
   const created = await prisma.universe.findMany({
     where: { symbol: { in: symbols } },

@@ -1,5 +1,4 @@
 import { expect, Page, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 
 // Created by beforeAll — fresh accounts so we never depend on pre-existing data.
@@ -33,7 +32,7 @@ async function waitForAccountsPanel(page: Page): Promise<void> {
  */
 async function selectAccountByName(
   page: Page,
-  accountName: string
+  accountName: string,
 ): Promise<void> {
   const accountLink = page
     .locator('[data-testid="account-item"]')
@@ -59,7 +58,7 @@ test.describe('State Persistence', () => {
     });
     if (!res1.ok()) {
       throw new Error(
-        `Failed to create primary test account: ${res1.status()}`
+        `Failed to create primary test account: ${res1.status()}`,
       );
     }
     const accounts1 = (await res1.json()) as Array<{
@@ -77,7 +76,7 @@ test.describe('State Persistence', () => {
     });
     if (!res2.ok()) {
       throw new Error(
-        `Failed to create secondary test account: ${res2.status()}`
+        `Failed to create secondary test account: ${res2.status()}`,
       );
     }
     const accounts2 = (await res2.json()) as Array<{
@@ -116,7 +115,7 @@ test.describe('State Persistence', () => {
       // Verify Screener tab is still selected
       await expect(page).toHaveURL(/\/global\/screener/);
       await expect(
-        page.locator('[data-testid="global-nav-screener"]')
+        page.locator('[data-testid="global-nav-screener"]'),
       ).toHaveClass(/active-link/);
     });
 
@@ -192,7 +191,7 @@ test.describe('State Persistence', () => {
 
       // Verify Open Positions tab is still selected
       await expect(page).toHaveURL(
-        new RegExp(`/account/${testAccountId}/open`)
+        new RegExp(`/account/${testAccountId}/open`),
       );
     });
 
@@ -214,7 +213,7 @@ test.describe('State Persistence', () => {
       await waitForAccountsPanel(page);
 
       await expect(page).toHaveURL(
-        new RegExp(`/account/${secondAccountId}/sold`)
+        new RegExp(`/account/${secondAccountId}/sold`),
       );
 
       // Now navigate directly to first account and refresh to restore its tab
@@ -225,7 +224,7 @@ test.describe('State Persistence', () => {
 
       // Verify first account's Open tab is restored independently
       await expect(page).toHaveURL(
-        new RegExp(`/account/${testAccountId}/open`)
+        new RegExp(`/account/${testAccountId}/open`),
       );
     });
 
@@ -243,7 +242,7 @@ test.describe('State Persistence', () => {
 
       // Verify Dividend Deposits tab is still selected
       await expect(page).toHaveURL(
-        new RegExp(`/account/${testAccountId}/div-dep`)
+        new RegExp(`/account/${testAccountId}/div-dep`),
       );
     });
   });
@@ -269,7 +268,7 @@ test.describe('State Persistence', () => {
 
       // Verify account with correct tab is restored
       await expect(page).toHaveURL(
-        new RegExp(`/account/${testAccountId}/sold`)
+        new RegExp(`/account/${testAccountId}/sold`),
       );
     });
   });

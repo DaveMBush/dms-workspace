@@ -3,11 +3,11 @@ import { generateUniqueId } from './generate-unique-id.helper';
 import type { SeederResultBase } from './seeder-result-base.types';
 import { initializePrismaClient } from './shared-prisma-client.helper';
 
-const DISTRIBUTIONS_PER_YEAR = 12;
-const LAST_PRICE = 10.0;
-const FLAT_AMOUNTS = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
-const UP_THEN_DOWN_AMOUNTS = [1, 2, 3, 4, 5, 6, 6, 5, 4, 3, 2, 1];
-const DOWN_THEN_UP_AMOUNTS = [6, 5, 4, 3, 2, 1, 1, 2, 3, 4, 5, 6];
+const distributionsPerYear = 12;
+const lastPrice = 10.0;
+const flatAmounts = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+const upThenDownAmounts = [1, 2, 3, 4, 5, 6, 6, 5, 4, 3, 2, 1];
+const downThenUpAmounts = [6, 5, 4, 3, 2, 1, 1, 2, 3, 4, 5, 6];
 
 interface VolatilityNewCategoriesSeederResult extends SeederResultBase {
   flatSymbol: string;
@@ -84,8 +84,8 @@ function buildUniverseCreateData(
     symbol,
     risk_group_id: riskGroupId,
     distribution: currentDistribution,
-    distributions_per_year: DISTRIBUTIONS_PER_YEAR,
-    last_price: LAST_PRICE,
+    distributions_per_year: distributionsPerYear,
+    last_price: lastPrice,
     ex_date: null,
     most_recent_sell_date: null,
     most_recent_sell_price: null,
@@ -100,17 +100,17 @@ function buildSeedPlans(uniqueId: string): SeedCategoryPlan[] {
   return [
     {
       symbol: `E2EFLT${uniqueId}`,
-      amounts: FLAT_AMOUNTS,
+      amounts: flatAmounts,
       volatilityLong: 'flat',
     },
     {
       symbol: `E2EUTD${uniqueId}`,
-      amounts: UP_THEN_DOWN_AMOUNTS,
+      amounts: upThenDownAmounts,
       volatilityLong: 'up-then-down',
     },
     {
       symbol: `E2EDTU${uniqueId}`,
-      amounts: DOWN_THEN_UP_AMOUNTS,
+      amounts: downThenUpAmounts,
       volatilityLong: 'down-then-up',
     },
   ];

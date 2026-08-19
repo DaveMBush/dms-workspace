@@ -1,5 +1,4 @@
 import type { PrismaClient } from '@prisma/client';
-
 import { generateUniqueId } from './generate-unique-id.helper';
 import type { SeederResultBase } from './seeder-result-base.types';
 import { fetchUniverseIds } from './shared-fetch-universe-ids.helper';
@@ -13,7 +12,7 @@ interface SeederResult extends SeederResultBase {
 async function createOpenTrade(
   prisma: PrismaClient,
   accountId: string,
-  universeId: string
+  universeId: string,
 ): Promise<void> {
   await prisma.trades.create({
     data: {
@@ -31,7 +30,7 @@ async function createOpenTrade(
 async function createTestUniverse(
   prisma: PrismaClient,
   symbol: string,
-  riskGroupId: string
+  riskGroupId: string,
 ): Promise<void> {
   await prisma.universe.create({
     data: {

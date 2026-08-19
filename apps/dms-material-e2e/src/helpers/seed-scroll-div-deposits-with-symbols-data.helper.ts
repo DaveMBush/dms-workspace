@@ -8,8 +8,8 @@ interface SeederResult {
   cleanup(): Promise<void>;
 }
 
-const ROW_COUNT = 60;
-const BASE_UNIVERSE_COUNT = 50;
+const rowCount = 60;
+const baseUniverseCount = 50;
 
 /**
  * Get or create a divDepositType named "Dividend" and return its id.
@@ -96,11 +96,11 @@ export async function seedScrollDivDepositsWithSymbolsData(
   try {
     const baseUniverseIds = await fetchExistingUniverseIds(
       prisma,
-      BASE_UNIVERSE_COUNT,
+      baseUniverseCount,
     );
     // Cycle through the 50 base IDs to produce 60 deposit rows
     const universeIds = Array.from(
-      { length: ROW_COUNT },
+      { length: rowCount },
       function cycleId(_: unknown, i: number): string {
         return baseUniverseIds[i % baseUniverseIds.length];
       },

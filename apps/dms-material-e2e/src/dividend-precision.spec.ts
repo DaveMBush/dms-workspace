@@ -25,7 +25,7 @@ import { createRiskGroups } from './helpers/shared-risk-groups.helper';
 // Known high-precision dividend value that simulates what dividendhistory.net
 // provides for a ticker like PDI. 4th decimal digit is deliberately non-zero
 // so a regression to 2-decimal precision would cause this test to fail.
-const HIGH_PRECISION_DISTRIBUTION = 0.2245;
+const highPrecisionDistribution = 0.2245;
 
 interface UniverseRecord {
   id: string;
@@ -94,7 +94,7 @@ test.describe('Dividend Precision After Update', () => {
         id: seededRecord.id,
         symbol: testSymbol,
         risk_group_id: seededRecord.riskGroupId,
-        distribution: HIGH_PRECISION_DISTRIBUTION,
+        distribution: highPrecisionDistribution,
         distributions_per_year: 12,
         last_price: 20.0,
         ex_date: new Date('2025-01-15').toISOString(),
@@ -117,7 +117,7 @@ test.describe('Dividend Precision After Update', () => {
     const updatedRecord = updatedRows.find((row) => row.id === seededRecord.id);
     expect(updatedRecord).toBeDefined();
     // Assert the server stored exactly the 4-decimal precision value.
-    expect(updatedRecord?.distribution).toBe(HIGH_PRECISION_DISTRIBUTION);
+    expect(updatedRecord?.distribution).toBe(highPrecisionDistribution);
 
     // ── Step 2: Load the Universe screen and verify the stored precision is
     // faithfully displayed in the UI (guards against UI-layer rounding).
@@ -174,7 +174,7 @@ test.describe('Dividend Precision After Update', () => {
         data: {
           symbol: baselineSymbol,
           risk_group_id: riskGroups.incomeRiskGroup.id,
-          distribution: HIGH_PRECISION_DISTRIBUTION, // 0.2245 stored directly
+          distribution: highPrecisionDistribution, // 0.2245 stored directly
           distributions_per_year: 12,
           last_price: 20.0,
           ex_date: new Date('2025-01-15'),

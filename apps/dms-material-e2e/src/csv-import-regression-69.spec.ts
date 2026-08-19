@@ -4,7 +4,7 @@ import { login } from './helpers/login.helper';
 import { seedImportData } from './helpers/seed-import-data.helper';
 
 // Resolve the fixtures directory relative to the workspace root.
-const FIXTURES_DIR = path.resolve(
+const fixturesDir = path.resolve(
   process.cwd(),
   'apps',
   'dms-material-e2e',
@@ -80,7 +80,7 @@ test.describe('CSV Import Regression (Epic 69)', () => {
     ).toBeVisible({ timeout: 5000 });
 
     // Upload fixture CSV
-    const filePath = path.join(FIXTURES_DIR, 'fidelity-regression-69.csv');
+    const filePath = path.join(fixturesDir, 'fidelity-regression-69.csv');
     const fileInput = page.locator('input[type="file"]');
     await fileInput.setInputFiles(filePath);
 
@@ -121,7 +121,7 @@ test.describe('CSV Import Regression (Epic 69)', () => {
       page.getByRole('heading', { name: 'Import Fidelity Transactions' }),
     ).toBeVisible({ timeout: 5000 });
 
-    const filePath = path.join(FIXTURES_DIR, 'fidelity-regression-69.csv');
+    const filePath = path.join(fixturesDir, 'fidelity-regression-69.csv');
     const fileInput = page.locator('input[type="file"]');
     await fileInput.setInputFiles(filePath);
 
@@ -189,7 +189,7 @@ test.describe('CSV Import Regression (Epic 69)', () => {
       page.getByRole('heading', { name: 'Import Fidelity Transactions' }),
     ).toBeVisible({ timeout: 5000 });
 
-    const filePath = path.join(FIXTURES_DIR, 'fidelity-empty-69.csv');
+    const filePath = path.join(fixturesDir, 'fidelity-empty-69.csv');
     const fileInput = page.locator('input[type="file"]');
     await fileInput.setInputFiles(filePath);
 

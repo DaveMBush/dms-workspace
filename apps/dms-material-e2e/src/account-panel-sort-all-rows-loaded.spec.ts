@@ -23,7 +23,7 @@ import { seedScrollDivDepositsWithSymbolsData } from './helpers/seed-scroll-div-
 import { seedScrollOpenPositionsData } from './helpers/seed-scroll-open-positions-data.helper';
 import { seedScrollSoldPositionsData } from './helpers/seed-scroll-sold-positions-data.helper';
 
-const VIEWPORT_SELECTOR = 'cdk-virtual-scroll-viewport';
+const viewportSelector = 'cdk-virtual-scroll-viewport';
 
 /** Scroll to the bottom of the CDK virtual scroll viewport.
  * Epic 112 (Story 112.2): The vertical scroll container is now .dms-outer-scroller
@@ -81,7 +81,7 @@ async function getFirstColumnTexts(
 async function assertNoEmptyCellsAfterSortScroll(
   page: import('playwright/test').Page,
 ): Promise<void> {
-  const viewport = page.locator(VIEWPORT_SELECTOR);
+  const viewport = page.locator(viewportSelector);
   await expect(viewport).toBeVisible({ timeout: 10000 });
 
   const symbolHeader = page.locator('.dms-header-cell[role="columnheader"]', {
@@ -193,7 +193,7 @@ test.describe('Sold Positions: sort+scroll shows all real data', () => {
   test('symbol filter + scroll does not collapse table height', async ({
     page,
   }) => {
-    const viewport = page.locator(VIEWPORT_SELECTOR);
+    const viewport = page.locator(viewportSelector);
     await expect(viewport).toBeVisible({ timeout: 10000 });
 
     // Wait for all rows to have real symbols before measuring height

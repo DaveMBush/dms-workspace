@@ -1,5 +1,4 @@
-import { test, expect } from 'playwright/test';
-
+import { expect, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 
 /**
@@ -52,7 +51,7 @@ test.describe('Universe Column Filter Width', () => {
 
     // Filter form field right edge must not exceed the column right edge (no overflow)
     expect(filterBox!.x + filterBox!.width).toBeLessThanOrEqual(
-      colBox!.x + colBox!.width + 1
+      colBox!.x + colBox!.width + 1,
     );
   });
 
@@ -85,7 +84,7 @@ test.describe('Universe Column Filter Width', () => {
 
     // Filter form field right edge must not exceed the column right edge (no overflow)
     expect(filterBox!.x + filterBox!.width).toBeLessThanOrEqual(
-      colBox!.x + colBox!.width + 1
+      colBox!.x + colBox!.width + 1,
     );
   });
 });

@@ -1,5 +1,4 @@
 import { expect, Page, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 import { seedUniverseE2eData } from './helpers/seed-universe-e2e-data.helper';
 
@@ -80,7 +79,7 @@ test.describe('Universe Sort State Stickiness (Story 54.1)', () => {
     // The sort state is read from localStorage via GlobalUniverseComponent's
     // sortColumns$ signal and passed to BaseTableComponent via [sortColumns].
     const restoredHeader = page.locator(
-      '.dms-header-cell[data-column="symbol"]'
+      '.dms-header-cell[data-column="symbol"]',
     );
     await expect(restoredHeader).toHaveAttribute('aria-sort', 'descending');
   });

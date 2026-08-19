@@ -1,5 +1,4 @@
 import { expect, Page, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 import { seedOpenPositionsE2eData } from './helpers/seed-open-positions-e2e-data.helper';
 
@@ -8,7 +7,7 @@ import { seedOpenPositionsE2eData } from './helpers/seed-open-positions-e2e-data
  */
 async function getSortState(
   page: Page,
-  table: string
+  table: string,
 ): Promise<{ field: string; order: string } | null> {
   return page.evaluate(function readSortFilterState(t: string) {
     const raw = localStorage.getItem('dms-sort-filter-state');
@@ -38,7 +37,7 @@ async function clearSortFilterState(page: Page): Promise<void> {
  */
 async function waitForTableRows(page: Page): Promise<void> {
   await expect(
-    page.locator('[data-testid="open-positions-table"]')
+    page.locator('[data-testid="open-positions-table"]'),
   ).toBeVisible({ timeout: 15000 });
   await page.waitForSelector('.dms-body-row[role="row"]', { timeout: 15000 });
 }
@@ -48,7 +47,7 @@ async function waitForTableRows(page: Page): Promise<void> {
  */
 async function getColumnTexts(page: Page, colIndex: number): Promise<string[]> {
   const cells = page.locator(
-    `.dms-body-row[role="row"] .dms-body-cell:nth-child(${colIndex})`
+    `.dms-body-row[role="row"] .dms-body-cell:nth-child(${colIndex})`,
   );
   const count = await cells.count();
   const texts: string[] = [];

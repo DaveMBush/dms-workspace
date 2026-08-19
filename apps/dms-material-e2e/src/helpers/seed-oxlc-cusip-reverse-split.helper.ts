@@ -2,9 +2,9 @@ import type { PrismaClient } from '@prisma/client';
 import { initializePrismaClient } from './shared-prisma-client.helper';
 import { createRiskGroups } from './shared-risk-groups.helper';
 
-const CUSIP_SYMBOL = '691543102';
-const TICKER_SYMBOL = 'OXLC';
-const ACCOUNT_NAME = 'OXLC CUSIP Split Test Account';
+const cusipSymbol = '691543102';
+const tickerSymbol = 'OXLC';
+const accountName = 'OXLC CUSIP Split Test Account';
 
 interface OxlcCusipSplitSeederResult {
   accountId: string;
@@ -13,15 +13,15 @@ interface OxlcCusipSplitSeederResult {
 }
 
 async function cleanupExistingData(prisma: PrismaClient): Promise<void> {
-  for (const symbol of [CUSIP_SYMBOL, TICKER_SYMBOL]) {
+  for (const symbol of [cusipSymbol, tickerSymbol]) {
     const existing = await prisma.universe.findFirst({ where: { symbol } });
     if (existing) {
       await prisma.trades.deleteMany({ where: { universeId: existing.id } });
       await prisma.universe.delete({ where: { id: existing.id } });
     }
   }
-  await prisma.accounts.deleteMany({ where: { name: ACCOUNT_NAME } });
-  await prisma.cusip_cache.deleteMany({ where: { cusip: CUSIP_SYMBOL } });
+  await prisma.accounts.deleteMany({ where: { name: accountName } });
+  await prisma.cusip_cache.deleteMany({ where: { cusip: cusipSymbol } });
 }
 
 async function createUniverses(
@@ -31,7 +31,7 @@ async function createUniverses(
   // Universe entry for the CUSIP symbol (where pre-split lots actually live)
   const cusipUniverse = await prisma.universe.create({
     data: {
-      symbol: CUSIP_SYMBOL,
+      symbol: cusipSymbol,
       risk_group_id: riskGroupId,
       distribution: 1.0,
       distributions_per_year: 12,
@@ -44,7 +44,7 @@ async function createUniverses(
   // Universe entry for the ticker symbol (needed by adjustLotsForSplit to resolve the split row)
   await prisma.universe.create({
     data: {
-      symbol: TICKER_SYMBOL,
+      symbol: tickerSymbol,
       risk_group_id: riskGroupId,
       distribution: 1.0,
       distributions_per_year: 12,
@@ -117,16 +117,16 @@ async function createSeedData(
     riskGroups.equitiesRiskGroup.id,
   );
   const account = await prisma.accounts.create({
-    data: { name: ACCOUNT_NAME },
+    data: { name: accountName },
   });
   await createPresplitLots(prisma, cusipUniverse.id, account.id);
 
   // Register CUSIP → ticker mapping so the import service knows the relationship.
   // The fix in Story 61.2 uses this mapping to locate CUSIP-stored lots during split adjustment.
   await prisma.cusip_cache.upsert({
-    where: { cusip: CUSIP_SYMBOL },
-    update: { symbol: TICKER_SYMBOL, source: 'THIRTEENF' },
-    create: { cusip: CUSIP_SYMBOL, symbol: TICKER_SYMBOL, source: 'THIRTEENF' },
+    where: { cusip: cusipSymbol },
+    update: { symbol: tickerSymbol, source: 'THIRTEENF' },
+    create: { cusip: cusipSymbol, symbol: tickerSymbol, source: 'THIRTEENF' },
   });
 
   return {
@@ -138,10 +138,10 @@ async function createSeedData(
           where: { universeId: cusipUniverse.id },
         });
         await prisma.accounts.deleteMany({ where: { id: account.id } });
-        for (const symbol of [CUSIP_SYMBOL, TICKER_SYMBOL]) {
+        for (const symbol of [cusipSymbol, tickerSymbol]) {
           await prisma.universe.deleteMany({ where: { symbol } });
         }
-        await prisma.cusip_cache.deleteMany({ where: { cusip: CUSIP_SYMBOL } });
+        await prisma.cusip_cache.deleteMany({ where: { cusip: cusipSymbol } });
       } finally {
         await prisma.$disconnect();
       }

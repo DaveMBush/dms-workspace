@@ -19,13 +19,13 @@ import { assertVisibleRowsNonEmpty } from './helpers/assert-visible-rows-non-emp
 import { login } from './helpers/login.helper';
 import { seedScrollDivDepositsWithSymbolsData } from './helpers/seed-scroll-div-deposits-with-symbols-data.helper';
 
-const VIEWPORT_SELECTOR = 'cdk-virtual-scroll-viewport';
+const viewportSelector = 'cdk-virtual-scroll-viewport';
 // NOTE: must be a TH cell selector — Angular Material's stickRows applies
 // position:sticky to TH children, not the TR. getBoundingClientRect on TR
 // returns the table-layout flow position, not the visual sticky position.
-const HEADER_ROW_SELECTOR = '.dms-header-cell[role="columnheader"]';
-const ROW_SELECTOR = '.dms-body-row[role="row"]';
-const SYMBOL_CELL_SELECTOR =
+const headerRowSelector = '.dms-header-cell[role="columnheader"]';
+const rowSelector = '.dms-body-row[role="row"]';
+const symbolCellSelector =
   '.dms-body-row[role="row"] .dms-body-cell[data-column="symbol"]';
 
 // ─── Scroll Helpers ────────────────────────────────────────────────────────────
@@ -70,7 +70,7 @@ test.describe('Dividend Deposits Scrolling Regression — Story 87.3', () => {
     await expect(page.locator('dms-base-table')).toBeVisible({
       timeout: 15000,
     });
-    await page.waitForSelector(ROW_SELECTOR, { timeout: 15000 });
+    await page.waitForSelector(rowSelector, { timeout: 15000 });
   });
 
   test('all deposit rows populate after fast scroll to bottom', async ({
@@ -80,14 +80,14 @@ test.describe('Dividend Deposits Scrolling Regression — Story 87.3', () => {
     // SmartNgRX lazy-load in-flight window where placeholder rows with
     // symbol: '\u2026' (or '' before Story 87.2) may briefly appear.
     // Asserts no blank symbol cells are visible after the scroll completes.
-    const viewport = page.locator(VIEWPORT_SELECTOR);
+    const viewport = page.locator(viewportSelector);
     await expect(viewport).toBeVisible({ timeout: 10000 });
 
     await scrollViewportToBottom(viewport);
 
     await assertVisibleRowsNonEmpty(
       page,
-      SYMBOL_CELL_SELECTOR,
+      symbolCellSelector,
       'Dividend Deposits: blank symbol cells detected after fast scroll to bottom. ' +
         'Story 87.3 regression guard: SmartNgRX lazy-load placeholder rows should not produce blank cells.',
     );
@@ -98,7 +98,7 @@ test.describe('Dividend Deposits Scrolling Regression — Story 87.3', () => {
     // the number of SmartNgRX lazy-load in-flight windows that overlap with
     // the viewport. Each direction change may trigger a new batch of isLoading
     // rows; if any produce blank symbol cells the assertion will fail.
-    const viewport = page.locator(VIEWPORT_SELECTOR);
+    const viewport = page.locator(viewportSelector);
     await expect(viewport).toBeVisible({ timeout: 10000 });
 
     await scrollViewportToBottom(viewport);
@@ -107,7 +107,7 @@ test.describe('Dividend Deposits Scrolling Regression — Story 87.3', () => {
 
     await assertVisibleRowsNonEmpty(
       page,
-      SYMBOL_CELL_SELECTOR,
+      symbolCellSelector,
       'Dividend Deposits: blank symbol cells detected after oscillation scroll (bottom\u2192top\u2192bottom). ' +
         'Story 87.3 regression guard: repeated isLoading cycles should not produce blank symbol cells.',
     );
@@ -123,13 +123,13 @@ test.describe('Dividend Deposits Scrolling Regression — Story 87.3', () => {
     await expect(symbolHeader).toBeVisible({ timeout: 10000 });
     await symbolHeader.click();
 
-    const viewport = page.locator(VIEWPORT_SELECTOR);
+    const viewport = page.locator(viewportSelector);
     await expect(viewport).toBeVisible({ timeout: 10000 });
     await scrollViewportToBottom(viewport);
 
     await assertVisibleRowsNonEmpty(
       page,
-      SYMBOL_CELL_SELECTOR,
+      symbolCellSelector,
       'Dividend Deposits: blank symbol cells detected after sort change + scroll to bottom. ' +
         'Story 87.3 regression guard: sort-triggered isLoading window should not produce blank rows.',
     );
@@ -176,8 +176,8 @@ test.describe('Dividend Deposits — Story 101.3 slow-scroll header-invariant re
     // base-table.component.scss) causes this test to fail.
     await assertStickyHeaderInvariant(
       page,
-      VIEWPORT_SELECTOR,
-      HEADER_ROW_SELECTOR,
+      viewportSelector,
+      headerRowSelector,
     );
   });
 });

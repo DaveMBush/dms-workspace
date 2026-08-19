@@ -3,14 +3,6 @@ import { expect, Page, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 import { seedImportData } from './helpers/seed-import-data.helper';
 
-// Resolve the fixtures directory relative to the workspace root.
-const _FIXTURES_DIR = path.resolve(
-  process.cwd(),
-  'apps',
-  'dms-material-e2e',
-  'fixtures',
-);
-
 /**
  * Navigate to the global universe page and wait for it to load
  */

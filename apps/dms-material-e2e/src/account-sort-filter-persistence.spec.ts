@@ -1,5 +1,4 @@
 import { expect, Page, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 import { seedDivDepositsE2eData } from './helpers/seed-div-deposits-e2e-data.helper';
 import { seedOpenPositionsE2eData } from './helpers/seed-open-positions-e2e-data.helper';
@@ -75,11 +74,11 @@ test.describe('Account Sort/Filter Persistence (Story 38.1)', () => {
 
       // After reload, sort indicator should still be visible
       const restoredHeader = page.locator(
-        '.dms-header-cell[data-column="buyDate"]'
+        '.dms-header-cell[data-column="buyDate"]',
       );
       await expect(restoredHeader).toHaveAttribute(
         'aria-sort',
-        /ascending|descending/
+        /ascending|descending/,
       );
     });
   });
@@ -176,11 +175,11 @@ test.describe('Account Sort/Filter Persistence (Story 38.1)', () => {
 
       // After reload, sort indicator should still be visible
       const restoredHeader = page.locator(
-        '.dms-header-cell[data-column="sell_date"]'
+        '.dms-header-cell[data-column="sell_date"]',
       );
       await expect(restoredHeader).toHaveAttribute(
         'aria-sort',
-        /ascending|descending/
+        /ascending|descending/,
       );
     });
   });
@@ -277,11 +276,11 @@ test.describe('Account Sort/Filter Persistence (Story 38.1)', () => {
 
       // After reload, sort indicator should still be visible
       const restoredHeader = page.locator(
-        '.dms-header-cell[data-column="amount"]'
+        '.dms-header-cell[data-column="amount"]',
       );
       await expect(restoredHeader).toHaveAttribute(
         'aria-sort',
-        /ascending|descending/
+        /ascending|descending/,
       );
     });
   });

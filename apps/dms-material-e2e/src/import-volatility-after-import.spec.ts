@@ -22,7 +22,6 @@ import { expect, test } from 'playwright/test';
  * route interception is needed; determinism comes from using a fictional symbol.
  */
 
-/* eslint-disable @typescript-eslint/naming-convention -- E2E test constants use UPPER_CASE for readability */
 const TEST_SYMBOL = 'IMPVOL92';
 const TEST_ACCOUNT_NAME = 'Import Volatility Test Account 92';
 const FIXTURES_DIR = path.resolve(__dirname, '..', 'fixtures');
@@ -33,12 +32,13 @@ function getWorkspaceRoot(): string {
 }
 
 async function initializePrismaClient(): Promise<PrismaClient> {
-  const { PrismaClient } = await import('@prisma/client');
-  const { PrismaBetterSqlite3 } =
+  const prismaClientImport = (await import('@prisma/client/index'))
+    .PrismaClient;
+  const { PrismaBetterSqlite3: prismaBetterSqlite3 } =
     await import('@prisma/adapter-better-sqlite3');
   const testDbUrl = `file:${getWorkspaceRoot()}/test-database.db`;
-  const adapter = new PrismaBetterSqlite3({ url: testDbUrl });
-  return new PrismaClient({ adapter });
+  const adapter = new prismaBetterSqlite3({ url: testDbUrl });
+  return new prismaClientImport({ adapter });
 }
 
 async function cleanupTestSymbol(prisma: PrismaClient): Promise<void> {

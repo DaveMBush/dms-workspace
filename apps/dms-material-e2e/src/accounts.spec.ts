@@ -1,9 +1,6 @@
-import { test, expect } from 'playwright/test';
-
+import { expect, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 
-// reimplement these once we can add an account via the UI
-// TODO(E82): blocked — accounts cannot be added via the UI yet
 test.describe.skip('Account List', () => {
   test.beforeEach(async ({ page }) => {
     await login(page);
@@ -86,7 +83,7 @@ test.describe.skip('Account List', () => {
     // Verify navigation occurred - wait for URL to contain the account ID
     await page.waitForURL(
       new RegExp(firstAccountHref!.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')),
-      { timeout: 10000 }
+      { timeout: 10000 },
     );
   });
 
@@ -169,7 +166,7 @@ test.describe.skip('Account List', () => {
 
     // Check that overflow-y is set to auto (scrollable)
     const overflowY = await accountsList.evaluate(
-      (el) => window.getComputedStyle(el).overflowY
+      (el) => window.getComputedStyle(el).overflowY,
     );
     expect(overflowY).toBe('auto');
   });

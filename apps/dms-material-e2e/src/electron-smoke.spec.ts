@@ -25,22 +25,22 @@ import { expect, test } from 'playwright/test';
 // ---------------------------------------------------------------------------
 
 /** Installed binary path (electron-builder deb, productName: DMS → /opt/DMS/) */
-const INSTALLED_BINARY = '/opt/DMS/dms';
+const installedBinary = '/opt/DMS/dms';
 /** chrome-sandbox path set by afterInstall.sh in Story 102.1 */
-const CHROME_SANDBOX_PATH = '/opt/DMS/chrome-sandbox';
+const chromeSandboxPath = '/opt/DMS/chrome-sandbox';
 /** dpkg package name used for removal in cleanup */
-const DPKG_PACKAGE_NAME = 'dms';
+const dpkgPackageName = 'dms';
 
 /** Workspace root: apps/dms-material-e2e/src → workspace root (3 levels up) */
-const WORKSPACE_ROOT = path.resolve(__dirname, '../../../');
+const workspaceRoot = path.resolve(__dirname, '../../../');
 /** Directory where electron-builder writes the Linux .deb artifact */
-const DEB_DIST_DIR = path.join(WORKSPACE_ROOT, 'dist', 'electron-dist');
+const debDistDir = path.join(workspaceRoot, 'dist', 'electron-dist');
 
 /** Error string that must be ABSENT from process output (Story 102.1 regression) */
-const SANDBOX_FATAL =
+const sandboxFatal =
   'The SUID sandbox helper binary was found, but is not configured correctly';
 /** Error string that must be ABSENT from process output (Story 102.2 regression) */
-const TSLIB_MISSING = "Cannot find module 'tslib'";
+const tslibMissing = "Cannot find module 'tslib'";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -51,19 +51,19 @@ const TSLIB_MISSING = "Cannot find module 'tslib'";
  * Returns null if the directory does not exist or contains no .deb files.
  */
 function findDebArtifact(): string | null {
-  if (!fs.existsSync(DEB_DIST_DIR)) {
+  if (!fs.existsSync(debDistDir)) {
     return null;
   }
   const debs = fs
-    .readdirSync(DEB_DIST_DIR)
+    .readdirSync(debDistDir)
     .filter((f) => f.endsWith('.deb'))
     .map((f) => ({
       file: f,
-      mtime: fs.statSync(path.join(DEB_DIST_DIR, f)).mtimeMs,
+      mtime: fs.statSync(path.join(debDistDir, f)).mtimeMs,
     }))
     .sort((a, b) => b.mtime - a.mtime);
 
-  return debs.length > 0 ? path.join(DEB_DIST_DIR, debs[0].file) : null;
+  return debs.length > 0 ? path.join(debDistDir, debs[0].file) : null;
 }
 
 // Evaluate preconditions at module load time so skip messages are immediate.
@@ -104,7 +104,7 @@ test.describe('Packaged Electron Smoke Test', () => {
       test.skip(
         true,
         [
-          `No .deb artifact found in ${DEB_DIST_DIR}.`,
+          `No .deb artifact found in ${debDistDir}.`,
           'Build the package first: pnpm nx run electron:build:linux',
         ].join(' '),
       );
@@ -142,8 +142,8 @@ test.describe('Packaged Electron Smoke Test', () => {
 
     if (isRoot) {
       try {
-        // eslint-disable-next-line sonarjs/os-command -- DPKG_PACKAGE_NAME is a constant defined in this test file
-        execSync(`dpkg -r ${DPKG_PACKAGE_NAME} 2>&1`, { encoding: 'utf8' });
+        // eslint-disable-next-line sonarjs/os-command -- dpkgPackageName is a constant defined in this test file
+        execSync(`dpkg -r ${dpkgPackageName} 2>&1`, { encoding: 'utf8' });
       } catch {
         // Best-effort cleanup — dpkg -r may fail if the package was never
         // fully installed; do not fail the suite.
@@ -156,13 +156,13 @@ test.describe('Packaged Electron Smoke Test', () => {
   // -------------------------------------------------------------------------
   test('AC#1: chrome-sandbox has owner root:root and mode 4755 after dpkg install', () => {
     expect(
-      fs.existsSync(CHROME_SANDBOX_PATH),
-      `chrome-sandbox not found at ${CHROME_SANDBOX_PATH}. ` +
+      fs.existsSync(chromeSandboxPath),
+      `chrome-sandbox not found at ${chromeSandboxPath}. ` +
         `The afterInstall hook from Story 102.1 may not have run.`,
     ).toBe(true);
 
-    // eslint-disable-next-line sonarjs/os-command -- CHROME_SANDBOX_PATH is a constant defined in this test file
-    const statOutput = execSync(`stat -c '%U:%G %a' "${CHROME_SANDBOX_PATH}"`, {
+    // eslint-disable-next-line sonarjs/os-command -- chromeSandboxPath is a constant defined in this test file
+    const statOutput = execSync(`stat -c '%U:%G %a' "${chromeSandboxPath}"`, {
       encoding: 'utf8',
     }).trim();
 
@@ -193,7 +193,7 @@ test.describe('Packaged Electron Smoke Test', () => {
       // Launch the INSTALLED binary — this exercises the full packaged artifact,
       // including the asar bundle (tslib resolution) and sandbox setup.
       app = await electron.launch({
-        executablePath: INSTALLED_BINARY,
+        executablePath: installedBinary,
         env: launchEnv,
         timeout: 45000,
       });
@@ -227,13 +227,13 @@ test.describe('Packaged Electron Smoke Test', () => {
         processOutput,
         `Sandbox FATAL detected — Story 102.1 chrome-sandbox fix may have regressed.\n` +
           `Captured output:\n${processOutput}`,
-      ).not.toContain(SANDBOX_FATAL);
+      ).not.toContain(sandboxFatal);
 
       expect(
         processOutput,
         `tslib module-not-found error detected — Story 102.2 importHelpers inlining ` +
           `may have regressed.\nCaptured output:\n${processOutput}`,
-      ).not.toContain(TSLIB_MISSING);
+      ).not.toContain(tslibMissing);
 
       // --- AC#3 assertions ---
 

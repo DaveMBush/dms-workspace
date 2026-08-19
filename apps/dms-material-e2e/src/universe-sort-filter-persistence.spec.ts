@@ -1,5 +1,4 @@
 import { expect, Page, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 import { seedUniverseE2eData } from './helpers/seed-universe-e2e-data.helper';
 
@@ -73,7 +72,7 @@ test.describe('Universe Sort/Filter Persistence (Story 38.3)', () => {
 
       // After reload, sort indicator should show the same direction
       const restoredHeader = page.locator(
-        '.dms-header-cell[data-column="symbol"]'
+        '.dms-header-cell[data-column="symbol"]',
       );
       await expect(restoredHeader).toHaveAttribute('aria-sort', sortBefore!);
     });
@@ -96,7 +95,7 @@ test.describe('Universe Sort/Filter Persistence (Story 38.3)', () => {
 
       // After reload, sort indicator should show the same direction
       const restoredHeader = page.locator(
-        '.dms-header-cell[data-column="ex_date"]'
+        '.dms-header-cell[data-column="ex_date"]',
       );
       await expect(restoredHeader).toHaveAttribute('aria-sort', sortBefore!);
     });

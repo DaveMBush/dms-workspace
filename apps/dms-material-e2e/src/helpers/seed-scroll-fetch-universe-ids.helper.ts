@@ -2,7 +2,7 @@ import { initializePrismaClient } from './shared-prisma-client.helper';
 
 export async function fetchExistingUniverseIds(
   prisma: Awaited<ReturnType<typeof initializePrismaClient>>,
-  count: number
+  count: number,
 ): Promise<string[]> {
   const universes = await prisma.universe.findMany({
     select: { id: true },

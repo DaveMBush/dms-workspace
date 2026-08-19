@@ -1,5 +1,4 @@
-import { test, expect } from 'playwright/test';
-
+import { expect, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 import { navigateToProfile } from './helpers/navigate-to-profile.helper';
 
@@ -148,7 +147,7 @@ test.describe('Notification Service', () => {
 
       // The snackbar should contain the message text
       await expect(snackbarContainer).toContainText(
-        'New passwords do not match'
+        'New passwords do not match',
       );
     });
 

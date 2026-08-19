@@ -14,28 +14,28 @@ test.skip(
 );
 
 // ─── Constants ───────────────────────────────────────────────────────────────
-const WORKSPACE_ROOT = path.resolve(__dirname, '../../..');
-const DIST_DIR = path.join(WORKSPACE_ROOT, 'dist/electron-dist');
-const MIGRATIONS_DIR = path.join(WORKSPACE_ROOT, 'prisma/migrations');
-const DMS_SMOKE_PORT = 39001;
-const HEALTH_URL = `http://127.0.0.1:${DMS_SMOKE_PORT}/api/health`;
+const workspaceRoot = path.resolve(__dirname, '../../..');
+const distDir = path.join(workspaceRoot, 'dist/electron-dist');
+const migrationsDir = path.join(workspaceRoot, 'prisma/migrations');
+const dmsSmokePort = 39001;
+const healthUrl = `http://127.0.0.1:${dmsSmokePort}/api/health`;
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function findAppImage(): string {
-  if (!fs.existsSync(DIST_DIR)) {
+  if (!fs.existsSync(distDir)) {
     throw new Error(
-      `AppImage directory not found: ${DIST_DIR}\n` +
+      `AppImage directory not found: ${distDir}\n` +
         'Run `nx run electron:build:linux` before executing this smoke test.',
     );
   }
-  const entries = fs.readdirSync(DIST_DIR);
+  const entries = fs.readdirSync(distDir);
   const appImages = entries
     .filter((e) => e.endsWith('.AppImage'))
-    .map((e) => path.join(DIST_DIR, e));
+    .map((e) => path.join(distDir, e));
   if (appImages.length === 0) {
     throw new Error(
-      `No *.AppImage found in ${DIST_DIR}\n` +
+      `No *.AppImage found in ${distDir}\n` +
         'Run `nx run electron:build:linux` before executing this smoke test.',
     );
   }
@@ -43,15 +43,15 @@ function findAppImage(): string {
 }
 
 function getExpectedMigrationNames(): string[] {
-  if (!fs.existsSync(MIGRATIONS_DIR)) {
-    throw new Error(`Migrations directory not found: ${MIGRATIONS_DIR}`);
+  if (!fs.existsSync(migrationsDir)) {
+    throw new Error(`Migrations directory not found: ${migrationsDir}`);
   }
   return fs
-    .readdirSync(MIGRATIONS_DIR, { withFileTypes: true })
+    .readdirSync(migrationsDir, { withFileTypes: true })
     .filter(
       (entry) =>
         entry.isDirectory() &&
-        fs.existsSync(path.join(MIGRATIONS_DIR, entry.name, 'migration.sql')),
+        fs.existsSync(path.join(migrationsDir, entry.name, 'migration.sql')),
     )
     .map((entry) => entry.name)
     .sort((a, b) => a.localeCompare(b));
@@ -60,12 +60,12 @@ function getExpectedMigrationNames(): string[] {
 interface MigrationRow {
   id: string;
   checksum: string;
-  finished_at: string | null;
-  migration_name: string;
+  finishedAt: string | null;
+  migrationName: string;
   logs: string | null;
-  rolled_back_at: string | null;
-  started_at: string;
-  applied_steps_count: number;
+  rolledBackAt: string | null;
+  startedAt: string;
+  appliedStepsCount: number;
 }
 
 function readMigrationsTable(dbPath: string): MigrationRow[] {
@@ -87,7 +87,7 @@ function launchAppImage(appImagePath: string, tmpHome: string): ChildProcess {
   const env = {
     ...process.env,
     HOME: tmpHome,
-    DMS_SMOKE_PORT: String(DMS_SMOKE_PORT),
+    DMS_SMOKE_PORT: String(dmsSmokePort),
   };
 
   let child: ChildProcess;
@@ -122,7 +122,7 @@ async function waitForHealth(timeoutMs = 90_000): Promise<void> {
     .poll(
       async function checkHealth() {
         try {
-          const res = await fetch(HEALTH_URL);
+          const res = await fetch(healthUrl);
           return res.status;
         } catch {
           return 0;
@@ -198,7 +198,7 @@ test.describe('Packaged Electron App – launch smoke test', () => {
     ).toBe(true);
 
     const appliedMigrations = readMigrationsTable(dbPath).map(
-      (r) => r.migration_name,
+      (r) => r.migrationName,
     );
     const expectedMigrations = getExpectedMigrationNames();
 

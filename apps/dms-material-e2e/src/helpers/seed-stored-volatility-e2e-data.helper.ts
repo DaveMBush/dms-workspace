@@ -6,21 +6,21 @@ import { getOrCreateRiskGroupId } from './get-or-create-risk-group-id.helper';
 import type { SeederResultBase } from './seeder-result-base.types';
 import { initializePrismaClient } from './shared-prisma-client.helper';
 
-const DISTRIBUTIONS_PER_YEAR = 12;
-const LAST_PRICE = 10.0;
+const distributionsPerYear = 12;
+const lastPrice = 10.0;
 
 // Steady: oscillating ~5% around mean → CV ≈ 5% (between 2% and 10% thresholds)
-const STEADY_AMOUNTS = [
+const steadyAmounts = [
   0.95, 1.05, 0.95, 1.05, 0.95, 1.05, 0.95, 1.05, 0.95, 1.05, 0.95, 1.05,
 ];
 
 // Increasing: linear ramp → positive normalised slope > 0.001 threshold
-const INCREASING_AMOUNTS = [
+const increasingAmounts = [
   0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6,
 ];
 
 // Volatile: alternating high/low → CV >> 10%, no clear trend, no reversal
-const VOLATILE_AMOUNTS = [
+const volatileAmounts = [
   0.5, 2.0, 0.3, 1.8, 0.4, 2.1, 0.6, 1.9, 0.5, 2.0, 0.4, 1.8,
 ];
 
@@ -54,8 +54,8 @@ async function seedOnePlan(
       symbol: plan.symbol,
       risk_group_id: ctx.riskGroupId,
       distribution: currentDist,
-      distributions_per_year: DISTRIBUTIONS_PER_YEAR,
-      last_price: LAST_PRICE,
+      distributions_per_year: distributionsPerYear,
+      last_price: lastPrice,
       ex_date: null,
       most_recent_sell_date: null,
       most_recent_sell_price: null,
@@ -84,17 +84,17 @@ function buildSeedPlans(uniqueId: string): SeedPlan[] {
   return [
     {
       symbol: `E2ESVST${uniqueId}`,
-      amounts: STEADY_AMOUNTS,
+      amounts: steadyAmounts,
       volatilityLong: 'steady',
     },
     {
       symbol: `E2ESVIC${uniqueId}`,
-      amounts: INCREASING_AMOUNTS,
+      amounts: increasingAmounts,
       volatilityLong: 'increasing',
     },
     {
       symbol: `E2ESVVL${uniqueId}`,
-      amounts: VOLATILE_AMOUNTS,
+      amounts: volatileAmounts,
       volatilityLong: 'volatile',
     },
   ];

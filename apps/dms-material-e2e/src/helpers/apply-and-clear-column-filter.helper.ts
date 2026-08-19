@@ -20,7 +20,7 @@ interface ColumnFilterOptions {
  */
 export async function applyAndClearColumnFilter(
   page: Page,
-  options: ColumnFilterOptions
+  options: ColumnFilterOptions,
 ): Promise<void> {
   const { columnSelector, filterValue } = options;
   const filterInput = page.locator(columnSelector).first();

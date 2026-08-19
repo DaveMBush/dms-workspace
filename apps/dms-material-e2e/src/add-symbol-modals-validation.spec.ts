@@ -1,5 +1,4 @@
 import { expect, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 import { seedAddSymbolModalsE2eData } from './helpers/seed-add-symbol-modals-e2e-data.helper';
 
@@ -39,7 +38,7 @@ test.describe('Add-Symbol modals validation polarity', () => {
 
     await page.locator('button[mattooltip="Add Symbol"]').click();
     await expect(
-      page.locator('[data-testid="add-symbol-dialog"]')
+      page.locator('[data-testid="add-symbol-dialog"]'),
     ).toBeVisible();
 
     // Type the out-of-universe symbol (free-text path — no autocomplete option click)
@@ -49,7 +48,7 @@ test.describe('Add-Symbol modals validation polarity', () => {
 
     // Select a Risk Group
     const riskGroupSelect = page.locator(
-      'mat-dialog-container mat-form-field mat-select'
+      'mat-dialog-container mat-form-field mat-select',
     );
     await riskGroupSelect.click();
     await page.locator('.cdk-overlay-container mat-option').first().click();
@@ -63,18 +62,18 @@ test.describe('Add-Symbol modals validation polarity', () => {
     await expect(
       page.locator('#symbol-errors mat-error', {
         hasText: 'Symbol already in universe',
-      })
+      }),
     ).not.toBeVisible();
 
     // Dialog still visible (no premature close)
     await expect(
-      page.locator('[data-testid="add-symbol-dialog"]')
+      page.locator('[data-testid="add-symbol-dialog"]'),
     ).toBeVisible();
 
     // Close dialog cleanly before AC2
     await page.locator('[data-testid="cancel-button"]').click();
     await expect(
-      page.locator('[data-testid="add-symbol-dialog"]')
+      page.locator('[data-testid="add-symbol-dialog"]'),
     ).not.toBeVisible();
   });
 
@@ -88,7 +87,7 @@ test.describe('Add-Symbol modals validation polarity', () => {
 
     await page.locator('button[mattooltip="Add Symbol"]').click();
     await expect(
-      page.locator('[data-testid="add-symbol-dialog"]')
+      page.locator('[data-testid="add-symbol-dialog"]'),
     ).toBeVisible();
 
     // Type the in-universe symbol (free-text, no autocomplete click needed)
@@ -98,7 +97,7 @@ test.describe('Add-Symbol modals validation polarity', () => {
 
     // Select a Risk Group
     const riskGroupSelect = page.locator(
-      'mat-dialog-container mat-form-field mat-select'
+      'mat-dialog-container mat-form-field mat-select',
     );
     await riskGroupSelect.click();
     await page.locator('.cdk-overlay-container mat-option').first().click();
@@ -112,7 +111,7 @@ test.describe('Add-Symbol modals validation polarity', () => {
     await expect(
       page.locator('#symbol-errors mat-error', {
         hasText: 'Symbol already in universe',
-      })
+      }),
     ).toBeVisible({ timeout: 5000 });
   });
 
@@ -132,7 +131,7 @@ test.describe('Add-Symbol modals validation polarity', () => {
     // Type the in-universe symbol and click the autocomplete option
     // (Open Positions Add requires a real autocomplete pick to set selectedUniverseId)
     const symbolInput = page.locator(
-      '[data-testid="symbol-autocomplete"] input'
+      '[data-testid="symbol-autocomplete"] input',
     );
     await symbolInput.fill(universeInSymbol);
 
@@ -143,17 +142,17 @@ test.describe('Add-Symbol modals validation polarity', () => {
     await page.locator('[data-testid="quantity-input"]').fill('10');
     await page.locator('[data-testid="price-input"]').fill('123.45');
     const purchaseDateInput = page.locator(
-      '[data-testid="purchase-date-input"]'
+      '[data-testid="purchase-date-input"]',
     );
     await purchaseDateInput.fill('1/15/2024');
     await purchaseDateInput.press('Tab');
 
     // Save button must be enabled and no invalid-symbol error
     await expect(
-      page.locator('[data-testid="add-position-button"]')
+      page.locator('[data-testid="add-position-button"]'),
     ).toBeEnabled({ timeout: 5000 });
     await expect(
-      page.locator('[data-testid="symbol-invalid-error"]')
+      page.locator('[data-testid="symbol-invalid-error"]'),
     ).not.toBeVisible();
   });
 
@@ -171,17 +170,17 @@ test.describe('Add-Symbol modals validation polarity', () => {
 
     // Type the out-of-universe symbol (will not match any universe entry)
     const symbolInput = page.locator(
-      '[data-testid="symbol-autocomplete"] input'
+      '[data-testid="symbol-autocomplete"] input',
     );
     await symbolInput.fill(universeOutSymbol);
     await symbolInput.press('Tab');
 
     // Save button must be disabled and invalid-symbol error must be visible
     await expect(
-      page.locator('[data-testid="add-position-button"]')
+      page.locator('[data-testid="add-position-button"]'),
     ).toBeDisabled({ timeout: 5000 });
     await expect(
-      page.locator('[data-testid="symbol-invalid-error"]')
+      page.locator('[data-testid="symbol-invalid-error"]'),
     ).toBeVisible({ timeout: 5000 });
 
     // Cancel dialog

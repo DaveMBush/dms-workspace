@@ -1,5 +1,4 @@
 import { expect, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 import { initializePrismaClient } from './helpers/shared-prisma-client.helper';
 import { createRiskGroups } from './helpers/shared-risk-groups.helper';
@@ -39,7 +38,7 @@ test.describe('Universe Risk Group Filter Dropdown Width', () => {
   }) => {
     // Risk Group filter mat-select uses panelWidth="" (content width)
     const riskGroupSelect = page.locator(
-      'div.dms-filter-row mat-select[panelwidth=""]'
+      'div.dms-filter-row mat-select[panelwidth=""]',
     );
     await expect(riskGroupSelect).toHaveCount(1);
     await expect(riskGroupSelect).toBeVisible({ timeout: 10000 });
@@ -54,11 +53,11 @@ test.describe('Universe Risk Group Filter Dropdown Width', () => {
     // Assert no mat-option element has horizontal text overflow
     const hasOverflow = await page.evaluate(() => {
       const options = document.querySelectorAll(
-        '.mat-mdc-select-panel mat-option'
+        '.mat-mdc-select-panel mat-option',
       );
       return Array.from(options).some(
         (el) =>
-          (el as HTMLElement).scrollWidth > (el as HTMLElement).clientWidth
+          (el as HTMLElement).scrollWidth > (el as HTMLElement).clientWidth,
       );
     });
     expect(hasOverflow).toBe(false);
@@ -72,7 +71,7 @@ test.describe('Universe Risk Group Filter Dropdown Width', () => {
   }) => {
     // Risk Group filter mat-select uses panelWidth="" (content width)
     const riskGroupSelect = page.locator(
-      'div.dms-filter-row mat-select[panelwidth=""]'
+      'div.dms-filter-row mat-select[panelwidth=""]',
     );
     await expect(riskGroupSelect).toHaveCount(1);
     await expect(riskGroupSelect).toBeVisible({ timeout: 10000 });

@@ -1,4 +1,4 @@
-import AxeBuilder from '@axe-core/playwright';
+import { axeBuilder } from '@axe-core/playwright';
 import { expect, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 
@@ -25,7 +25,7 @@ test.describe('Accessibility - axe-core audits', () => {
     test('should have no accessibility violations on login page', async ({
       page,
     }) => {
-      const results = await new AxeBuilder({ page })
+      const results = await new axeBuilder({ page })
         .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
         .analyze();
 
@@ -42,7 +42,7 @@ test.describe('Accessibility - axe-core audits', () => {
         timeout: 10000,
       });
 
-      let axeBuilder = new AxeBuilder({ page }).withTags([
+      let axeRunner = new axeBuilder({ page }).withTags([
         'wcag2a',
         'wcag2aa',
         'wcag21a',
@@ -53,10 +53,10 @@ test.describe('Accessibility - axe-core audits', () => {
       // trips the color-contrast rule while Chromium (where the color is genuinely
       // accessible) passes. Disable only this one rule for Firefox.
       if (browserName === 'firefox') {
-        axeBuilder = axeBuilder.disableRules(['color-contrast']);
+        axeRunner = axeRunner.disableRules(['color-contrast']);
       }
 
-      const results = await axeBuilder.analyze();
+      const results = await axeRunner.analyze();
 
       expect(results.violations).toEqual([]);
     });
@@ -72,7 +72,7 @@ test.describe('Accessibility - axe-core audits', () => {
     test('should have no accessibility violations on dashboard', async ({
       page,
     }) => {
-      const results = await new AxeBuilder({ page })
+      const results = await new axeBuilder({ page })
         .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
         .analyze();
 
@@ -95,7 +95,7 @@ test.describe('Accessibility - axe-core audits', () => {
     test('should have no accessibility violations on universe page', async ({
       page,
     }) => {
-      const results = await new AxeBuilder({ page })
+      const results = await new axeBuilder({ page })
         .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
         .analyze();
 
@@ -118,7 +118,7 @@ test.describe('Accessibility - axe-core audits', () => {
     test('should have no accessibility violations on screener page', async ({
       page,
     }) => {
-      const results = await new AxeBuilder({ page })
+      const results = await new axeBuilder({ page })
         .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
         .analyze();
 
@@ -137,7 +137,7 @@ test.describe('Accessibility - axe-core audits', () => {
     test('should have no accessibility violations on global summary page', async ({
       page,
     }) => {
-      const results = await new AxeBuilder({ page })
+      const results = await new axeBuilder({ page })
         .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
         .analyze();
 
@@ -156,7 +156,7 @@ test.describe('Accessibility - axe-core audits', () => {
     test('should have no accessibility violations on error logs page', async ({
       page,
     }) => {
-      const results = await new AxeBuilder({ page })
+      const results = await new axeBuilder({ page })
         .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
         .analyze();
 
@@ -177,7 +177,7 @@ test.describe('Accessibility - axe-core audits', () => {
     test('should have no accessibility violations on cusip cache page', async ({
       page,
     }) => {
-      const results = await new AxeBuilder({ page })
+      const results = await new axeBuilder({ page })
         .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
         .analyze();
 
@@ -196,7 +196,7 @@ test.describe('Accessibility - axe-core audits', () => {
     test('should have no accessibility violations on profile page', async ({
       page,
     }) => {
-      const results = await new AxeBuilder({ page })
+      const results = await new axeBuilder({ page })
         .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
         .analyze();
 
@@ -654,7 +654,7 @@ test.describe('Accessibility - Visual Requirements', () => {
   // ─── Color Contrast ──────────────────────────────────────────────────
 
   test('should pass color contrast checks on dashboard', async ({ page }) => {
-    const results = await new AxeBuilder({ page })
+    const results = await new axeBuilder({ page })
       .withTags(['wcag2aa'])
       .withRules(['color-contrast'])
       .analyze();
@@ -671,7 +671,7 @@ test.describe('Accessibility - Visual Requirements', () => {
       timeout: 15000,
     });
 
-    const results = await new AxeBuilder({ page })
+    const results = await new axeBuilder({ page })
       .withTags(['wcag2aa'])
       .withRules(['color-contrast'])
       .analyze();

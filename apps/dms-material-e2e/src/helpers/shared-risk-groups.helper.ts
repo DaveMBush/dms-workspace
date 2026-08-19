@@ -1,12 +1,11 @@
 import type { PrismaClient } from '@prisma/client';
-
 import type { RiskGroups } from './risk-groups.types';
 
 /**
  * Create risk groups in the database
  */
 export async function createRiskGroups(
-  prisma: PrismaClient
+  prisma: PrismaClient,
 ): Promise<RiskGroups> {
   const equitiesRiskGroup = await prisma.risk_group.upsert({
     where: { name: 'Equities' },

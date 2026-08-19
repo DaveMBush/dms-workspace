@@ -38,36 +38,36 @@ import { seedScrollUniverseData } from './helpers/seed-scroll-universe-data.help
  * Epic 112 (Story 112.2): full-width outer scroll container — owns overflow-y:auto.
  * The vertical scrollbar lives on this element, permanently at the viewport right edge.
  */
-const OUTER_SCROLLER_SEL = '.dms-outer-scroller';
+const outerScrollerSel = '.dms-outer-scroller';
 
 /**
  * Body viewport owns horizontal scroll.
  * Story 114.2 keeps the vertical scrollbar on .dms-outer-scroller and mirrors
  * this viewport scrollLeft into the sibling header viewport.
  */
-const SCROLL_CONTAINER_SEL = '.dms-table-body';
+const scrollContainerSel = '.dms-table-body';
 
 /** Header viewport receives wheel input and proxies horizontal motion into body viewport. */
-const HEADER_VIEWPORT_SEL = '.dms-table-header-viewport';
+const headerViewportSel = '.dms-table-header-viewport';
 
 /** Detached header region inside the clipped header viewport. */
-const HEADER_REGION_SEL = '[data-testid="base-table-header"]';
+const headerRegionSel = '[data-testid="base-table-header"]';
 
 /** Column-header cells in the column-label row (not the filter row). */
-const COLUMN_HEADER_CELLS_SEL =
+const columnHeaderCellsSel =
   '.dms-column-header-row .dms-header-cell[role="columnheader"]';
 
 /**
  * Flex spacer at the end of the column header row.
  * flex:1 — absorbs spare width so rows always span container width.
  */
-const COL_SPACER_IN_HEADER_SEL = '.dms-column-header-row .dms-col-spacer';
+const colSpacerInHeaderSel = '.dms-column-header-row .dms-col-spacer';
 
 /** Body data rows. */
-const BODY_ROW_SEL = '.dms-body-row[role="row"]';
+const bodyRowSel = '.dms-body-row[role="row"]';
 
 /** Body cells inside a row. */
-const BODY_CELL_SEL = '.dms-body-cell[role="cell"]';
+const bodyCellSel = '.dms-body-cell[role="cell"]';
 
 // ─── Shared browser-side helpers ──────────────────────────────────────────────
 
@@ -241,7 +241,7 @@ async function navigateToUniverse(page: Page): Promise<void> {
   await page
     .locator('dms-base-table')
     .waitFor({ state: 'visible', timeout: 15000 });
-  await page.waitForSelector(BODY_ROW_SEL, { timeout: 15000 });
+  await page.waitForSelector(bodyRowSel, { timeout: 15000 });
 }
 
 // ─── AC1 — Scrollbar right-edge on narrow viewport (800px) ────────────────────
@@ -257,7 +257,7 @@ test.describe('Base Table Layout Regression — AC1: scrollbar right-edge on nar
   }) => {
     // Precondition: table must be wider than 800px to test horizontal scroll.
     const canScroll = await page
-      .locator(SCROLL_CONTAINER_SEL)
+      .locator(scrollContainerSel)
       .first()
       .evaluate(function checkScrollable(el: Element): boolean {
         return el.scrollWidth > el.clientWidth;
@@ -335,12 +335,12 @@ test.describe('Base Table Layout Regression — AC1: scrollbar right-edge on nar
         };
       },
       {
-        outerSel: OUTER_SCROLLER_SEL,
-        headerViewportSel: HEADER_VIEWPORT_SEL,
-        headerCellSel: COLUMN_HEADER_CELLS_SEL,
-        bodySel: SCROLL_CONTAINER_SEL,
-        bodyRowSel: BODY_ROW_SEL,
-        bodyCellSel: BODY_CELL_SEL,
+        outerSel: outerScrollerSel,
+        headerViewportSel,
+        headerCellSel: columnHeaderCellsSel,
+        bodySel: scrollContainerSel,
+        bodyRowSel,
+        bodyCellSel,
       },
     );
 
@@ -362,19 +362,19 @@ test.describe('Base Table Layout Regression — AC1: scrollbar right-edge on nar
           el.scrollLeft = (el.scrollWidth - el.clientWidth) * percent;
         }
       },
-      { containerSel: SCROLL_CONTAINER_SEL, percent: 0.5 },
+      { containerSel: scrollContainerSel, percent: 0.5 },
     );
 
     // Allow one frame for the layout to settle.
     await page.waitForTimeout(50);
 
     const result50 = await page.evaluate(checkHeaderViewportAndOuterGeometry, {
-      outerSel: OUTER_SCROLLER_SEL,
-      headerViewportSel: HEADER_VIEWPORT_SEL,
-      bodySel: SCROLL_CONTAINER_SEL,
-      headerCellSel: COLUMN_HEADER_CELLS_SEL,
-      bodyRowSel: BODY_ROW_SEL,
-      bodyCellSel: BODY_CELL_SEL,
+      outerSel: outerScrollerSel,
+      headerViewportSel,
+      bodySel: scrollContainerSel,
+      headerCellSel: columnHeaderCellsSel,
+      bodyRowSel,
+      bodyCellSel,
       baselineOuterRight: baseline.outerRight,
       baselineHeaderTop: baseline.headerTop,
       baselineHeaderRight: baseline.headerRight,
@@ -408,17 +408,17 @@ test.describe('Base Table Layout Regression — AC1: scrollbar right-edge on nar
       if (el) {
         el.scrollLeft = el.scrollWidth - el.clientWidth;
       }
-    }, SCROLL_CONTAINER_SEL);
+    }, scrollContainerSel);
 
     await page.waitForTimeout(50);
 
     const result100 = await page.evaluate(checkHeaderViewportAndOuterGeometry, {
-      outerSel: OUTER_SCROLLER_SEL,
-      headerViewportSel: HEADER_VIEWPORT_SEL,
-      bodySel: SCROLL_CONTAINER_SEL,
-      headerCellSel: COLUMN_HEADER_CELLS_SEL,
-      bodyRowSel: BODY_ROW_SEL,
-      bodyCellSel: BODY_CELL_SEL,
+      outerSel: outerScrollerSel,
+      headerViewportSel,
+      bodySel: scrollContainerSel,
+      headerCellSel: columnHeaderCellsSel,
+      bodyRowSel,
+      bodyCellSel,
       baselineOuterRight: baseline.outerRight,
       baselineHeaderTop: baseline.headerTop,
       baselineHeaderRight: baseline.headerRight,
@@ -451,7 +451,7 @@ test.describe('Base Table Layout Regression — AC1: scrollbar right-edge on nar
     page,
   }) => {
     const canScroll = await page
-      .locator(SCROLL_CONTAINER_SEL)
+      .locator(scrollContainerSel)
       .first()
       .evaluate(function checkScrollable(el: Element): boolean {
         return el.scrollWidth > el.clientWidth;
@@ -485,10 +485,10 @@ test.describe('Base Table Layout Regression — AC1: scrollbar right-edge on nar
           bodyScrollLeft: body.scrollLeft,
         };
       },
-      { headerSel: HEADER_VIEWPORT_SEL, bodySel: SCROLL_CONTAINER_SEL },
+      { headerSel: headerViewportSel, bodySel: scrollContainerSel },
     );
 
-    await page.locator(HEADER_VIEWPORT_SEL).hover();
+    await page.locator(headerViewportSel).hover();
     await page.mouse.wheel(240, 0);
     await page.waitForFunction(
       function waitForMirroredHorizontalScroll(arg: {
@@ -509,8 +509,8 @@ test.describe('Base Table Layout Regression — AC1: scrollbar right-edge on nar
         );
       },
       {
-        headerSel: HEADER_VIEWPORT_SEL,
-        bodySel: SCROLL_CONTAINER_SEL,
+        headerSel: headerViewportSel,
+        bodySel: scrollContainerSel,
         previousBodyScrollLeft: before.bodyScrollLeft,
       },
       { timeout: 2000 },
@@ -535,7 +535,7 @@ test.describe('Base Table Layout Regression — AC1: scrollbar right-edge on nar
           bodyScrollLeft: body.scrollLeft,
         };
       },
-      { headerSel: HEADER_VIEWPORT_SEL, bodySel: SCROLL_CONTAINER_SEL },
+      { headerSel: headerViewportSel, bodySel: scrollContainerSel },
     );
 
     expect(
@@ -587,7 +587,7 @@ test.describe('Base Table Layout Regression — AC2: outer container width on wi
       const parentClientWidth = parent.clientWidth;
       const diff = Math.abs(outerClientWidth - parentClientWidth);
       return { ok: diff <= 2, outerClientWidth, parentClientWidth, diff };
-    }, OUTER_SCROLLER_SEL);
+    }, outerScrollerSel);
 
     expect(
       result.ok,
@@ -698,11 +698,11 @@ test.describe('Base Table Layout Regression — AC2: outer container width on wi
         };
       },
       {
-        outerSel: OUTER_SCROLLER_SEL,
-        headerViewportSel: HEADER_VIEWPORT_SEL,
-        headerRegionSel: HEADER_REGION_SEL,
-        bodySel: SCROLL_CONTAINER_SEL,
-        bodyRowSel: BODY_ROW_SEL,
+        outerSel: outerScrollerSel,
+        headerViewportSel,
+        headerRegionSel,
+        bodySel: scrollContainerSel,
+        bodyRowSel,
       },
     );
 
@@ -796,9 +796,9 @@ test.describe('Base Table Layout Regression — AC3: column fill on wide viewpor
         };
       },
       {
-        containerSel: SCROLL_CONTAINER_SEL,
-        headerCellsSel: COLUMN_HEADER_CELLS_SEL,
-        spacerSel: COL_SPACER_IN_HEADER_SEL,
+        containerSel: scrollContainerSel,
+        headerCellsSel: columnHeaderCellsSel,
+        spacerSel: colSpacerInHeaderSel,
       },
     );
 
@@ -840,8 +840,8 @@ test.describe('Base Table Layout Regression — AC4: beyond-table background mat
         cellBg: string;
         rowBg: string;
       } {
-        const { bodyRowSel, bodyCellSel } = arg;
-        const bodyRow = document.querySelector<HTMLElement>(bodyRowSel);
+        const { bodyRowSel: rowSel, bodyCellSel: cellSel } = arg;
+        const bodyRow = document.querySelector<HTMLElement>(rowSel);
         if (!bodyRow) {
           return {
             ok: false,
@@ -850,7 +850,7 @@ test.describe('Base Table Layout Regression — AC4: beyond-table background mat
             rowBg: '',
           };
         }
-        const bodyCell = bodyRow.querySelector<HTMLElement>(bodyCellSel);
+        const bodyCell = bodyRow.querySelector<HTMLElement>(cellSel);
         if (!bodyCell) {
           return {
             ok: false,
@@ -870,7 +870,7 @@ test.describe('Base Table Layout Regression — AC4: beyond-table background mat
           rowBg,
         };
       },
-      { bodyRowSel: BODY_ROW_SEL, bodyCellSel: BODY_CELL_SEL },
+      { bodyRowSel, bodyCellSel },
     );
 
     expect(

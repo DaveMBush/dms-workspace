@@ -1,5 +1,4 @@
 import { test } from 'playwright/test';
-
 import { captureStoryInBothThemes } from './helpers/storybook-theme-snapshot';
 
 /**
@@ -39,7 +38,7 @@ test.describe('Storybook Dual-Theme Snapshots', function storybookSnapshots() {
   }) {
     await captureStoryInBothThemes(
       page,
-      'shared-basetable--universe-table-variation'
+      'shared-basetable--universe-table-variation',
     );
   });
 });

@@ -1,5 +1,4 @@
-import { test, expect, Page } from 'playwright/test';
-
+import { expect, Page, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 
 /**
@@ -35,7 +34,7 @@ async function waitForAccountsPanel(page: Page): Promise<void> {
  */
 async function createTestAccount(
   page: Page,
-  nameSuffix: string
+  nameSuffix: string,
 ): Promise<string> {
   const addButton = page.locator('[data-testid="add-account-button"]');
   await addButton.click();
@@ -51,10 +50,10 @@ async function createTestAccount(
     .filter({ hasText: accountName });
   await expect(newAccount).toBeVisible({ timeout: 10000 });
   await expect(
-    newAccount.locator('[data-testid="edit-account-button"]')
+    newAccount.locator('[data-testid="edit-account-button"]'),
   ).toBeVisible({ timeout: 10000 });
   await expect(
-    page.locator('[data-testid="node-editor-input"]')
+    page.locator('[data-testid="node-editor-input"]'),
   ).not.toBeVisible({
     timeout: 10000,
   });
@@ -169,7 +168,7 @@ test.describe('Account CRUD Operations', () => {
         .locator('[data-testid="account-item"]')
         .filter({ hasText: originalName });
       const editButton = accountItem.locator(
-        '[data-testid="edit-account-button"]'
+        '[data-testid="edit-account-button"]',
       );
       await expect(editButton).toBeVisible({ timeout: 10000 });
       await editButton.click();
@@ -206,7 +205,7 @@ test.describe('Account CRUD Operations', () => {
         .filter({ hasText: originalName });
 
       const editButton = accountItem.locator(
-        '[data-testid="edit-account-button"]'
+        '[data-testid="edit-account-button"]',
       );
       await expect(editButton).toBeVisible({ timeout: 10000 });
       await editButton.click();
@@ -227,7 +226,7 @@ test.describe('Account CRUD Operations', () => {
 
       // Verify name unchanged by checking the same account item
       await expect(
-        accountItem.locator('[data-testid="account-name"]')
+        accountItem.locator('[data-testid="account-name"]'),
       ).toHaveText(originalName);
     });
 
@@ -240,7 +239,7 @@ test.describe('Account CRUD Operations', () => {
         .filter({ hasText: originalName });
 
       const editButton = accountItem.locator(
-        '[data-testid="edit-account-button"]'
+        '[data-testid="edit-account-button"]',
       );
       await expect(editButton).toBeVisible({ timeout: 10000 });
       await editButton.click();
@@ -262,7 +261,7 @@ test.describe('Account CRUD Operations', () => {
 
       // Name should be unchanged
       await expect(
-        accountItem.locator('[data-testid="account-name"]')
+        accountItem.locator('[data-testid="account-name"]'),
       ).toHaveText(originalName);
     });
   });
@@ -287,7 +286,7 @@ test.describe('Account CRUD Operations', () => {
 
       // Click delete button
       const deleteButton = testAccount.locator(
-        '[data-testid="delete-account-button"]'
+        '[data-testid="delete-account-button"]',
       );
       await deleteButton.click();
 
@@ -342,7 +341,7 @@ test.describe('Account CRUD Operations', () => {
         (response) =>
           response.url().includes('/api/accounts/add') &&
           response.request().method() === 'POST',
-        { timeout: 20000 }
+        { timeout: 20000 },
       );
 
       await input.press('Enter');
@@ -354,7 +353,7 @@ test.describe('Account CRUD Operations', () => {
           .text()
           .catch(() => 'Unable to read response');
         throw new Error(
-          `Account save failed: ${saveResponse.status()} - ${responseBody}`
+          `Account save failed: ${saveResponse.status()} - ${responseBody}`,
         );
       }
 

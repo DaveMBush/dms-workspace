@@ -1,5 +1,4 @@
 import { expect, Locator, Page, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 import { seedDivDepositsE2eData } from './helpers/seed-div-deposits-e2e-data.helper';
 import { seedOpenPositionsE2eData } from './helpers/seed-open-positions-e2e-data.helper';
@@ -19,7 +18,7 @@ async function clearSortFilterState(page: Page): Promise<void> {
  */
 async function getColumnTexts(
   scope: Locator,
-  cellSelector: string
+  cellSelector: string,
 ): Promise<string[]> {
   const cells = scope.locator(cellSelector);
   const count = await cells.count();
@@ -105,13 +104,13 @@ test.describe('Account Tables - Sorting (Story 37.1 - Failing Tests)', () => {
         openPositionsTable
           .locator('.dms-body-cell[data-column="symbol"]')
           .filter({ hasText: symbolsOpen[0] })
-          .first()
+          .first(),
       ).toBeVisible({ timeout: 15000 });
 
       // Read Symbol column (col 1) text values after sort
       const symbolTexts = await getColumnTexts(
         openPositionsTable,
-        '.dms-body-cell[data-column="symbol"]'
+        '.dms-body-cell[data-column="symbol"]',
       );
       expect(symbolTexts.length).toBeGreaterThanOrEqual(3);
 
@@ -181,13 +180,13 @@ test.describe('Account Tables - Sorting (Story 37.1 - Failing Tests)', () => {
         soldPositionsTable
           .locator('.dms-body-cell[data-column="symbol"]')
           .filter({ hasText: symbolsClosed[0] })
-          .first()
+          .first(),
       ).toBeVisible({ timeout: 15000 });
 
       // Read Symbol column (col 1) text values after sort
       const symbolTexts = await getColumnTexts(
         soldPositionsTable,
-        '.dms-body-cell[data-column="symbol"]'
+        '.dms-body-cell[data-column="symbol"]',
       );
       expect(symbolTexts.length).toBeGreaterThanOrEqual(3);
 
@@ -255,7 +254,7 @@ test.describe('Account Tables - Sorting (Story 37.1 - Failing Tests)', () => {
       // Read Amount column (col 3) text values after sort
       const amountTexts = await getColumnTexts(
         page,
-        '.dms-body-row[role="row"] .dms-body-cell:nth-child(3)'
+        '.dms-body-row[role="row"] .dms-body-cell:nth-child(3)',
       );
       expect(amountTexts.length).toBeGreaterThanOrEqual(3);
 

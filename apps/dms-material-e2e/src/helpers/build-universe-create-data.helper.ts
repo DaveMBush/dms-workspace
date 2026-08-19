@@ -3,7 +3,7 @@ import type { Prisma } from '@prisma/client';
 export function buildUniverseCreateData(
   symbol: string,
   riskGroupId: string,
-  storedVolatility: string
+  storedVolatility: string,
 ): Prisma.universeUncheckedCreateInput {
   return {
     symbol,

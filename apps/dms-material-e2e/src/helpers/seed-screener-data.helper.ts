@@ -28,7 +28,11 @@ function createTestDataArray(
   incomeId: string,
   taxFreeId: string,
 ): ScreenerRecord[] {
-  const b = { distribution: 0.0, distributions_per_year: 0, last_price: 0.0 };
+  const b = {
+    distribution: 0.0,
+    distributions_per_year: 0,
+    last_price: 0.0,
+  };
   return [
     {
       ...b,

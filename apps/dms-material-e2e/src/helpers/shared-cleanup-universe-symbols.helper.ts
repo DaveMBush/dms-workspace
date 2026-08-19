@@ -6,7 +6,7 @@ import type { PrismaClient } from '@prisma/client';
  */
 export async function cleanupUniverseBySymbols(
   prisma: PrismaClient,
-  symbols: string[]
+  symbols: string[],
 ): Promise<void> {
   try {
     const universeRows = await prisma.universe.findMany({

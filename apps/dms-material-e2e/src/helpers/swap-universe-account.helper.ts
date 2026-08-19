@@ -1,7 +1,7 @@
 import { expect, type Page } from 'playwright/test';
 
 /** Selector for any visible data row inside a mat-table. */
-const ROW_SELECTOR = '.dms-body-row[role="row"]';
+const rowSelector = '.dms-body-row[role="row"]';
 
 interface UniverseSwapOptions {
   /** Selector for the account mat-select control. Default: '.account-select mat-select'. */
@@ -29,7 +29,7 @@ export async function swapUniverseAccount(
   const accountSelect = page.locator(accountSelectSelector);
   await accountSelect.click();
   await page.locator('mat-option').nth(optionIndex).click();
-  await expect(page.locator(ROW_SELECTOR).first()).toBeVisible({
+  await expect(page.locator(rowSelector).first()).toBeVisible({
     timeout: 10000,
   });
 }

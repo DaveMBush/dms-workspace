@@ -1,5 +1,4 @@
-import { test, expect } from 'playwright/test';
-
+import { expect, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 
 test.describe('Logout', () => {
@@ -9,7 +8,7 @@ test.describe('Logout', () => {
     const userMenuButton = page.locator('button[aria-label="User menu"]');
     await expect(userMenuButton).toBeVisible();
     await expect(userMenuButton.locator('mat-icon')).toContainText(
-      'account_circle'
+      'account_circle',
     );
   });
 
@@ -21,10 +20,10 @@ test.describe('Logout', () => {
 
     // Menu items should be visible in the CDK overlay
     await expect(
-      page.locator('a[mat-menu-item]', { hasText: 'Profile' })
+      page.locator('a[mat-menu-item]', { hasText: 'Profile' }),
     ).toBeVisible();
     await expect(
-      page.locator('button[mat-menu-item]', { hasText: 'Logout' })
+      page.locator('button[mat-menu-item]', { hasText: 'Logout' }),
     ).toBeVisible();
   });
 
@@ -60,7 +59,7 @@ test.describe('Logout', () => {
     // Should show confirmation dialog
     await expect(page.getByText('Confirm Logout')).toBeVisible();
     await expect(
-      page.getByText('Are you sure you want to log out?')
+      page.getByText('Are you sure you want to log out?'),
     ).toBeVisible();
   });
 
@@ -98,7 +97,7 @@ test.describe('Logout', () => {
 
     // Menu items should be visible
     await expect(
-      page.locator('button[mat-menu-item]', { hasText: 'Logout' })
+      page.locator('button[mat-menu-item]', { hasText: 'Logout' }),
     ).toBeVisible();
 
     // Click the CDK overlay backdrop to close menu
@@ -106,7 +105,7 @@ test.describe('Logout', () => {
 
     // Menu items should disappear
     await expect(
-      page.locator('button[mat-menu-item]', { hasText: 'Logout' })
+      page.locator('button[mat-menu-item]', { hasText: 'Logout' }),
     ).not.toBeVisible();
   });
 
@@ -118,7 +117,7 @@ test.describe('Logout', () => {
     // Test in light theme
     await page.locator('button[aria-label="User menu"]').click();
     await expect(
-      page.locator('button[mat-menu-item]', { hasText: 'Logout' })
+      page.locator('button[mat-menu-item]', { hasText: 'Logout' }),
     ).toBeVisible();
     await page.keyboard.press('Escape');
 
@@ -128,7 +127,7 @@ test.describe('Logout', () => {
     // Test in dark theme
     await page.locator('button[aria-label="User menu"]').click();
     await expect(
-      page.locator('button[mat-menu-item]', { hasText: 'Logout' })
+      page.locator('button[mat-menu-item]', { hasText: 'Logout' }),
     ).toBeVisible();
   });
 
@@ -139,7 +138,7 @@ test.describe('Logout', () => {
 
     // Menu should be visible
     await expect(
-      page.locator('button[mat-menu-item]', { hasText: 'Logout' })
+      page.locator('button[mat-menu-item]', { hasText: 'Logout' }),
     ).toBeVisible();
 
     // Press Escape
@@ -147,7 +146,7 @@ test.describe('Logout', () => {
 
     // Menu should close
     await expect(
-      page.locator('button[mat-menu-item]', { hasText: 'Logout' })
+      page.locator('button[mat-menu-item]', { hasText: 'Logout' }),
     ).not.toBeVisible();
   });
 

@@ -1,5 +1,4 @@
 import { expect, Page, test } from 'playwright/test';
-
 import { login } from './helpers/login.helper';
 import { seedExpiredFilterE2eData } from './helpers/seed-expired-filter-e2e-data.helper';
 

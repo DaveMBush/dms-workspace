@@ -8,7 +8,7 @@ export async function verifyMonotonicScroll(
   page: Page,
   selector: string,
   steps = 20,
-  stepPx = 100
+  stepPx = 100,
 ): Promise<number> {
   const el = page.locator(selector);
 
@@ -28,7 +28,7 @@ export async function verifyMonotonicScroll(
     await page.waitForTimeout(300);
 
     const curr = await el.evaluate(function getCurrentScrollTop(
-      node: Element
+      node: Element,
     ): number {
       return node.scrollTop;
     });
@@ -37,7 +37,7 @@ export async function verifyMonotonicScroll(
     // that momentarily adjust the scroll anchor — these are not visible regressions.
     if (curr < prev - 20) {
       throw new Error(
-        `Scroll position decreased: ${prev} -> ${curr} (step ${i})`
+        `Scroll position decreased: ${prev} -> ${curr} (step ${i})`,
       );
     }
     prev = curr;

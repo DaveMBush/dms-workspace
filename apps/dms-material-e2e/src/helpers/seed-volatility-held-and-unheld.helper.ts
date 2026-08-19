@@ -24,12 +24,12 @@ import { initializePrismaClient } from './shared-prisma-client.helper';
  * This verifies the rendering half of the fix; Story 88.3 tests the wiring.
  */
 
-const DISTRIBUTIONS_PER_YEAR = 12;
-const LAST_PRICE = 10.0;
-const MONTHS_TO_SEED = 12;
+const distributionsPerYear = 12;
+const lastPrice = 10.0;
+const monthsToSeed = 12;
 
 // Steady: oscillating ~5% around mean → CV ≈ 5% (between 2% and 10% thresholds)
-const STEADY_AMOUNTS = [
+const steadyAmounts = [
   0.95, 1.05, 0.95, 1.05, 0.95, 1.05, 0.95, 1.05, 0.95, 1.05, 0.95, 1.05,
 ];
 
@@ -59,9 +59,9 @@ async function seedHeldSymbol(
     data: {
       symbol,
       risk_group_id: riskGroupId,
-      distribution: STEADY_AMOUNTS[STEADY_AMOUNTS.length - 1],
-      distributions_per_year: DISTRIBUTIONS_PER_YEAR,
-      last_price: LAST_PRICE,
+      distribution: steadyAmounts[steadyAmounts.length - 1],
+      distributions_per_year: distributionsPerYear,
+      last_price: lastPrice,
       ex_date: null,
       most_recent_sell_date: null,
       most_recent_sell_price: null,
@@ -73,12 +73,12 @@ async function seedHeldSymbol(
   });
   universeIds.push(universe.id);
 
-  const dates = buildMonthlyDates(MONTHS_TO_SEED);
+  const dates = buildMonthlyDates(monthsToSeed);
   await prisma.divDeposits.createMany({
     data: dates.map(function buildDeposit(date: Date, i: number) {
       return {
         date,
-        amount: STEADY_AMOUNTS[i],
+        amount: steadyAmounts[i],
         accountId,
         divDepositTypeId,
         universeId: universe.id,
@@ -91,7 +91,7 @@ async function seedHeldSymbol(
     data: {
       universeId: universe.id,
       accountId,
-      buy: LAST_PRICE,
+      buy: lastPrice,
       sell: 0,
       buy_date: new Date('2023-01-01'),
       quantity: 100,
@@ -111,8 +111,8 @@ async function seedUnheldSymbol(
       symbol,
       risk_group_id: riskGroupId,
       distribution: 1.0,
-      distributions_per_year: DISTRIBUTIONS_PER_YEAR,
-      last_price: LAST_PRICE,
+      distributions_per_year: distributionsPerYear,
+      last_price: lastPrice,
       ex_date: null,
       most_recent_sell_date: null,
       most_recent_sell_price: null,

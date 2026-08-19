@@ -153,7 +153,6 @@ test.describe('Add Symbol Dialog', () => {
         await page.waitForTimeout(2000);
         const retryCount = await optionsLocator.count();
         if (retryCount === 0) {
-          // TODO(E82): blocked — SmartNgRX store timing issue
           test.skip(
             true,
             'Risk groups not loaded - SmartNgRX store timing issue',
@@ -194,7 +193,6 @@ test.describe('Add Symbol Dialog', () => {
         await page.waitForTimeout(2000);
         const retryCount = await optionsLocator.count();
         if (retryCount === 0) {
-          // TODO(E82): blocked — SmartNgRX store timing issue
           test.skip(
             true,
             'Risk groups not loaded - SmartNgRX store timing issue',
@@ -374,11 +372,6 @@ test.describe('Add Symbol Dialog', () => {
       // Backdrop should be present and cover the background
       const backdrop = page.locator('.cdk-overlay-backdrop');
       await expect(backdrop).toBeVisible();
-
-      // Background button should be covered by backdrop (not clickable)
-      const _backgroundButton = page.locator(
-        'button[mattooltip="Update Universe"]',
-      );
 
       // Verify the backdrop is in front by checking if dialog content is visible
       // while the backdrop exists - this proves background is blocked

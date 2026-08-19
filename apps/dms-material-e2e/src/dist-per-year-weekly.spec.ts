@@ -31,10 +31,10 @@ import { expect, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 
 /** Standard E2E seed symbol guaranteed to be in the test database. */
-const TEST_SYMBOL = 'TESTEQ1';
+const testSymbol = 'TESTEQ1';
 
 /** Number of distributions per year for a weekly schedule. */
-const WEEKLY_DIST_PER_YEAR = 52;
+const weeklyDistPerYear = 52;
 
 test.describe('Dist/Year Weekly Acceptance — Epic 78 / Story 78.1', () => {
   test.beforeEach(async ({ page }) => {
@@ -49,12 +49,12 @@ test.describe('Dist/Year Weekly Acceptance — Epic 78 / Story 78.1', () => {
 
     // Filter to the known seed symbol so only one row is visible.
     const symbolInput = page.locator('input[placeholder="Search Symbol"]');
-    await symbolInput.fill(TEST_SYMBOL);
+    await symbolInput.fill(testSymbol);
     // Wait for the row to appear — Playwright retries until the table re-renders.
     // No fixed debounce sleep: we let the assertion itself act as the gate.
     await expect(
       page.locator('.dms-body-row[role="row"]', {
-        has: page.locator(`text=${TEST_SYMBOL}`),
+        has: page.locator(`text=${testSymbol}`),
       }),
     ).toBeVisible({ timeout: 10000 });
   });
@@ -71,7 +71,7 @@ test.describe('Dist/Year Weekly Acceptance — Epic 78 / Story 78.1', () => {
     page,
   }) => {
     const row = page.locator('.dms-body-row[role="row"]', {
-      has: page.locator(`text=${TEST_SYMBOL}`),
+      has: page.locator(`text=${testSymbol}`),
     });
     await expect(row).toBeVisible({ timeout: 10000 });
 
@@ -85,7 +85,7 @@ test.describe('Dist/Year Weekly Acceptance — Epic 78 / Story 78.1', () => {
     // Fill the input with 52 (weekly distributions per year).
     const distPerYearInput = distPerYearTd.locator('input[matinput]');
     await expect(distPerYearInput).toBeVisible({ timeout: 5000 });
-    await distPerYearInput.fill(String(WEEKLY_DIST_PER_YEAR));
+    await distPerYearInput.fill(String(weeklyDistPerYear));
 
     // Blur the field to trigger saveEdit() and validation.
     await distPerYearInput.blur();
@@ -101,7 +101,7 @@ test.describe('Dist/Year Weekly Acceptance — Epic 78 / Story 78.1', () => {
     page,
   }) => {
     const row = page.locator('.dms-body-row[role="row"]', {
-      has: page.locator(`text=${TEST_SYMBOL}`),
+      has: page.locator(`text=${testSymbol}`),
     });
     await expect(row).toBeVisible({ timeout: 10000 });
 
@@ -115,7 +115,7 @@ test.describe('Dist/Year Weekly Acceptance — Epic 78 / Story 78.1', () => {
     // Fill the input with 52 and press Enter to commit.
     const distPerYearInput = distPerYearTd.locator('input[matinput]');
     await expect(distPerYearInput).toBeVisible({ timeout: 5000 });
-    await distPerYearInput.fill(String(WEEKLY_DIST_PER_YEAR));
+    await distPerYearInput.fill(String(weeklyDistPerYear));
     await distPerYearInput.press('Enter');
 
     // EXPECTED TO FAIL: The input remains visible because validation rejects 52
@@ -125,6 +125,6 @@ test.describe('Dist/Year Weekly Acceptance — Epic 78 / Story 78.1', () => {
 
     // EXPECTED TO FAIL: The display value should show 52 after a successful save.
     // Currently the value is never saved due to the hardcoded max constraint.
-    await expect(distPerYearDisplay).toHaveText(String(WEEKLY_DIST_PER_YEAR));
+    await expect(distPerYearDisplay).toHaveText(String(weeklyDistPerYear));
   });
 });

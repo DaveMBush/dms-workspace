@@ -1,8 +1,8 @@
 import { fetchExistingUniverseIds } from './seed-scroll-fetch-universe-ids.helper';
 import { initializePrismaClient } from './shared-prisma-client.helper';
 
-const ROW_COUNT = 60;
-const BASE_UNIVERSE_COUNT = 50;
+const rowCount = 60;
+const baseUniverseCount = 50;
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- Prisma createMany requires untyped batch data */
 /**
@@ -26,10 +26,10 @@ export async function seedScrollTradesCommon(
 ): Promise<{ accountId: string; isNewAccount: boolean }> {
   const baseUniverseIds = await fetchExistingUniverseIds(
     prisma,
-    BASE_UNIVERSE_COUNT,
+    baseUniverseCount,
   );
   const universeIds = Array.from(
-    { length: ROW_COUNT },
+    { length: rowCount },
     function cycleId(_: unknown, i: number): string {
       return baseUniverseIds[i % baseUniverseIds.length];
     },

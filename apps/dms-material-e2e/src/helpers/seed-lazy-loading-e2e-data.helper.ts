@@ -4,8 +4,8 @@ import { initializePrismaClient } from './shared-prisma-client.helper';
 import { createRiskGroups } from './shared-risk-groups.helper';
 import type { UniverseRecord } from './universe-record.types';
 
-const UNIVERSE_ROW_COUNT = 120;
-const OPEN_POSITIONS_COUNT = 80;
+const universeRowCount = 120;
+const openPositionsCount = 80;
 
 interface LazyLoadingSeederResult {
   cleanup(): Promise<void>;
@@ -139,10 +139,10 @@ export async function seedLazyLoadingE2eData(): Promise<LazyLoadingSeederResult>
   const prisma = await initializePrismaClient();
   const uniqueId = generateUniqueId();
 
-  const universeSymbols = generateSymbols('ULZY', UNIVERSE_ROW_COUNT, uniqueId);
+  const universeSymbols = generateSymbols('ULZY', universeRowCount, uniqueId);
   const openPositionSymbols = generateSymbols(
     'OLZY',
-    OPEN_POSITIONS_COUNT,
+    openPositionsCount,
     uniqueId,
   );
   const accountName = `E2E-Lazy-Acct-${uniqueId}`;

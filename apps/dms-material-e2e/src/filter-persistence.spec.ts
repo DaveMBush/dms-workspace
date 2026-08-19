@@ -1,7 +1,7 @@
 import { expect, Page, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 
-const ACCOUNT_UUID = '1677e04f-ef9b-4372-adb3-b740443088dc';
+const accountUuid = '1677e04f-ef9b-4372-adb3-b740443088dc';
 
 /**
  * Helper: read filter state from localStorage.
@@ -54,7 +54,7 @@ test.describe('Universe Filter Persistence', () => {
     expect(filters!['symbol']).toBe('XYZ');
 
     // Navigate away
-    await page.goto(`/account/${ACCOUNT_UUID}/open`);
+    await page.goto(`/account/${accountUuid}/open`);
     await page.waitForLoadState('networkidle');
 
     // Navigate back to universe
