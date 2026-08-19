@@ -11,10 +11,10 @@ const rowCount = 60;
 
 interface ScreenerRecord {
   symbol: string;
-  riskGroupId: string;
+  risk_group_id: string;
   distribution: number;
-  distributionsPerYear: number;
-  lastPrice: number;
+  distributions_per_year: number;
+  last_price: number;
 }
 
 /**
@@ -27,10 +27,10 @@ function createBulkRecords(
   return symbols.map(function mapSymbol(symbol): ScreenerRecord {
     return {
       symbol,
-      riskGroupId,
+      risk_group_id: riskGroupId,
       distribution: 1.0,
-      distributionsPerYear: 4,
-      lastPrice: 50.0,
+      distributions_per_year: 4,
+      last_price: 50.0,
     };
   });
 }

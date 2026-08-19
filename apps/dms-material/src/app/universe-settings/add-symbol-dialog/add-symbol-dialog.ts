@@ -147,9 +147,18 @@ export class AddSymbolDialogComponent implements OnInit {
     { initialValue: this.form.get('symbol')!.status },
   );
 
+  // statusChanges only emits when the status string itself changes (e.g. VALID
+  // -> INVALID), so it never fires when a control stays INVALID but the
+  // underlying error switches (e.g. required -> duplicate). Track valueChanges
+  // directly so duplicate detection recomputes on every keystroke.
+  private readonly symbolControlValue = toSignal(
+    this.form.get('symbol')!.valueChanges,
+    { initialValue: this.form.get('symbol')!.value },
+  );
+
   isSubmitDisabled = computed(
     function isSubmitDisabled(this: AddSymbolDialogComponent) {
-      const sv = this.form.get('symbol')?.value ?? '';
+      const sv = this.symbolControlValue() ?? '';
       const existingSymbols = this.existingSymbols();
       return (
         this.isLoading() ||
@@ -187,7 +196,7 @@ export class AddSymbolDialogComponent implements OnInit {
 
   symbolDuplicateError = computed(
     function symbolDuplicateError(this: AddSymbolDialogComponent) {
-      const sv = this.form.get('symbol')?.value ?? '';
+      const sv = this.symbolControlValue() ?? '';
       return sv.length > 0 && this.existingSymbols().includes(sv);
     }.bind(this),
   );

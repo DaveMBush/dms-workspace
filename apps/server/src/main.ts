@@ -75,6 +75,16 @@ process.on('SIGINT', function handleSigint(_) {
   void shutdown('SIGINT');
 });
 
+// Log-and-continue instead of crashing the whole process on a stray unhandled
+// error (e.g. a failed background fetch to an external API). Without this,
+// one bad promise rejection takes down the entire server for the rest of a run.
+process.on('unhandledRejection', function handleUnhandledRejection(reason) {
+  server.log.error({ err: reason }, 'Unhandled promise rejection');
+});
+process.on('uncaughtException', function handleUncaughtException(error) {
+  server.log.error({ err: error }, 'Uncaught exception');
+});
+
 // Start the server with database connection retry
 async function startServer(): Promise<void> {
   try {
