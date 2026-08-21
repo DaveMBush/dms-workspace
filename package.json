@@ -40,7 +40,7 @@
     "@aws-amplify/auth": "^6.19.1",
     "@aws-amplify/core": "^6.16.1",
     "@aws-sdk/client-ssm": "^3.1024.0",
-    "@fastify/autoload": "~6.3.1",
+    "@fastify/autoload": "~6.5.0",
     "@fastify/cookie": "^11.0.2",
     "@fastify/cors": "^11.2.0",
     "@fastify/multipart": "^9.4.0",
