@@ -3,12 +3,6 @@
 Self-contained prompt. Runs fully headless — **never ask questions, never
 wait for approval, never show menus**. Complete all steps in one run.
 
-Invoke with:
-
-```bash
-qwen -p "Read and follow .github/instructions/generate-epics-and-stories.md exactly. Input file: <path-to-prose-epic-file>"
-```
-
 ## Purpose
 
 Hand it a prose description file. It produces:
@@ -23,7 +17,7 @@ files separately.
 ## Inputs
 
 | Input | Location |
-|---|---|
+| --- | --- |
 | Prose Epic file (each `##` section = one Epic) | provided at invocation |
 | Architecture spine | `_bmad-output/planning-artifacts/architecture/**/ARCHITECTURE-SPINE.md` |
 | PRD | `_bmad-output/planning-artifacts/prds/**/prd.md` |
@@ -35,7 +29,7 @@ generated files. Do not modify them.
 ## Outputs
 
 | Output | Location |
-|---|---|
+| --- | --- |
 | Epic breakdown document | `_bmad-output/planning-artifacts/epics.md` (append new epics; do not destroy existing content) |
 | Story files | `_bmad-output/implementation-artifacts/stories/epic-{N}/{N}.{M}-kebab-title.md` |
 
@@ -81,6 +75,9 @@ So that {value_benefit}.
 
 Rules:
 
+- The model you are using has limited context so work in small chunks instead of trying to do everything all at once.
+- Use sub-agents whenever possible to avoid context bloat.
+- Do not use parallel sub-agents; all sub-agents should operate sequentially to avoid model access timeout conflicts.
 - Number epics in the order they appear in the prose file (continuing after
   any existing epics already in epics.md).
 - `epic_goal` states the user outcome, not the technical approach.
@@ -163,7 +160,7 @@ Every Epic's stories are emitted in a fixed triple ordering, numbered
 consecutively within the Epic. This is non-negotiable.
 
 | Order | Story kind | `Status` value |
-|---|---|---|
+| --- | --- | --- |
 | 1st | Unit tests for the change (red-phase TDD scaffold) | `skip` |
 | 2nd | Implementation of the change | `ready-for-dev` |
 | 3rd | e2e test for the change (only if the change is user-visible) | `ready-for-dev` |
