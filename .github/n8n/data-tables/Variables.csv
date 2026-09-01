@@ -1,0 +1,13 @@
+﻿key,value
+fix-dms-material-dms-material-e2e-lint-prompt,When I run `pnpm nx run dms-material-e2e:lint` I see lint issues. Run the command and attempt to fix the issues.
+fix-dms-material-model,lmstudio/unsloth/qwen3.8-27b
+fix-dms-material-dms-material-lint-prompt,When I run `pnpm nx run dms-material:lint` I see lint issues. Run the command and attempt to fix the issues.
+fix-dms-material-electron-lint-prompt,When I run `pnpm nx run electron:lint` I see lint issues. Run the command and attempt to fix the issues.
+fix-dms-material-dms-material-test-prompt,When I run `pnpm nx run dms-material:test` I see issues with the unit tests. Run the command and attempt to fix the issues. You can assume the application under test is correct and that something is wrong with the tests.
+fix-dms-material-server-test-prompt,When I run `pnpm nx run server:test` I see issues with the unit tests. Run the command and attempt to fix the issues. You can assume the application under test is correct and that something is wrong with the tests.
+fix-dms-material-electron-test-prompt,There are issues when I run `pnpm nx run electron:test`  that I need you to fix.
+fix-dms-material-dms-material-e2e-e2e-chromium-prompt,"When I run `pnpm e2e:dms-material:chromium` I see e2e tests that are failing. I need for you to figure out why and fix the issues. "
+fix-dms-material-server-build-prompt,There is an issue when I run `pnpm nx run server:build` that I need you to fix.
+fix-dms-material-server-lint-prompt,When I run `pnpm nx run server:lint` I see lint issues. Run the command and attempt to fix the issues.
+fix-dms-material-dms-material-build-prompt,There is an issue when I run `pnpm nx run dms-material:build` that I need you to fix.
+fix-dms-material-electron-build-prompt,There is an issue when I run `pnpm nx run electron:build` that I need you to fix.

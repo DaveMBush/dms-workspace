@@ -16,22 +16,22 @@ files separately.
 
 ## Inputs
 
-| Input | Location |
-| --- | --- |
-| Prose Epic file (each `##` section = one Epic) | provided at invocation |
-| Architecture spine | `_bmad-output/planning-artifacts/architecture/**/ARCHITECTURE-SPINE.md` |
-| PRD | `_bmad-output/planning-artifacts/prds/**/prd.md` |
-| UX design | `_bmad-output/planning-artifacts/ux-designs/**/DESIGN.md` and `EXPERIENCE.md` |
+| Input                                          | Location                                                                      |
+| ---------------------------------------------- | ----------------------------------------------------------------------------- |
+| Prose Epic file (each `##` section = one Epic) | provided at invocation                                                        |
+| Architecture spine                             | `_bmad-output/planning-artifacts/architecture/**/ARCHITECTURE-SPINE.md`       |
+| PRD                                            | `_bmad-output/planning-artifacts/prds/**/prd.md`                              |
+| UX design                                      | `_bmad-output/planning-artifacts/ux-designs/**/DESIGN.md` and `EXPERIENCE.md` |
 
 All four context documents are FINAL. Cite ADs and FRs from them in the
 generated files. Do not modify them.
 
 ## Outputs
 
-| Output | Location |
-| --- | --- |
+| Output                  | Location                                                                                       |
+| ----------------------- | ---------------------------------------------------------------------------------------------- |
 | Epic breakdown document | `_bmad-output/planning-artifacts/epics.md` (append new epics; do not destroy existing content) |
-| Story files | `_bmad-output/implementation-artifacts/stories/epic-{N}/{N}.{M}-kebab-title.md` |
+| Story files             | `_bmad-output/implementation-artifacts/stories/epic-{N}/{N}.{M}-kebab-title.md`                |
 
 ## Workflow
 
@@ -159,26 +159,35 @@ Rules:
 Every Epic's stories are emitted in a fixed triple ordering, numbered
 consecutively within the Epic. This is non-negotiable.
 
-| Order | Story kind | `Status` value |
-| --- | --- | --- |
-| 1st | Unit tests for the change (red-phase TDD scaffold) | `skip` |
-| 2nd | Implementation of the change | `ready-for-dev` |
-| 3rd | e2e test for the change (only if the change is user-visible) | `ready-for-dev` |
+| Order | Story kind                                                   | `Status` value  |
+| ----- | ------------------------------------------------------------ | --------------- |
+| 1st   | Unit tests for the change (red-phase TDD scaffold)           | `ready-for-dev` |
+| 2nd   | Implementation of the change                                 | `ready-for-dev` |
+| 3rd   | e2e test for the change (only if the change is user-visible) | `ready-for-dev` |
 
 Rules:
 
-- The `skip` status is a placeholder: the unit-test story is written and
-  committed, but its implementation is intentionally deferred. Dark Factory 2
-  fills it in at implementation time. Do not leave it blank or as `TODO`.
+- **Red-phase TDD convention:** The unit-test story writes failing tests that
+  are marked `.skip()` in code (Vitest `it.skip`, Jest `test.skip`, etc.) so CI
+  stays green. The implementation story's FIRST task is to remove those skips,
+  confirm the tests go red, then implement until they pass. Both stories get
+  `Status: ready-for-dev` — DF2 runs both in sequence.
+- **Story-level `Status: skip`** means "deliberately never run this story" and
+  must NOT be used for red-phase scaffolds. It is reserved for stories that are
+  intentionally out of scope (e.g. superseded by a later design decision).
 - The e2e story is present ONLY when the Epic produces user-visible behavior.
   If a change is internal-only (e.g. pure data seeding with no UI), emit just
   the 1st and 2nd stories.
 - A single Epic may contain several triples (multiple implementation units).
   Number them in order: `N.1` (unit), `N.2` (impl), `N.3` (e2e), then
   `N.4` (next unit's unit tests), `N.5`, `N.6`, …
-- The unit-test story (status `skip`) references the exact test files and
-  cases that the implementation story must make pass. The implementation
-  story's acceptance criteria must be consistent with those tests.
+- The unit-test story references the exact test files and cases that the
+  implementation story must make pass, and its tasks explicitly instruct the
+  dev agent to mark each new/rewritten test `.skip()` in code (with a note
+  that the implementation story removes the skips). The implementation story's
+  acceptance criteria must be consistent with those tests, and it carries an
+  explicit first task: remove the `.skip()` markers from the unit-test
+  story's specs, confirm they fail (red), then implement until green.
 
 ## Headless Rules (non-negotiable)
 

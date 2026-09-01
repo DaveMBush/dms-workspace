@@ -1,0 +1,391 @@
+{
+  "name": "DMS Electron Build, Lint, Test Validation",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.2,
+      "position": [-1392, -32],
+      "id": "639ee680-7004-4bbd-b35c-76a30c052b6c",
+      "name": "When Executed by Another Workflow",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "formTitle": "Parameters",
+        "formDescription": "This collects the elements need to run the reusable validation loop",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Project",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "server"
+                  },
+                  {
+                    "option": "dms-material"
+                  },
+                  {
+                    "option": "electron"
+                  },
+                  {
+                    "option": "dms-material-e2e"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "Executor",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "build"
+                  },
+                  {
+                    "option": "test"
+                  },
+                  {
+                    "option": "lint"
+                  },
+                  {
+                    "option": "dms-material:chromium"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "cwd"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [-1360, -288],
+      "id": "3d6e65e1-cbd2-4cb6-8c4f-1171f3bacf15",
+      "name": "On form submission",
+      "webhookId": "32959561-9bc0-43d0-979d-6f16d1e78613"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {result: 'pass'}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-624, -224],
+      "id": "36a196a9-b512-422e-b737-b930a2d1eb21",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "jsCode": "return { result: 'fixed'};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [496, -32],
+      "id": "b352a716-bce1-4cc6-90bb-4dc094802da8",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "df007bc8-7a0f-4242-9ffd-5ed5c871fcdc",
+              "leftValue": "={{ $json.code }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [-848, -128],
+      "id": "affb0a00-9683-4af9-b182-8c783147841b",
+      "name": "If code == 0"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "df007bc8-7a0f-4242-9ffd-5ed5c871fcdc",
+              "leftValue": "={{ $json.code}}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [272, -32],
+      "id": "1a4ee52f-078e-4eea-b0b1-2762a1839631",
+      "name": "If code === 0"
+    },
+    {
+      "parameters": {
+        "jsCode": "\nvar record = $input.all().reduce((acc, v) => {\n  var key = v.json.key;\n  var value = v.json.value;\n  var returnValue = {...acc, [key]: value};\n  return returnValue;\n}, {});\n\nconsole.log(record);\nvar promptKey = 'fix-dms-material-' + $('Code in JavaScript2').first().json.project + '-' + $('Code in JavaScript2').first().json.executor + '-prompt';\nconsole.log(promptKey);\nvar promptVal = record[promptKey];\nconsole.log(promptVal);\nreturn {\n  model: record['fix-dms-material-model'],\n  prompt: promptVal\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-400, -96],
+      "id": "0ddaae89-59da-4b75-8a6a-1c3b978f5b39",
+      "name": "Reduce to Record"
+    },
+    {
+      "parameters": {
+        "command": "=pnpm nx run {{ $json.combine }}",
+        "cwd": "={{ $json.cwd }}"
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [-1024, -128],
+      "id": "fccb191a-1a34-405f-8241-4d912a4113bd",
+      "name": "pnpm nx run {{Project}}:{{Executor}}",
+      "credentials": {
+        "sshPassword": {
+          "id": "2M7LU3ql52s8ShX2",
+          "name": "SSH Password account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "jnt5XOd12A83mA01",
+          "mode": "list",
+          "cachedResultName": "Variables",
+          "cachedResultUrl": "/projects/bWQUsHMf0gJtM1FN/datatables/jnt5XOd12A83mA01"
+        },
+        "filters": {
+          "conditions": []
+        },
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [-624, -32],
+      "id": "e00b01f1-6dec-4772-9763-188caf287086",
+      "name": "Get Variable Rows"
+    },
+    {
+      "parameters": {
+        "command": "=QWEN_CODE_UNATTENDED_RETRY=1 qwen -p \"{{ $json[\"prompt\"] }}\" --model {{ $json[\"model\"] }} --yolo",
+        "cwd": "={{ $('Code in JavaScript2').item.json.cwd }}"
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [-176, -96],
+      "id": "eb052f4e-73dd-436b-9d58-9fbf7e095243",
+      "name": "CoPilot fix {{Project}}:{{Executor}}",
+      "credentials": {
+        "sshPassword": {
+          "id": "2M7LU3ql52s8ShX2",
+          "name": "SSH Password account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  combine: $input.first().json.Project + ':' +$input.first().json.Executor,\n  project: $input.first().json.Project,\n  executor: $input.first().json.Executor,\n  cwd: $input.first().json.cwd\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-1216, -144],
+      "id": "3a58130a-9243-43ff-badc-5f68ffe877b0",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "command": "=pnpm nx run {{ $('Code in JavaScript2').item.json.combine }}",
+        "cwd": "={{ $('Code in JavaScript2').item.json.cwd }}"
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [48, -96],
+      "id": "938dab09-b0cd-4b9e-bb7d-92a6da01cd3f",
+      "name": "pnpm nx run {{Project}}:{{Executor}}1",
+      "credentials": {
+        "sshPassword": {
+          "id": "2M7LU3ql52s8ShX2",
+          "name": "SSH Password account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If code == 0": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Variable Rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If code === 0": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Variable Rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reduce to Record": {
+      "main": [
+        [
+          {
+            "node": "CoPilot fix {{Project}}:{{Executor}}",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "pnpm nx run {{Project}}:{{Executor}}": {
+      "main": [
+        [
+          {
+            "node": "If code == 0",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Variable Rows": {
+      "main": [
+        [
+          {
+            "node": "Reduce to Record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CoPilot fix {{Project}}:{{Executor}}": {
+      "main": [
+        [
+          {
+            "node": "pnpm nx run {{Project}}:{{Executor}}1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "pnpm nx run {{Project}}:{{Executor}}",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "pnpm nx run {{Project}}:{{Executor}}1": {
+      "main": [
+        [
+          {
+            "node": "If code === 0",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "7b44b5b8-4b58-4690-89b7-cf0fd8cf16fa",
+  "meta": {
+    "instanceId": "efe7529a89851410cd052ec9508b6ab889cd60c3aa7db04a996939ffa07fd21d"
+  },
+  "nodeGroups": [],
+  "id": "cyajXDFXKwu7HIlO",
+  "tags": []
+}

@@ -1,0 +1,351 @@
+{
+  "name": "DupCheck",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.2,
+      "position": [-512, 96],
+      "id": "3731dd0d-0a91-4c02-bdef-5cf5e71746ed",
+      "name": "When Executed by Another Workflow",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "formTitle": "Parameters",
+        "formDescription": "This collects the elements need to run the reusable validation loop",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "cwd"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [-480, -160],
+      "id": "c5ef88ce-a09a-4c2b-bcb7-8311515c7901",
+      "name": "On form submission",
+      "webhookId": "2bcf63eb-d548-41e4-b6de-5238715f0183"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {result: 'pass'}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [256, -96],
+      "id": "7594d5db-acf5-4610-8245-e7184d53c930",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "jsCode": "return { result: 'fixed'};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1376, 96],
+      "id": "30d4079c-34a9-416f-b734-c9eebe1cf2be",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "df007bc8-7a0f-4242-9ffd-5ed5c871fcdc",
+              "leftValue": "={{ $json.code }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [32, 0],
+      "id": "75d082fb-9ac2-4470-aa3a-916832dc333e",
+      "name": "If code == 0"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "df007bc8-7a0f-4242-9ffd-5ed5c871fcdc",
+              "leftValue": "={{ $json.code}}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [1152, 96],
+      "id": "e6b8a392-fcda-4337-b1ce-6c937646d742",
+      "name": "If code === 0"
+    },
+    {
+      "parameters": {
+        "jsCode": "\nvar record = $input.all().reduce((acc, v) => {\n  var key = v.json.key;\n  var value = v.json.value;\n  var returnValue = {...acc, [key]: value};\n  return returnValue;\n}, {});\nreturn {\n  model: record['fix-dms-material-model'],\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [480, 32],
+      "id": "67b803e2-feea-47c8-970a-64771873f6b1",
+      "name": "Reduce to Record"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "jnt5XOd12A83mA01",
+          "mode": "list",
+          "cachedResultName": "Variables",
+          "cachedResultUrl": "/projects/bWQUsHMf0gJtM1FN/datatables/jnt5XOd12A83mA01"
+        },
+        "filters": {
+          "conditions": []
+        },
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [256, 96],
+      "id": "5b0f4eae-0c3a-4c83-9eb9-7f13a2ef1fcf",
+      "name": "Get Variable Rows"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  cwd: $input.first().json.cwd\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-336, -16],
+      "id": "f01f74af-0205-4829-b665-4df09628326a",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "command": "=pnpm dupcheck",
+        "cwd": "={{ $json.cwd }}"
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [-144, 0],
+      "id": "8ddee327-ec28-47d7-aaa3-b3ad8a6b4b48",
+      "name": "pnpm dupcheck",
+      "credentials": {
+        "sshPassword": {
+          "id": "2M7LU3ql52s8ShX2",
+          "name": "SSH Password account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "command": "=QWEN_CODE_UNATTENDED_RETRY=1 qwen -p \"There are duplicate code issues found when I run `pnpm dupcheck` that I need for you to fix\" --model {{ $json[\"model\"] }} --yolo",
+        "cwd": "={{ $('Code in JavaScript2').item.json.cwd }}"
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [704, 32],
+      "id": "f12c6b10-3605-4746-b995-fd620e7bb1bc",
+      "name": "CoPilot fix DupCheck",
+      "credentials": {
+        "sshPassword": {
+          "id": "2M7LU3ql52s8ShX2",
+          "name": "SSH Password account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "command": "=pnpm dupcheck",
+        "cwd": "={{ $('Code in JavaScript2').item.json.cwd }}"
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [928, 32],
+      "id": "947a7a67-a775-44d7-9a73-860a1fb1e195",
+      "name": "pnpm dupcheck (b)",
+      "credentials": {
+        "sshPassword": {
+          "id": "2M7LU3ql52s8ShX2",
+          "name": "SSH Password account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If code == 0": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Variable Rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If code === 0": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Variable Rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reduce to Record": {
+      "main": [
+        [
+          {
+            "node": "CoPilot fix DupCheck",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Variable Rows": {
+      "main": [
+        [
+          {
+            "node": "Reduce to Record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "pnpm dupcheck",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "pnpm dupcheck": {
+      "main": [
+        [
+          {
+            "node": "If code == 0",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CoPilot fix DupCheck": {
+      "main": [
+        [
+          {
+            "node": "pnpm dupcheck (b)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "pnpm dupcheck (b)": {
+      "main": [
+        [
+          {
+            "node": "If code === 0",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "3c71304b-a214-49ec-bd75-495d1441e95d",
+  "meta": {
+    "instanceId": "efe7529a89851410cd052ec9508b6ab889cd60c3aa7db04a996939ffa07fd21d"
+  },
+  "nodeGroups": [],
+  "id": "DEfJCPu2rlQomqGT",
+  "tags": []
+}

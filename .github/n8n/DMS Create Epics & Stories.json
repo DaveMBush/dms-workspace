@@ -1,0 +1,328 @@
+{
+  "name": "DMS Create Epics & Stories",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Select File",
+        "formDescription": "Pick the file from `.github/epic-descriptions` that contains the next epics to work on",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "File",
+              "fieldType": "file",
+              "acceptFileTypes": "*.md",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [-976, -96],
+      "id": "d53a2d74-cf72-4b2f-9929-8ba048eab9de",
+      "name": "On form submission",
+      "webhookId": "4bc2b69d-f43a-4f38-a6af-6f61d07060c1"
+    },
+    {
+      "parameters": {
+        "command": "=QWEN_CODE_UNATTENDED_RETRY=1 QWEN_CODE_SUPPRESS_YOLO_WARNING=1 qwen -p \"{{ $json.retry }}Read and follow .github/instructions/generate-epics-and-stories.md exactly. Input file: .github/epic-descriptions/{{ $json.filename }} \" --model {{ $json[\"model\"] }} --yolo",
+        "cwd": "/home/dave/code/dms-workspace"
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [-464, -96],
+      "id": "6f93158b-5708-4fa1-a5c4-edf259e68aee",
+      "name": "Execute a command",
+      "credentials": {
+        "sshPassword": {
+          "id": "2M7LU3ql52s8ShX2",
+          "name": "SSH Password account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "Create Epics and Stories Completed",
+        "completionMessage": "=Epics and Stories have completed:\n\nStandard Out\n{{ $json.stdout }}\n\nStandard Error\n{{ $json.stderr }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [400, -176],
+      "id": "47690d8c-aad8-4388-a866-26ccc3214298",
+      "name": "Form",
+      "webhookId": "c0962b89-40fd-4b46-9254-fb9b4f9cb72d"
+    },
+    {
+      "parameters": {
+        "jsCode": "\nvar record = $input.all().reduce((acc, v) => {\n  var key = v.json.key;\n  var value = v.json.value;\n  var returnValue = {...acc, [key]: value};\n  return returnValue;\n}, {});\n\nreturn {\n  model: record['fix-dms-material-model'],\n  filename: $('On form submission').first().json.File[0].filename,\n  retry: ''\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-640, -96],
+      "id": "3cf0c551-bfbf-4540-a93c-8a746f25964c",
+      "name": "Reduce to Record"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "jnt5XOd12A83mA01",
+          "mode": "list",
+          "cachedResultName": "Variables",
+          "cachedResultUrl": "/projects/bWQUsHMf0gJtM1FN/datatables/jnt5XOd12A83mA01"
+        },
+        "filters": {
+          "conditions": []
+        },
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [-800, -96],
+      "id": "c2903705-8f65-4cda-a19e-1449e71aaee0",
+      "name": "Get Variable Rows"
+    },
+    {
+      "parameters": {
+        "command": "=echo '{{ $json.b64 }}' | base64 -d | node .github/n8n/scripts/validate-epics-and-stories.mjs --stdin",
+        "cwd": "/home/dave/code/dms-workspace"
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [-32, -16],
+      "id": "3c91c81e-80ba-4086-89a1-3bc2b855ea23",
+      "name": "Validate Completion",
+      "credentials": {
+        "sshPassword": {
+          "id": "2M7LU3ql52s8ShX2",
+          "name": "SSH Password account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{$json.code}}",
+                    "rightValue": 0,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "id": "c008f2ee-63e5-413e-8105-f9988b202d8f"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "c6cdf9b0-a178-4c59-a7b7-53b619cbe634",
+                    "leftValue": "={{$json.code}}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "4ecce46d-b55f-4153-89af-b092d333a678",
+                    "leftValue": "={{$json.code}}",
+                    "rightValue": 2,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [160, 0],
+      "id": "35d86807-013b-4f40-adb3-dd2c7c3ab332",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "jsCode": "\n\n\nreturn {\n  \"model\": $('Reduce to Record').first().json.model,\n  \"filename\": $('Reduce to Record').first().json.filename,\n  \"retry\": \"Continue working on the following. (Some files may already have been created but they are not completed yet.): \\n\"\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [384, 160],
+      "id": "60b21df9-459d-45fb-b1c9-eaa07a7c2430",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "jsCode": "return { b64: Buffer.from($input.first().json.stdout ?? '', 'utf8').toString('base64') };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-240, -96],
+      "id": "6ceecba7-95ae-46ed-9c76-14000b25a85c",
+      "name": "Base64 Encode stdOut"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Get Variable Rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a command": {
+      "main": [
+        [
+          {
+            "node": "Base64 Encode stdOut",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Variable Rows": {
+      "main": [
+        [
+          {
+            "node": "Reduce to Record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reduce to Record": {
+      "main": [
+        [
+          {
+            "node": "Execute a command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Completion": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Form",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Form",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Get Variable Rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Base64 Encode stdOut": {
+      "main": [
+        [
+          {
+            "node": "Validate Completion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "72e137b9-31fa-464c-a86f-472fe12ac8c0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "efe7529a89851410cd052ec9508b6ab889cd60c3aa7db04a996939ffa07fd21d"
+  },
+  "nodeGroups": [],
+  "id": "PX6vLvhB6KY2Wy3s",
+  "tags": []
+}

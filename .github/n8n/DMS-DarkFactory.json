@@ -1,0 +1,1335 @@
+{
+  "name": "DMS-DarkFactory",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [-688, 1536],
+      "id": "f19cda76-3e8d-433b-99ae-b0e85ee92cd4",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  cwd: '/home/dave/code/dms-workspace'\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-512, 1536],
+      "id": "7529d321-524c-4bbd-b1fd-06195862b572",
+      "name": "Parameters"
+    },
+    {
+      "parameters": {
+        "command": "node .github/n8n/scripts/report-incomplete-epics.mjs",
+        "cwd": "={{ $('Parameters').item.json.cwd }}"
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [-32, 1536],
+      "id": "661b389b-2cd9-456e-94f5-a87d3d3242d3",
+      "name": "Find Next Epic",
+      "credentials": {
+        "sshPassword": {
+          "id": "2M7LU3ql52s8ShX2",
+          "name": "SSH Password account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "if( $input.first().json.code !== 0) {\n  return { nextEpic: '' }\n}\nreturn JSON.parse($input.first().json.stdout)"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [112, 1536],
+      "id": "40f108ee-8c32-42ad-9ba6-d8e548204ea0",
+      "name": "Parse Epic"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "92ad9e39-8988-4a93-aa78-8ae7e2b23d5c",
+              "leftValue": "={{ $json.nextEpic }}",
+              "rightValue": {},
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [256, 1536],
+      "id": "f4048c5a-7904-4ba7-9093-096fb3d32d98",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "command": "=node .github/n8n/scripts/report-next-story.mjs --epic {{ $('Parse Epic').item.json.nextEpic }}",
+        "cwd": "={{ $('Parameters').item.json.cwd }}"
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [416, 1632],
+      "id": "3ff4911a-780d-484e-b9cf-bfa2eb3c83da",
+      "name": "Find Next Story",
+      "credentials": {
+        "sshPassword": {
+          "id": "2M7LU3ql52s8ShX2",
+          "name": "SSH Password account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "if($input.first().json.code !== 0) {\n  throw Error(\"There was a problem retrieving the next story\");\n}\nreturn JSON.parse($input.first().json.stdout)"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [560, 1632],
+      "id": "ccea1dc5-983f-48cf-a714-99b20bc2c91f",
+      "name": "Parse Story"
+    },
+    {
+      "parameters": {
+        "command": "=node .github/n8n/scripts/create-story-issue.mjs --story {{ $json.nextStory.id }}",
+        "cwd": "={{ $('Parameters').item.json.cwd }}"
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [848, 1632],
+      "id": "30f05eac-7c6a-4a10-accf-0deb35cf657b",
+      "name": "Create Story & Worktree",
+      "credentials": {
+        "sshPassword": {
+          "id": "2M7LU3ql52s8ShX2",
+          "name": "SSH Password account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "command": "=QWEN_CODE_UNATTENDED_RETRY=1 qwen -p \"Read .github/instructions/execute-story.md and follow it exactly to implement the story at _bmad-output/implementation-artifacts/stories/{{ $('Parse Story').item.json.nextStory.file }}. Work only in this directory. Never ask questions; complete everything in one run, then print the final report as specified.\" --model {{ $('Reduce to Record').item.json.model }} --yolo",
+        "cwd": "={{ $('Parse Worktree Location').item.json.worktreePath }}"
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [1248, 1632],
+      "id": "1dc434b8-3b80-44ad-8803-445ca192970f",
+      "name": "Develop Story",
+      "credentials": {
+        "sshPassword": {
+          "id": "2M7LU3ql52s8ShX2",
+          "name": "SSH Password account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "jnt5XOd12A83mA01",
+          "mode": "list",
+          "cachedResultName": "Variables",
+          "cachedResultUrl": "/projects/bWQUsHMf0gJtM1FN/datatables/jnt5XOd12A83mA01"
+        },
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [-352, 1536],
+      "id": "7416317e-894c-49b2-8886-c97e4ba0217e",
+      "name": "Get row(s)"
+    },
+    {
+      "parameters": {
+        "jsCode": "let model = $input.all().filter((j) => j.json['key'] === 'fix-dms-material-model');\nif(model.length === 0) {\n  throw new Error(\"Can't find model in datatable\");\n}\nreturn { model: model[0].json.value };\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-192, 1536],
+      "id": "b8f12d0d-b373-439a-a03a-6e5c60e51181",
+      "name": "Reduce to Record"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "77f97a36-6b0a-4972-b767-9c2bf4391644",
+              "leftValue": "=$json.statusAfter",
+              "rightValue": "review",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [1568, 1632],
+      "id": "59b69cb5-c8cd-4634-aaa4-ac3053b6cf5a",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\ncwd: $('Parse Worktree Location').first().json.worktreePath\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1808, 1616],
+      "id": "25449b8f-dd50-4bd2-9f46-b2a275848751",
+      "name": "Extract Worktree Path"
+    },
+    {
+      "parameters": {
+        "command": "=QWEN_CODE_UNATTENDED_RETRY=1 qwen -p \"Read .github/instructions/review-story.md and follow it exactly to review the story at _bmad-output/implementation-artifacts/stories/{{ $('Parse Story').item.json.nextStory.file }}. Work only in this directory. Never ask questions; complete everything in one run, then print the final report as specified.\" --model {{ $('Reduce to Record').item.json.model }} --yolo",
+        "cwd": "={{ $('Parse Worktree Location').item.json.worktreePath }}"
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [2208, 1616],
+      "id": "d40feb3e-4bea-47ef-aa67-eecb96521cb2",
+      "name": "Code Review",
+      "credentials": {
+        "sshPassword": {
+          "id": "2M7LU3ql52s8ShX2",
+          "name": "SSH Password account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "if($json.code !== 0) {\n  return {\n    statusAfter: 'error'\n  }\n}\ntry {\nvar splitArray = $json.stdout.split('=== DF2 FINAL REPORT ===');\nvar json = splitArray[splitArray.length - 1];\nreturn JSON.parse(json);\n} catch {\n  return {\n    statusAfter: 'error'\n  }\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1408, 1632],
+      "id": "a81c981f-c6c3-44d1-ad84-cfe51cf79ea6",
+      "name": "Parse Story Return"
+    },
+    {
+      "parameters": {
+        "jsCode": "if($json.code !== 0) {\n  return {\n    result: 'error';\n  }\n}\ntry {\nvar splitArray = $json.stdout.split('=== DF2 REVIEW REPORT ===');\nvar json = splitArray[splitArray.length - 1];\nreturn JSON.parse(json);\n} catch {\n  return {\n    result: 'error';\n  }\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2400, 1616],
+      "id": "0b5102a2-b1fa-466c-bfe4-56208ab8276c",
+      "name": "Parse Review Return"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "fd37112c-7e14-492e-967b-6dbebd4cb2bc",
+              "leftValue": "={{ $json.result }}",
+              "rightValue": "pass",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [2624, 1616],
+      "id": "6aec9cf1-be73-433f-a490-d203a5c48b91",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "command": "=QWEN_CODE_UNATTENDED_RETRY=1 qwen -p \"Read .github/instructions/fix-story-findings.md and follow it exactly to fix the story at _bmad-output/implementation-artifacts/stories/{{ $('Parse Story').item.json.nextStory.file }}. Work only in this directory. Never ask questions; complete everything in one run, then print the final report as specified.\" --model {{ $('Reduce to Record').item.json.model }} --yolo",
+        "cwd": "={{ $('Parse Worktree Location').item.json.worktreePath }}"
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [2816, 1680],
+      "id": "e0510aa1-18dd-4ce4-be2f-c09a839245cc",
+      "name": "Fix Review Issues",
+      "credentials": {
+        "sshPassword": {
+          "id": "2M7LU3ql52s8ShX2",
+          "name": "SSH Password account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "fd37112c-7e14-492e-967b-6dbebd4cb2bc",
+              "leftValue": "={{ $json.complete }}",
+              "rightValue": "pass",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [3200, 1680],
+      "id": "5ca82cff-689d-4a4e-8b13-ccd2aea92a8d",
+      "name": "If3"
+    },
+    {
+      "parameters": {
+        "jsCode": "if ($json.code !== 0) {\n  return { complete: false };\n}\nreturn { \"complete\": $json.stdout.contains('=== DF2 FIX REPORT ===') };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [3008, 1680],
+      "id": "bb669f93-93c5-4c15-bc73-061d8cdd1357",
+      "name": "Parse Fix Return"
+    },
+    {
+      "parameters": {
+        "command": "=node .github/n8n/scripts/create-story-pr.mjs --story {{ $('Parse Story').item.json.nextStory.id }}",
+        "cwd": "={{ $('Parse Worktree Location').item.json.worktreePath }}"
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [2816, 1424],
+      "id": "7941f7da-1dd9-4ac9-a958-765993bbf187",
+      "name": "Create Pull Request",
+      "credentials": {
+        "sshPassword": {
+          "id": "2M7LU3ql52s8ShX2",
+          "name": "SSH Password account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nreturn [{ json: { ...JSON.parse(item.stdout), exitCode: item.code } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [3008, 1424],
+      "id": "3666ea6e-6e8b-4b5b-a38f-ffdd4009535b",
+      "name": "Parse PR Return"
+    },
+    {
+      "parameters": {
+        "command": "=node .github/n8n/scripts/wait-code-rabbit.mjs --pr {{ $json.prNumber }} --timeout-ms 1800000 --poll-ms 30000",
+        "cwd": "={{ $('Parse Worktree Location').item.json.worktreePath }}"
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [3200, 1424],
+      "id": "5392c25e-38fc-4e0f-8480-8066b8c38979",
+      "name": "Wait for CodeRabbit",
+      "credentials": {
+        "sshPassword": {
+          "id": "2M7LU3ql52s8ShX2",
+          "name": "SSH Password account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nreturn [{ json: { ...JSON.parse(item.stdout), exitCode: item.code } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [3408, 1424],
+      "id": "6b411b93-e297-42e0-847c-1c57cdd01c16",
+      "name": "Parse CodeRabbit Return"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.state }}",
+                    "rightValue": "clean",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "3e8f4006-445b-4f1a-824f-b3c39fee41d6"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "clean"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "37ff523a-6b41-43c3-9093-1c3919e7c225",
+                    "leftValue": "={{ $json.state }}",
+                    "rightValue": "issues",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "issues"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "0ae6403f-03aa-4109-8ff2-78bfc2b29b46",
+                    "leftValue": "={{ $json.state }}",
+                    "rightValue": "timeout",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "timeout"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [3632, 1424],
+      "id": "cca43076-ed41-43bc-aa7a-a2e48f3c7514",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "command": "=QWEN_CODE_UNATTENDED_RETRY=1 qwen -p \"Read .github/instructions/fix-code-rabbit-findings.md PR number: {{ $node[\"Parse PR Return\"].json.prNumber }}. Work only in this directory. Never ask questions; complete everything in one run, then print the final report as specified. Follow instructions exactly.\" --model {{ $('Reduce to Record').item.json.model }} --yolo",
+        "cwd": "={{ $('Parse Worktree Location').item.json.worktreePath }}"
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [3904, 1472],
+      "id": "e1a67c23-3fa3-4b8d-99ca-2d5d65786cf5",
+      "name": "Fix CodeRabbit Issues",
+      "credentials": {
+        "sshPassword": {
+          "id": "2M7LU3ql52s8ShX2",
+          "name": "SSH Password account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "if ($input.first().json.code !== 0) {\n  return {\n    result: 'error'\n  }\n}\nconst out = $input.first().json.stdout ?? \"\";\nconst m = out.match(/=== DF2 CR FIX REPORT ===\\s*([\\s\\S]*)$/);\nif (!m) return [{ json: { result: \"blocked\", notes: [\"report block missing from stdout\"], raw: out.slice(-2000) } }];\ntry { return [{ json: JSON.parse(m[1]) }]; }\ncatch (e) { return [{ json: { result: \"blocked\", notes: [\"invalid report JSON\"], raw: m[1].slice(0, 2000) } }]; }"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [4112, 1472],
+      "id": "bac5b41e-3a90-4875-8e4d-29d2776c3e24",
+      "name": "Parse CodeRabbit Report"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "2ffdb5ed-90c7-4c74-8640-64aec3358ed2",
+              "leftValue": "=$json.result",
+              "rightValue": "fixed",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [4336, 1472],
+      "id": "0578becd-2f70-4f1d-8d1c-980cbe42ed77",
+      "name": "If4"
+    },
+    {
+      "parameters": {
+        "command": "=node .github/n8n/scripts/wait-ci.mjs --pr {{ $('Parse PR Return').item.json.prNumber }} --timeout-ms 1800000 --poll-ms 30000",
+        "cwd": "={{ $('Parse Worktree Location').item.json.worktreePath }}"
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [4704, 1232],
+      "id": "a2f64555-df74-4481-8eec-202ccbf9965c",
+      "name": "Wait For CI",
+      "credentials": {
+        "sshPassword": {
+          "id": "2M7LU3ql52s8ShX2",
+          "name": "SSH Password account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nlet parsed;\ntry {\n  parsed = JSON.parse(item.stdout);\n} catch (e) {\n  return [{ json: { state: \"error\", notes: [\"stdout was not valid JSON\"], raw: String(item.stdout).slice(0, 2000), exitCode: item.code } }];\n}\nreturn [{ json: { ...parsed, state: parsed.state ?? \"error\", exitCode: item.code } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [4928, 1232],
+      "id": "8ccb9e7f-5a54-4316-a853-c0b431c8f89f",
+      "name": "Parse Wait for CI"
+    },
+    {
+      "parameters": {
+        "command": "=QWEN_CODE_UNATTENDED_RETRY=1 qwen -p \"Read .github/instructions/fix-ci-failures.md PR number: {{ $node[\"Parse PR Return\"].json.prNumber }}. \nFailing steps: {{ JSON.stringify($node[\"Parse Wait for CI\"].json.failedSteps) }}\nWork only in this directory. Never ask questions; complete everything in one run, then print the final report as specified. Follow instructions exactly.\" --model {{ $('Reduce to Record').item.json.model }} --yolo",
+        "cwd": "={{ $('Parse Worktree Location').item.json.worktreePath }}"
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [5408, 1264],
+      "id": "5830d059-da33-46ed-b625-fcf52a1400e1",
+      "name": "Fix CI Fails",
+      "credentials": {
+        "sshPassword": {
+          "id": "2M7LU3ql52s8ShX2",
+          "name": "SSH Password account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.state }}",
+                    "rightValue": "success",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "b32ac1f2-602a-41c5-812c-5d87becc57e0"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "success"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "c85dd55e-c4d5-40ab-aeb7-3416c3570013",
+                    "leftValue": "={{ $json.state }}",
+                    "rightValue": "failure",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "failure"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "adfa95d0-1872-4914-95ea-564a6fba016f",
+                    "leftValue": "={{ $json.state }}",
+                    "rightValue": "timeout",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "timeout"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "87d99dec-d639-4070-b963-2390bc50078f",
+                    "leftValue": "={{ $json.state }}",
+                    "rightValue": "error",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "error"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [5152, 1232],
+      "id": "5519abe1-d181-4767-9b9f-d07281f5da99",
+      "name": "CI Switch"
+    },
+    {
+      "parameters": {
+        "jsCode": "if($input.first().json.code !== 0) {\n  return {\n    result: 'error'\n  }\n}\nconst out = $input.first().json.stdout ?? \"\";\nconst m = out.match(/=== DF2 CI FIX REPORT ===\\s*([\\s\\S]*)$/);\nif (!m) return [{ json: { result: \"blocked\", notes: [\"report block missing from stdout\"], raw: out.slice(-2000) } }];\ntry { return [{ json: JSON.parse(m[1]) }]; }\ncatch (e) { return [{ json: { result: \"blocked\", notes: [\"invalid report JSON\"], raw: m[1].slice(0, 2000) } }]; }"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [5632, 1264],
+      "id": "c4e9efea-79eb-4361-8b5a-c0bf3534c8c1",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "ba15298b-fb69-4100-aec7-1f36d61d1862",
+              "leftValue": "={{ $json.result }}",
+              "rightValue": "fixed",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [5856, 1264],
+      "id": "45e94652-4410-443d-83e2-c60d2e23ac6d",
+      "name": "If5"
+    },
+    {
+      "parameters": {
+        "command": "node .github/n8n/scripts/merge-story-pr.mjs",
+        "cwd": "={{ $('Parse Worktree Location').item.json.worktreePath }}"
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [5392, 1008],
+      "id": "29554aa8-e79c-4a4f-b12c-dbc1e3151660",
+      "name": "Merge Story PR",
+      "credentials": {
+        "sshPassword": {
+          "id": "2M7LU3ql52s8ShX2",
+          "name": "SSH Password account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "b332ebef-09f9-48b3-9b83-9c8c564ea8ba",
+              "leftValue": "={{ $json.nextStory }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [688, 1632],
+      "id": "130489b0-f55d-4678-beb5-7a2567144020",
+      "name": "If6"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "pvsxLVSbUfOaN9Ad",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/pvsxLVSbUfOaN9Ad",
+          "cachedResultName": "DMS Validation Gate"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [2016, 1616],
+      "id": "b84b3245-0a8c-4158-9889-37d557e3cad7",
+      "name": "Call 'DMS Validation Gate'"
+    },
+    {
+      "parameters": {
+        "jsCode": "if($input.first().json.code !== 0) {\n  throw Error(\"There was a problem creating story and worktree\");\n}\nreturn JSON.parse($input.first().json.stdout)"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1040, 1632],
+      "id": "d717e229-dc84-4e5a-874a-f5541329632a",
+      "name": "Parse Worktree Location"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Parameters",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parameters": {
+      "main": [
+        [
+          {
+            "node": "Get row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find Next Epic": {
+      "main": [
+        [
+          {
+            "node": "Parse Epic",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Epic": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Find Next Story",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Find Next Story": {
+      "main": [
+        [
+          {
+            "node": "Parse Story",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Story": {
+      "main": [
+        [
+          {
+            "node": "If6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Story & Worktree": {
+      "main": [
+        [
+          {
+            "node": "Parse Worktree Location",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s)": {
+      "main": [
+        [
+          {
+            "node": "Reduce to Record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reduce to Record": {
+      "main": [
+        [
+          {
+            "node": "Find Next Epic",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Develop Story": {
+      "main": [
+        [
+          {
+            "node": "Parse Story Return",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Extract Worktree Path",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Find Next Epic",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Worktree Path": {
+      "main": [
+        [
+          {
+            "node": "Call 'DMS Validation Gate'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code Review": {
+      "main": [
+        [
+          {
+            "node": "Parse Review Return",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Story Return": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Review Return": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Create Pull Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fix Review Issues",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fix Review Issues": {
+      "main": [
+        [
+          {
+            "node": "Parse Fix Return",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If3": {
+      "main": [
+        [
+          {
+            "node": "Extract Worktree Path",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fix Review Issues",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Pull Request": {
+      "main": [
+        [
+          {
+            "node": "Parse PR Return",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Fix Return": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse PR Return": {
+      "main": [
+        [
+          {
+            "node": "Wait for CodeRabbit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for CodeRabbit": {
+      "main": [
+        [
+          {
+            "node": "Parse CodeRabbit Return",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse CodeRabbit Return": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Wait For CI",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fix CodeRabbit Issues",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait for CodeRabbit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fix CodeRabbit Issues": {
+      "main": [
+        [
+          {
+            "node": "Parse CodeRabbit Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse CodeRabbit Report": {
+      "main": [
+        [
+          {
+            "node": "If4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If4": {
+      "main": [
+        [
+          {
+            "node": "Call 'DMS Validation Gate'",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fix CodeRabbit Issues",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait For CI": {
+      "main": [
+        [
+          {
+            "node": "Parse Wait for CI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Wait for CI": {
+      "main": [
+        [
+          {
+            "node": "CI Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CI Switch": {
+      "main": [
+        [
+          {
+            "node": "Merge Story PR",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fix CI Fails",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait For CI",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait For CI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fix CI Fails": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "If5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If5": {
+      "main": [
+        [
+          {
+            "node": "Call 'DMS Validation Gate'",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait For CI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Story PR": {
+      "main": [
+        [
+          {
+            "node": "Find Next Epic",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If6": {
+      "main": [
+        [
+          {
+            "node": "Create Story & Worktree",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'DMS Validation Gate'": {
+      "main": [
+        [
+          {
+            "node": "Code Review",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Worktree Location": {
+      "main": [
+        [
+          {
+            "node": "Develop Story",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "9e1c5888-e7df-418c-8276-dd4bd19739e0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "efe7529a89851410cd052ec9508b6ab889cd60c3aa7db04a996939ffa07fd21d"
+  },
+  "nodeGroups": [],
+  "id": "812K9Fn5YOA4HtR0",
+  "tags": []
+}
