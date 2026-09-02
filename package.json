@@ -111,7 +111,7 @@
     "@smarttools/eslint-plugin-rxjs": "^1.0.22",
     "@storybook/addon-themes": "10.5.3",
     "@storybook/angular": "10.5.3",
-    "@storybook/angular-vite": "^10.5.5",
+    "@storybook/angular-vite": "^10.5.10",
     "@storybook/builder-vite": "^10.5.4",
     "@stylistic/eslint-plugin": "^2.6.4",
     "@swc-node/register": "1.11.1",
