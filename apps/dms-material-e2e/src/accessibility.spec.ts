@@ -489,7 +489,9 @@ test.describe('Accessibility - Keyboard Navigation', () => {
       // Enter should trigger sort — verify aria-sort changes
       await page.keyboard.press('Enter');
       await expect
-        .poll(async () => (await headers.first().getAttribute('aria-sort')) ?? null)
+        .poll(
+          async () => (await headers.first().getAttribute('aria-sort')) ?? null,
+        )
         .not.toBe(sortBefore);
 
       const sortAfter = await headers.first().getAttribute('aria-sort');

@@ -1,6 +1,5 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import fastify, { FastifyInstance } from 'fastify';
-
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import registerAccountIndexesRoutes from './index';
 
 // Story AX.9: TDD Tests for /indexes endpoint handling soldTrades
@@ -97,7 +96,7 @@ describe('GET /indexes - soldTrades childField (AX.9)', () => {
           accountId: 'acc-1',
           sell_date: { not: null },
         }),
-      })
+      }),
     );
   });
 
@@ -120,7 +119,7 @@ describe('GET /indexes - soldTrades childField (AX.9)', () => {
     expect(mockPrismaTrades.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
         orderBy: expect.any(Object),
-      })
+      }),
     );
   });
 
@@ -207,7 +206,7 @@ describe('GET /indexes - soldTrades childField (AX.9)', () => {
     expect(body.indexes).toEqual(['only-sold']);
     expect(body).toHaveLength(1);
     expect(mockPrismaTrades.findMany).toHaveBeenCalledWith(
-      expect.objectContaining({ skip: 0, take: 10 })
+      expect.objectContaining({ skip: 0, take: 10 }),
     );
   });
 
@@ -232,7 +231,7 @@ describe('GET /indexes - soldTrades childField (AX.9)', () => {
     expect(body.indexes).toEqual(['sold-99']);
     expect(body).toHaveLength(100);
     expect(mockPrismaTrades.findMany).toHaveBeenCalledWith(
-      expect.objectContaining({ skip: 99, take: 10 })
+      expect.objectContaining({ skip: 99, take: 10 }),
     );
   });
 });

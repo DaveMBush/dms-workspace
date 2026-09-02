@@ -228,7 +228,7 @@ describe('Transaction Validation', function () {
           const result = mod.validateAmount(amount);
 
           expect(result).toEqual({ valid: true });
-        }
+        },
       );
     });
   });
@@ -262,7 +262,7 @@ describe('Transaction Validation', function () {
         const result = mod.validateDate(date);
 
         expect(result.valid).toBe(false);
-      }
+      },
     );
 
     test('should accept date in various valid formats', async function () {

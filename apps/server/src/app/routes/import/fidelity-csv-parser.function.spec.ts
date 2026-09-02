@@ -1,5 +1,4 @@
 import { describe, expect, test } from 'vitest';
-
 import { parseFidelityCsv } from './fidelity-csv-parser.function';
 
 describe('parseFidelityCsv', function () {
@@ -156,7 +155,7 @@ describe('parseFidelityCsv', function () {
 
     test('should throw error for CSV with incorrect header columns', function () {
       const csv = ['Wrong,Headers,Here', '02/15/2026,YOU BOUGHT,SPY'].join(
-        '\n'
+        '\n',
       );
 
       expect(function () {
@@ -170,7 +169,7 @@ describe('parseFidelityCsv', function () {
       expect(function () {
         parseFidelityCsv(csv);
       }).toThrow(
-        'does not match web format (missing: Action, Symbol, Description, Price ($), Quantity, Amount ($))'
+        'does not match web format (missing: Action, Symbol, Description, Price ($), Quantity, Amount ($))',
       );
     });
 
@@ -406,7 +405,7 @@ describe('parseFidelityCsv', function () {
       expect(result).toHaveLength(1);
       expect(result[0].date).toBe('12/08/2025');
       expect(result[0].action).toBe(
-        'REVERSE SPLIT R/S FROM 88634T493#REOR M0051704770001'
+        'REVERSE SPLIT R/S FROM 88634T493#REOR M0051704770001',
       );
       expect(result[0].symbol).toBe('MSTY');
       expect(result[0].quantity).toBe(80);
@@ -470,7 +469,7 @@ describe('parseFidelityCsv', function () {
 
     test('should throw for desktop row with too few columns', function () {
       const csv = [DESKTOP_FORMAT_HEADER, 'Dec-31-2025,DIVIDEND,XFLT'].join(
-        '\n'
+        '\n',
       );
 
       expect(function () {

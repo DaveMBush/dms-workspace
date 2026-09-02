@@ -2,7 +2,6 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-
 import { ensureDbFile } from './ensure-db-file';
 
 describe('ensureDbFile', () => {
@@ -29,13 +28,16 @@ describe('ensureDbFile', () => {
     expect(fs.existsSync(dbPath)).toBe(true);
   });
 
-  it.skipIf(process.platform === 'win32')('creates the directory with mode 0o700 on POSIX', () => {
-    ensureDbFile(dbPath);
-    const dir = path.dirname(dbPath);
-    const stats = fs.statSync(dir);
-    // eslint-disable-next-line no-bitwise -- bitwise AND needed to extract file permission bits from mode
-    expect(stats.mode & 0o777).toBe(0o700);
-  });
+  it.skipIf(process.platform === 'win32')(
+    'creates the directory with mode 0o700 on POSIX',
+    () => {
+      ensureDbFile(dbPath);
+      const dir = path.dirname(dbPath);
+      const stats = fs.statSync(dir);
+      // eslint-disable-next-line no-bitwise -- bitwise AND needed to extract file permission bits from mode
+      expect(stats.mode & 0o777).toBe(0o700);
+    },
+  );
 
   it('leaves the existing file untouched when it already exists', () => {
     const dir = path.dirname(dbPath);

@@ -1,6 +1,5 @@
-import { describe, it, expect } from 'vitest';
 import { FastifyRequest } from 'fastify';
-
+import { describe, expect, it } from 'vitest';
 import { parseSortFilterHeader } from './parse-sort-filter-header.function';
 
 function createRequest(headerValue: string | undefined): FastifyRequest {
@@ -21,7 +20,7 @@ describe('parseSortFilterHeader', () => {
         const result = parseSortFilterHeader(createRequest(header));
 
         expect(result).toEqual({});
-      }
+      },
     );
 
     it('should parse valid table state with sort', () => {

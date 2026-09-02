@@ -1,21 +1,20 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { ScreeningData } from '../screener/screening-data.interface';
+import { axiosGetWithBackoff } from './axios-get-with-backoff.function';
+import {
+  classifySymbolRiskGroupId,
+  lookupCefConnectSymbol,
+  RiskGroupMap,
+} from './cef-classification.function';
 
 vi.mock('./axios-get-with-backoff.function', () => ({
   axiosGetWithBackoff: vi.fn(),
 }));
 
-import { axiosGetWithBackoff } from './axios-get-with-backoff.function';
-import {
-  RiskGroupMap,
-  classifySymbolRiskGroupId,
-  lookupCefConnectSymbol,
-} from './cef-classification.function';
-import { ScreeningData } from '../screener/screening-data.interface';
-
 const mockAxiosGetWithBackoff = vi.mocked(axiosGetWithBackoff);
 
 function makeScreeningData(
-  overrides: Partial<ScreeningData> = {}
+  overrides: Partial<ScreeningData> = {},
 ): ScreeningData {
   return {
     CategoryId: 1,
@@ -78,7 +77,7 @@ describe('lookupCefConnectSymbol', () => {
     mockAxiosGetWithBackoff.mockRejectedValueOnce(new Error('Network failure'));
 
     await expect(lookupCefConnectSymbol('PDI')).rejects.toThrow(
-      'Network failure'
+      'Network failure',
     );
   });
 

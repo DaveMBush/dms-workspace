@@ -1,9 +1,8 @@
-import { TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
 import { vi } from 'vitest';
-
-import { selectCurrentAccountSignal } from '../../store/current-account/select-current-account.signal';
 import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
+import { selectCurrentAccountSignal } from '../../store/current-account/select-current-account.signal';
 import { Trade } from '../../store/trades/trade.interface';
 import { SoldPositionsComponentService } from './sold-positions-component.service';
 
@@ -31,21 +30,21 @@ vi.mock(
   '../../store/trades/selectors/select-open-trade-entity.function',
   () => ({
     selectOpenTradeEntity: vi.fn().mockReturnValue([]),
-  })
+  }),
 );
 
 vi.mock(
   '../../store/trades/selectors/select-sold-trade-entity.function',
   () => ({
     selectSoldTradeEntity: vi.fn().mockReturnValue([]),
-  })
+  }),
 );
 
 vi.mock(
   '../../store/accounts/selectors/select-accounts-entity.function',
   () => ({
     selectAccountsEntity: vi.fn().mockReturnValue([]),
-  })
+  }),
 );
 
 vi.mock('../../store/accounts/selectors/select-accounts.function', () => ({
@@ -91,7 +90,7 @@ function createMockSoldTradesArray(count: number): Trade[] {
         symbol: symbols[i % 3],
         buy_date: '2024-01-15',
         sell_date: '2024-06-15',
-      })
+      }),
     );
   }
   return items;
@@ -120,7 +119,7 @@ describe('SoldPositionsComponentService - Virtual Data Access (AX.11)', () => {
 
     // Set the selectCurrentAccountSignal mock to return our mock account
     const selectCurrentAccountSignalMock = vi.mocked(
-      selectCurrentAccountSignal
+      selectCurrentAccountSignal,
     );
     selectCurrentAccountSignalMock.mockReturnValue(mockCurrentAccount);
 

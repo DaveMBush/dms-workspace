@@ -8,9 +8,9 @@
 
 import { expect, Page, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
+import { settle } from './helpers/settle.helper';
 import { initializePrismaClient } from './helpers/shared-prisma-client.helper';
 import { createRiskGroups } from './helpers/shared-risk-groups.helper';
-import { settle } from './helpers/settle.helper';
 
 const cefSymbol = 'PDI';
 

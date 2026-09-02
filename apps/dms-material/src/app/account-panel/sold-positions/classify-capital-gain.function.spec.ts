@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-
 import { classifyCapitalGain } from './classify-capital-gain.function';
 
 describe('classifyCapitalGain', () => {

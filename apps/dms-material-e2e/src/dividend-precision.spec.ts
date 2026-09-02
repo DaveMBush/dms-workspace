@@ -1,9 +1,9 @@
 import { expect, test } from 'playwright/test';
 import { generateUniqueId } from './helpers/generate-unique-id.helper';
 import { login } from './helpers/login.helper';
+import { settle } from './helpers/settle.helper';
 import { initializePrismaClient } from './helpers/shared-prisma-client.helper';
 import { createRiskGroups } from './helpers/shared-risk-groups.helper';
-import { settle } from './helpers/settle.helper';
 
 /**
  * Dividend Precision After Update – E2E Regression Guard
@@ -118,7 +118,10 @@ test.describe('Dividend Precision After Update', () => {
     const updatedRecord = updatedRows.find((row) => row.id === seededRecord.id);
     expect(updatedRecord).toBeDefined();
     // Assert the server preserved full 4-decimal precision (no rounding to fewer places).
-    expect(updatedRecord?.distribution).toBeCloseTo(highPrecisionDistribution, 4);
+    expect(updatedRecord?.distribution).toBeCloseTo(
+      highPrecisionDistribution,
+      4,
+    );
 
     // ── Step 2: Load the Universe screen and verify the stored precision is
     // faithfully displayed in the UI (guards against UI-layer rounding).

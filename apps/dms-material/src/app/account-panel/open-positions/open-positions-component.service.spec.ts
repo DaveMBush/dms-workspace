@@ -1,11 +1,10 @@
-import { TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
 import { vi } from 'vitest';
-
-import { selectCurrentAccountSignal } from '../../store/current-account/select-current-account.signal';
 import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
-import { OpenPositionsComponentService } from './open-positions-component.service';
+import { selectCurrentAccountSignal } from '../../store/current-account/select-current-account.signal';
 import { Trade } from '../../store/trades/trade.interface';
+import { OpenPositionsComponentService } from './open-positions-component.service';
 
 // Mock SmartNgRX dependencies to prevent store initialization
 vi.mock('../../store/current-account/select-current-account.signal', () => ({
@@ -38,7 +37,7 @@ vi.mock(
   '../../store/accounts/selectors/select-accounts-entity.function',
   () => ({
     selectAccountsEntity: vi.fn().mockReturnValue([]),
-  })
+  }),
 );
 
 // Mock selectAccounts to avoid SmartNgRX initialization
@@ -81,7 +80,7 @@ function createMockTradesArray(count: number): Trade[] {
         buy: 100 + i * 10,
         quantity: 50 + i,
         buy_date: '2024-01-15',
-      })
+      }),
     );
   }
   return items;
@@ -110,7 +109,7 @@ describe('OpenPositionsComponentService - Virtual Data Access (AX.7)', () => {
 
     // Set the selectCurrentAccountSignal mock to return our mock account
     const selectCurrentAccountSignalMock = vi.mocked(
-      selectCurrentAccountSignal
+      selectCurrentAccountSignal,
     );
     selectCurrentAccountSignalMock.mockReturnValue(mockCurrentAccount);
 

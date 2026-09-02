@@ -1,6 +1,5 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import fastify, { FastifyInstance } from 'fastify';
-
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import registerAccountIndexesRoutes from './index';
 
 // Story AX.5: TDD Tests for /indexes endpoint handling openTrades
@@ -99,7 +98,7 @@ describe('GET /indexes - openTrades childField (AX.5)', () => {
             expect.objectContaining({ sell_date: null }),
           ]),
         }),
-      })
+      }),
     );
   });
 
@@ -122,7 +121,7 @@ describe('GET /indexes - openTrades childField (AX.5)', () => {
     expect(mockPrismaTrades.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
         orderBy: expect.any(Object),
-      })
+      }),
     );
   });
 
@@ -209,7 +208,7 @@ describe('GET /indexes - openTrades childField (AX.5)', () => {
     expect(body.indexes).toEqual(['only-trade']);
     expect(body).toHaveLength(1);
     expect(mockPrismaTrades.findMany).toHaveBeenCalledWith(
-      expect.objectContaining({ skip: 0, take: 10 })
+      expect.objectContaining({ skip: 0, take: 10 }),
     );
   });
 
@@ -234,7 +233,7 @@ describe('GET /indexes - openTrades childField (AX.5)', () => {
     expect(body.indexes).toEqual(['trade-99']);
     expect(body).toHaveLength(100);
     expect(mockPrismaTrades.findMany).toHaveBeenCalledWith(
-      expect.objectContaining({ skip: 99, take: 10 })
+      expect.objectContaining({ skip: 99, take: 10 }),
     );
   });
 });

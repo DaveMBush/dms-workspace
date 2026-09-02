@@ -35,9 +35,9 @@ import { seedScrollOpenPositionsData } from './helpers/seed-scroll-open-position
 import { seedScrollScreenerData } from './helpers/seed-scroll-screener-data.helper';
 import { seedScrollSoldPositionsData } from './helpers/seed-scroll-sold-positions-data.helper';
 import { seedScrollUniverseData } from './helpers/seed-scroll-universe-data.helper';
+import { settle } from './helpers/settle.helper';
 import { swapActiveAccountViaNavigation } from './helpers/swap-active-account-via-navigation.helper';
 import { swapUniverseAccount } from './helpers/swap-universe-account.helper';
-import { settle } from './helpers/settle.helper';
 
 // ─── Selectors ────────────────────────────────────────────────────────────────
 

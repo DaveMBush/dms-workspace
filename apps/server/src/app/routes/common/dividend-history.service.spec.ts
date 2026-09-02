@@ -1,4 +1,10 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { logger } from '../../../utils/structured-logger';
+import {
+  enforceDividendHistoryRateLimit,
+  fetchDividendHistory,
+  updateDividendHistoryCallTime,
+} from './dividend-history.service';
 
 vi.mock('../../../utils/structured-logger', () => ({
   logger: {
@@ -9,13 +15,6 @@ vi.mock('../../../utils/structured-logger', () => ({
   },
 }));
 
-import { logger } from '../../../utils/structured-logger';
-import {
-  enforceDividendHistoryRateLimit,
-  fetchDividendHistory,
-  updateDividendHistoryCallTime,
-} from './dividend-history.service';
-
 const mockLogger = vi.mocked(logger);
 
 const SAMPLE_DIVIDEND_ROWS = [
@@ -25,14 +24,14 @@ const SAMPLE_DIVIDEND_ROWS = [
 ];
 
 function buildDividendHtml(
-  rows: Array<{ exDiv: string; payDay: string; payout: number }>
+  rows: Array<{ exDiv: string; payDay: string; payout: number }>,
 ): string {
   const tableRows = rows
     .map(
       (r) =>
         `<tr><td>${r.exDiv}</td><td></td><td></td><td>${
           r.payDay
-        }</td><td></td><td>$${r.payout.toFixed(5)}</td></tr>`
+        }</td><td></td><td>$${r.payout.toFixed(5)}</td></tr>`,
     )
     .join('\n');
   return `<html><body><table class="table table-bordered"><thead><tr><th>Ex-Div</th><th></th><th></th><th>Pay Date</th><th></th><th>Amount</th></tr></thead><tbody>${tableRows}</tbody></table></body></html>`;
@@ -47,7 +46,7 @@ function buildHtmlWithMalformedTable(): string {
 }
 
 function buildMultiTableDividendHtml(
-  rows: Array<{ exDiv: string; payDay: string; payout: number }>
+  rows: Array<{ exDiv: string; payDay: string; payout: number }>,
 ): string {
   const dummyTable =
     '<table class="table table-bordered"><tbody><tr><td>Symbol</td><td>Info</td></tr></tbody></table>';
@@ -56,7 +55,7 @@ function buildMultiTableDividendHtml(
       (r) =>
         `<tr><td>${r.exDiv}</td><td></td><td></td><td>${
           r.payDay
-        }</td><td></td><td>$${r.payout.toFixed(5)}</td></tr>`
+        }</td><td></td><td>$${r.payout.toFixed(5)}</td></tr>`,
     )
     .join('\n');
   const dividendTable = `<table class="table table-bordered"><thead><tr><th>Ex-Div</th><th></th><th></th><th>Pay Date</th><th></th><th>Amount</th></tr></thead><tbody>${tableRows}</tbody></table>`;
@@ -118,7 +117,7 @@ describe('dividend-history.service', () => {
             'Accept-Language': 'en-US,en;q=0.9',
             Referer: 'https://dividendhistory.net/',
           },
-        }
+        },
       );
     });
 
@@ -146,7 +145,7 @@ describe('dividend-history.service', () => {
             'Accept-Language': 'en-US,en;q=0.9',
             Referer: 'https://dividendhistory.net/',
           },
-        }
+        },
       );
     });
 
@@ -157,7 +156,7 @@ describe('dividend-history.service', () => {
         text: vi
           .fn()
           .mockResolvedValueOnce(
-            buildMultiTableDividendHtml(SAMPLE_DIVIDEND_ROWS)
+            buildMultiTableDividendHtml(SAMPLE_DIVIDEND_ROWS),
           ),
       });
 
@@ -187,7 +186,7 @@ describe('dividend-history.service', () => {
       // so that calculateDistributionsPerYear can use them for cadence detection.
       expect(result).toHaveLength(4);
       expect(
-        result.every((row) => row.amount > 0 && !isNaN(row.date.valueOf()))
+        result.every((row) => row.amount > 0 && !isNaN(row.date.valueOf())),
       ).toBe(true);
     });
 
@@ -202,7 +201,7 @@ describe('dividend-history.service', () => {
       expect(result).toEqual([]);
       expect(mockLogger.warn).toHaveBeenCalledWith(
         'dividendhistory.net returned 404 for ticker UNKNOWN',
-        { ticker: 'UNKNOWN', status: 404 }
+        { ticker: 'UNKNOWN', status: 404 },
       );
     });
 
@@ -218,7 +217,7 @@ describe('dividend-history.service', () => {
       expect(result).toEqual([]);
       expect(mockLogger.warn).toHaveBeenCalledWith(
         'No dividend data found on dividendhistory.net for ticker NODATA',
-        { ticker: 'NODATA' }
+        { ticker: 'NODATA' },
       );
     });
 
@@ -234,7 +233,7 @@ describe('dividend-history.service', () => {
       expect(result).toEqual([]);
       expect(mockLogger.warn).toHaveBeenCalledWith(
         'No dividend data found on dividendhistory.net for ticker BAD',
-        { ticker: 'BAD' }
+        { ticker: 'BAD' },
       );
     });
 
@@ -264,7 +263,7 @@ describe('dividend-history.service', () => {
       expect(result).toEqual([]);
       expect(mockLogger.warn).toHaveBeenCalledWith(
         'No dividend data found on dividendhistory.net for ticker EMPTY',
-        { ticker: 'EMPTY' }
+        { ticker: 'EMPTY' },
       );
     });
 
@@ -276,7 +275,7 @@ describe('dividend-history.service', () => {
       expect(result).toEqual([]);
       expect(mockLogger.warn).toHaveBeenCalledWith(
         'Error fetching dividend history for NET from dividendhistory.net',
-        { ticker: 'NET', error: 'Error: Network failure' }
+        { ticker: 'NET', error: 'Error: Network failure' },
       );
     });
 
@@ -396,7 +395,7 @@ describe('dividend-history.service', () => {
 
       expect(mockLogger.debug).toHaveBeenCalledWith(
         expect.stringContaining('PDI'),
-        expect.objectContaining({ ticker: 'PDI' })
+        expect.objectContaining({ ticker: 'PDI' }),
       );
     });
   });

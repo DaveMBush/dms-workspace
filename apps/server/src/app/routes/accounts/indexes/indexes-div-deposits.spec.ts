@@ -1,6 +1,5 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import fastify, { FastifyInstance } from 'fastify';
-
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import registerAccountIndexesRoutes from './index';
 
 // Story AX.14: Tests for /indexes endpoint handling divDeposits childField

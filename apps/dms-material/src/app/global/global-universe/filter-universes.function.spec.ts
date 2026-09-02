@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest';
-import { filterUniverses } from './filter-universes.function';
+import { describe, expect, it } from 'vitest';
 import { Universe } from '../../store/universe/universe.interface';
+import { filterUniverses } from './filter-universes.function';
 
 // TDD GREEN Phase - Story AN.8
 // Tests enabled and passing with implementation
@@ -591,7 +591,7 @@ describe('filterUniverses - Expired Filter Comprehensive Tests (Story AN.9)', ()
       expect(
         result.every(function checkExpired(r) {
           return r.expired;
-        })
+        }),
       ).toBe(true);
     });
 
@@ -606,7 +606,7 @@ describe('filterUniverses - Expired Filter Comprehensive Tests (Story AN.9)', ()
       expect(
         result.every(function checkNotExpired(r) {
           return !r.expired;
-        })
+        }),
       ).toBe(true);
     });
 
@@ -684,7 +684,7 @@ describe('filterUniverses - Expired Filter Comprehensive Tests (Story AN.9)', ()
       expect(
         result.every(function checkEquity(r) {
           return r.risk_group_id === 'equity' && !r.expired;
-        })
+        }),
       ).toBe(true);
     });
 
@@ -741,7 +741,7 @@ describe('filterUniverses - Expired Filter Comprehensive Tests (Story AN.9)', ()
       expect(
         result.every(function checkExpired(r) {
           return r.expired;
-        })
+        }),
       ).toBe(true);
     });
 
@@ -1340,7 +1340,7 @@ describe('filterUniverses - Epic 65 placeholder row preservation (CDK scroll-hei
         riskGroupFilter: 'equity',
         expiredFilter: null,
         minYieldFilter: 1.0,
-      }
+      },
     );
     expect(result).toHaveLength(4);
     const placeholders = result.filter(function selectEmpty(r) {

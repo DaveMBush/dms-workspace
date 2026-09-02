@@ -1,8 +1,7 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import fastify, { FastifyInstance } from 'fastify';
-
-import registerAccountRoutes from './index';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ACCOUNT_PAGE_SIZE } from './account-page-size.const';
+import registerAccountRoutes from './index';
 
 // Hoisted mocks
 const { mockPrismaTrades, mockPrismaDivDeposits, mockPrismaAccounts } =
@@ -115,7 +114,7 @@ describe('buildAccountResponse - openTrades lazy loading (Story 40.3)', () => {
       expect.objectContaining({
         skip: 0,
         take: ACCOUNT_PAGE_SIZE,
-      })
+      }),
     );
   });
 
@@ -124,7 +123,7 @@ describe('buildAccountResponse - openTrades lazy loading (Story 40.3)', () => {
       { length: ACCOUNT_PAGE_SIZE },
       function createId(_, i) {
         return makeTradeId(`trade-${i}`);
-      }
+      },
     );
     setupMocks({ openTradeIds: page, openCount: 120 });
 
@@ -156,7 +155,7 @@ describe('buildAccountResponse - openTrades lazy loading (Story 40.3)', () => {
             expect.objectContaining({ sell_date: null }),
           ]),
         }),
-      })
+      }),
     );
   });
 
@@ -172,7 +171,7 @@ describe('buildAccountResponse - openTrades lazy loading (Story 40.3)', () => {
     expect(mockPrismaTrades.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
         orderBy: { createdAt: 'asc' },
-      })
+      }),
     );
   });
 

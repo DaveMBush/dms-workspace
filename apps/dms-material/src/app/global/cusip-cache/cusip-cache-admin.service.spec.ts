@@ -5,7 +5,6 @@ import {
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-
 import { CusipCacheAdminService } from './cusip-cache-admin.service';
 
 describe('CusipCacheAdminService', function describeService() {
@@ -147,7 +146,7 @@ describe('CusipCacheAdminService', function describeService() {
       });
       req.flush(
         { error: 'Not found' },
-        { status: 404, statusText: 'Not Found' }
+        { status: 404, statusText: 'Not Found' },
       );
 
       expect(service.error()).toBeTruthy();
@@ -217,7 +216,7 @@ describe('CusipCacheAdminService', function describeService() {
       const req = httpMock.expectOne('/api/admin/cusip-cache/add');
       req.flush(
         { error: 'Invalid CUSIP' },
-        { status: 400, statusText: 'Bad Request' }
+        { status: 400, statusText: 'Bad Request' },
       );
 
       expect(service.error()).toBeTruthy();
@@ -246,7 +245,7 @@ describe('CusipCacheAdminService', function describeService() {
       const req = httpMock.expectOne('/api/admin/cusip-cache/nonexistent');
       req.flush(
         { error: 'Not found' },
-        { status: 404, statusText: 'Not Found' }
+        { status: 404, statusText: 'Not Found' },
       );
 
       expect(service.error()).toBeTruthy();

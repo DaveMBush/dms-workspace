@@ -2,9 +2,9 @@ import { expect, Page, test } from 'playwright/test';
 import { generateUniqueId } from './helpers/generate-unique-id.helper';
 import { getOrCreateDivDepositTypeId } from './helpers/get-or-create-div-deposit-type-id.helper';
 import { login } from './helpers/login.helper';
+import { settle } from './helpers/settle.helper';
 import { initializePrismaClient } from './helpers/shared-prisma-client.helper';
 import { createRiskGroups } from './helpers/shared-risk-groups.helper';
-import { settle } from './helpers/settle.helper';
 
 // ─── Module-level test data ───────────────────────────────────────────────────
 

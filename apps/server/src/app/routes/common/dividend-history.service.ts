@@ -47,15 +47,15 @@ export function updateDividendHistoryCallTime(): void {
 
 async function fetchAndParseHtml(
   url: string,
-  upperTicker: string
+  upperTicker: string,
 ): Promise<ParsedDividendRow[] | null> {
   const response = await fetch(url, { headers: BROWSER_HEADERS });
   if (!response.ok) {
     logger.warn(
       `dividendhistory.net returned ${String(
-        response.status
+        response.status,
       )} for ticker ${upperTicker}`,
-      { ticker: upperTicker, status: response.status }
+      { ticker: upperTicker, status: response.status },
     );
     return null;
   }
@@ -162,18 +162,18 @@ function parseExDivDate(exDiv: string): number {
  * distinct pay date so interval calculations see the true monthly spacing.
  */
 function deduplicateByPayDay(
-  rawRows: ParsedDividendRow[]
+  rawRows: ParsedDividendRow[],
 ): ParsedDividendRow[] {
   const sorted = [...rawRows].sort(function sortByExDivAscending(
     a: ParsedDividendRow,
-    b: ParsedDividendRow
+    b: ParsedDividendRow,
   ): number {
     return parseExDivDate(a.exDiv) - parseExDivDate(b.exDiv);
   });
 
   const seenPayDays = new Set<string>();
   return sorted.filter(function filterFirstByPayDay(
-    row: ParsedDividendRow
+    row: ParsedDividendRow,
   ): boolean {
     if (seenPayDays.has(row.payDay)) {
       return false;
@@ -196,14 +196,14 @@ function isValidProcessedRow(row: ProcessedRow): boolean {
 }
 
 export async function fetchDividendHistory(
-  ticker: string
+  ticker: string,
 ): Promise<ProcessedRow[]> {
   await enforceDividendHistoryRateLimit();
   updateDividendHistoryCallTime();
 
   const upperTicker = ticker.toUpperCase();
   const url = `${BASE_URL}/${encodeURIComponent(
-    upperTicker.toLowerCase()
+    upperTicker.toLowerCase(),
   )}-dividend-yield`;
 
   try {
@@ -212,7 +212,7 @@ export async function fetchDividendHistory(
       {
         ticker: upperTicker,
         url,
-      }
+      },
     );
 
     const rawRows = await fetchAndParseHtml(url, upperTicker);
@@ -220,7 +220,7 @@ export async function fetchDividendHistory(
     if (!rawRows || rawRows.length === 0) {
       logger.warn(
         `No dividend data found on dividendhistory.net for ticker ${upperTicker}`,
-        { ticker: upperTicker }
+        { ticker: upperTicker },
       );
       return [];
     }
@@ -234,14 +234,14 @@ export async function fetchDividendHistory(
 
     logger.debug(
       `Found ${processed.length.toString()} dividend entries for ${upperTicker} from dividendhistory.net`,
-      { ticker: upperTicker, count: processed.length }
+      { ticker: upperTicker, count: processed.length },
     );
 
     return processed;
   } catch (error) {
     logger.warn(
       `Error fetching dividend history for ${upperTicker} from dividendhistory.net`,
-      { ticker: upperTicker, error: String(error) }
+      { ticker: upperTicker, error: String(error) },
     );
     return [];
   }
