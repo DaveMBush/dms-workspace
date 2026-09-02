@@ -129,6 +129,7 @@ if (existingIssue) {
   ].join('\n');
   let out;
   try {
+    // gh issue create has no --json flag; it prints the new issue URL.
     out = run('gh', [
       'issue',
       'create',
@@ -136,15 +137,15 @@ if (existingIssue) {
       issueTitle,
       '--body',
       body,
-      '--json',
-      'number,url',
     ]);
   } catch (e) {
     fail('gh issue create failed', { stderr: String(e.stderr || e.message) });
   }
-  const created = JSON.parse(out);
-  issueNumber = created.number;
-  issueUrl = created.url;
+  const urlMatch = out.match(/issues\/(\d+)/);
+  if (!urlMatch)
+    fail('could not parse issue number from gh output', { stdout: out });
+  issueNumber = Number(urlMatch[1]);
+  issueUrl = out;
 }
 
 // --- 3. Branch off origin/main named after the issue ------------------------
