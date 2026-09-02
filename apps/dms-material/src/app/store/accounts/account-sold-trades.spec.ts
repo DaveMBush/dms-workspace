@@ -32,7 +32,7 @@ describe('Account soldTrades PartialArrayDefinition (Story 40.3)', () => {
     };
     expect(soldTrades.startIndex).toBe(0);
     expect(soldTrades.indexes).toEqual(['trade-1', 'trade-2']);
-    expect(soldTrades.length).toBe(10);
+    expect(soldTrades).toHaveLength(10);
   });
 
   it('should have default row with PartialArrayDefinition shape for soldTrades', () => {

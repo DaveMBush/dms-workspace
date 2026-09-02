@@ -1,4 +1,5 @@
 import { expect, test } from 'playwright/test';
+import { settle } from './helpers/settle.helper';
 
 test.describe('Summary Display Component (Charts)', () => {
   test.beforeEach(async ({ page }) => {
@@ -43,7 +44,7 @@ test.describe('Summary Display Component (Charts)', () => {
           box.x + box.width * 0.3,
           box.y + box.height * 0.4,
         );
-        await page.waitForTimeout(500);
+        await settle(page, 500);
 
         // Tooltip should appear - Chart.js creates a tooltip element
         // The tooltip is visible when it has content
@@ -169,7 +170,7 @@ test.describe('Summary Display Component (Charts)', () => {
       await page.waitForLoadState('networkidle');
 
       // Wait for animation duration (Chart.js default is ~1s)
-      await page.waitForTimeout(1500);
+      await settle(page, 1500);
 
       // Verify charts are rendered after animation
       const pieChart = page.locator('[data-testid="pie-chart"] canvas');
@@ -182,7 +183,7 @@ test.describe('Summary Display Component (Charts)', () => {
       await updateButton.click();
 
       // Small delay for update
-      await page.waitForTimeout(300);
+      await settle(page, 300);
 
       // Chart should still be visible and functional
       const lineChart = page.locator('[data-testid="line-chart"] canvas');
@@ -245,7 +246,7 @@ test.describe('Summary Display Component (Charts)', () => {
   test.describe('Responsive Design', () => {
     test('charts work on mobile viewport', async ({ page }) => {
       await page.setViewportSize({ width: 375, height: 667 });
-      await page.waitForTimeout(300);
+      await settle(page, 300);
 
       const pieChart = page.locator('[data-testid="pie-chart"]');
       await expect(pieChart).toBeVisible();
@@ -256,7 +257,7 @@ test.describe('Summary Display Component (Charts)', () => {
 
     test('charts work on tablet viewport', async ({ page }) => {
       await page.setViewportSize({ width: 768, height: 1024 });
-      await page.waitForTimeout(300);
+      await settle(page, 300);
 
       const pieChart = page.locator('[data-testid="pie-chart"]');
       await expect(pieChart).toBeVisible();

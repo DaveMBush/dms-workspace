@@ -1,6 +1,7 @@
 import { expect, Page, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 import { seedUniverseData } from './helpers/seed-universe-data.helper';
+import { settle } from './helpers/settle.helper';
 
 function getUniverseRowBySymbol(
   page: Page,
@@ -161,7 +162,7 @@ test.describe('Universe Table Workflows', () => {
       await expect(yieldCell).toBeVisible();
       const text = await yieldCell.textContent();
       // Percentage format check (e.g., 5.25% or 5.25)
-      // eslint-disable-next-line sonarjs/slow-regex -- Simple regex for decimal format validation
+      // eslint-disable-next-line sonarjs/super-linear-regex -- \d+ is quadratic on digit-heavy input, but JS has no atomic quantifier and bounding it would change the match; input is a short cell value
       expect(text).toMatch(/\d+\.\d{2}/);
     });
 
@@ -299,7 +300,7 @@ test.describe('Universe Table Workflows', () => {
       await input.press('Enter');
 
       // Wait for yield to recalculate
-      await page.waitForTimeout(500);
+      await settle(page, 500);
 
       const newYield = await yieldCell.textContent();
       // Yield should have changed (assuming price is constant)
@@ -494,7 +495,7 @@ test.describe('Universe Table Workflows', () => {
       await confirmButton.click();
 
       // Row should be removed
-      await page.waitForTimeout(500);
+      await settle(page, 500);
       const rowsAfter = await page.locator('tbody tr').count();
       expect(rowsAfter).toBe(rowsBefore - 1);
     });
@@ -588,7 +589,7 @@ test.describe('Universe Table Workflows', () => {
       await expect(dialog).not.toBeVisible();
 
       // Table should have new row
-      await page.waitForTimeout(1000);
+      await settle(page, 1000);
       const rowsAfter = await page.locator('tbody tr').count();
       expect(rowsAfter).toBe(rowsBefore + 1);
     });
@@ -653,7 +654,7 @@ test.describe('Universe Table Workflows', () => {
       const updateButton = page.locator('[data-testid="update-fields-button"]');
       await updateButton.click();
 
-      await page.waitForTimeout(2000);
+      await settle(page, 2000);
       expect(updateCallCount).toBe(1);
     });
 
@@ -704,7 +705,7 @@ test.describe('Universe Table Workflows', () => {
       const updateButton = page.locator('[data-testid="update-fields-button"]');
       await updateButton.click();
 
-      await page.waitForTimeout(2000);
+      await settle(page, 2000);
 
       const notification = page.locator('.notification-success');
       await expect(notification).toBeVisible();
@@ -722,7 +723,7 @@ test.describe('Universe Table Workflows', () => {
       const updateButton = page.locator('[data-testid="update-fields-button"]');
       await updateButton.click();
 
-      await page.waitForTimeout(2000);
+      await settle(page, 2000);
 
       const notification = page.locator('.notification-error');
       await expect(notification).toBeVisible();
@@ -746,7 +747,7 @@ test.describe('Universe Table Workflows', () => {
       await page.getByRole('option', { name: 'Equities' }).click();
 
       // Filtered results should be <= baseline
-      await page.waitForTimeout(500); // Allow filter to apply
+      await settle(page, 500); // Allow filter to apply
       const filteredCount = await rows.count();
       expect(filteredCount).toBeLessThanOrEqual(baselineCount);
 
@@ -774,7 +775,7 @@ test.describe('Universe Table Workflows', () => {
       await page.getByRole('option', { name: 'No' }).click();
 
       // Filtered results should be <= baseline
-      await page.waitForTimeout(500); // Allow filter to apply
+      await settle(page, 500); // Allow filter to apply
       const filteredCount = await rows.count();
       expect(filteredCount).toBeLessThanOrEqual(baselineCount);
 
@@ -810,7 +811,7 @@ test.describe('Universe Table Workflows', () => {
       await page.getByRole('option', { name: 'No' }).click();
 
       // Filtered results should be <= baseline with all filters applied
-      await page.waitForTimeout(500); // Allow filters to apply
+      await settle(page, 500); // Allow filters to apply
       const filteredCount = await rows.count();
       expect(filteredCount).toBeLessThanOrEqual(baselineCount);
 
@@ -878,7 +879,7 @@ test.describe('Universe Table Workflows', () => {
       const refreshButton = page.locator('[data-testid="refresh-button"]');
       await refreshButton.click();
 
-      await page.waitForTimeout(1000);
+      await settle(page, 1000);
       expect(refreshCallCount).toBeGreaterThan(0);
     });
 
@@ -907,7 +908,7 @@ test.describe('Universe Table Workflows', () => {
       const refreshButton = page.locator('[data-testid="refresh-button"]');
       await refreshButton.click();
 
-      await page.waitForTimeout(1000);
+      await settle(page, 1000);
 
       const filterValue = await symbolInput.inputValue();
       expect(filterValue).toBe('AAP');
@@ -991,7 +992,7 @@ test.describe('Universe Table Workflows', () => {
       await symbolInput.fill('$%^&*()');
 
       // Should not crash and show no results or empty state
-      await page.waitForTimeout(500); // Allow filter to apply
+      await settle(page, 500); // Allow filter to apply
       const rows = page.locator('tbody tr');
       const count = await rows.count();
 

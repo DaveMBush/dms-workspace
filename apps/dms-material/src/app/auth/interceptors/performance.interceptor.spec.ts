@@ -9,7 +9,6 @@ import {
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { vi } from 'vitest';
-
 import { PerformanceLoggingService } from '../../shared/services/performance-logging.service';
 import { performanceInterceptor } from './performance.interceptor';
 
@@ -66,7 +65,7 @@ describe('PerformanceInterceptor', () => {
           duration: expect.any(Number),
           startTime: expect.any(Number),
           endTime: expect.any(Number),
-        })
+        }),
       );
     });
 
@@ -84,7 +83,7 @@ describe('PerformanceInterceptor', () => {
       // Respond with error
       req.flush(
         { error: 'Server Error' },
-        { status: 500, statusText: 'Internal Server Error' }
+        { status: 500, statusText: 'Internal Server Error' },
       );
 
       expect(mockPerformanceLogging.logPerformanceMetric).toHaveBeenCalledWith(
@@ -94,48 +93,26 @@ describe('PerformanceInterceptor', () => {
           statusCode: 500,
           url: testUrl,
           method: 'GET',
-        })
+        }),
       );
     });
   });
 
   describe('operation detection', () => {
-    it('should detect auth login operation', () => {
-      httpClient.post('/api/auth/login', {}).subscribe();
+    it.each([
+      ['/api/auth/login', 'auth-login'],
+      ['/api/auth/refresh', 'auth-refresh'],
+      ['/api/auth/logout', 'auth-logout'],
+    ])('should detect %s operation', (url, expectedOperation) => {
+      httpClient.post(url, {}).subscribe();
 
-      const req = httpTestingController.expectOne('/api/auth/login');
+      const req = httpTestingController.expectOne(url);
       req.flush({});
 
       expect(mockPerformanceLogging.logPerformanceMetric).toHaveBeenCalledWith(
         expect.objectContaining({
-          operation: 'auth-login',
-        })
-      );
-    });
-
-    it('should detect auth refresh operation', () => {
-      httpClient.post('/api/auth/refresh', {}).subscribe();
-
-      const req = httpTestingController.expectOne('/api/auth/refresh');
-      req.flush({});
-
-      expect(mockPerformanceLogging.logPerformanceMetric).toHaveBeenCalledWith(
-        expect.objectContaining({
-          operation: 'auth-refresh',
-        })
-      );
-    });
-
-    it('should detect auth logout operation', () => {
-      httpClient.post('/api/auth/logout', {}).subscribe();
-
-      const req = httpTestingController.expectOne('/api/auth/logout');
-      req.flush({});
-
-      expect(mockPerformanceLogging.logPerformanceMetric).toHaveBeenCalledWith(
-        expect.objectContaining({
-          operation: 'auth-logout',
-        })
+          operation: expectedOperation,
+        }),
       );
     });
 
@@ -148,7 +125,7 @@ describe('PerformanceInterceptor', () => {
       expect(mockPerformanceLogging.logPerformanceMetric).toHaveBeenCalledWith(
         expect.objectContaining({
           operation: 'auth-general',
-        })
+        }),
       );
     });
 
@@ -177,11 +154,11 @@ describe('PerformanceInterceptor', () => {
         req.flush({});
 
         expect(
-          mockPerformanceLogging.logPerformanceMetric
+          mockPerformanceLogging.logPerformanceMetric,
         ).toHaveBeenCalledWith(
           expect.objectContaining({
             operation: expected,
-          })
+          }),
         );
       });
     });
@@ -195,7 +172,7 @@ describe('PerformanceInterceptor', () => {
       expect(mockPerformanceLogging.logPerformanceMetric).toHaveBeenCalledWith(
         expect.objectContaining({
           operation: 'get-request',
-        })
+        }),
       );
     });
   });
@@ -215,7 +192,7 @@ describe('PerformanceInterceptor', () => {
       expect(mockPerformanceLogging.logPerformanceMetric).toHaveBeenCalledWith(
         expect.objectContaining({
           requestId: testRequestId,
-        })
+        }),
       );
     });
 
@@ -228,9 +205,9 @@ describe('PerformanceInterceptor', () => {
       expect(mockPerformanceLogging.logPerformanceMetric).toHaveBeenCalledWith(
         expect.objectContaining({
           requestId: expect.stringMatching(
-            /^perf-[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/
+            /^perf-[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/,
           ),
-        })
+        }),
       );
     });
   });
@@ -246,13 +223,13 @@ describe('PerformanceInterceptor', () => {
           status: 200,
           statusText: 'OK',
           headers: { 'X-Cache-Status': 'HIT' },
-        }
+        },
       );
 
       expect(mockPerformanceLogging.logPerformanceMetric).toHaveBeenCalledWith(
         expect.objectContaining({
           cacheHit: true,
-        })
+        }),
       );
     });
 
@@ -266,13 +243,13 @@ describe('PerformanceInterceptor', () => {
           status: 200,
           statusText: 'OK',
           headers: { 'X-Cache-Status': 'MISS' },
-        }
+        },
       );
 
       expect(mockPerformanceLogging.logPerformanceMetric).toHaveBeenCalledWith(
         expect.objectContaining({
           cacheHit: false,
-        })
+        }),
       );
     });
 
@@ -285,7 +262,7 @@ describe('PerformanceInterceptor', () => {
       expect(mockPerformanceLogging.logPerformanceMetric).toHaveBeenCalledWith(
         expect.objectContaining({
           cacheHit: undefined,
-        })
+        }),
       );
     });
   });
@@ -306,7 +283,7 @@ describe('PerformanceInterceptor', () => {
           duration: expect.any(Number),
           startTime: expect.any(Number),
           endTime: expect.any(Number),
-        })
+        }),
       );
 
       const call = mockPerformanceLogging.logPerformanceMetric.mock.calls[0][0];
@@ -333,7 +310,7 @@ describe('PerformanceInterceptor', () => {
         expect.objectContaining({
           success: false,
           statusCode: 0,
-        })
+        }),
       );
     });
 
@@ -356,7 +333,7 @@ describe('PerformanceInterceptor', () => {
         expect.objectContaining({
           success: false,
           statusCode: 0,
-        })
+        }),
       );
     });
   });

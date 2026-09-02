@@ -1,10 +1,8 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal, WritableSignal } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { of } from 'rxjs';
 import { vi } from 'vitest';
-
-import { DivDepModalComponent } from '../div-dep-modal/div-dep-modal.component';
 import { ColumnDef } from '../../shared/components/base-table/column-def.interface';
 import { ConfirmDialogService } from '../../shared/services/confirm-dialog.service';
 import { NotificationService } from '../../shared/services/notification.service';
@@ -12,14 +10,16 @@ import { SortFilterStateService } from '../../shared/services/sort-filter-state.
 import { currentAccountSignalStore } from '../../store/current-account/current-account.signal-store';
 import { DivDeposit } from '../../store/div-deposits/div-deposit.interface';
 import { divDepositsEffectsServiceToken } from '../../store/div-deposits/div-deposits-effect-service-token';
-import { DividendDepositsComponent } from './dividend-deposits.component';
+import { DivDepModalComponent } from '../div-dep-modal/div-dep-modal.component';
 import { DividendDepositsComponentService } from './dividend-deposits-component.service';
+import { DividendDepositsComponent } from './dividend-deposits.component';
+
 // Mock selectDivDepositTypes to avoid SmartNgRX initialization from DivDepModalComponent
 vi.mock(
   '../../store/div-deposit-types/selectors/select-div-deposit-types.function',
   () => ({
     selectDivDepositTypes: vi.fn().mockReturnValue([]),
-  })
+  }),
 );
 
 // Mock selectUniverses to avoid SmartNgRX initialization from DivDepModalComponent
@@ -37,7 +37,7 @@ vi.mock(
   '../../store/div-deposit-types/selectors/select-div-deposit-type-entity.function',
   () => ({
     selectDivDepositTypeEntity: vi.fn().mockReturnValue({}),
-  })
+  }),
 );
 
 // Mock selectTopEntities to avoid SmartNgRX initialization
@@ -50,7 +50,7 @@ vi.mock(
   '../../store/accounts/selectors/select-accounts-entity.function',
   () => ({
     selectAccountsEntity: vi.fn().mockReturnValue([]),
-  })
+  }),
 );
 
 // Mock selectAccounts to avoid SmartNgRX initialization
@@ -63,7 +63,7 @@ vi.mock(
   '../../store/trades/selectors/select-open-trade-entity.function',
   () => ({
     selectOpenTradeEntity: vi.fn().mockReturnValue({}),
-  })
+  }),
 );
 
 // Mock selectSoldTradeEntity to avoid SmartNgRX initialization
@@ -71,7 +71,7 @@ vi.mock(
   '../../store/trades/selectors/select-sold-trade-entity.function',
   () => ({
     selectSoldTradeEntity: vi.fn().mockReturnValue({}),
-  })
+  }),
 );
 
 // Mock selectAccountChildren to avoid SmartNgRX initialization
@@ -79,7 +79,7 @@ vi.mock(
   '../../store/trades/selectors/select-account-children.function',
   () => ({
     selectAccountChildren: vi.fn().mockReturnValue({ entities: {} }),
-  })
+  }),
 );
 
 // Helper to create test DivDeposit data
@@ -161,12 +161,12 @@ describe('DividendDepositsComponent', () => {
   // AC 3: Tests verify table columns display correctly
   describe('columns', () => {
     it('should define exactly 5 columns', () => {
-      expect(component.columns.length).toBe(5);
+      expect(component.columns).toHaveLength(5);
     });
 
     it('should have symbol column with sortable true and correct width', () => {
       const col = component.columns.find(
-        (c: ColumnDef) => c.field === 'symbol'
+        (c: ColumnDef) => c.field === 'symbol',
       );
       expect(col).toBeTruthy();
       expect(col?.sortable).toBe(true);
@@ -183,7 +183,7 @@ describe('DividendDepositsComponent', () => {
 
     it('should have amount column with type currency, sortable true, and correct width', () => {
       const col = component.columns.find(
-        (c: ColumnDef) => c.field === 'amount'
+        (c: ColumnDef) => c.field === 'amount',
       );
       expect(col).toBeTruthy();
       expect(col?.type).toBe('currency');
@@ -199,7 +199,7 @@ describe('DividendDepositsComponent', () => {
 
     it('should have actions column with type actions and correct width', () => {
       const col = component.columns.find(
-        (c: ColumnDef) => c.field === 'actions'
+        (c: ColumnDef) => c.field === 'actions',
       );
       expect(col).toBeTruthy();
       expect(col?.type).toBe('actions');
@@ -218,7 +218,7 @@ describe('DividendDepositsComponent', () => {
 
     it('should not have type column as sortable', () => {
       const typeCol = component.columns.find(
-        (c: ColumnDef) => c.field === 'type'
+        (c: ColumnDef) => c.field === 'type',
       );
       expect(typeCol?.sortable).toBeFalsy();
     });
@@ -241,14 +241,14 @@ describe('DividendDepositsComponent', () => {
         createDivDeposit({ id: 'dep-2', accountId: 'acc-1', amount: 200 }),
       ]);
 
-      expect(component.dividends$().length).toBe(2);
+      expect(component.dividends$()).toHaveLength(2);
     });
 
     // AC 5: Tests verify empty state when no dividends
     it('should display empty state when store has no dividends', () => {
       // Arrange: signal starts at [] (set in beforeEach)
       expect(component.dividends$()).toEqual([]);
-      expect(component.dividends$().length).toBe(0);
+      expect(component.dividends$()).toHaveLength(0);
     });
 
     // AC 2: Tests verify table filters by selected account
@@ -261,9 +261,11 @@ describe('DividendDepositsComponent', () => {
         createDivDeposit({ id: 'dep-3', accountId: 'acc-1', amount: 300 }),
       ]);
 
-      expect(component.dividends$().length).toBe(2);
+      expect(component.dividends$()).toHaveLength(2);
       expect(
-        component.dividends$().every((d: DivDeposit) => d.accountId === 'acc-1')
+        component
+          .dividends$()
+          .every((d: DivDeposit) => d.accountId === 'acc-1'),
       ).toBe(true);
     });
 
@@ -276,7 +278,7 @@ describe('DividendDepositsComponent', () => {
       ]);
 
       expect(
-        component.dividends$().some((d: DivDeposit) => d.accountId === 'acc-2')
+        component.dividends$().some((d: DivDeposit) => d.accountId === 'acc-2'),
       ).toBe(false);
     });
 
@@ -286,7 +288,7 @@ describe('DividendDepositsComponent', () => {
       // Arrange: service returns empty array because selected account has no dividends
       mockDividendDepositsService.dividends.set([]);
 
-      expect(component.dividends$().length).toBe(0);
+      expect(component.dividends$()).toHaveLength(0);
     });
 
     it('should reactively update when store data changes', () => {
@@ -294,7 +296,7 @@ describe('DividendDepositsComponent', () => {
       mockDividendDepositsService.dividends.set([
         createDivDeposit({ id: 'dep-1', accountId: 'acc-1', amount: 100 }),
       ]);
-      expect(component.dividends$().length).toBe(1);
+      expect(component.dividends$()).toHaveLength(1);
 
       // Act: add a second dividend for the same account via signal update
       mockDividendDepositsService.dividends.set([
@@ -303,7 +305,7 @@ describe('DividendDepositsComponent', () => {
       ]);
 
       // Assert: component reactively reflects updated store state
-      expect(component.dividends$().length).toBe(2);
+      expect(component.dividends$()).toHaveLength(2);
     });
   });
 
@@ -314,14 +316,14 @@ describe('DividendDepositsComponent', () => {
         expect.anything(),
         expect.objectContaining({
           data: expect.objectContaining({ mode: 'add' }),
-        })
+        }),
       );
     });
 
     it('should show success notification when dialog closes with result', () => {
       component.onAddDividend();
       expect(mockNotification.success).toHaveBeenCalledWith(
-        'Dividend added successfully'
+        'Dividend added successfully',
       );
     });
   });
@@ -334,7 +336,7 @@ describe('DividendDepositsComponent', () => {
         expect.anything(),
         expect.objectContaining({
           data: expect.objectContaining({ mode: 'edit', dividend }),
-        })
+        }),
       );
     });
 
@@ -342,7 +344,7 @@ describe('DividendDepositsComponent', () => {
       const dividend = createDivDeposit({ id: 'dep-edit' });
       component.onEditDividend(dividend);
       expect(mockNotification.success).toHaveBeenCalledWith(
-        'Dividend updated successfully'
+        'Dividend updated successfully',
       );
     });
   });
@@ -352,7 +354,7 @@ describe('DividendDepositsComponent', () => {
       const dividend = createDivDeposit({ id: 'dep-del' });
       component.onDeleteDividend(dividend);
       expect(mockConfirmDialog.confirm).toHaveBeenCalledWith(
-        expect.objectContaining({ title: 'Delete Dividend' })
+        expect.objectContaining({ title: 'Delete Dividend' }),
       );
     });
 
@@ -432,7 +434,7 @@ describe('DividendDepositsComponent - Add Dialog SmartNgRX Integration (AQ.3)', 
       DivDepModalComponent,
       expect.objectContaining({
         data: expect.objectContaining({ mode: 'add' }),
-      })
+      }),
     );
   });
 
@@ -442,7 +444,7 @@ describe('DividendDepositsComponent - Add Dialog SmartNgRX Integration (AQ.3)', 
 
     const callArgs = mockDialog.open.mock.calls[0] as [
       unknown,
-      { width: string; data: { mode: string } }
+      { width: string; data: { mode: string } },
     ];
     expect(callArgs[1].data.mode).toBe('add');
   });
@@ -453,7 +455,7 @@ describe('DividendDepositsComponent - Add Dialog SmartNgRX Integration (AQ.3)', 
 
     const callArgs = mockDialog.open.mock.calls[0] as [
       unknown,
-      { width: string; data: unknown }
+      { width: string; data: unknown },
     ];
     expect(callArgs[1].width).toBe('500px');
   });
@@ -466,7 +468,7 @@ describe('DividendDepositsComponent - Add Dialog SmartNgRX Integration (AQ.3)', 
     component.onAddDividend();
 
     expect(mockNotification.success).toHaveBeenCalledWith(
-      'Dividend added successfully'
+      'Dividend added successfully',
     );
   });
 
@@ -487,7 +489,7 @@ describe('DividendDepositsComponent - Add Dialog SmartNgRX Integration (AQ.3)', 
     component.onAddDividend();
 
     expect(mockDividendDepositsService.addDivDeposit).toHaveBeenCalledWith(
-      mockData
+      mockData,
     );
   });
 
@@ -509,7 +511,7 @@ describe('DividendDepositsComponent - Add Dialog SmartNgRX Integration (AQ.3)', 
 
     // SmartNgRX store is updated by addDivDeposit (SmartArray.add! pattern)
     expect(mockDividendDepositsService.addDivDeposit).toHaveBeenCalledWith(
-      newDividend
+      newDividend,
     );
   });
 });
@@ -589,7 +591,7 @@ describe('DividendDepositsComponent - Edit Dialog SmartNgRX Integration (AQ.5)',
       DivDepModalComponent,
       expect.objectContaining({
         data: expect.objectContaining({ mode: 'edit' }),
-      })
+      }),
     );
   });
 
@@ -601,7 +603,7 @@ describe('DividendDepositsComponent - Edit Dialog SmartNgRX Integration (AQ.5)',
 
     const callArgs = mockDialog.open.mock.calls[0] as [
       unknown,
-      { width: string; data: { mode: string } }
+      { width: string; data: { mode: string } },
     ];
     expect(callArgs[1].data.mode).toBe('edit');
   });
@@ -614,7 +616,7 @@ describe('DividendDepositsComponent - Edit Dialog SmartNgRX Integration (AQ.5)',
 
     const callArgs = mockDialog.open.mock.calls[0] as [
       unknown,
-      { width: string; data: { mode: string; dividend: DivDeposit } }
+      { width: string; data: { mode: string; dividend: DivDeposit } },
     ];
     expect(callArgs[1].data.dividend).toEqual(dividend);
   });
@@ -627,7 +629,7 @@ describe('DividendDepositsComponent - Edit Dialog SmartNgRX Integration (AQ.5)',
 
     const callArgs = mockDialog.open.mock.calls[0] as [
       unknown,
-      { width: string; data: unknown }
+      { width: string; data: unknown },
     ];
     expect(callArgs[1].width).toBe('500px');
   });
@@ -641,7 +643,7 @@ describe('DividendDepositsComponent - Edit Dialog SmartNgRX Integration (AQ.5)',
     component.onEditDividend(dividend);
 
     expect(mockNotification.success).toHaveBeenCalledWith(
-      'Dividend updated successfully'
+      'Dividend updated successfully',
     );
   });
 
@@ -762,7 +764,7 @@ describe('DividendDepositsComponent - Delete Dialog SmartNgRX Integration (AQ.7)
         title: 'Delete Dividend',
         message: 'Are you sure you want to delete this dividend?',
         confirmText: 'Delete',
-      })
+      }),
     );
   });
 
@@ -804,7 +806,7 @@ describe('DividendDepositsComponent - Delete Dialog SmartNgRX Integration (AQ.7)
     component.onDeleteDividend(dividend);
 
     expect(mockDividendDepositsService.deleteDivDeposit).toHaveBeenCalledWith(
-      dividend.id
+      dividend.id,
     );
     // Regression guard: delete must go through SmartNgRX service,
     // not raw effectsService.delete
@@ -905,7 +907,7 @@ describe('DividendDepositsComponent - Account Selection Integration', () => {
       fixture.detectChanges();
 
       const dividends = component.dividends$();
-      expect(dividends.length).toBe(0);
+      expect(dividends).toHaveLength(0);
     });
 
     it('should handle initial account selection on component creation', () => {
@@ -914,7 +916,7 @@ describe('DividendDepositsComponent - Account Selection Integration', () => {
 
       // Verify service receives initial account selection
       expect(mockDividendDepositsService.selectedAccountId()).toBe(
-        'acc-initial'
+        'acc-initial',
       );
     });
   });
@@ -937,7 +939,7 @@ describe('DividendDepositsComponent - Account Selection Integration', () => {
       mockDividendDepositsService.dividends.set(account1Dividends);
 
       const dividends = component.dividends$();
-      expect(dividends.length).toBe(1);
+      expect(dividends).toHaveLength(1);
       expect(dividends[0].amount).toBe(100);
     });
 
@@ -971,7 +973,7 @@ describe('DividendDepositsComponent - Account Selection Integration', () => {
       expect(mockDividendDepositsService.selectedAccountId()).toBe('acc-1');
       mockDividendDepositsService.dividends.set(account1Dividends);
 
-      expect(component.dividends$().length).toBe(1);
+      expect(component.dividends$()).toHaveLength(1);
 
       // Switch to second account
       mockCurrentAccountStore.selectCurrentAccountId.set('acc-2');
@@ -980,7 +982,7 @@ describe('DividendDepositsComponent - Account Selection Integration', () => {
       mockDividendDepositsService.dividends.set(account2Dividends);
 
       const dividends = component.dividends$();
-      expect(dividends.length).toBe(2);
+      expect(dividends).toHaveLength(2);
       expect(dividends[0].amount).toBe(250);
       expect(dividends[1].amount).toBe(375);
     });
@@ -1000,7 +1002,7 @@ describe('DividendDepositsComponent - Account Selection Integration', () => {
       fixture.detectChanges();
       expect(mockDividendDepositsService.selectedAccountId()).toBe('acc-1');
       mockDividendDepositsService.dividends.set(mockDividends);
-      expect(component.dividends$().length).toBe(1);
+      expect(component.dividends$()).toHaveLength(1);
 
       // Deselect account
       mockCurrentAccountStore.selectCurrentAccountId.set('');
@@ -1008,7 +1010,7 @@ describe('DividendDepositsComponent - Account Selection Integration', () => {
       expect(mockDividendDepositsService.selectedAccountId()).toBe('');
       mockDividendDepositsService.dividends.set([]);
 
-      expect(component.dividends$().length).toBe(0);
+      expect(component.dividends$()).toHaveLength(0);
     });
 
     it('should update dividend amounts for new account', () => {
@@ -1032,7 +1034,7 @@ describe('DividendDepositsComponent - Account Selection Integration', () => {
       fixture.detectChanges();
 
       const displayed = component.dividends$();
-      expect(displayed.length).toBe(2);
+      expect(displayed).toHaveLength(2);
       expect(displayed[0].amount).toBe(500);
       expect(displayed[1].amount).toBe(150);
     });
@@ -1091,7 +1093,7 @@ describe('DividendDepositsComponent - Account Selection Integration', () => {
       fixture.detectChanges();
 
       const dividends = component.dividends$();
-      expect(dividends.length).toBe(1);
+      expect(dividends).toHaveLength(1);
       expect(dividends[0].id).toBe('dep-100');
       expect(dividends[0].amount).toBe(75);
     });
@@ -1107,12 +1109,12 @@ describe('DividendDepositsComponent - Account Selection Integration', () => {
       expect(
         component.columns.find(function findSymbol(c: ColumnDef) {
           return c.field === 'symbol';
-        })
+        }),
       ).toBeTruthy();
       expect(
         component.columns.find(function findAmount(c: ColumnDef) {
           return c.field === 'amount';
-        })
+        }),
       ).toBeTruthy();
     });
 
@@ -1125,7 +1127,7 @@ describe('DividendDepositsComponent - Account Selection Integration', () => {
 
       const dividends = component.dividends$();
       expect(Array.isArray(dividends)).toBe(true);
-      expect(dividends.length).toBe(0);
+      expect(dividends).toHaveLength(0);
     });
   });
 
@@ -1160,7 +1162,7 @@ describe('DividendDepositsComponent - Account Selection Integration', () => {
       });
       component.onAddDividend();
       expect(mockDividendDepositsService.addDivDeposit).toHaveBeenCalledWith(
-        newDividend
+        newDividend,
       );
     });
 
@@ -1198,7 +1200,7 @@ describe('DividendDepositsComponent - Account Selection Integration', () => {
       fixture.detectChanges();
 
       // Component column definitions should be preserved
-      expect(component.columns.length).toBe(columnCount);
+      expect(component.columns).toHaveLength(columnCount);
     });
   });
 });

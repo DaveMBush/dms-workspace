@@ -1,6 +1,7 @@
 import { expect, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 import { seedScreenerData } from './helpers/seed-screener-data.helper';
+import { settle } from './helpers/settle.helper';
 
 test.describe('Screener Table', () => {
   let cleanup: () => Promise<void>;
@@ -85,10 +86,10 @@ test.describe('Screener Table', () => {
     test('should filter by risk group', async ({ page }) => {
       const dropdown = page.locator('[data-testid="risk-group-filter"]');
       await dropdown.click();
-      await page.waitForTimeout(300); // Wait for dropdown animation
+      await settle(page, 300); // Wait for dropdown animation
 
       await page.getByRole('option', { name: 'Equities' }).click();
-      await page.waitForTimeout(500); // Wait for filter to apply
+      await settle(page, 500); // Wait for filter to apply
 
       // All visible rows should have "Equities" risk group
       const riskGroups = await page
@@ -108,9 +109,9 @@ test.describe('Screener Table', () => {
 
       // First filter to something specific
       await dropdown.click();
-      await page.waitForTimeout(300); // Wait for dropdown animation
+      await settle(page, 300); // Wait for dropdown animation
       await page.getByRole('option', { name: 'Equities' }).click();
-      await page.waitForTimeout(500); // Wait for filter to apply
+      await settle(page, 500); // Wait for filter to apply
 
       const filteredCount = await page
         .locator('[data-testid="screener-table"] .dms-body-row[role="row"]')
@@ -118,9 +119,9 @@ test.describe('Screener Table', () => {
 
       // Then select All
       await dropdown.click();
-      await page.waitForTimeout(300); // Wait for dropdown animation
+      await settle(page, 300); // Wait for dropdown animation
       await page.getByRole('option', { name: 'All' }).click();
-      await page.waitForTimeout(500); // Wait for filter to apply
+      await settle(page, 500); // Wait for filter to apply
 
       const allCount = await page
         .locator('[data-testid="screener-table"] .dms-body-row[role="row"]')

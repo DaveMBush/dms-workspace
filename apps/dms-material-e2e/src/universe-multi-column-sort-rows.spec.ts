@@ -1,6 +1,7 @@
 import { expect, Page, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 import { seedUniverseE2eData } from './helpers/seed-universe-e2e-data.helper';
+import { settle } from './helpers/settle.helper';
 
 /**
  * Helper: collect text content from all visible cells in a given column index (1-based).
@@ -102,18 +103,18 @@ test.describe('Universe Screen - Multi-Column Sort Row Ordering & Refresh Persis
     const sharedSuffix = symbols[0].slice('UAAA-'.length);
     const symbolInput = page.locator('input[placeholder="Search Symbol"]');
     await symbolInput.fill(sharedSuffix);
-    await page.waitForTimeout(800);
+    await settle(page, 800);
     await page.waitForLoadState('networkidle');
 
     // Click Symbol header to sort ascending (primary sort)
     const symbolHeader = page.getByRole('columnheader', { name: 'Symbol' });
     await symbolHeader.click();
-    await page.waitForTimeout(800);
+    await settle(page, 800);
     await page.waitForLoadState('networkidle');
 
     // Collect Symbol values after ascending sort
     const ascValues = await getColumnTexts(page, UNIVERSE_COLUMN_INDEX.symbol);
-    expect(ascValues.length).toBe(5);
+    expect(ascValues).toHaveLength(5);
 
     // UAAA (symbols[0]) must appear before UEEE (symbols[4]) in ascending order
     const ascIdxUAAA = ascValues.indexOf(symbols[0]);
@@ -125,11 +126,11 @@ test.describe('Universe Screen - Multi-Column Sort Row Ordering & Refresh Persis
     // Click Symbol header again to sort descending, proving the sort is live
     // (not just natural DB insertion order)
     await symbolHeader.click();
-    await page.waitForTimeout(800);
+    await settle(page, 800);
     await page.waitForLoadState('networkidle');
 
     const descValues = await getColumnTexts(page, UNIVERSE_COLUMN_INDEX.symbol);
-    expect(descValues.length).toBe(5);
+    expect(descValues).toHaveLength(5);
 
     // In descending order UEEE must appear before UAAA — opposite of ascending
     const descIdxUAAA = descValues.indexOf(symbols[0]);
@@ -150,7 +151,7 @@ test.describe('Universe Screen - Multi-Column Sort Row Ordering & Refresh Persis
     const sharedSuffix = symbols[0].slice('UAAA-'.length);
     const symbolInput = page.locator('input[placeholder="Search Symbol"]');
     await symbolInput.fill(sharedSuffix);
-    await page.waitForTimeout(800);
+    await settle(page, 800);
     await page.waitForLoadState('networkidle');
 
     // Primary sort: Risk Group ascending
@@ -158,13 +159,13 @@ test.describe('Universe Screen - Multi-Column Sort Row Ordering & Refresh Persis
       name: 'Risk Group',
     });
     await riskGroupHeader.click();
-    await page.waitForTimeout(800);
+    await settle(page, 800);
     await page.waitForLoadState('networkidle');
 
     // Secondary sort: Ex-Date ascending (Shift+click)
     const exDateHeader = page.getByRole('columnheader', { name: 'Ex-Date' });
     await exDateHeader.click({ modifiers: ['Shift'] });
-    await page.waitForTimeout(800);
+    await settle(page, 800);
     await page.waitForLoadState('networkidle');
 
     // Capture symbol order before reload — this is the ground truth.
@@ -172,12 +173,12 @@ test.describe('Universe Screen - Multi-Column Sort Row Ordering & Refresh Persis
       page,
       UNIVERSE_COLUMN_INDEX.symbol,
     );
-    expect(symbolsBefore.length).toBe(5);
+    expect(symbolsBefore).toHaveLength(5);
 
     // ── Simulate browser refresh ──────────────────────────────────────────
     await page.reload();
     await waitForTableRows(page);
-    await page.waitForTimeout(800);
+    await settle(page, 800);
     await page.waitForLoadState('networkidle');
 
     // AC #1: sort rank indicators must be visible on both sort columns.
@@ -193,7 +194,7 @@ test.describe('Universe Screen - Multi-Column Sort Row Ordering & Refresh Persis
       page,
       UNIVERSE_COLUMN_INDEX.symbol,
     );
-    expect(symbolsAfter.length).toBe(5);
+    expect(symbolsAfter).toHaveLength(5);
     expect(symbolsAfter).toEqual(symbolsBefore);
   });
 
@@ -213,7 +214,7 @@ test.describe('Universe Screen - Multi-Column Sort Row Ordering & Refresh Persis
     const sharedSuffix = symbols[0].slice('UAAA-'.length);
     const symbolInput = page.locator('input[placeholder="Search Symbol"]');
     await symbolInput.fill(sharedSuffix);
-    await page.waitForTimeout(800);
+    await settle(page, 800);
     await page.waitForLoadState('networkidle');
 
     // Primary sort: Risk Group ascending
@@ -221,7 +222,7 @@ test.describe('Universe Screen - Multi-Column Sort Row Ordering & Refresh Persis
       name: 'Risk Group',
     });
     await riskGroupHeader.click();
-    await page.waitForTimeout(800);
+    await settle(page, 800);
     await page.waitForLoadState('networkidle');
 
     // Secondary sort: Ex-Date ascending (Shift+click)
@@ -230,7 +231,7 @@ test.describe('Universe Screen - Multi-Column Sort Row Ordering & Refresh Persis
     //   UAAA (ex_date 2026-06-15, June)
     const exDateHeader = page.getByRole('columnheader', { name: 'Ex-Date' });
     await exDateHeader.click({ modifiers: ['Shift'] });
-    await page.waitForTimeout(800);
+    await settle(page, 800);
     await page.waitForLoadState('networkidle');
 
     // Collect all displayed symbol values in DOM order
@@ -238,7 +239,7 @@ test.describe('Universe Screen - Multi-Column Sort Row Ordering & Refresh Persis
       page,
       UNIVERSE_COLUMN_INDEX.symbol,
     );
-    expect(symbolValues.length).toBe(5);
+    expect(symbolValues).toHaveLength(5);
 
     // Identify positions of the two Equities rows
     const idxUAAA = symbolValues.indexOf(symbols[0]); // ex_date 2026-06-15 — later date

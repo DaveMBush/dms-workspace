@@ -1,6 +1,7 @@
 import { expect, Page, Request, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 import { seedScrollDivDepositsData } from './helpers/seed-scroll-div-deposits-data.helper';
+import { settle } from './helpers/settle.helper';
 
 /** Maximum rows the server should return in a single indexes request */
 const MAX_PAGE_SIZE = 50;
@@ -181,7 +182,7 @@ test.describe('Lazy Loading Network Traffic - Dividend Deposits', () => {
     await login(page);
     await page.goto(`/account/${accountId}/div-dep`);
     await waitForDivDepositsTable(page);
-    await page.waitForTimeout(1500);
+    await settle(page, 1500);
 
     // Scroll the virtual viewport incrementally to trigger range changes
     for (let i = 0; i < 5; i++) {
@@ -191,7 +192,7 @@ test.describe('Lazy Loading Network Traffic - Dividend Deposits', () => {
           (viewport as HTMLElement).scrollTop = (step + 1) * 1000;
         }
       }, i);
-      await page.waitForTimeout(500);
+      await settle(page, 500);
     }
 
     // Wait for at least one request, then await all response JSON parsing

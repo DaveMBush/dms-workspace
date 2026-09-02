@@ -1,5 +1,6 @@
 import { expect, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
+import { settle } from './helpers/settle.helper';
 
 test.describe('Add Symbol Dialog', () => {
   test.beforeEach(async ({ page }) => {
@@ -150,9 +151,10 @@ test.describe('Add Symbol Dialog', () => {
 
       if (optionCount === 0) {
         // Wait a bit longer in case they're still loading
-        await page.waitForTimeout(2000);
+        await settle(page, 2000);
         const retryCount = await optionsLocator.count();
         if (retryCount === 0) {
+          // Skip: risk groups failed to load from the SmartNgRX store in this run.
           test.skip(
             true,
             'Risk groups not loaded - SmartNgRX store timing issue',
@@ -190,9 +192,10 @@ test.describe('Add Symbol Dialog', () => {
 
       if (optionCount === 0) {
         // Wait a bit longer in case they're still loading
-        await page.waitForTimeout(2000);
+        await settle(page, 2000);
         const retryCount = await optionsLocator.count();
         if (retryCount === 0) {
+          // Skip: risk groups failed to load from the SmartNgRX store in this run.
           test.skip(
             true,
             'Risk groups not loaded - SmartNgRX store timing issue',
@@ -327,7 +330,7 @@ test.describe('Add Symbol Dialog', () => {
       await expect(
         page.getByRole('heading', { name: 'Add Symbol to Universe' }),
       ).toBeVisible();
-      await page.waitForTimeout(200);
+      await settle(page, 200);
 
       // Tab through all elements in the dialog
       await page.keyboard.press('Tab'); // Symbol input
@@ -351,7 +354,7 @@ test.describe('Add Symbol Dialog', () => {
       await expect(
         page.getByRole('heading', { name: 'Add Symbol to Universe' }),
       ).toBeVisible();
-      await page.waitForTimeout(200);
+      await settle(page, 200);
 
       // Tab through elements - verify tab navigation works
       await page.keyboard.press('Tab');
@@ -464,7 +467,7 @@ test.describe('Add Symbol Dialog', () => {
 
       const input = page.locator('dms-symbol-autocomplete input');
       await input.fill("<script>alert('xss')</script>");
-      await page.waitForTimeout(500);
+      await settle(page, 500);
 
       // Should not cause any errors or execute scripts
       await expect(page.locator('mat-dialog-container')).toBeVisible();

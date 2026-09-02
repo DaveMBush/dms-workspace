@@ -428,7 +428,7 @@ describe('DatabasePerformanceService', () => {
       const stats =
         databasePerformanceService.getQueryStatistics('test-query-1');
 
-      expect(stats.length).toBe(1);
+      expect(stats).toHaveLength(1);
       expect(stats[0].queryName).toBe('test-query-1');
       expect(stats[0].count).toBe(2);
     });

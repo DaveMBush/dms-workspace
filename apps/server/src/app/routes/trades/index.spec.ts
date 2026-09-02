@@ -1,5 +1,4 @@
-import { describe, it, expect } from 'vitest';
-
+import { describe, expect, it } from 'vitest';
 import { mapTradeToResponse, type TradeWithUniverseAndDates } from './index';
 
 describe('mapTradeToResponse', function () {
@@ -511,7 +510,7 @@ describe('mapTradeToResponse', function () {
 
       const result = mapTradeToResponse(trade);
 
-      expect(result.last_price).toBe(12.34);
+      expect(result.last_price).toBeCloseTo(12.34);
     });
 
     it('should return 0 for last_price when universe is null', function () {

@@ -1,5 +1,4 @@
 import { signal } from '@angular/core';
-
 import { UserProfile } from '../types/profile.types';
 
 export abstract class BaseProfileService {
@@ -14,7 +13,7 @@ export abstract class BaseProfileService {
   abstract loadUserProfile(): Promise<void>;
   abstract changeUserPassword(
     oldPassword: string,
-    newPassword: string
+    newPassword: string,
   ): Promise<void>;
 
   abstract updateEmail(newEmail: string): Promise<void>;
@@ -28,7 +27,7 @@ export abstract class BaseProfileService {
   abstract confirmPasswordReset(
     username: string,
     confirmationCode: string,
-    newPassword: string
+    newPassword: string,
   ): Promise<void>;
 
   protected getErrorMessage(error: unknown): string {
@@ -51,13 +50,13 @@ export abstract class BaseProfileService {
 
   protected isValidEmail(email: string): boolean {
     // Simple email validation regex - not vulnerable to ReDoS
-    // eslint-disable-next-line sonarjs/slow-regex -- Simple regex pattern is safe
+    // eslint-disable-next-line sonarjs/super-linear-regex -- Simple regex pattern is safe
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   }
 
   protected async executeWithErrorHandling<T>(
-    operation: () => Promise<T>
+    operation: () => Promise<T>,
   ): Promise<T> {
     this.isLoading.set(true);
     this.error.set(null);
@@ -74,7 +73,7 @@ export abstract class BaseProfileService {
   }
 
   protected async executeLoadProfile(
-    operation: () => Promise<void>
+    operation: () => Promise<void>,
   ): Promise<void> {
     this.isLoading.set(true);
     this.error.set(null);

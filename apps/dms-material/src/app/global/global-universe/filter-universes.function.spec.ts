@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest';
-import { filterUniverses } from './filter-universes.function';
+import { describe, expect, it } from 'vitest';
 import { Universe } from '../../store/universe/universe.interface';
+import { filterUniverses } from './filter-universes.function';
 
 // TDD GREEN Phase - Story AN.8
 // Tests enabled and passing with implementation
@@ -591,7 +591,7 @@ describe('filterUniverses - Expired Filter Comprehensive Tests (Story AN.9)', ()
       expect(
         result.every(function checkExpired(r) {
           return r.expired;
-        })
+        }),
       ).toBe(true);
     });
 
@@ -606,7 +606,7 @@ describe('filterUniverses - Expired Filter Comprehensive Tests (Story AN.9)', ()
       expect(
         result.every(function checkNotExpired(r) {
           return !r.expired;
-        })
+        }),
       ).toBe(true);
     });
 
@@ -684,42 +684,27 @@ describe('filterUniverses - Expired Filter Comprehensive Tests (Story AN.9)', ()
       expect(
         result.every(function checkEquity(r) {
           return r.risk_group_id === 'equity' && !r.expired;
-        })
+        }),
       ).toBe(true);
     });
 
-    it('should combine expired=true with equity risk group', () => {
-      const result = filterUniverses(testData, {
-        symbolFilter: '',
-        riskGroupFilter: 'equity',
-        expiredFilter: true,
-        minYieldFilter: null,
-      });
-      expect(result).toHaveLength(1); // Only MSFT
-      expect(result[0].symbol).toBe('MSFT');
-    });
-
-    it('should combine expired=true with bond risk group', () => {
-      const result = filterUniverses(testData, {
-        symbolFilter: '',
-        riskGroupFilter: 'bond',
-        expiredFilter: true,
-        minYieldFilter: null,
-      });
-      expect(result).toHaveLength(1); // Only TLT
-      expect(result[0].symbol).toBe('TLT');
-    });
-
-    it('should combine expired=true with reit risk group', () => {
-      const result = filterUniverses(testData, {
-        symbolFilter: '',
-        riskGroupFilter: 'reit',
-        expiredFilter: true,
-        minYieldFilter: null,
-      });
-      expect(result).toHaveLength(1); // Only VNQ
-      expect(result[0].symbol).toBe('VNQ');
-    });
+    it.each([
+      ['equity', 'MSFT'],
+      ['bond', 'TLT'],
+      ['reit', 'VNQ'],
+    ])(
+      'should combine expired=true with %s risk group',
+      (riskGroupFilter, expectedSymbol) => {
+        const result = filterUniverses(testData, {
+          symbolFilter: '',
+          riskGroupFilter,
+          expiredFilter: true,
+          minYieldFilter: null,
+        });
+        expect(result).toHaveLength(1);
+        expect(result[0].symbol).toBe(expectedSymbol);
+      },
+    );
 
     it('should return empty when risk group matches but no expired symbols', () => {
       const result = filterUniverses(testData, {
@@ -756,7 +741,7 @@ describe('filterUniverses - Expired Filter Comprehensive Tests (Story AN.9)', ()
       expect(
         result.every(function checkExpired(r) {
           return r.expired;
-        })
+        }),
       ).toBe(true);
     });
 
@@ -1355,7 +1340,7 @@ describe('filterUniverses - Epic 65 placeholder row preservation (CDK scroll-hei
         riskGroupFilter: 'equity',
         expiredFilter: null,
         minYieldFilter: 1.0,
-      }
+      },
     );
     expect(result).toHaveLength(4);
     const placeholders = result.filter(function selectEmpty(r) {

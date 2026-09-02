@@ -1,5 +1,6 @@
 import { expect, Page, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
+import { settle } from './helpers/settle.helper';
 
 const accountUuid = '1677e04f-ef9b-4372-adb3-b740443088dc';
 
@@ -46,7 +47,7 @@ test.describe('Universe Filter Persistence', () => {
     const symbolInput = page.getByPlaceholder('Search Symbol');
     await symbolInput.fill('XYZ');
     // Wait for debounced save (300ms) plus a buffer
-    await page.waitForTimeout(600);
+    await settle(page, 600);
 
     // Verify filter was saved to localStorage
     const filters = await getFilterState(page, 'universes');

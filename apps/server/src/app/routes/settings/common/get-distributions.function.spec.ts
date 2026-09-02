@@ -1,7 +1,6 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
-
-import type { ProcessedRow } from '../../common/distribution-api.function';
 import { logger } from '../../../../utils/structured-logger';
+import type { ProcessedRow } from '../../common/distribution-api.function';
 import { getDistributions } from './get-distributions.function';
 
 // Hoisted mocks
@@ -319,7 +318,7 @@ describe('getDistributions', () => {
     const result = await getDistributions('PDI');
 
     expect(result.result).toBeDefined();
-    expect(result.result?.distribution).toBe(0.2205);
+    expect(result.result?.distribution).toBeCloseTo(0.2205);
     expect(mockFetchDistributionData).not.toHaveBeenCalled();
   });
 
@@ -338,7 +337,7 @@ describe('getDistributions', () => {
     expect(mockFetchDistributionData).toHaveBeenCalledWith('NOLISTING');
     expect(vi.mocked(logger.warn)).toHaveBeenCalledWith(
       'fetchDividendHistory returned no data for NOLISTING, falling back to Yahoo Finance',
-      { symbol: 'NOLISTING' }
+      { symbol: 'NOLISTING' },
     );
   });
 

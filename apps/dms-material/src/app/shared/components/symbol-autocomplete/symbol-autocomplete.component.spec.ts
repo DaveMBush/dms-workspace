@@ -61,7 +61,7 @@ describe('SymbolAutocompleteComponent', () => {
     component.searchControl.setValue('test');
     component.reset();
     expect(component.searchControl.value).toBeFalsy();
-    expect(component.filteredOptions().length).toBe(0);
+    expect(component.filteredOptions()).toHaveLength(0);
   });
 
   it('should initialize with correct default values', () => {
@@ -71,7 +71,7 @@ describe('SymbolAutocompleteComponent', () => {
     expect(component.minLength()).toBe(2);
     expect(component.forceSelection()).toBe(true);
     expect(component.isLoading()).toBe(false);
-    expect(component.filteredOptions().length).toBe(0);
+    expect(component.filteredOptions()).toHaveLength(0);
   });
 
   it('should have filteredOptions signal', () => {

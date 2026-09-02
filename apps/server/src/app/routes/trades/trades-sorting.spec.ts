@@ -357,7 +357,7 @@ describe('Open Trades Endpoint - Sorting', function openTradesSortingTests() {
 
       expect(response.statusCode).toBe(200);
       const rows = JSON.parse(response.body) as unknown as OpenTradeResponse[];
-      expect(rows.length).toBe(4);
+      expect(rows).toHaveLength(4);
       for (const row of rows) {
         expect(row).toHaveProperty('buy');
         expect(row).toHaveProperty('buy_date');
@@ -530,7 +530,7 @@ describe('Open Trades Endpoint - Sorting', function openTradesSortingTests() {
 
       expect(response.statusCode).toBe(200);
       const rows = JSON.parse(response.body) as unknown as OpenTradeResponse[];
-      expect(rows.length).toBe(4);
+      expect(rows).toHaveLength(4);
       // Default sort should be by symbol ascending
       const symbols = rows.map(function extractSymbol(r) {
         return r.symbol;
@@ -594,7 +594,7 @@ describe('Closed Trades Endpoint - Sorting', function closedTradesSortingTests()
       const rows = JSON.parse(
         response.body,
       ) as unknown as ClosedTradeResponse[];
-      expect(rows.length).toBe(4);
+      expect(rows).toHaveLength(4);
       for (const row of rows) {
         expect(row).toHaveProperty('sell');
         expect(row).toHaveProperty('sell_date');
@@ -791,7 +791,7 @@ describe('Closed Trades Endpoint - Sorting', function closedTradesSortingTests()
       const rows = JSON.parse(
         response.body,
       ) as unknown as ClosedTradeResponse[];
-      expect(rows.length).toBe(4);
+      expect(rows).toHaveLength(4);
       // Default sort should be by symbol ascending
       const symbols = rows.map(function extractSymbol(r) {
         return r.symbol;

@@ -67,7 +67,6 @@ describe('LoginComponent', () => {
     });
 
     it('should show error for short password', () => {
-      // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- not real
       component.loginForm.patchValue({ password: '123' });
       const passwordControl = component.loginForm.get('password');
       passwordControl?.markAsTouched();

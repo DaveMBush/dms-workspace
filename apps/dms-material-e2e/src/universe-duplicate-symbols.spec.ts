@@ -142,7 +142,7 @@ test.describe('Universe Screen - Duplicate Symbols Bug (Story 55.1)', () => {
     const totalCount = descUniverses!.length;
 
     // All returned IDs must cover the full universe set.
-    expect(indexes.length).toBe(totalCount);
+    expect(indexes).toHaveLength(totalCount);
 
     // No duplicate IDs in the response — this catches the stale-position bug
     // where some IDs appeared at both a new sorted position and an old stale

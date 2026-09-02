@@ -1,5 +1,6 @@
 import { expect, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
+import { settle } from './helpers/settle.helper';
 
 const ACCOUNT_UUID = '1677e04f-ef9b-4372-adb3-b740443088dc';
 
@@ -11,7 +12,7 @@ test.describe('Open Positions', () => {
 
     // Wait for page to be fully loaded
     await page.waitForLoadState('networkidle');
-    await page.waitForTimeout(2000); // Give time for universe data to load
+    await settle(page, 2000); // Give time for universe data to load
   });
 
   test('should display open positions table', async ({ page }) => {
@@ -85,12 +86,12 @@ test.describe('Open Positions', () => {
     await symbolInput.fill('AA'); // Type partial symbol to trigger autocomplete
 
     // Wait for and click first option from autocomplete
-    await page.waitForTimeout(1000); // Give time for search to complete
+    await settle(page, 1000); // Give time for search to complete
     const firstOption = page.locator('mat-option').first();
     await expect(firstOption).toBeVisible({ timeout: 5000 });
     await firstOption.click();
 
-    await page.waitForTimeout(500);
+    await settle(page, 500);
 
     const quantityInput = page.locator('[data-testid="quantity-input"]');
     await quantityInput.fill('100');
@@ -105,7 +106,7 @@ test.describe('Open Positions', () => {
     await purchaseDateInput.fill('1/15/2024');
     await purchaseDateInput.blur(); // Trigger validation
 
-    await page.waitForTimeout(500);
+    await settle(page, 500);
 
     // Submit the form - wait for button to be enabled
     const saveButton = page.locator('[data-testid="add-position-button"]');
@@ -116,7 +117,7 @@ test.describe('Open Positions', () => {
     await expect(dialogTitle).not.toBeVisible({ timeout: 10000 });
 
     // Verify row count increased
-    await page.waitForTimeout(1000); // Wait for table to update
+    await settle(page, 1000); // Wait for table to update
     const newRows = await table.locator('.dms-body-row[role="row"]').count();
     expect(newRows).toBeGreaterThan(initialRows);
   });
@@ -138,7 +139,7 @@ test.describe('Open Positions', () => {
       '[data-testid="symbol-autocomplete"] input',
     );
     await symbolInput.fill('AAPL');
-    await page.waitForTimeout(500);
+    await settle(page, 500);
     await page.keyboard.press('Enter');
 
     const quantityInput = page.locator('[data-testid="quantity-input"]');
@@ -221,7 +222,7 @@ test.describe('Open Positions', () => {
       '[data-testid="symbol-autocomplete"] input',
     );
     await symbolInput.fill('MSFT');
-    await page.waitForTimeout(500);
+    await settle(page, 500);
     await page.keyboard.press('Enter');
 
     await page.locator('[data-testid="quantity-input"]').fill('50');
@@ -233,7 +234,7 @@ test.describe('Open Positions', () => {
     await purchaseDateInput.click();
     await purchaseDateInput.fill('01/15/2024');
     await purchaseDateInput.press('Enter');
-    await page.waitForTimeout(300);
+    await settle(page, 300);
 
     const saveButton = page.locator('[data-testid="add-position-button"]');
     await expect(saveButton).toBeEnabled({ timeout: 2000 });
@@ -269,7 +270,7 @@ test.describe('Open Positions', () => {
     await page.keyboard.press('Enter');
 
     // Wait for save
-    await page.waitForTimeout(1000);
+    await settle(page, 1000);
 
     // Verify value changed
     const newValue = await quantityCell.textContent();
@@ -288,7 +289,7 @@ test.describe('Open Positions', () => {
       '[data-testid="symbol-autocomplete"] input',
     );
     await symbolInput.fill('TSLA');
-    await page.waitForTimeout(500);
+    await settle(page, 500);
     await page.keyboard.press('Enter');
 
     await page.locator('[data-testid="quantity-input"]').fill('25');
@@ -300,7 +301,7 @@ test.describe('Open Positions', () => {
     await purchaseDateInput.click();
     await purchaseDateInput.fill('01/15/2024');
     await purchaseDateInput.press('Enter');
-    await page.waitForTimeout(300);
+    await settle(page, 300);
 
     const saveButton = page.locator('[data-testid="add-position-button"]');
     await expect(saveButton).toBeEnabled({ timeout: 2000 });
@@ -333,7 +334,7 @@ test.describe('Open Positions', () => {
     await page.keyboard.press('Enter');
 
     // Wait for save
-    await page.waitForTimeout(1000);
+    await settle(page, 1000);
 
     // Verify value changed
     const newValue = await buyPriceCell.textContent();
@@ -351,7 +352,7 @@ test.describe('Open Positions', () => {
       '[data-testid="symbol-autocomplete"] input',
     );
     await symbolInput.fill('GOOGL');
-    await page.waitForTimeout(500);
+    await settle(page, 500);
     await page.keyboard.press('Enter');
 
     await page.locator('[data-testid="quantity-input"]').fill('15');
@@ -363,7 +364,7 @@ test.describe('Open Positions', () => {
     await purchaseDateInput.click();
     await purchaseDateInput.fill('01/15/2024');
     await purchaseDateInput.press('Enter');
-    await page.waitForTimeout(300);
+    await settle(page, 300);
 
     const saveButton = page.locator('[data-testid="add-position-button"]');
     await expect(saveButton).toBeEnabled({ timeout: 2000 });
@@ -396,7 +397,7 @@ test.describe('Open Positions', () => {
     await page.keyboard.press('Enter');
 
     // Wait for save
-    await page.waitForTimeout(1000);
+    await settle(page, 1000);
 
     // Verify date changed
     const newValue = await buyDateCell.textContent();
@@ -414,7 +415,7 @@ test.describe('Open Positions', () => {
       '[data-testid="symbol-autocomplete"] input',
     );
     await symbolInput.fill('AMZN');
-    await page.waitForTimeout(500);
+    await settle(page, 500);
     await page.keyboard.press('Enter');
 
     await page.locator('[data-testid="quantity-input"]').fill('30');
@@ -426,7 +427,7 @@ test.describe('Open Positions', () => {
     await purchaseDateInput.click();
     await purchaseDateInput.fill('01/15/2024');
     await purchaseDateInput.press('Enter');
-    await page.waitForTimeout(300);
+    await settle(page, 300);
 
     const saveButton = page.locator('[data-testid="add-position-button"]');
     await expect(saveButton).toBeEnabled({ timeout: 2000 });
@@ -462,7 +463,7 @@ test.describe('Open Positions', () => {
     await page.keyboard.press('Escape');
 
     // Wait for cancel
-    await page.waitForTimeout(500);
+    await settle(page, 500);
 
     // Verify value didn't change
     const newValue = await quantityCell.textContent();
@@ -478,7 +479,7 @@ test.describe('Open Positions', () => {
     await addButton.click();
     let symbolInput = page.locator('[data-testid="symbol-autocomplete"] input');
     await symbolInput.fill('AAPL');
-    await page.waitForTimeout(500);
+    await settle(page, 500);
     await page.keyboard.press('Enter');
     await page.locator('[data-testid="quantity-input"]').fill('10');
     await page.locator('[data-testid="price-input"]').fill('150.00');
@@ -486,7 +487,7 @@ test.describe('Open Positions', () => {
     await purchaseDateInput.click();
     await purchaseDateInput.fill('01/15/2024');
     await purchaseDateInput.press('Enter');
-    await page.waitForTimeout(300);
+    await settle(page, 300);
     let saveButton = page.locator('[data-testid="add-position-button"]');
     await expect(saveButton).toBeEnabled({ timeout: 2000 });
     await saveButton.click();
@@ -498,7 +499,7 @@ test.describe('Open Positions', () => {
     await addButton.click();
     symbolInput = page.locator('[data-testid="symbol-autocomplete"] input');
     await symbolInput.fill('MSFT');
-    await page.waitForTimeout(500);
+    await settle(page, 500);
     await page.keyboard.press('Enter');
     await page.locator('[data-testid="quantity-input"]').fill('20');
     await page.locator('[data-testid="price-input"]').fill('200.00');
@@ -506,7 +507,7 @@ test.describe('Open Positions', () => {
     await purchaseDateInput.click();
     await purchaseDateInput.fill('01/15/2024');
     await purchaseDateInput.press('Enter');
-    await page.waitForTimeout(300);
+    await settle(page, 300);
     saveButton = page.locator('[data-testid="add-position-button"]');
     await expect(saveButton).toBeEnabled({ timeout: 2000 });
     await saveButton.click();
@@ -514,7 +515,7 @@ test.describe('Open Positions', () => {
     await expect(dialogTitle).not.toBeVisible({ timeout: 10000 });
 
     // Now test filtering
-    await page.waitForTimeout(2000);
+    await settle(page, 2000);
 
     // Get initial row count
     const table = page.locator('dms-base-table');
@@ -527,7 +528,7 @@ test.describe('Open Positions', () => {
     await searchInput.fill('A');
 
     // Wait for filter to apply
-    await page.waitForTimeout(1000);
+    await settle(page, 1000);
 
     // Get filtered row count
     const filteredRows = await table
@@ -560,7 +561,7 @@ test.describe('Open Positions', () => {
       '[data-testid="symbol-autocomplete"] input',
     );
     await symbolInput.fill('NFLX');
-    await page.waitForTimeout(500);
+    await settle(page, 500);
     await page.keyboard.press('Enter');
 
     await page.locator('[data-testid="quantity-input"]').fill('40');
@@ -572,7 +573,7 @@ test.describe('Open Positions', () => {
     await purchaseDateInput.click();
     await purchaseDateInput.fill('01/15/2024');
     await purchaseDateInput.press('Enter');
-    await page.waitForTimeout(300);
+    await settle(page, 300);
 
     const saveButton = page.locator('[data-testid="add-position-button"]');
     await expect(saveButton).toBeEnabled({ timeout: 2000 });
@@ -584,7 +585,7 @@ test.describe('Open Positions', () => {
     // Now test deletion
     const table = page.locator('dms-base-table');
     await table.waitFor({ state: 'visible', timeout: 10000 });
-    await page.waitForTimeout(2000);
+    await settle(page, 2000);
 
     // Get initial row count
     const initialRows = await table
@@ -598,7 +599,7 @@ test.describe('Open Positions', () => {
     await deleteButton.click();
 
     // Wait for deletion
-    await page.waitForTimeout(1000);
+    await settle(page, 1000);
 
     // Verify row count decreased
     const newRows = await table.locator('.dms-body-row[role="row"]').count();

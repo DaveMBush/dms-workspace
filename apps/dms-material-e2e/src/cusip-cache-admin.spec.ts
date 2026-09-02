@@ -1,5 +1,6 @@
 import { expect, Page, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
+import { settle } from './helpers/settle.helper';
 
 const baseApi = `${
   process.env['E2E_API_BASE_URL'] ?? 'http://localhost:3001/api'
@@ -331,7 +332,7 @@ test.describe('CUSIP Cache Admin UI', function describeCusipCache() {
       await confirmButton.click();
 
       // Verify the entry is removed by searching again
-      await page.waitForTimeout(500);
+      await settle(page, 500);
       await page.locator('[data-testid="search-input"]').fill(testCusip);
       await page.locator('[data-testid="search-button"]').click();
 
@@ -415,7 +416,7 @@ test.describe('CUSIP Cache Admin UI', function describeCusipCache() {
       page,
     }) {
       await page.setViewportSize({ width: 1920, height: 1080 });
-      await page.waitForTimeout(300);
+      await settle(page, 300);
 
       await expect(
         page.locator('[data-testid="cusip-cache-page"]'),
@@ -426,7 +427,7 @@ test.describe('CUSIP Cache Admin UI', function describeCusipCache() {
       page,
     }) {
       await page.setViewportSize({ width: 768, height: 1024 });
-      await page.waitForTimeout(300);
+      await settle(page, 300);
 
       await expect(
         page.locator('[data-testid="cusip-cache-page"]'),

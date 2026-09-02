@@ -1,21 +1,20 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { ScreeningData } from '../screener/screening-data.interface';
+import { axiosGetWithBackoff } from './axios-get-with-backoff.function';
+import {
+  classifySymbolRiskGroupId,
+  lookupCefConnectSymbol,
+  RiskGroupMap,
+} from './cef-classification.function';
 
 vi.mock('./axios-get-with-backoff.function', () => ({
   axiosGetWithBackoff: vi.fn(),
 }));
 
-import { axiosGetWithBackoff } from './axios-get-with-backoff.function';
-import {
-  RiskGroupMap,
-  classifySymbolRiskGroupId,
-  lookupCefConnectSymbol,
-} from './cef-classification.function';
-import { ScreeningData } from '../screener/screening-data.interface';
-
 const mockAxiosGetWithBackoff = vi.mocked(axiosGetWithBackoff);
 
 function makeScreeningData(
-  overrides: Partial<ScreeningData> = {}
+  overrides: Partial<ScreeningData> = {},
 ): ScreeningData {
   return {
     CategoryId: 1,
@@ -78,7 +77,7 @@ describe('lookupCefConnectSymbol', () => {
     mockAxiosGetWithBackoff.mockRejectedValueOnce(new Error('Network failure'));
 
     await expect(lookupCefConnectSymbol('PDI')).rejects.toThrow(
-      'Network failure'
+      'Network failure',
     );
   });
 
@@ -98,44 +97,18 @@ describe('lookupCefConnectSymbol', () => {
 });
 
 describe('classifySymbolRiskGroupId', () => {
-  it('returns equities risk_group_id when CategoryId is <= 10', () => {
-    const data = makeScreeningData({ CategoryId: 5 });
+  it.each([
+    [5, 'equities-id'],
+    [25, 'equities-id'],
+    [26, 'equities-id'],
+    [15, 'income-id'],
+    [22, 'tax-free-id'],
+  ])('classifies CategoryId %i as %s', (categoryId, expected) => {
+    const data = makeScreeningData({ CategoryId: categoryId });
 
     const result = classifySymbolRiskGroupId(data, RISK_GROUPS);
 
-    expect(result).toBe('equities-id');
-  });
-
-  it('returns equities risk_group_id when CategoryId is 25', () => {
-    const data = makeScreeningData({ CategoryId: 25 });
-
-    const result = classifySymbolRiskGroupId(data, RISK_GROUPS);
-
-    expect(result).toBe('equities-id');
-  });
-
-  it('returns equities risk_group_id when CategoryId is 26', () => {
-    const data = makeScreeningData({ CategoryId: 26 });
-
-    const result = classifySymbolRiskGroupId(data, RISK_GROUPS);
-
-    expect(result).toBe('equities-id');
-  });
-
-  it('returns income risk_group_id when CategoryId is in 11-20 range', () => {
-    const data = makeScreeningData({ CategoryId: 15 });
-
-    const result = classifySymbolRiskGroupId(data, RISK_GROUPS);
-
-    expect(result).toBe('income-id');
-  });
-
-  it('returns taxFree risk_group_id when CategoryId is in 21-24 range', () => {
-    const data = makeScreeningData({ CategoryId: 22 });
-
-    const result = classifySymbolRiskGroupId(data, RISK_GROUPS);
-
-    expect(result).toBe('tax-free-id');
+    expect(result).toBe(expected);
   });
 
   it('returns null when CategoryId is out of all known ranges', () => {

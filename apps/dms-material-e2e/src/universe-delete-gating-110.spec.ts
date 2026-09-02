@@ -2,6 +2,7 @@ import { expect, Page, test } from 'playwright/test';
 import { generateUniqueId } from './helpers/generate-unique-id.helper';
 import { getOrCreateDivDepositTypeId } from './helpers/get-or-create-div-deposit-type-id.helper';
 import { login } from './helpers/login.helper';
+import { settle } from './helpers/settle.helper';
 import { initializePrismaClient } from './helpers/shared-prisma-client.helper';
 import { createRiskGroups } from './helpers/shared-risk-groups.helper';
 
@@ -42,7 +43,7 @@ async function filterBySymbol(page: Page, symbol: string): Promise<void> {
   const input = page.locator('input[placeholder="Search Symbol"]');
   await input.fill('');
   await input.fill(symbol);
-  await page.waitForTimeout(600);
+  await settle(page, 600);
 }
 
 /**
@@ -55,7 +56,7 @@ async function selectUniverseAccount(
   const accountSelect = page.locator('.account-select mat-select');
   await accountSelect.click();
   await page.getByRole('option', { name: accountName, exact: true }).click();
-  await page.waitForTimeout(500);
+  await settle(page, 500);
 }
 
 // ─── Story 110.3: Universe Delete-Button Gating ───────────────────────────────

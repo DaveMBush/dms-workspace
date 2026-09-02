@@ -1,6 +1,5 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import fastify, { FastifyInstance } from 'fastify';
-
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import registerAccountIndexesRoutes from './index';
 
 // Story AX.14: Tests for /indexes endpoint handling divDeposits childField
@@ -64,7 +63,7 @@ describe('GET /indexes - divDeposits childField (AX.14)', () => {
     expect(response.statusCode).toBe(200);
     expect(body.startIndex).toBe(0);
     expect(body.indexes).toEqual(['dep-0', 'dep-1', 'dep-2', 'dep-3', 'dep-4']);
-    expect(body.length).toBe(20);
+    expect(body).toHaveLength(20);
   });
 
   it('should return correct slice using skip and take', async () => {
@@ -88,7 +87,7 @@ describe('GET /indexes - divDeposits childField (AX.14)', () => {
     const body = JSON.parse(response.body);
     expect(body.startIndex).toBe(5);
     expect(body.indexes).toEqual(['dep-5', 'dep-6', 'dep-7']);
-    expect(body.length).toBe(15);
+    expect(body).toHaveLength(15);
   });
 
   it('should return correct total count from prisma count', async () => {
@@ -107,7 +106,7 @@ describe('GET /indexes - divDeposits childField (AX.14)', () => {
     });
 
     const body = JSON.parse(response.body);
-    expect(body.length).toBe(100);
+    expect(body).toHaveLength(100);
   });
 
   it('should return empty indexes and length 0 when no div deposits match', async () => {
@@ -127,7 +126,7 @@ describe('GET /indexes - divDeposits childField (AX.14)', () => {
 
     const body = JSON.parse(response.body);
     expect(body.indexes).toEqual([]);
-    expect(body.length).toBe(0);
+    expect(body).toHaveLength(0);
   });
 
   it('should handle single div deposit correctly', async () => {
@@ -149,7 +148,7 @@ describe('GET /indexes - divDeposits childField (AX.14)', () => {
 
     const body = JSON.parse(response.body);
     expect(body.indexes).toEqual(['dep-only']);
-    expect(body.length).toBe(1);
+    expect(body).toHaveLength(1);
   });
 
   it('should handle startIndex at end of dataset (scroll to end)', async () => {
@@ -170,7 +169,7 @@ describe('GET /indexes - divDeposits childField (AX.14)', () => {
     const body = JSON.parse(response.body);
     expect(body.startIndex).toBe(99);
     expect(body.indexes).toEqual(['dep-99']);
-    expect(body.length).toBe(100);
+    expect(body).toHaveLength(100);
   });
 
   it('should handle startIndex at beginning after previous request at end', async () => {
@@ -193,7 +192,7 @@ describe('GET /indexes - divDeposits childField (AX.14)', () => {
     expect(endResponse.statusCode).toBe(200);
     expect(endBody.startIndex).toBe(99);
     expect(endBody.indexes).toEqual(['dep-99']);
-    expect(endBody.length).toBe(100);
+    expect(endBody).toHaveLength(100);
 
     // Second request: scroll back to beginning
     const beginIds = Array.from({ length: 10 }, function createId(_, i) {
@@ -232,6 +231,6 @@ describe('GET /indexes - divDeposits childField (AX.14)', () => {
 
     const body = JSON.parse(response.body);
     expect(body.indexes).toEqual([]);
-    expect(body.length).toBe(0);
+    expect(body).toHaveLength(0);
   });
 });

@@ -441,6 +441,7 @@ test.describe('Confirm Dialog Service', () => {
 
       // Rapid clicks
       await cancelButton.click();
+      // eslint-disable-next-line sonarjs/no-forced-browser-interaction -- intentional: the second rapid click targets a possibly-removed button to verify no error is thrown.
       await cancelButton.click({ force: true }).catch(() => {
         // Expected - button may be gone
       });

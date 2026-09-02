@@ -1,5 +1,6 @@
 import { expect, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
+import { settle } from './helpers/settle.helper';
 
 test.describe.skip('Account List', () => {
   test.beforeEach(async ({ page }) => {
@@ -7,7 +8,7 @@ test.describe.skip('Account List', () => {
 
     // Give the app extra time to fully initialize before checking for accounts
     // Webkit needs more time for Angular to bootstrap and trigger API calls
-    await page.waitForTimeout(2000);
+    await settle(page, 2000);
 
     // Wait for the accounts panel to be visible before checking for items
     await page.waitForSelector('.accounts-panel', { timeout: 10000 });
@@ -51,7 +52,7 @@ test.describe.skip('Account List', () => {
     await expect(accountItems.first()).toBeVisible({ timeout: 30000 });
 
     // Extra stability wait for Material rendering
-    await page.waitForTimeout(100);
+    await settle(page, 100);
 
     // Verify account has icon and name
     const firstAccount = accountItems.first();
@@ -71,7 +72,7 @@ test.describe.skip('Account List', () => {
     await expect(accountItems.first()).toBeVisible({ timeout: 30000 });
 
     // Extra stability wait
-    await page.waitForTimeout(100);
+    await settle(page, 100);
 
     // Get the first account's ID from the href
     const firstAccountHref = await accountItems.first().getAttribute('href');
@@ -97,7 +98,7 @@ test.describe.skip('Account List', () => {
     await expect(accountItems.first()).toBeVisible({ timeout: 30000 });
 
     // Extra stability wait for Material rendering
-    await page.waitForTimeout(100);
+    await settle(page, 100);
 
     // Verify at least one account has a name
     const firstAccountName = await accountItems
@@ -185,7 +186,7 @@ test.describe.skip('Account List', () => {
     await expect(page.locator('.accounts-list')).toBeVisible({
       timeout: 30000,
     });
-    await page.waitForTimeout(100);
+    await settle(page, 100);
 
     // Wait for accounts to load
     const accountItems = page.locator('.account-item');

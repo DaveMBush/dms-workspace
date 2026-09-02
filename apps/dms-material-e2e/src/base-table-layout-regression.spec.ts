@@ -31,6 +31,7 @@
 import { expect, test, type Page } from 'playwright/test';
 import { login } from './helpers/login.helper';
 import { seedScrollUniverseData } from './helpers/seed-scroll-universe-data.helper';
+import { settle } from './helpers/settle.helper';
 
 // ─── Selectors ────────────────────────────────────────────────────────────────
 
@@ -366,7 +367,7 @@ test.describe('Base Table Layout Regression — AC1: scrollbar right-edge on nar
     );
 
     // Allow one frame for the layout to settle.
-    await page.waitForTimeout(50);
+    await settle(page, 50);
 
     const result50 = await page.evaluate(checkHeaderViewportAndOuterGeometry, {
       outerSel: outerScrollerSel,
@@ -410,7 +411,7 @@ test.describe('Base Table Layout Regression — AC1: scrollbar right-edge on nar
       }
     }, scrollContainerSel);
 
-    await page.waitForTimeout(50);
+    await settle(page, 50);
 
     const result100 = await page.evaluate(checkHeaderViewportAndOuterGeometry, {
       outerSel: outerScrollerSel,

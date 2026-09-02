@@ -1,6 +1,7 @@
 import { expect, Page, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 import { seedUniverseE2eData } from './helpers/seed-universe-e2e-data.helper';
+import { settle } from './helpers/settle.helper';
 
 /**
  * Helper: read sort state from the sort-filter localStorage key.
@@ -146,14 +147,14 @@ test.describe('Universe Screen E2E', () => {
       // Open the Risk Group filter dropdown and select "Income"
       const riskGroupSelect = page.locator('.header-filter mat-select').first();
       await riskGroupSelect.dispatchEvent('click');
-      await page.waitForTimeout(300);
+      await settle(page, 300);
 
       const incomeOption = page.getByRole('option', {
         name: 'Income',
         exact: true,
       });
       await incomeOption.click();
-      await page.waitForTimeout(500);
+      await settle(page, 500);
 
       // All visible rows should show "Income" in the Risk Group column
       const riskGroupCells = await getColumnTexts(
@@ -170,7 +171,7 @@ test.describe('Universe Screen E2E', () => {
       // Enter a minimum yield value
       const yieldInput = page.locator('input[placeholder="Min Yield %"]');
       await yieldInput.fill('5');
-      await page.waitForTimeout(500);
+      await settle(page, 500);
 
       // All visible rows should have yield >= 5%
       const yieldCells = await getColumnTexts(
@@ -191,10 +192,10 @@ test.describe('Universe Screen E2E', () => {
       // Expired select is the last one in the filter row
       const expiredSelect = expiredSelects.last();
       await expiredSelect.dispatchEvent('click');
-      await page.waitForTimeout(300);
+      await settle(page, 300);
       const yesOption = page.getByRole('option', { name: 'Yes' });
       await yesOption.click();
-      await page.waitForTimeout(500);
+      await settle(page, 500);
 
       // All visible rows should show expired = "Yes" or a checkmark
       const expiredCells = await getColumnTexts(page, 12);
@@ -222,7 +223,7 @@ test.describe('Universe Screen E2E', () => {
         exact: true,
       });
       await header.click();
-      await page.waitForTimeout(500);
+      await settle(page, 500);
 
       const state = await getSortState(page, 'universes');
       expect(state).not.toBeNull();
@@ -233,7 +234,7 @@ test.describe('Universe Screen E2E', () => {
     test('should sort by Risk Group', async ({ page }) => {
       const header = page.getByRole('columnheader', { name: 'Risk Group' });
       await header.click();
-      await page.waitForTimeout(500);
+      await settle(page, 500);
 
       const state = await getSortState(page, 'universes');
       expect(state).not.toBeNull();
@@ -247,7 +248,7 @@ test.describe('Universe Screen E2E', () => {
         exact: true,
       });
       await header.click();
-      await page.waitForTimeout(500);
+      await settle(page, 500);
 
       const state = await getSortState(page, 'universes');
       expect(state).not.toBeNull();
@@ -260,7 +261,7 @@ test.describe('Universe Screen E2E', () => {
         name: 'Avg Purch Yield %',
       });
       await header.click();
-      await page.waitForTimeout(500);
+      await settle(page, 500);
 
       const state = await getSortState(page, 'universes');
       expect(state).not.toBeNull();
@@ -271,7 +272,7 @@ test.describe('Universe Screen E2E', () => {
     test('should sort by Ex-Date', async ({ page }) => {
       const header = page.getByRole('columnheader', { name: 'Ex-Date' });
       await header.click();
-      await page.waitForTimeout(500);
+      await settle(page, 500);
 
       const state = await getSortState(page, 'universes');
       expect(state).not.toBeNull();
@@ -284,7 +285,7 @@ test.describe('Universe Screen E2E', () => {
         name: 'Mst Rcnt Sll Dt',
       });
       await header.click();
-      await page.waitForTimeout(500);
+      await settle(page, 500);
 
       const state = await getSortState(page, 'universes');
       expect(state).not.toBeNull();
@@ -297,7 +298,7 @@ test.describe('Universe Screen E2E', () => {
         name: 'Mst Rcnt Sell $',
       });
       await header.click();
-      await page.waitForTimeout(500);
+      await settle(page, 500);
 
       const state = await getSortState(page, 'universes');
       expect(state).not.toBeNull();
@@ -322,7 +323,7 @@ test.describe('Universe Screen E2E', () => {
       // Record initial "All Accounts" values for seeded symbol
       const symbolInput = page.locator('input[placeholder="Search Symbol"]');
       await symbolInput.fill(symbols[0]);
-      await page.waitForTimeout(800);
+      await settle(page, 800);
 
       // Capture row data with "All Accounts" (default)
       const allAccountsYield = await getColumnTexts(
@@ -356,7 +357,7 @@ test.describe('Universe Screen E2E', () => {
         '.universe-toolbar mat-form-field mat-select',
       );
       await accountSelect.click();
-      await page.waitForTimeout(300);
+      await settle(page, 300);
 
       const account1Option = page.getByRole('option', {
         name: accountNames[0],
@@ -364,12 +365,12 @@ test.describe('Universe Screen E2E', () => {
       // If account option exists, select it and verify computed fields change
       if ((await account1Option.count()) > 0) {
         await account1Option.click();
-        await page.waitForTimeout(800);
+        await settle(page, 800);
 
         // Re-filter to our symbol
         await symbolInput.clear();
         await symbolInput.fill(symbols[0]);
-        await page.waitForTimeout(800);
+        await settle(page, 800);
 
         const acct1Yield = await getColumnTexts(
           page,
@@ -421,7 +422,7 @@ test.describe('Universe Screen E2E', () => {
     }) => {
       const symbolInput = page.locator('input[placeholder="Search Symbol"]');
       await symbolInput.fill(symbols[0]);
-      await page.waitForTimeout(800);
+      await settle(page, 800);
 
       // Get all-accounts yield
       const allYield = await getColumnTexts(
@@ -434,18 +435,18 @@ test.describe('Universe Screen E2E', () => {
         '.universe-toolbar mat-form-field mat-select',
       );
       await accountSelect.click();
-      await page.waitForTimeout(300);
+      await settle(page, 300);
 
       const account1Option = page.getByRole('option', {
         name: accountNames[0],
       });
       if ((await account1Option.count()) > 0) {
         await account1Option.click();
-        await page.waitForTimeout(800);
+        await settle(page, 800);
 
         await symbolInput.clear();
         await symbolInput.fill(symbols[0]);
-        await page.waitForTimeout(800);
+        await settle(page, 800);
 
         const acct1Yield = await getColumnTexts(
           page,
@@ -464,7 +465,7 @@ test.describe('Universe Screen E2E', () => {
     test('should compute Position per selected account', async ({ page }) => {
       const symbolInput = page.locator('input[placeholder="Search Symbol"]');
       await symbolInput.fill(symbols[0]);
-      await page.waitForTimeout(800);
+      await settle(page, 800);
 
       const allPosition = await getColumnTexts(
         page,
@@ -477,18 +478,18 @@ test.describe('Universe Screen E2E', () => {
         '.universe-toolbar mat-form-field mat-select',
       );
       await accountSelect.click();
-      await page.waitForTimeout(300);
+      await settle(page, 300);
 
       const account2Option = page.getByRole('option', {
         name: accountNames[1],
       });
       if ((await account2Option.count()) > 0) {
         await account2Option.click();
-        await page.waitForTimeout(800);
+        await settle(page, 800);
 
         await symbolInput.clear();
         await symbolInput.fill(symbols[0]);
-        await page.waitForTimeout(800);
+        await settle(page, 800);
 
         const acct2Position = await getColumnTexts(
           page,
@@ -505,7 +506,7 @@ test.describe('Universe Screen E2E', () => {
     }) => {
       const symbolInput = page.locator('input[placeholder="Search Symbol"]');
       await symbolInput.fill(symbols[0]);
-      await page.waitForTimeout(800);
+      await settle(page, 800);
 
       const allSellDate = await getColumnTexts(
         page,
@@ -516,18 +517,18 @@ test.describe('Universe Screen E2E', () => {
         '.universe-toolbar mat-form-field mat-select',
       );
       await accountSelect.click();
-      await page.waitForTimeout(300);
+      await settle(page, 300);
 
       const account1Option = page.getByRole('option', {
         name: accountNames[0],
       });
       if ((await account1Option.count()) > 0) {
         await account1Option.click();
-        await page.waitForTimeout(800);
+        await settle(page, 800);
 
         await symbolInput.clear();
         await symbolInput.fill(symbols[0]);
-        await page.waitForTimeout(800);
+        await settle(page, 800);
 
         const acct1SellDate = await getColumnTexts(
           page,
@@ -546,7 +547,7 @@ test.describe('Universe Screen E2E', () => {
     }) => {
       const symbolInput = page.locator('input[placeholder="Search Symbol"]');
       await symbolInput.fill(symbols[0]);
-      await page.waitForTimeout(800);
+      await settle(page, 800);
 
       const allSellPrice = await getColumnTexts(
         page,
@@ -557,18 +558,18 @@ test.describe('Universe Screen E2E', () => {
         '.universe-toolbar mat-form-field mat-select',
       );
       await accountSelect.click();
-      await page.waitForTimeout(300);
+      await settle(page, 300);
 
       const account1Option = page.getByRole('option', {
         name: accountNames[0],
       });
       if ((await account1Option.count()) > 0) {
         await account1Option.click();
-        await page.waitForTimeout(800);
+        await settle(page, 800);
 
         await symbolInput.clear();
         await symbolInput.fill(symbols[0]);
-        await page.waitForTimeout(800);
+        await settle(page, 800);
 
         const acct1SellPrice = await getColumnTexts(
           page,
@@ -587,7 +588,7 @@ test.describe('Universe Screen E2E', () => {
     }) => {
       const symbolInput = page.locator('input[placeholder="Search Symbol"]');
       await symbolInput.fill(symbols[0]);
-      await page.waitForTimeout(800);
+      await settle(page, 800);
 
       const allLastPrice = await getColumnTexts(
         page,
@@ -599,18 +600,18 @@ test.describe('Universe Screen E2E', () => {
         '.universe-toolbar mat-form-field mat-select',
       );
       await accountSelect.click();
-      await page.waitForTimeout(300);
+      await settle(page, 300);
 
       const account1Option = page.getByRole('option', {
         name: accountNames[0],
       });
       if ((await account1Option.count()) > 0) {
         await account1Option.click();
-        await page.waitForTimeout(800);
+        await settle(page, 800);
 
         await symbolInput.clear();
         await symbolInput.fill(symbols[0]);
-        await page.waitForTimeout(800);
+        await settle(page, 800);
 
         const acct1LastPrice = await getColumnTexts(
           page,

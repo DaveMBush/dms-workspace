@@ -47,15 +47,15 @@ export function updateDividendHistoryCallTime(): void {
 
 async function fetchAndParseHtml(
   url: string,
-  upperTicker: string
+  upperTicker: string,
 ): Promise<ParsedDividendRow[] | null> {
   const response = await fetch(url, { headers: BROWSER_HEADERS });
   if (!response.ok) {
     logger.warn(
       `dividendhistory.net returned ${String(
-        response.status
+        response.status,
       )} for ticker ${upperTicker}`,
-      { ticker: upperTicker, status: response.status }
+      { ticker: upperTicker, status: response.status },
     );
     return null;
   }
@@ -63,14 +63,44 @@ async function fetchAndParseHtml(
   return parseDividendTable(html);
 }
 
+// Removes HTML tags with a linear scan (a regex like /<[^>]+>/g is flagged by
+// sonarjs/super-linear-regex for backtracking on adversarial input).
+function stripTags(text: string): string {
+  let result = '';
+  let inTag = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text.charAt(i);
+    if (ch === '<') {
+      inTag = true;
+    } else if (ch === '>') {
+      inTag = false;
+    } else if (!inTag) {
+      result += ch;
+    }
+  }
+  return result.trim();
+}
+
 function parseCellValues(cells: string): string[] {
   const cellValues: string[] = [];
-  const cellRegex = /<td[^>]*>([\s\S]*?)<\/td>/gi;
-  let cellMatch: RegExpExecArray | null;
-  while ((cellMatch = cellRegex.exec(cells)) !== null) {
-    // eslint-disable-next-line sonarjs/slow-regex -- safe: [^>]+ is bounded by > and cannot catastrophically backtrack
-    const text = cellMatch[1].replace(/<[^>]+>/g, '').trim();
-    cellValues.push(text);
+  // Linear index scan instead of a backtracking regex (sonarjs/super-linear-regex)
+  const haystack = cells.toLowerCase();
+  let searchFrom = 0;
+  for (;;) {
+    const tagStart = haystack.indexOf('<td', searchFrom);
+    if (tagStart === -1) {
+      break;
+    }
+    const contentStart = haystack.indexOf('>', tagStart + 3);
+    if (contentStart === -1) {
+      break;
+    }
+    const tagEnd = haystack.indexOf('</td>', contentStart + 1);
+    if (tagEnd === -1) {
+      break;
+    }
+    cellValues.push(stripTags(cells.slice(contentStart + 1, tagEnd)));
+    searchFrom = tagEnd + 4;
   }
   return cellValues;
 }
@@ -132,18 +162,18 @@ function parseExDivDate(exDiv: string): number {
  * distinct pay date so interval calculations see the true monthly spacing.
  */
 function deduplicateByPayDay(
-  rawRows: ParsedDividendRow[]
+  rawRows: ParsedDividendRow[],
 ): ParsedDividendRow[] {
   const sorted = [...rawRows].sort(function sortByExDivAscending(
     a: ParsedDividendRow,
-    b: ParsedDividendRow
+    b: ParsedDividendRow,
   ): number {
     return parseExDivDate(a.exDiv) - parseExDivDate(b.exDiv);
   });
 
   const seenPayDays = new Set<string>();
   return sorted.filter(function filterFirstByPayDay(
-    row: ParsedDividendRow
+    row: ParsedDividendRow,
   ): boolean {
     if (seenPayDays.has(row.payDay)) {
       return false;
@@ -166,14 +196,14 @@ function isValidProcessedRow(row: ProcessedRow): boolean {
 }
 
 export async function fetchDividendHistory(
-  ticker: string
+  ticker: string,
 ): Promise<ProcessedRow[]> {
   await enforceDividendHistoryRateLimit();
   updateDividendHistoryCallTime();
 
   const upperTicker = ticker.toUpperCase();
   const url = `${BASE_URL}/${encodeURIComponent(
-    upperTicker.toLowerCase()
+    upperTicker.toLowerCase(),
   )}-dividend-yield`;
 
   try {
@@ -182,7 +212,7 @@ export async function fetchDividendHistory(
       {
         ticker: upperTicker,
         url,
-      }
+      },
     );
 
     const rawRows = await fetchAndParseHtml(url, upperTicker);
@@ -190,7 +220,7 @@ export async function fetchDividendHistory(
     if (!rawRows || rawRows.length === 0) {
       logger.warn(
         `No dividend data found on dividendhistory.net for ticker ${upperTicker}`,
-        { ticker: upperTicker }
+        { ticker: upperTicker },
       );
       return [];
     }
@@ -204,14 +234,14 @@ export async function fetchDividendHistory(
 
     logger.debug(
       `Found ${processed.length.toString()} dividend entries for ${upperTicker} from dividendhistory.net`,
-      { ticker: upperTicker, count: processed.length }
+      { ticker: upperTicker, count: processed.length },
     );
 
     return processed;
   } catch (error) {
     logger.warn(
       `Error fetching dividend history for ${upperTicker} from dividendhistory.net`,
-      { ticker: upperTicker, error: String(error) }
+      { ticker: upperTicker, error: String(error) },
     );
     return [];
   }

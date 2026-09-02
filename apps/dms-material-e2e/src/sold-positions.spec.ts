@@ -1,5 +1,6 @@
 import { expect, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
+import { settle } from './helpers/settle.helper';
 
 test.describe('Sold Positions', () => {
   test.beforeEach(async ({ page }) => {
@@ -73,7 +74,7 @@ test.describe('Sold Positions', () => {
       await sellDateButton.click();
 
       // Wait for sort to apply
-      await page.waitForTimeout(300);
+      await settle(page, 300);
 
       // Verify the button is still visible (sorting completed without error)
       await expect(sellDateButton).toBeVisible();
@@ -86,7 +87,7 @@ test.describe('Sold Positions', () => {
       await searchInput.fill('AAPL');
 
       // Wait for filter to apply
-      await page.waitForTimeout(300);
+      await settle(page, 300);
 
       // Table should still be visible (even if no results)
       const table = page.locator('dms-base-table');
@@ -99,7 +100,7 @@ test.describe('Sold Positions', () => {
       // Filter by non-existent symbol
       const searchInput = page.getByPlaceholder('Search Symbol');
       await searchInput.fill('NONEXISTENT123');
-      await page.waitForTimeout(300);
+      await settle(page, 300);
 
       // Table should be visible but rows should be empty or show no results message
       const table = page.locator('dms-base-table');
@@ -159,9 +160,9 @@ test.describe('Sold Positions', () => {
 
       // Type and then clear
       await searchInput.fill('AAPL');
-      await page.waitForTimeout(300);
+      await settle(page, 300);
       await searchInput.clear();
-      await page.waitForTimeout(300);
+      await settle(page, 300);
 
       // Table should still be visible
       const table = page.locator('dms-base-table');
@@ -211,7 +212,7 @@ test.describe('Sold Positions', () => {
 
       // Type partial symbol
       await searchInput.fill('AA');
-      await page.waitForTimeout(300);
+      await settle(page, 300);
 
       // Table should still be visible
       const table = page.locator('dms-base-table');
@@ -223,7 +224,7 @@ test.describe('Sold Positions', () => {
 
       // Type lowercase
       await searchInput.fill('aapl');
-      await page.waitForTimeout(300);
+      await settle(page, 300);
 
       // Table should still be visible and filter should work
       const table = page.locator('dms-base-table');

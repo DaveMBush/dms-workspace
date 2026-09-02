@@ -1,6 +1,7 @@
 import { expect, Page, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 import { seedExpiredFilterE2eData } from './helpers/seed-expired-filter-e2e-data.helper';
+import { settle } from './helpers/settle.helper';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -30,7 +31,7 @@ async function filterBySymbol(page: Page, symbol: string): Promise<void> {
   const input = page.locator('input[placeholder="Search Symbol"]');
   await input.fill(symbol);
   // Allow Angular's debounce / change-detection cycle to complete.
-  await page.waitForTimeout(600);
+  await settle(page, 600);
 }
 
 // ─── Epic 109 — Expired-No-Open Filter (Story 109.3) ─────────────────────────

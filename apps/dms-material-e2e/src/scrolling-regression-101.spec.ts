@@ -180,6 +180,7 @@ import { seedScrollOpenPositionsData } from './helpers/seed-scroll-open-position
 import { seedScrollScreenerData } from './helpers/seed-scroll-screener-data.helper';
 import { seedScrollSoldPositionsData } from './helpers/seed-scroll-sold-positions-data.helper';
 import { seedScrollUniverseData } from './helpers/seed-scroll-universe-data.helper';
+import { settle } from './helpers/settle.helper';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -267,7 +268,7 @@ async function captureSlowScrollFrames(
     ) {
       (el as HTMLElement).scrollTop = top;
     }, y);
-    await page.waitForTimeout(frameDelayMs);
+    await settle(page, frameDelayMs);
 
     const [hb, vb, st] = await Promise.all([
       headerLocator.boundingBox(),
@@ -400,7 +401,7 @@ test.describe('Open Positions — Round 7 slow-scroll sticky-header regression (
     await page.waitForSelector('cdk-virtual-scroll-viewport', {
       timeout: 30000,
     });
-    await page.waitForTimeout(2000);
+    await settle(page, 2000);
   });
 
   test('Open Positions: sticky header does not drift down with content during slow scroll (header-scrolls-with-content)', async ({
@@ -477,7 +478,7 @@ test.describe('Sold Positions — Round 7 slow-scroll sticky-header regression (
     await page.waitForSelector('cdk-virtual-scroll-viewport', {
       timeout: 30000,
     });
-    await page.waitForTimeout(2000);
+    await settle(page, 2000);
   });
 
   test('Sold Positions: sticky header does not drift down with content during slow scroll (header-scrolls-with-content)', async ({
@@ -554,7 +555,7 @@ test.describe('Dividend Deposits — Round 7 slow-scroll sticky-header regressio
     await page.waitForSelector('cdk-virtual-scroll-viewport', {
       timeout: 30000,
     });
-    await page.waitForTimeout(2000);
+    await settle(page, 2000);
   });
 
   test('Dividend Deposits: sticky header does not drift down with content during slow scroll (header-scrolls-with-content)', async ({

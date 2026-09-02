@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, no-underscore-dangle, sonarjs/os-command, unused-imports/no-unused-vars, vitest/no-conditional-expect -- Test file uses dynamic imports and global test hooks intentionally */
+/* eslint-disable @typescript-eslint/no-explicit-any, no-underscore-dangle, unused-imports/no-unused-vars, vitest/no-conditional-expect -- Test file uses dynamic imports and global test hooks intentionally */
 import { execSync } from 'child_process';
 import { rmSync } from 'fs';
 import { PrismaClient } from '@prisma/client';
@@ -400,7 +400,7 @@ export default defineConfig({
       ).__testOptimizedBatchAccountLoad([]);
 
       expect(result).toBeInstanceOf(Array);
-      expect(result.length).toBe(0);
+      expect(result).toHaveLength(0);
     });
 
     it('should handle partial matches', async () => {

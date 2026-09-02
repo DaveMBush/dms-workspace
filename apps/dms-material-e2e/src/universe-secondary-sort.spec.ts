@@ -1,6 +1,7 @@
 import { expect, Page, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 import { seedUniverseE2eData } from './helpers/seed-universe-e2e-data.helper';
+import { settle } from './helpers/settle.helper';
 
 /**
  * Helper: collect text content from all visible cells in a given column
@@ -107,7 +108,7 @@ test.describe('Universe Screen - Secondary Sort (Story 43.2)', () => {
     const sharedSuffix = symbols[0].slice('UAAA-'.length);
     const symbolInput = page.locator('input[placeholder="Search Symbol"]');
     await symbolInput.fill(sharedSuffix);
-    await page.waitForTimeout(800);
+    await settle(page, 800);
     await page.waitForLoadState('networkidle');
 
     // Primary sort: Risk Group ascending (single click)
@@ -115,17 +116,17 @@ test.describe('Universe Screen - Secondary Sort (Story 43.2)', () => {
       name: 'Risk Group',
     });
     await riskGroupHeader.click();
-    await page.waitForTimeout(800);
+    await settle(page, 800);
     await page.waitForLoadState('networkidle');
 
     // Secondary sort: Ex-Date — first Shift+click sets it to ascending,
     // second Shift+click toggles it to descending.
     const exDateHeader = page.getByRole('columnheader', { name: 'Ex-Date' });
     await exDateHeader.click({ modifiers: ['Shift'] }); // asc
-    await page.waitForTimeout(800);
+    await settle(page, 800);
     await page.waitForLoadState('networkidle');
     await exDateHeader.click({ modifiers: ['Shift'] }); // desc
-    await page.waitForTimeout(800);
+    await settle(page, 800);
     await page.waitForLoadState('networkidle');
 
     // Collect all symbol values in current DOM row order
@@ -133,7 +134,7 @@ test.describe('Universe Screen - Secondary Sort (Story 43.2)', () => {
       page,
       UNIVERSE_COLUMN_INDEX.symbol,
     );
-    expect(symbolValues.length).toBe(5);
+    expect(symbolValues).toHaveLength(5);
 
     // Within the Equities group, descending Ex-Date means later date first:
     //   UAAA (2026-06-15, later)  → must appear BEFORE
@@ -155,7 +156,7 @@ test.describe('Universe Screen - Secondary Sort (Story 43.2)', () => {
     const sharedSuffix = symbols[0].slice('UAAA-'.length);
     const symbolInput = page.locator('input[placeholder="Search Symbol"]');
     await symbolInput.fill(sharedSuffix);
-    await page.waitForTimeout(800);
+    await settle(page, 800);
     await page.waitForLoadState('networkidle');
 
     // Primary sort: Risk Group ascending (single click)
@@ -163,13 +164,13 @@ test.describe('Universe Screen - Secondary Sort (Story 43.2)', () => {
       name: 'Risk Group',
     });
     await riskGroupHeader.click();
-    await page.waitForTimeout(800);
+    await settle(page, 800);
     await page.waitForLoadState('networkidle');
 
     // Secondary sort: Ex-Date ascending (single Shift+click)
     const exDateHeader = page.getByRole('columnheader', { name: 'Ex-Date' });
     await exDateHeader.click({ modifiers: ['Shift'] });
-    await page.waitForTimeout(800);
+    await settle(page, 800);
     await page.waitForLoadState('networkidle');
 
     // Collect all symbol values in current DOM row order
@@ -177,7 +178,7 @@ test.describe('Universe Screen - Secondary Sort (Story 43.2)', () => {
       page,
       UNIVERSE_COLUMN_INDEX.symbol,
     );
-    expect(symbolValues.length).toBe(5);
+    expect(symbolValues).toHaveLength(5);
 
     // Within the Equities group, ascending Ex-Date means earlier date first:
     //   UDDD (2026-04-15, earlier) → must appear BEFORE

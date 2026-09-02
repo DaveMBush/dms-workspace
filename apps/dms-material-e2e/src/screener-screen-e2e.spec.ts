@@ -1,6 +1,7 @@
 import { expect, Page, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 import { seedScreenerData } from './helpers/seed-screener-data.helper';
+import { settle } from './helpers/settle.helper';
 
 /**
  * Helper: read sort state from the sort-filter localStorage key.
@@ -87,10 +88,10 @@ test.describe('Screener Screen E2E', () => {
     test('should filter by Risk Group', async ({ page }) => {
       const dropdown = page.locator('[data-testid="risk-group-filter"]');
       await dropdown.click();
-      await page.waitForTimeout(300);
+      await settle(page, 300);
 
       await page.getByRole('option', { name: 'Equities' }).click();
-      await page.waitForTimeout(500);
+      await settle(page, 500);
 
       // All visible rows should have "Equities" in the Risk Group column (column 2)
       const riskGroupCells = await getColumnTexts(page, 2);
@@ -114,7 +115,7 @@ test.describe('Screener Screen E2E', () => {
     test('should sort by Symbol', async ({ page }) => {
       const header = page.getByRole('columnheader', { name: 'Symbol' });
       await header.click();
-      await page.waitForTimeout(500);
+      await settle(page, 500);
 
       const state = await getSortState(page, 'screens');
       expect(state).not.toBeNull();
@@ -125,7 +126,7 @@ test.describe('Screener Screen E2E', () => {
     test('should sort by Risk Group', async ({ page }) => {
       const header = page.getByRole('columnheader', { name: 'Risk Group' });
       await header.click();
-      await page.waitForTimeout(500);
+      await settle(page, 500);
 
       const state = await getSortState(page, 'screens');
       expect(state).not.toBeNull();

@@ -1,5 +1,6 @@
 import { expect, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
+import { settle } from './helpers/settle.helper';
 
 test.describe('Add Symbol Flow', () => {
   test.beforeEach(async ({ page }) => {
@@ -43,7 +44,7 @@ test.describe('Add Symbol Flow', () => {
       await input.fill('AA');
 
       // Wait for debounce and API response
-      await page.waitForTimeout(600);
+      await settle(page, 600);
 
       // Check for visible options (not the panel which has hidden class)
       const options = page.locator(
@@ -65,7 +66,7 @@ test.describe('Add Symbol Flow', () => {
       await page.click('[data-testid="add-symbol-button"]');
       const input = page.locator('[data-testid="symbol-input"]');
       await input.fill('AA');
-      await page.waitForTimeout(600);
+      await settle(page, 600);
 
       // Click on the autocomplete option
       const option = page.locator(
@@ -94,7 +95,7 @@ test.describe('Add Symbol Flow', () => {
       // Select symbol from autocomplete
       const input = page.locator('[data-testid="symbol-input"]');
       await input.fill('AA');
-      await page.waitForTimeout(600);
+      await settle(page, 600);
 
       const option = page.locator(
         '.mat-option:has-text("AAPL"), .mat-mdc-option:has-text("AAPL")',
@@ -104,7 +105,7 @@ test.describe('Add Symbol Flow', () => {
 
       // Select risk group
       await page.click('mat-select[formcontrolname="riskGroupId"]');
-      await page.waitForTimeout(300);
+      await settle(page, 300);
       const riskGroupOption = page.locator(
         '.cdk-overlay-container .mat-option:first-child, .cdk-overlay-container .mat-mdc-option:first-child',
       );
@@ -117,7 +118,7 @@ test.describe('Add Symbol Flow', () => {
 
       // Verify submit was clicked (button may show loading state or dialog may close)
       // Since SmartNgRX handles the actual API, we just verify the interaction succeeded
-      await page.waitForTimeout(500);
+      await settle(page, 500);
     });
 
     test('should refresh universe table after addition', async () => {
@@ -183,7 +184,7 @@ test.describe('Add Symbol Flow', () => {
       // Select symbol
       const input = page.locator('[data-testid="symbol-input"]');
       await input.fill('TEST');
-      await page.waitForTimeout(600);
+      await settle(page, 600);
 
       const option = page.locator(
         '.mat-option:has-text("TEST"), .mat-mdc-option:has-text("TEST")',
@@ -193,7 +194,7 @@ test.describe('Add Symbol Flow', () => {
 
       // Select risk group
       await page.click('mat-select[formcontrolname="riskGroupId"]');
-      await page.waitForTimeout(300);
+      await settle(page, 300);
       const riskGroupOption = page.locator(
         '.cdk-overlay-container .mat-option:first-child, .cdk-overlay-container .mat-mdc-option:first-child',
       );

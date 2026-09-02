@@ -67,6 +67,7 @@ import { seedScrollOpenPositionsData } from './helpers/seed-scroll-open-position
 import { seedScrollScreenerData } from './helpers/seed-scroll-screener-data.helper';
 import { seedScrollSoldPositionsData } from './helpers/seed-scroll-sold-positions-data.helper';
 import { seedScrollUniverseData } from './helpers/seed-scroll-universe-data.helper';
+import { settle } from './helpers/settle.helper';
 import { swapActiveAccountViaNavigation } from './helpers/swap-active-account-via-navigation.helper';
 import { swapUniverseAccount } from './helpers/swap-universe-account.helper';
 
@@ -259,7 +260,7 @@ test.describe('Open Positions — account-change sticky-header regression', () =
     await page.waitForSelector('cdk-virtual-scroll-viewport', {
       timeout: 30000,
     });
-    await page.waitForTimeout(2000);
+    await settle(page, 2000);
   });
 
   test('Open Positions: all sticky-header invariants hold after account-change (drift / overlap / flicker)', async ({
@@ -302,7 +303,7 @@ test.describe('Open Positions — filter-change (symbol) sticky-header regressio
     await page.waitForSelector('cdk-virtual-scroll-viewport', {
       timeout: 30000,
     });
-    await page.waitForTimeout(2000);
+    await settle(page, 2000);
   });
 
   test('Open Positions: all sticky-header invariants hold after symbol filter apply/clear (drift / overlap / flicker)', async ({
@@ -350,7 +351,7 @@ test.describe('Sold Positions — account-change sticky-header regression', () =
     await page.waitForSelector('cdk-virtual-scroll-viewport', {
       timeout: 30000,
     });
-    await page.waitForTimeout(2000);
+    await settle(page, 2000);
   });
 
   test('Sold Positions: all sticky-header invariants hold after account-change (drift / overlap / flicker)', async ({
@@ -389,7 +390,7 @@ test.describe('Sold Positions — filter-change (symbol) sticky-header regressio
     await page.waitForSelector('cdk-virtual-scroll-viewport', {
       timeout: 30000,
     });
-    await page.waitForTimeout(2000);
+    await settle(page, 2000);
   });
 
   test('Sold Positions: all sticky-header invariants hold after symbol filter apply/clear (drift / overlap / flicker)', async ({
@@ -441,7 +442,7 @@ test.describe('Dividend Deposits — account-change sticky-header regression', (
     await page.waitForSelector('cdk-virtual-scroll-viewport', {
       timeout: 30000,
     });
-    await page.waitForTimeout(2000);
+    await settle(page, 2000);
   });
 
   test('Dividend Deposits: all sticky-header invariants hold after account-change (drift / overlap / flicker)', async ({

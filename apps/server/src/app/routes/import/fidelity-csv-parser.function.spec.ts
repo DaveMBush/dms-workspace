@@ -1,5 +1,4 @@
 import { describe, expect, test } from 'vitest';
-
 import { parseFidelityCsv } from './fidelity-csv-parser.function';
 
 describe('parseFidelityCsv', function () {
@@ -156,7 +155,7 @@ describe('parseFidelityCsv', function () {
 
     test('should throw error for CSV with incorrect header columns', function () {
       const csv = ['Wrong,Headers,Here', '02/15/2026,YOU BOUGHT,SPY'].join(
-        '\n'
+        '\n',
       );
 
       expect(function () {
@@ -170,7 +169,7 @@ describe('parseFidelityCsv', function () {
       expect(function () {
         parseFidelityCsv(csv);
       }).toThrow(
-        'does not match web format (missing: Action, Symbol, Description, Price ($), Quantity, Amount ($))'
+        'does not match web format (missing: Action, Symbol, Description, Price ($), Quantity, Amount ($))',
       );
     });
 
@@ -206,33 +205,21 @@ describe('parseFidelityCsv', function () {
   });
 
   describe('malformed data handling', function () {
-    test('should throw error for non-numeric quantity', function () {
-      const csv = [
-        HEADER,
+    test.each([
+      [
+        'quantity',
         '02/15/2026,My Brokerage,12345678,YOU BOUGHT,SPY,SPDR S&P 500 ETF,Stock,450.25,abc,,,,-4502.50,02/15/2026',
-      ].join('\n');
-
-      expect(function () {
-        parseFidelityCsv(csv);
-      }).toThrow();
-    });
-
-    test('should throw error for non-numeric price', function () {
-      const csv = [
-        HEADER,
+      ],
+      [
+        'price',
         '02/15/2026,My Brokerage,12345678,YOU BOUGHT,SPY,SPDR S&P 500 ETF,Stock,not-a-price,10,,,,-4502.50,02/15/2026',
-      ].join('\n');
-
-      expect(function () {
-        parseFidelityCsv(csv);
-      }).toThrow();
-    });
-
-    test('should throw error for non-numeric total amount', function () {
-      const csv = [
-        HEADER,
+      ],
+      [
+        'total amount',
         '02/15/2026,My Brokerage,12345678,YOU BOUGHT,SPY,SPDR S&P 500 ETF,Stock,450.25,10,,,,invalid,02/15/2026',
-      ].join('\n');
+      ],
+    ])('should throw error for non-numeric %s', function (field, row) {
+      const csv = [HEADER, row].join('\n');
 
       expect(function () {
         parseFidelityCsv(csv);
@@ -418,7 +405,7 @@ describe('parseFidelityCsv', function () {
       expect(result).toHaveLength(1);
       expect(result[0].date).toBe('12/08/2025');
       expect(result[0].action).toBe(
-        'REVERSE SPLIT R/S FROM 88634T493#REOR M0051704770001'
+        'REVERSE SPLIT R/S FROM 88634T493#REOR M0051704770001',
       );
       expect(result[0].symbol).toBe('MSTY');
       expect(result[0].quantity).toBe(80);
@@ -482,7 +469,7 @@ describe('parseFidelityCsv', function () {
 
     test('should throw for desktop row with too few columns', function () {
       const csv = [DESKTOP_FORMAT_HEADER, 'Dec-31-2025,DIVIDEND,XFLT'].join(
-        '\n'
+        '\n',
       );
 
       expect(function () {

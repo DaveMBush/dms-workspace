@@ -42,7 +42,7 @@ describe('ScreenerService', () => {
   });
 
   it('should have error signal initialized to null', () => {
-    expect(service.error()).toBe(null);
+    expect(service.error()).toBeNull();
   });
 
   it('should call GET /api/screener on refresh()', () => {

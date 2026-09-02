@@ -10,6 +10,7 @@
 import path from 'path';
 import { expect, Page, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
+import { settle } from './helpers/settle.helper';
 import { initializePrismaClient } from './helpers/shared-prisma-client.helper';
 import { createRiskGroups } from './helpers/shared-risk-groups.helper';
 
@@ -83,7 +84,7 @@ async function typeSymbolAndSelectAutocomplete(
   });
   const input = page.locator('[data-testid="symbol-input"]');
   await input.fill(symbol);
-  await page.waitForTimeout(600);
+  await settle(page, 600);
   const firstOption = page
     .locator('.mat-option:visible, .mat-mdc-option:visible')
     .filter({ hasText: symbol })
@@ -98,7 +99,7 @@ async function selectRiskGroupInDialog(
   groupName: string,
 ): Promise<void> {
   await page.locator('mat-select[formcontrolname="riskGroupId"]').click();
-  await page.waitForTimeout(300);
+  await settle(page, 300);
   const option = page
     .locator(
       '.cdk-overlay-container .mat-option, .cdk-overlay-container .mat-mdc-option',

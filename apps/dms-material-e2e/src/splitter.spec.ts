@@ -1,5 +1,6 @@
 import { expect, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
+import { settle } from './helpers/settle.helper';
 
 test.describe('Splitter', () => {
   test.beforeEach(async ({ page }) => {
@@ -41,7 +42,7 @@ test.describe('Splitter', () => {
     await page.mouse.move(containerBox!.x + 10, containerBox!.y);
     await page.mouse.up();
 
-    await page.waitForTimeout(100);
+    await settle(page, 100);
 
     // Check localStorage value is clamped to minimum
     const stored = await page.evaluate(() =>
@@ -68,7 +69,7 @@ test.describe('Splitter', () => {
     );
     await page.mouse.up();
 
-    await page.waitForTimeout(100);
+    await settle(page, 100);
 
     // Check localStorage value is clamped to maximum
     const stored = await page.evaluate(() =>
@@ -98,7 +99,7 @@ test.describe('Splitter', () => {
     await page.mouse.move(targetX, containerBox!.y);
     await page.mouse.up();
 
-    await page.waitForTimeout(100);
+    await settle(page, 100);
 
     // Left panel should be wider
     const afterRightDragBox = await leftPanel.boundingBox();
@@ -112,7 +113,7 @@ test.describe('Splitter', () => {
     await page.mouse.move(targetX2, containerBox!.y);
     await page.mouse.up();
 
-    await page.waitForTimeout(100);
+    await settle(page, 100);
 
     // Left panel should be narrower than after right drag
     const afterLeftDragBox = await leftPanel.boundingBox();
@@ -133,7 +134,7 @@ test.describe('Splitter', () => {
     await page.mouse.move(targetX, containerBox!.y);
     await page.mouse.up();
 
-    await page.waitForTimeout(100);
+    await settle(page, 100);
 
     // Check localStorage
     const stored = await page.evaluate(() =>
@@ -158,7 +159,7 @@ test.describe('Splitter', () => {
     await page.mouse.move(targetX, containerBox!.y);
     await page.mouse.up();
 
-    await page.waitForTimeout(100);
+    await settle(page, 100);
 
     // Get the stored value before reload
     const storedBefore = await page.evaluate(() =>
@@ -167,7 +168,7 @@ test.describe('Splitter', () => {
 
     // Reload page
     await page.reload();
-    await page.waitForTimeout(500);
+    await settle(page, 500);
 
     // Check the stored value after reload matches
     const storedAfter = await page.evaluate(() =>
@@ -194,7 +195,7 @@ test.describe('Splitter', () => {
     await page.mouse.move(targetX, containerBox!.y);
     await page.mouse.up();
 
-    await page.waitForTimeout(100);
+    await settle(page, 100);
 
     // Get actual panel width before restart
     const beforeRestartBox = await leftPanel.boundingBox();
@@ -237,7 +238,7 @@ test.describe('Splitter', () => {
     // Click handle without dragging
     await handle.click();
 
-    await page.waitForTimeout(100);
+    await settle(page, 100);
 
     // Width should remain the same
     const afterClickBox = await leftPanel.boundingBox();
@@ -262,7 +263,7 @@ test.describe('Splitter', () => {
     await page.mouse.move(targetX, containerBox!.y);
     await page.mouse.up();
 
-    await page.waitForTimeout(100);
+    await settle(page, 100);
 
     // Get percentage
     const beforeBox = await leftPanel.boundingBox();
@@ -272,7 +273,7 @@ test.describe('Splitter', () => {
 
     // Resize window
     await page.setViewportSize({ width: 1200, height: 800 });
-    await page.waitForTimeout(300);
+    await settle(page, 300);
 
     // Get new percentage
     const afterBox = await leftPanel.boundingBox();
@@ -297,7 +298,7 @@ test.describe('Splitter', () => {
       await page.mouse.down();
       await page.mouse.move(targetX, containerBox!.y);
       await page.mouse.up();
-      await page.waitForTimeout(50);
+      await settle(page, 50);
     }
 
     // Should have a valid stored value
@@ -316,7 +317,7 @@ test.describe('Splitter', () => {
     const leftPanel = page.locator('.accounts-panel');
     const container = page.locator('.splitter-container');
 
-    await page.waitForTimeout(500);
+    await settle(page, 500);
 
     const leftBox = await leftPanel.boundingBox();
     const containerBox = await container.boundingBox();

@@ -22,6 +22,7 @@ import { login } from './helpers/login.helper';
 import { seedScrollDivDepositsWithSymbolsData } from './helpers/seed-scroll-div-deposits-with-symbols-data.helper';
 import { seedScrollOpenPositionsData } from './helpers/seed-scroll-open-positions-data.helper';
 import { seedScrollSoldPositionsData } from './helpers/seed-scroll-sold-positions-data.helper';
+import { settle } from './helpers/settle.helper';
 
 const viewportSelector = 'cdk-virtual-scroll-viewport';
 
@@ -42,7 +43,7 @@ async function scrollToBottom(
     }
   });
   // Allow virtual scroll to render the new range
-  await page.waitForTimeout(600);
+  await settle(page, 600);
 }
 
 /** Wait for the virtual scroll table to be visible and rows to appear.
@@ -88,10 +89,10 @@ async function assertNoEmptyCellsAfterSortScroll(
     hasText: 'Symbol',
   });
   await symbolHeader.click();
-  await page.waitForTimeout(300);
+  await settle(page, 300);
   await symbolHeader.click();
   // Allow data to load after sort triggers new SmartNgRX requests
-  await page.waitForTimeout(1500);
+  await settle(page, 1500);
 
   await scrollToBottom(page);
 
@@ -226,7 +227,7 @@ test.describe('Sold Positions: sort+scroll shows all real data', () => {
     // The sold-positions filter uses placeholder="Search Symbol" (no data-testid)
     const filterInput = page.getByPlaceholder('Search Symbol');
     await filterInput.fill(filterChar);
-    await page.waitForTimeout(600);
+    await settle(page, 600);
 
     const filteredHeight = await viewport.evaluate(function getHeight(
       el: Element,
@@ -241,7 +242,7 @@ test.describe('Sold Positions: sort+scroll shows all real data', () => {
 
     // Clear filter and verify height recovers to within ~100 px of initial
     await filterInput.fill('');
-    await page.waitForTimeout(600);
+    await settle(page, 600);
 
     const clearedHeight = await viewport.evaluate(function getHeight(
       el: Element,

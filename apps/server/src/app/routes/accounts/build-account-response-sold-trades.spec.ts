@@ -1,8 +1,7 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import fastify, { FastifyInstance } from 'fastify';
-
-import registerAccountRoutes from './index';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ACCOUNT_PAGE_SIZE } from './account-page-size.const';
+import registerAccountRoutes from './index';
 
 // Hoisted mocks
 const { mockPrismaTrades, mockPrismaDivDeposits, mockPrismaAccounts } =
@@ -110,7 +109,7 @@ describe('buildAccountResponse - soldTrades lazy loading (Story 40.3)', () => {
       expect.objectContaining({
         skip: 0,
         take: ACCOUNT_PAGE_SIZE,
-      })
+      }),
     );
   });
 
@@ -119,7 +118,7 @@ describe('buildAccountResponse - soldTrades lazy loading (Story 40.3)', () => {
       { length: ACCOUNT_PAGE_SIZE },
       function createId(_, i) {
         return makeTradeId(`sold-${i}`);
-      }
+      },
     );
     setupMocks({ soldTradeIds: page, soldCount: 120 });
 
@@ -131,7 +130,7 @@ describe('buildAccountResponse - soldTrades lazy loading (Story 40.3)', () => {
 
     const body = JSON.parse(response.body);
     expect(body[0].soldTrades.indexes).toHaveLength(ACCOUNT_PAGE_SIZE);
-    expect(body[0].soldTrades.length).toBe(120);
+    expect(body[0].soldTrades).toHaveLength(120);
   });
 
   it('should filter sold trades by sell_date IS NOT NULL', async () => {
@@ -151,7 +150,7 @@ describe('buildAccountResponse - soldTrades lazy loading (Story 40.3)', () => {
           accountId: 'acc-1',
           sell_date: { not: null },
         }),
-      })
+      }),
     );
   });
 
@@ -169,7 +168,7 @@ describe('buildAccountResponse - soldTrades lazy loading (Story 40.3)', () => {
 
     const body = JSON.parse(response.body);
     expect(body[0].soldTrades.indexes).toHaveLength(5);
-    expect(body[0].soldTrades.length).toBe(5);
+    expect(body[0].soldTrades).toHaveLength(5);
   });
 
   it('should return empty PartialArrayDefinition when no sold trades exist', async () => {

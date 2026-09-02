@@ -1,4 +1,5 @@
 import { expect, test } from 'playwright/test';
+import { settle } from './helpers/settle.helper';
 
 test.describe('Theme Switching', () => {
   test.beforeEach(async ({ page }) => {
@@ -100,14 +101,14 @@ test.describe('Theme Switching', () => {
 
     // Toggle to dark
     await themeButton.click();
-    await page.waitForTimeout(100);
+    await settle(page, 100);
 
     let theme = await page.evaluate(() => localStorage.getItem('dms-theme'));
     expect(theme).toBe('dark');
 
     // Toggle to light
     await themeButton.click();
-    await page.waitForTimeout(100);
+    await settle(page, 100);
 
     theme = await page.evaluate(() => localStorage.getItem('dms-theme'));
     expect(theme).toBe('light');

@@ -1,11 +1,10 @@
-import { TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
 import {
   HttpTestingController,
   provideHttpClientTesting,
 } from '@angular/common/http/testing';
-import { provideHttpClient } from '@angular/common/http';
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-
+import { TestBed } from '@angular/core/testing';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { SummaryService } from './summary.service';
 
 describe('SummaryService', () => {
@@ -49,7 +48,7 @@ describe('SummaryService', () => {
       const req = httpMock.expectOne(
         (request) =>
           request.url === '/api/summary' &&
-          request.params.get('month') === '2025-03'
+          request.params.get('month') === '2025-03',
       );
       expect(req.request.method).toBe('GET');
       req.flush(mockResponse);
@@ -71,7 +70,7 @@ describe('SummaryService', () => {
       service.fetchSummary('2025-03');
 
       const req = httpMock.expectOne(
-        (request) => request.url === '/api/summary'
+        (request) => request.url === '/api/summary',
       );
       req.flush({
         deposits: 200000,
@@ -92,7 +91,7 @@ describe('SummaryService', () => {
       service.fetchGraph();
 
       const req = httpMock.expectOne(
-        (request) => request.url === '/api/summary/graph'
+        (request) => request.url === '/api/summary/graph',
       );
       expect(req.request.method).toBe('GET');
       expect(req.request.params.has('year')).toBe(true);
@@ -131,11 +130,11 @@ describe('SummaryService', () => {
       service.fetchGraph();
 
       const req = httpMock.expectOne(
-        (request) => request.url === '/api/summary/graph'
+        (request) => request.url === '/api/summary/graph',
       );
       req.flush(mockGraph);
 
-      expect(service.graph().length).toBe(2);
+      expect(service.graph()).toHaveLength(2);
       expect(service.graph()[0].month).toBe('01-2025');
     });
   });
@@ -168,7 +167,7 @@ describe('SummaryService', () => {
       ]);
 
       const months = service.months();
-      expect(months.length).toBe(3);
+      expect(months).toHaveLength(3);
       expect(months[0]).toEqual({ label: '01/2025', value: '2025-01' });
       expect(months[1]).toEqual({ label: '02/2025', value: '2025-02' });
     });
@@ -179,7 +178,7 @@ describe('SummaryService', () => {
       service.fetchSummary('2025-03');
 
       const req = httpMock.expectOne(
-        (request) => request.url === '/api/summary'
+        (request) => request.url === '/api/summary',
       );
       req.flush('Error', { status: 500, statusText: 'Server Error' });
 
@@ -190,7 +189,7 @@ describe('SummaryService', () => {
       service.fetchGraph();
 
       const req = httpMock.expectOne(
-        (request) => request.url === '/api/summary/graph'
+        (request) => request.url === '/api/summary/graph',
       );
       req.flush('Error', { status: 500, statusText: 'Server Error' });
 
@@ -210,7 +209,7 @@ describe('SummaryService', () => {
       // First request fails
       service.fetchSummary('2025-03');
       const req1 = httpMock.expectOne(
-        (request) => request.url === '/api/summary'
+        (request) => request.url === '/api/summary',
       );
       req1.flush('Error', { status: 500, statusText: 'Server Error' });
 
@@ -219,7 +218,7 @@ describe('SummaryService', () => {
       // Second request succeeds
       service.fetchSummary('2025-03');
       const req2 = httpMock.expectOne(
-        (request) => request.url === '/api/summary'
+        (request) => request.url === '/api/summary',
       );
       req2.flush({
         deposits: 100000,
@@ -243,7 +242,7 @@ describe('SummaryService', () => {
       expect(service.loading()).toBe(true);
 
       const req = httpMock.expectOne(
-        (request) => request.url === '/api/summary'
+        (request) => request.url === '/api/summary',
       );
       req.flush({
         deposits: 0,
@@ -263,7 +262,7 @@ describe('SummaryService', () => {
       expect(service.loading()).toBe(true);
 
       const req = httpMock.expectOne(
-        (request) => request.url === '/api/summary'
+        (request) => request.url === '/api/summary',
       );
       req.flush('Error', { status: 500, statusText: 'Server Error' });
 
@@ -285,7 +284,7 @@ describe('SummaryService', () => {
       service.fetchMonths();
       httpMock.expectNone('/api/summary/months');
 
-      expect(service.months().length).toBe(2);
+      expect(service.months()).toHaveLength(2);
     });
 
     it('should refresh months cache when invalidateMonthsCache is called', () => {
@@ -305,7 +304,7 @@ describe('SummaryService', () => {
         { month: '2025-02', label: '02/2025' },
       ]);
 
-      expect(service.months().length).toBe(2);
+      expect(service.months()).toHaveLength(2);
     });
 
     it('should set loading during months fetch', () => {
@@ -328,14 +327,14 @@ describe('SummaryService', () => {
       service.fetchSummary('2025-01');
       const req1 = httpMock.expectOne(
         (req) =>
-          req.url === '/api/summary' && req.params.get('month') === '2025-01'
+          req.url === '/api/summary' && req.params.get('month') === '2025-01',
       );
 
       // Second request before first completes
       service.fetchSummary('2025-02');
       const req2 = httpMock.expectOne(
         (req) =>
-          req.url === '/api/summary' && req.params.get('month') === '2025-02'
+          req.url === '/api/summary' && req.params.get('month') === '2025-02',
       );
 
       // First request completes (stale) — should be ignored
@@ -369,14 +368,14 @@ describe('SummaryService', () => {
       service.fetchSummary('2025-01');
       const req1 = httpMock.expectOne(
         (req) =>
-          req.url === '/api/summary' && req.params.get('month') === '2025-01'
+          req.url === '/api/summary' && req.params.get('month') === '2025-01',
       );
 
       // Second request before first completes
       service.fetchSummary('2025-02');
       const req2 = httpMock.expectOne(
         (req) =>
-          req.url === '/api/summary' && req.params.get('month') === '2025-02'
+          req.url === '/api/summary' && req.params.get('month') === '2025-02',
       );
 
       // First request errors (stale) — should be ignored
@@ -405,7 +404,7 @@ describe('SummaryService', () => {
         (req) =>
           req.url === '/api/summary/graph' &&
           req.params.get('account_id') === '123' &&
-          req.params.get('month') === '2024-12'
+          req.params.get('month') === '2024-12',
       );
 
       service.fetchGraph(2025, '456', '2025-02');
@@ -413,7 +412,7 @@ describe('SummaryService', () => {
         (req) =>
           req.url === '/api/summary/graph' &&
           req.params.get('account_id') === '456' &&
-          req.params.get('month') === '2025-02'
+          req.params.get('month') === '2025-02',
       );
 
       req1.flush([
@@ -449,12 +448,12 @@ describe('SummaryService', () => {
     it('should ignore stale account-month response when a newer request is pending', () => {
       service.fetchMonths('123', 2024);
       const req1 = httpMock.expectOne(
-        '/api/summary/months?account_id=123&year=2024'
+        '/api/summary/months?account_id=123&year=2024',
       );
 
       service.fetchMonths('456', 2025);
       const req2 = httpMock.expectOne(
-        '/api/summary/months?account_id=456&year=2025'
+        '/api/summary/months?account_id=456&year=2025',
       );
 
       req1.flush([{ month: '2024-12', label: '12/2024' }]);
@@ -522,14 +521,14 @@ describe('SummaryService', () => {
       service.fetchSummary('2025-01', onDone);
       const req1 = httpMock.expectOne(
         (req) =>
-          req.url === '/api/summary' && req.params.get('month') === '2025-01'
+          req.url === '/api/summary' && req.params.get('month') === '2025-01',
       );
 
       // Second request supersedes
       service.fetchSummary('2025-02');
       const req2 = httpMock.expectOne(
         (req) =>
-          req.url === '/api/summary' && req.params.get('month') === '2025-02'
+          req.url === '/api/summary' && req.params.get('month') === '2025-02',
       );
 
       // First request completes (stale) — callback should NOT be called
@@ -577,7 +576,7 @@ describe('SummaryService', () => {
       service.fetchYears();
       httpMock.expectNone('/api/summary/years');
 
-      expect(service.years().length).toBe(2);
+      expect(service.years()).toHaveLength(2);
     });
 
     it('should refresh years cache when invalidateYearsCache is called', () => {
@@ -592,7 +591,7 @@ describe('SummaryService', () => {
       const req2 = httpMock.expectOne('/api/summary/years');
       req2.flush([2025, 2024]);
 
-      expect(service.years().length).toBe(2);
+      expect(service.years()).toHaveLength(2);
     });
 
     it('should set error when years fetch fails', () => {

@@ -91,7 +91,7 @@ export class MockAuthService extends BaseAuthService {
   async getAccessToken(): Promise<string | null> {
     try {
       return await Promise.resolve(
-        localStorage.getItem('dms_mock_access_token')
+        localStorage.getItem('dms_mock_access_token'),
       );
     } catch {
       return null;
@@ -139,7 +139,7 @@ export class MockAuthService extends BaseAuthService {
         return false;
       }
       return await Promise.resolve(
-        parseInt(expiration, 10) > Date.now() / 1000
+        parseInt(expiration, 10) > Date.now() / 1000,
       );
     } catch {
       return false;
@@ -151,7 +151,7 @@ export class MockAuthService extends BaseAuthService {
    */
   protected async performAuthentication(
     username: string,
-    password: string
+    password: string,
   ): Promise<void> {
     await this.performAuthenticationWithOptions(username, password, false);
   }
@@ -176,7 +176,7 @@ export class MockAuthService extends BaseAuthService {
    */
   private async performSignInWithRememberMe(
     username: string,
-    password: string
+    password: string,
   ): Promise<void> {
     await this.performAuthenticationWithOptions(username, password, true);
   }
@@ -187,7 +187,7 @@ export class MockAuthService extends BaseAuthService {
   private async performAuthenticationWithOptions(
     username: string,
     password: string,
-    rememberMe: boolean
+    rememberMe: boolean,
   ): Promise<void> {
     // Simulate network delay
     // eslint-disable-next-line no-restricted-syntax -- Promise required for async simulation
@@ -203,7 +203,7 @@ export class MockAuthService extends BaseAuthService {
 
     if (!isValidCredentials) {
       throw new Error(
-        'Invalid email format or password too short (min 8 characters)'
+        'Invalid email format or password too short (min 8 characters)',
       );
     }
 
@@ -276,7 +276,7 @@ export class MockAuthService extends BaseAuthService {
       if (session.expiration !== undefined) {
         localStorage.setItem(
           'dms_mock_token_expiration',
-          session.expiration.toString()
+          session.expiration.toString(),
         );
       }
 
@@ -307,7 +307,7 @@ export class MockAuthService extends BaseAuthService {
         iat: Math.floor(Date.now() / 1000),
         iss: 'mock-auth-service',
         remember_me: rememberMe,
-      })
+      }),
     );
     const signature = btoa('mock-signature');
 
@@ -319,7 +319,7 @@ export class MockAuthService extends BaseAuthService {
    */
   private isValidEmail(email: string): boolean {
     // Simple email validation regex - not vulnerable to ReDoS
-    // eslint-disable-next-line sonarjs/slow-regex -- Simple regex pattern is safe
+    // eslint-disable-next-line sonarjs/super-linear-regex -- Simple regex pattern is safe
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   }

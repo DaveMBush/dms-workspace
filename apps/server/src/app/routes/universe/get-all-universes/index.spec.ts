@@ -294,7 +294,7 @@ describe('GET /api/universe - expired-no-open filter (Story 109.3)', function fi
 
       expect(response.statusCode).toBe(200);
       const rows = JSON.parse(response.body) as Array<{ symbol: string }>;
-      expect(rows.length).toBe(2);
+      expect(rows).toHaveLength(2);
     });
 
     it('marks non-closed-end funds with no activity as deletable', async function deletableTrueTest() {
@@ -432,7 +432,7 @@ describe('GET /api/universe - expired-no-open filter (Story 109.3)', function fi
 
       expect(response.statusCode).toBe(200);
       const rows = JSON.parse(response.body) as Array<{ symbol: string }>;
-      expect(rows.length).toBe(2);
+      expect(rows).toHaveLength(2);
     });
   });
 });

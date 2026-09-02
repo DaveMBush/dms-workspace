@@ -1,4 +1,5 @@
 import { expect, test } from 'playwright/test';
+import { settle } from './helpers/settle.helper';
 
 // FIX: These tests require a mechanism to trigger the session warning dialog
 // Currently, the dialog is only shown automatically before session timeout,
@@ -62,7 +63,7 @@ test.describe.skip('Session Warning Dialog', () => {
     const initialValue = await progressBar.getAttribute('aria-valuenow');
 
     // Wait a few seconds
-    await page.waitForTimeout(3000);
+    await settle(page, 3000);
 
     // Get new progress value
     const newValue = await progressBar.getAttribute('aria-valuenow');
@@ -107,6 +108,7 @@ test.describe.skip('Session Warning Dialog', () => {
     const dialog = page.locator('dms-session-warning');
 
     // Try clicking backdrop (outside dialog)
+    // eslint-disable-next-line sonarjs/no-forced-browser-interaction -- intentional: force the click onto the backdrop to verify disableClose keeps the dialog open.
     await page.locator('.cdk-overlay-backdrop').click({ force: true });
 
     // Dialog should still be visible (disableClose: true)

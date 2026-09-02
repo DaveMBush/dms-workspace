@@ -2,6 +2,7 @@ import { expect, Page, test } from 'playwright/test';
 import { createDeletableUniverseSymbol } from './helpers/create-deletable-universe-symbol.helper';
 import { login } from './helpers/login.helper';
 import { seedUniverseE2eData } from './helpers/seed-universe-e2e-data.helper';
+import { settle } from './helpers/settle.helper';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -65,10 +66,10 @@ async function applyMultiColumnSort(page: Page): Promise<void> {
   );
   // First Shift+click: add Yield% as secondary sort ascending
   await yieldHeader.click({ modifiers: ['Shift'] });
-  await page.waitForTimeout(300);
+  await settle(page, 300);
   // Second Shift+click: toggle Yield% secondary sort to descending
   await yieldHeader.click({ modifiers: ['Shift'] });
-  await page.waitForTimeout(300);
+  await settle(page, 300);
 }
 
 // Expected sort state after applyMultiColumnSort().
@@ -160,7 +161,7 @@ test.describe('Universe Sort State Persistence (Story 113.3)', () => {
     const symbolFilter = page.getByPlaceholder('Search Symbol');
     await symbolFilter.fill('');
     await symbolFilter.fill(symbols[0]);
-    await page.waitForTimeout(600);
+    await settle(page, 600);
     await expect(targetRow).toBeVisible({ timeout: 20000 });
 
     // Now apply the multi-column sort while the filter is still active.
@@ -175,7 +176,7 @@ test.describe('Universe Sort State Persistence (Story 113.3)', () => {
     await expect(input).toBeVisible({ timeout: 5000 });
     await input.fill('1.5000');
     await input.press('Enter');
-    await page.waitForTimeout(500);
+    await settle(page, 500);
 
     // Clear symbol filter and verify sort survived the edit
     await symbolFilter.fill('');
@@ -221,12 +222,12 @@ test.describe('Universe Sort State Persistence (Story 113.3)', () => {
     ).toBeVisible();
 
     // Wait for existing-symbols GET to complete (isLoading → false)
-    await page.waitForTimeout(600);
+    await settle(page, 600);
 
     // Type the symbol to trigger autocomplete
     const symbolInput = page.locator('dms-symbol-autocomplete input');
     await symbolInput.fill('ZZZZZ');
-    await page.waitForTimeout(400);
+    await settle(page, 400);
 
     // Pick from the autocomplete overlay
     const autocompleteOption = page
@@ -281,7 +282,7 @@ test.describe('Universe Sort State Persistence (Story 113.3)', () => {
       const symbolFilter = page.getByPlaceholder('Search Symbol');
       await symbolFilter.fill('');
       await symbolFilter.fill(noTradeSymbol);
-      await page.waitForTimeout(600);
+      await settle(page, 600);
       await expect(row).toBeVisible({ timeout: 20000 });
 
       // Apply multi-column sort while the filter is still active.
@@ -344,7 +345,7 @@ test.describe('Universe Sort State Persistence (Story 113.3)', () => {
     await page.waitForSelector('mat-option', { timeout: 5000 });
     // Small stabilisation wait — Material overlay animation can detach/reattach
     // mat-option elements briefly after they appear in the DOM.
-    await page.waitForTimeout(200);
+    await settle(page, 200);
     await page.locator('mat-option').nth(1).click();
     // Wait for the overlay to fully close before proceeding.
     // Without this, the closing animation backdrop can absorb the next click.
@@ -356,7 +357,7 @@ test.describe('Universe Sort State Persistence (Story 113.3)', () => {
     // Switch back to All Accounts (index 0)
     await accountSelect.click();
     await page.waitForSelector('mat-option', { timeout: 10000 });
-    await page.waitForTimeout(200);
+    await settle(page, 200);
     await page.locator('mat-option').nth(0).click();
     // Wait for the overlay to fully close before asserting table state.
     await expect(page.locator('mat-option')).toHaveCount(0, { timeout: 3000 });

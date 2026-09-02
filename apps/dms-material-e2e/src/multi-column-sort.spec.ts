@@ -1,5 +1,6 @@
 import { expect, Page, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
+import { settle } from './helpers/settle.helper';
 
 /**
  * Helper: read sortColumns state from localStorage.
@@ -42,7 +43,7 @@ test.describe('Universe Table - Multi-Column Sort', () => {
   test('single click sets sole sort column (AC #1)', async ({ page }) => {
     const symbolHeader = page.getByRole('columnheader', { name: 'Symbol' });
     await symbolHeader.click();
-    await page.waitForTimeout(300);
+    await settle(page, 300);
 
     const cols = await getSortColumnsState(page, 'universes');
     expect(cols).toEqual([{ column: 'symbol', direction: 'asc' }]);
@@ -54,14 +55,14 @@ test.describe('Universe Table - Multi-Column Sort', () => {
     // Primary sort: Symbol asc
     const symbolHeader = page.getByRole('columnheader', { name: 'Symbol' });
     await symbolHeader.click();
-    await page.waitForTimeout(300);
+    await settle(page, 300);
 
     // Secondary sort: Risk Group asc (Shift+click)
     const riskGroupHeader = page.getByRole('columnheader', {
       name: 'Risk Group',
     });
     await riskGroupHeader.click({ modifiers: ['Shift'] });
-    await page.waitForTimeout(300);
+    await settle(page, 300);
 
     const cols = await getSortColumnsState(page, 'universes');
     expect(cols).toEqual([
@@ -76,14 +77,14 @@ test.describe('Universe Table - Multi-Column Sort', () => {
     // Primary sort: Symbol
     const symbolHeader = page.getByRole('columnheader', { name: 'Symbol' });
     await symbolHeader.click();
-    await page.waitForTimeout(300);
+    await settle(page, 300);
 
     // Secondary sort: Risk Group
     const riskGroupHeader = page.getByRole('columnheader', {
       name: 'Risk Group',
     });
     await riskGroupHeader.click({ modifiers: ['Shift'] });
-    await page.waitForTimeout(300);
+    await settle(page, 300);
 
     // Check rank indicators are visible
     const rankIndicators = page.locator('[data-testid="sort-rank"]');
@@ -96,18 +97,18 @@ test.describe('Universe Table - Multi-Column Sort', () => {
     // Primary sort: Symbol asc
     const symbolHeader = page.getByRole('columnheader', { name: 'Symbol' });
     await symbolHeader.click();
-    await page.waitForTimeout(300);
+    await settle(page, 300);
 
     // Secondary sort: Risk Group asc
     const riskGroupHeader = page.getByRole('columnheader', {
       name: 'Risk Group',
     });
     await riskGroupHeader.click({ modifiers: ['Shift'] });
-    await page.waitForTimeout(300);
+    await settle(page, 300);
 
     // Shift+click Risk Group again → toggle to desc
     await riskGroupHeader.click({ modifiers: ['Shift'] });
-    await page.waitForTimeout(300);
+    await settle(page, 300);
 
     const cols = await getSortColumnsState(page, 'universes');
     expect(cols).toEqual([
@@ -122,22 +123,22 @@ test.describe('Universe Table - Multi-Column Sort', () => {
     // Primary sort: Symbol asc
     const symbolHeader = page.getByRole('columnheader', { name: 'Symbol' });
     await symbolHeader.click();
-    await page.waitForTimeout(300);
+    await settle(page, 300);
 
     // Secondary sort: Risk Group asc
     const riskGroupHeader = page.getByRole('columnheader', {
       name: 'Risk Group',
     });
     await riskGroupHeader.click({ modifiers: ['Shift'] });
-    await page.waitForTimeout(300);
+    await settle(page, 300);
 
     // Shift+click Risk Group → desc
     await riskGroupHeader.click({ modifiers: ['Shift'] });
-    await page.waitForTimeout(300);
+    await settle(page, 300);
 
     // Shift+click Risk Group again → remove
     await riskGroupHeader.click({ modifiers: ['Shift'] });
-    await page.waitForTimeout(300);
+    await settle(page, 300);
 
     const cols = await getSortColumnsState(page, 'universes');
     expect(cols).toEqual([{ column: 'symbol', direction: 'asc' }]);
@@ -149,17 +150,17 @@ test.describe('Universe Table - Multi-Column Sort', () => {
     // Set up multi-column sort: Symbol + Risk Group
     const symbolHeader = page.getByRole('columnheader', { name: 'Symbol' });
     await symbolHeader.click();
-    await page.waitForTimeout(300);
+    await settle(page, 300);
 
     const riskGroupHeader = page.getByRole('columnheader', {
       name: 'Risk Group',
     });
     await riskGroupHeader.click({ modifiers: ['Shift'] });
-    await page.waitForTimeout(300);
+    await settle(page, 300);
 
     // Non-shift click on Symbol → should reset to single sort
     await symbolHeader.click();
-    await page.waitForTimeout(300);
+    await settle(page, 300);
 
     // MatSort will cycle: was asc → now desc for Symbol
     const cols = await getSortColumnsState(page, 'universes');

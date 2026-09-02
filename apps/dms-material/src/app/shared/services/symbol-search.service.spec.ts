@@ -53,7 +53,7 @@ describe('SymbolSearchService', () => {
 
       const results = await resultPromise;
       expect(results).toEqual(mockResponse);
-      expect(results.length).toBe(2);
+      expect(results).toHaveLength(2);
       expect(results[0].symbol).toBe('AAPL');
     });
 
@@ -98,7 +98,7 @@ describe('SymbolSearchService', () => {
 
       const results = await resultPromise;
       expect(results).toEqual([]);
-      expect(results.length).toBe(0);
+      expect(results).toHaveLength(0);
     });
 
     it('should handle API errors gracefully', async () => {
@@ -169,7 +169,7 @@ describe('SymbolSearchService', () => {
       req.flush(mockResponse);
 
       const results = await resultPromise;
-      expect(results.length).toBe(2);
+      expect(results).toHaveLength(2);
       expect(results.every((r) => r.symbol.length > 0)).toBe(true);
     });
 
@@ -222,7 +222,7 @@ describe('SymbolSearchService', () => {
       const requests = httpMock.match((request) =>
         request.url.includes('/api/symbol/search'),
       );
-      expect(requests.length).toBe(1);
+      expect(requests).toHaveLength(1);
       expect(requests[0].request.params.get('query')).toBe(query3);
 
       requests[0].flush(mockResponse);
