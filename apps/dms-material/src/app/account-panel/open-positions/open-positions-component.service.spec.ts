@@ -131,7 +131,7 @@ describe('OpenPositionsComponentService - Virtual Data Access (AX.7)', () => {
   it('should return sparse array with length matching SmartArray total length', () => {
     const positions = service.selectOpenPositions();
 
-    expect(positions.length).toBe(200);
+    expect(positions).toHaveLength(200);
   });
 
   // AC: Test selectOpenPositions returns sparse array with default visible range (0-50)
@@ -145,7 +145,7 @@ describe('OpenPositionsComponentService - Virtual Data Access (AX.7)', () => {
     expect(positions[49].id).toBe('trade-49');
 
     // Total length should match the full data array
-    expect(positions.length).toBe(200);
+    expect(positions).toHaveLength(200);
   });
 
   // AC: Test only items within visible range are transformed
@@ -191,7 +191,7 @@ describe('OpenPositionsComponentService - Virtual Data Access (AX.7)', () => {
     }
 
     // Array length equals total count
-    expect(positions.length).toBe(200);
+    expect(positions).toHaveLength(200);
   });
 
   // AC: Test that universe symbols are resolved for visible items
@@ -215,7 +215,7 @@ describe('OpenPositionsComponentService - Virtual Data Access (AX.7)', () => {
     const positions = service.selectOpenPositions();
 
     // Should still have correct total length
-    expect(positions.length).toBe(200);
+    expect(positions).toHaveLength(200);
 
     // Only items 190-199 should be defined (data ends at 200)
     for (let i = 190; i < 200; i++) {
@@ -237,7 +237,7 @@ describe('OpenPositionsComponentService - Virtual Data Access (AX.7)', () => {
 
     const positions = service.selectOpenPositions();
 
-    expect(positions.length).toBe(0);
+    expect(positions).toHaveLength(0);
   });
 
   // AC: Test that visibleRange signal exists on service
@@ -325,7 +325,7 @@ describe('OpenPositionsComponentService - Virtual Data Access (AX.7)', () => {
 
     const positions = service.selectOpenPositions();
 
-    expect(positions.length).toBe(1);
+    expect(positions).toHaveLength(1);
     expect(positions[0]).toBeDefined();
     expect(positions[0].id).toBe('single-trade');
     expect(positions[0].symbol).toBe('PDI'); // Story 95.2: symbol comes from trade.symbol directly
@@ -353,7 +353,7 @@ describe('OpenPositionsComponentService - Virtual Data Access (AX.7)', () => {
 
     const positions = service.selectOpenPositions();
 
-    expect(positions.length).toBe(200);
+    expect(positions).toHaveLength(200);
     for (let i = 195; i < 200; i++) {
       expect(positions[i]).toBeDefined();
       expect(positions[i].id).toBe(`trade-${i}`);

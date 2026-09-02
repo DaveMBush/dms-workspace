@@ -1,6 +1,7 @@
 import { expect, Page, Request, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 import { seedLazyLoadingE2eData } from './helpers/seed-lazy-loading-e2e-data.helper';
+import { settle } from './helpers/settle.helper';
 
 /** Maximum rows the server should return in a single indexes request */
 const MAX_PAGE_SIZE = 50;
@@ -158,7 +159,7 @@ test.describe('Lazy Loading Network Traffic', () => {
       await waitForTableRows(page);
 
       // Wait for API responses to settle
-      await page.waitForTimeout(1500);
+      await settle(page, 1500);
 
       expect(topResponses.length).toBeGreaterThanOrEqual(1);
 
@@ -183,7 +184,7 @@ test.describe('Lazy Loading Network Traffic', () => {
       await login(page);
       await page.goto('/global/universe');
       await waitForTableRows(page);
-      await page.waitForTimeout(1500);
+      await settle(page, 1500);
 
       // Scroll the virtual viewport incrementally to trigger range changes
       for (let i = 0; i < 5; i++) {
@@ -195,11 +196,11 @@ test.describe('Lazy Loading Network Traffic', () => {
             (viewport as HTMLElement).scrollTop = (step + 1) * 1500;
           }
         }, i);
-        await page.waitForTimeout(500);
+        await settle(page, 500);
       }
 
       // Wait for requests
-      await page.waitForTimeout(3000);
+      await settle(page, 3000);
 
       // We should have at least one indexes request after scrolling
       expect(indexesRequests.length).toBeGreaterThan(0);
@@ -240,7 +241,7 @@ test.describe('Lazy Loading Network Traffic', () => {
       });
 
       // Wait for indexes requests to complete
-      await page.waitForTimeout(2000);
+      await settle(page, 2000);
 
       // Filter to openTrades requests only
       const openTradeRequests = indexesRequests.filter(

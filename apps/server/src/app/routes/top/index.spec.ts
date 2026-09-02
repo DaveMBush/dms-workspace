@@ -592,7 +592,7 @@ describe('Top Route Handler', () => {
       const body = JSON.parse(response.body);
       expect(body[0].universes.startIndex).toBe(0);
       expect(body[0].universes.indexes).toHaveLength(50);
-      expect(body[0].universes.length).toBe(100);
+      expect(body[0].universes).toHaveLength(100);
     });
 
     it('should apply skip=0 and take=50 to findMany for non-computed sort initial load', async () => {
@@ -639,7 +639,7 @@ describe('Top Route Handler', () => {
       // Computed sort returns ALL IDs (not paginated) so SmartNgRX can replace
       // every slot and avoid stale/duplicate rows (changed in Story 55.2).
       expect(body[0].universes.indexes).toHaveLength(100);
-      expect(body[0].universes.length).toBe(100);
+      expect(body[0].universes).toHaveLength(100);
     });
 
     it('should pass distinct: ["id"] to Prisma query for computed sort to prevent duplicate universe IDs (story 55.2)', async () => {
@@ -757,7 +757,7 @@ describe('Top Route Handler', () => {
       expect(body.startIndex).toBe(50);
       expect(body.indexes).toHaveLength(20);
       expect(body.indexes[0]).toBe('uni-51');
-      expect(body.length).toBe(100);
+      expect(body).toHaveLength(100);
     });
 
     it('should return empty result for unsupported childField', async () => {
@@ -775,7 +775,7 @@ describe('Top Route Handler', () => {
       expect(response.statusCode).toBe(200);
       const body = JSON.parse(response.body);
       expect(body.indexes).toEqual([]);
-      expect(body.length).toBe(0);
+      expect(body).toHaveLength(0);
     });
 
     it('should pass sort/filter state to universe query', async () => {

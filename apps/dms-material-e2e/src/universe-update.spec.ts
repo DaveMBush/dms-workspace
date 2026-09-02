@@ -1,5 +1,6 @@
 import { expect, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
+import { settle } from './helpers/settle.helper';
 
 /**
  * Universe Update E2E Tests (TDD - GREEN Phase)
@@ -65,7 +66,7 @@ test.describe('Universe Update Flow', () => {
       await button.click();
 
       // Wait for operation to complete
-      await page.waitForTimeout(2000);
+      await settle(page, 2000);
 
       // Should have called the API once
       expect(syncCallCount).toBe(1);
@@ -109,7 +110,7 @@ test.describe('Universe Update Flow', () => {
       await button.click();
 
       // Wait for operation to complete
-      await page.waitForTimeout(2000);
+      await settle(page, 2000);
 
       // Button should be re-enabled
       await expect(button).toBeEnabled();
@@ -279,7 +280,7 @@ test.describe('Universe Update Flow', () => {
         }
 
         // Wait a moment between tests
-        await page.waitForTimeout(500);
+        await settle(page, 500);
       }
     });
 
@@ -471,7 +472,7 @@ test.describe('Universe Update Flow', () => {
         }
 
         // Wait a moment between tests
-        await page.waitForTimeout(500);
+        await settle(page, 500);
       }
     });
   });
@@ -499,12 +500,14 @@ test.describe('Universe Update Flow', () => {
       await expect(button).toBeDisabled();
 
       // Try clicking while disabled (these should be ignored)
+      // eslint-disable-next-line sonarjs/no-forced-browser-interaction -- intentional: forced clicks on a disabled button must be ignored by the guard.
       await button.click({ force: true }); // Force click to test guard logic
-      await page.waitForTimeout(100);
+      await settle(page, 100);
+      // eslint-disable-next-line sonarjs/no-forced-browser-interaction -- intentional: second forced click on the disabled button must also be ignored.
       await button.click({ force: true }); // Force click to test guard logic
 
       // Wait for operation to complete
-      await page.waitForTimeout(2000);
+      await settle(page, 2000);
 
       // Should only have called API once (concurrent clicks prevented)
       expect(syncCallCount).toBe(1);
@@ -542,14 +545,14 @@ test.describe('Universe Update Flow', () => {
 
       // Click and wait for completion
       await button.click();
-      await page.waitForTimeout(2000);
+      await settle(page, 2000);
 
       // Button should be back to enabled state
       await expect(button).toBeEnabled();
 
       // Should be able to click again
       await button.click();
-      await page.waitForTimeout(2000);
+      await settle(page, 2000);
 
       await expect(button).toBeEnabled();
     });

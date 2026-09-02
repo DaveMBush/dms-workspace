@@ -15,35 +15,14 @@ function createRequest(headerValue: string | undefined): FastifyRequest {
 
 describe('parseSortFilterHeader', () => {
   describe('basic parsing', () => {
-    it('should return empty object when header is missing', () => {
-      const result = parseSortFilterHeader(createRequest(undefined));
+    it.each([undefined, '', 'not-json', '[]', 'null'])(
+      'returns empty object for header %p',
+      (header) => {
+        const result = parseSortFilterHeader(createRequest(header));
 
-      expect(result).toEqual({});
-    });
-
-    it('should return empty object for empty string', () => {
-      const result = parseSortFilterHeader(createRequest(''));
-
-      expect(result).toEqual({});
-    });
-
-    it('should return empty object for invalid JSON', () => {
-      const result = parseSortFilterHeader(createRequest('not-json'));
-
-      expect(result).toEqual({});
-    });
-
-    it('should return empty object for JSON array', () => {
-      const result = parseSortFilterHeader(createRequest('[]'));
-
-      expect(result).toEqual({});
-    });
-
-    it('should return empty object for JSON null', () => {
-      const result = parseSortFilterHeader(createRequest('null'));
-
-      expect(result).toEqual({});
-    });
+        expect(result).toEqual({});
+      }
+    );
 
     it('should parse valid table state with sort', () => {
       const header = JSON.stringify({

@@ -87,6 +87,7 @@
 import { expect, Locator, Page, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 import { seedDeepScrollUniverseData } from './helpers/seed-deep-scroll-universe-data.helper';
+import { settle } from './helpers/settle.helper';
 
 const VIEWPORT_SELECTOR = '.dms-outer-scroller';
 const ROW_SELECTOR = '.dms-body-row[role="row"]';
@@ -361,7 +362,7 @@ test.describe('Universe Lazy-Load Deep Scroll — empty symbols after crossing p
       exact: true,
     });
     await yieldHeader.click();
-    await page.waitForTimeout(100);
+    await settle(page, 100);
     await page
       .waitForLoadState('networkidle', { timeout: 10000 })
       .catch(function ignoreTimeout() {
@@ -499,7 +500,7 @@ test.describe('Universe Lazy-Load Deep Scroll — empty symbols after crossing p
     const symbolInput = page.locator('input[placeholder="Search Symbol"]');
     await expect(symbolInput).toBeVisible({ timeout: 10000 });
     await symbolInput.fill('UDSCRL');
-    await page.waitForTimeout(100);
+    await settle(page, 100);
     await page
       .waitForLoadState('networkidle', { timeout: 10000 })
       .catch(function ignoreTimeout() {

@@ -29,10 +29,7 @@ describe('ensureDbFile', () => {
     expect(fs.existsSync(dbPath)).toBe(true);
   });
 
-  it('creates the directory with mode 0o700 on POSIX', () => {
-    if (process.platform === 'win32') {
-      return;
-    }
+  it.skipIf(process.platform === 'win32')('creates the directory with mode 0o700 on POSIX', () => {
     ensureDbFile(dbPath);
     const dir = path.dirname(dbPath);
     const stats = fs.statSync(dir);

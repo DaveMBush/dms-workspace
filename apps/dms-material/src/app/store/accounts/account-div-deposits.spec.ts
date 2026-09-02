@@ -32,7 +32,7 @@ describe('Account divDeposits PartialArrayDefinition (Story 40.3)', () => {
     };
     expect(divDeposits.startIndex).toBe(0);
     expect(divDeposits.indexes).toEqual(['div-1', 'div-2']);
-    expect(divDeposits.length).toBe(10);
+    expect(divDeposits).toHaveLength(10);
   });
 
   it('should have default row with PartialArrayDefinition shape for divDeposits', () => {

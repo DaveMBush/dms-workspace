@@ -202,7 +202,7 @@ describe('GET /api/universe - Server-Side Sorting', function universeSortingTest
 
       expect(response.statusCode).toBe(200);
       const rows = JSON.parse(response.body) as UniverseResponse[];
-      expect(rows.length).toBe(4);
+      expect(rows).toHaveLength(4);
       // Verify ascending order by sector
       for (let i = 1; i < rows.length; i++) {
         expect(rows[i - 1].id).toBeDefined();
@@ -219,7 +219,7 @@ describe('GET /api/universe - Server-Side Sorting', function universeSortingTest
 
       expect(response.statusCode).toBe(200);
       const rows = JSON.parse(response.body) as UniverseResponse[];
-      expect(rows.length).toBe(4);
+      expect(rows).toHaveLength(4);
     });
   });
 
@@ -268,7 +268,7 @@ describe('GET /api/universe - Server-Side Sorting', function universeSortingTest
 
       expect(response.statusCode).toBe(200);
       const rows = JSON.parse(response.body) as UniverseResponse[];
-      expect(rows.length).toBe(4);
+      expect(rows).toHaveLength(4);
       // Default sort should return results in a consistent order (e.g., by symbol asc)
       const symbols = rows.map(function getSymbol(r) {
         return r.symbol;

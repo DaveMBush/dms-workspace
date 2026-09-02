@@ -54,7 +54,7 @@ describe('ProfileService', () => {
       expect(service.profile()?.username).toBe('testuser');
       expect(service.profile()?.email).toBe('test@example.com');
       expect(service.loading()).toBe(false);
-      expect(service.profileError()).toBe(null);
+      expect(service.profileError()).toBeNull();
     });
 
     it('should handle load profile error', async () => {
@@ -63,7 +63,7 @@ describe('ProfileService', () => {
 
       await service.loadUserProfile(); // No expect rejection, it handles error internally
 
-      expect(service.profile()).toBe(null);
+      expect(service.profile()).toBeNull();
       expect(service.loading()).toBe(false);
       expect(service.profileError()).toBe('Failed to load profile information');
     });
@@ -80,13 +80,11 @@ describe('ProfileService', () => {
       ).resolves.not.toThrow();
 
       expect(updatePassword).toHaveBeenCalledWith({
-        // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- not a password
         oldPassword: 'oldpass',
-        // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- not a password
         newPassword: 'newpass',
       });
       expect(service.loading()).toBe(false);
-      expect(service.profileError()).toBe(null);
+      expect(service.profileError()).toBeNull();
     });
 
     it('should handle password change error', async () => {
@@ -122,7 +120,7 @@ describe('ProfileService', () => {
         userAttributes: { email: 'new@example.com' },
       });
       expect(service.loading()).toBe(false);
-      expect(service.profileError()).toBe(null);
+      expect(service.profileError()).toBeNull();
     });
 
     it('should handle update email error', async () => {

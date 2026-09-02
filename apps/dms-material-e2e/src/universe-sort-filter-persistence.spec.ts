@@ -1,6 +1,7 @@
 import { expect, Page, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 import { seedUniverseE2eData } from './helpers/seed-universe-e2e-data.helper';
+import { settle } from './helpers/settle.helper';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -60,7 +61,7 @@ test.describe('Universe Sort/Filter Persistence (Story 38.3)', () => {
       // Click "Symbol" column header to apply ascending sort
       const header = page.locator('.dms-header-cell[data-column="symbol"]');
       await header.click();
-      await page.waitForTimeout(500);
+      await settle(page, 500);
 
       // Capture exact sort direction before reload
       const sortBefore = await header.getAttribute('aria-sort');
@@ -83,7 +84,7 @@ test.describe('Universe Sort/Filter Persistence (Story 38.3)', () => {
       // Click "Ex-Date" column header to apply ascending sort
       const header = page.locator('.dms-header-cell[data-column="ex_date"]');
       await header.click();
-      await page.waitForTimeout(500);
+      await settle(page, 500);
 
       // Capture exact sort direction before reload
       const sortBefore = await header.getAttribute('aria-sort');
@@ -119,7 +120,7 @@ test.describe('Universe Sort/Filter Persistence (Story 38.3)', () => {
       const symbolInput = page.getByPlaceholder('Search Symbol');
       await symbolInput.fill(filterValue);
       // Wait for debounced save (300ms) plus buffer
-      await page.waitForTimeout(600);
+      await settle(page, 600);
 
       // Verify filtered data is visible before reload
       const rowsBefore = page.locator('.dms-body-row[role="row"]');

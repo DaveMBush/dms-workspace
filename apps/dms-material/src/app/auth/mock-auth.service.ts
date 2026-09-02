@@ -319,7 +319,7 @@ export class MockAuthService extends BaseAuthService {
    */
   private isValidEmail(email: string): boolean {
     // Simple email validation regex - not vulnerable to ReDoS
-    // eslint-disable-next-line sonarjs/slow-regex -- Simple regex pattern is safe
+    // eslint-disable-next-line sonarjs/super-linear-regex -- Simple regex pattern is safe
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   }

@@ -109,7 +109,7 @@ describe('AuthService', () => {
   describe('Sign In', () => {
     const validCredentials: SignInRequest = {
       username: 'testuser@example.com',
-      // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- not real
+      // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- test credential
       password: 'ValidPassword123!',
     };
 
@@ -210,7 +210,6 @@ describe('AuthService', () => {
       mockFetchAuthSession.mockResolvedValue(mockSession);
       await service.signIn({
         username: 'test@example.com',
-        // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- not real
         password: 'password',
       });
     });
@@ -251,7 +250,6 @@ describe('AuthService', () => {
       mockFetchAuthSession.mockResolvedValue(mockSession);
       await service.signIn({
         username: 'test@example.com',
-        // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- not real
         password: 'password',
       });
     });
@@ -329,7 +327,6 @@ describe('AuthService', () => {
       mockSignIn.mockRejectedValue(authError);
 
       // Act
-      // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- not real
       service.signIn({ username: 'test', password: 'test' }).catch(() => {
         // Expected to fail
       });
@@ -358,7 +355,6 @@ describe('AuthService', () => {
 
       await service.signIn({
         username: 'test@example.com',
-        // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- not real
         password: 'password',
       });
 

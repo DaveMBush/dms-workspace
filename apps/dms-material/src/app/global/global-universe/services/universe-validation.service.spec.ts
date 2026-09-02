@@ -63,11 +63,11 @@ describe('UniverseValidationService', () => {
 
   describe('transformExDateValue', () => {
     it('should return null for null input', () => {
-      expect(service.transformExDateValue(null)).toBe(null);
+      expect(service.transformExDateValue(null)).toBeNull();
     });
 
     it('should return null for empty string', () => {
-      expect(service.transformExDateValue('')).toBe(null);
+      expect(service.transformExDateValue('')).toBeNull();
     });
 
     it('should return INVALID_DATE for invalid Date object', () => {

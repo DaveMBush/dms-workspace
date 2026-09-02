@@ -1,6 +1,7 @@
 import { expect, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 import { seedUniverseData } from './helpers/seed-universe-data.helper';
+import { settle } from './helpers/settle.helper';
 
 const UNIVERSE_COLUMN_INDEX = {
   symbol: 3,
@@ -31,7 +32,7 @@ test.describe('Universe Re-sort After Cell Edit', () => {
       '.dms-header-cell[data-column="ex_date"]',
     );
     await exDateHeader.click();
-    await page.waitForTimeout(500);
+    await settle(page, 500);
 
     // Verify sort is active
     const sortDir = await exDateHeader.getAttribute('aria-sort');

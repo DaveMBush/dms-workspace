@@ -72,7 +72,7 @@ describe('GET /indexes - soldTrades childField (AX.9)', () => {
       'sold-3',
       'sold-4',
     ]);
-    expect(body.length).toBe(20);
+    expect(body).toHaveLength(20);
   });
 
   it('should filter sold trades by sell_date IS NOT NULL', async () => {
@@ -145,7 +145,7 @@ describe('GET /indexes - soldTrades childField (AX.9)', () => {
     const body = JSON.parse(response.body);
     expect(body.startIndex).toBe(5);
     expect(body.indexes).toEqual(['sold-5', 'sold-6', 'sold-7']);
-    expect(body.length).toBe(15);
+    expect(body).toHaveLength(15);
   });
 
   it('should return correct total count from prisma count', async () => {
@@ -164,7 +164,7 @@ describe('GET /indexes - soldTrades childField (AX.9)', () => {
     });
 
     const body = JSON.parse(response.body);
-    expect(body.length).toBe(100);
+    expect(body).toHaveLength(100);
   });
 
   it('should return empty indexes and length 0 when no sold trades match', async () => {
@@ -184,7 +184,7 @@ describe('GET /indexes - soldTrades childField (AX.9)', () => {
 
     const body = JSON.parse(response.body);
     expect(body.indexes).toEqual([]);
-    expect(body.length).toBe(0);
+    expect(body).toHaveLength(0);
   });
 
   // AX.14: Single item edge case
@@ -205,7 +205,7 @@ describe('GET /indexes - soldTrades childField (AX.9)', () => {
 
     const body = JSON.parse(response.body);
     expect(body.indexes).toEqual(['only-sold']);
-    expect(body.length).toBe(1);
+    expect(body).toHaveLength(1);
     expect(mockPrismaTrades.findMany).toHaveBeenCalledWith(
       expect.objectContaining({ skip: 0, take: 10 })
     );
@@ -230,7 +230,7 @@ describe('GET /indexes - soldTrades childField (AX.9)', () => {
     const body = JSON.parse(response.body);
     expect(body.startIndex).toBe(99);
     expect(body.indexes).toEqual(['sold-99']);
-    expect(body.length).toBe(100);
+    expect(body).toHaveLength(100);
     expect(mockPrismaTrades.findMany).toHaveBeenCalledWith(
       expect.objectContaining({ skip: 99, take: 10 })
     );

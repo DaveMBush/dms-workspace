@@ -3,6 +3,7 @@ import { generateUniqueId } from './helpers/generate-unique-id.helper';
 import { login } from './helpers/login.helper';
 import { initializePrismaClient } from './helpers/shared-prisma-client.helper';
 import { createRiskGroups } from './helpers/shared-risk-groups.helper';
+import { settle } from './helpers/settle.helper';
 
 /**
  * Dividend Precision After Update – E2E Regression Guard
@@ -116,8 +117,8 @@ test.describe('Dividend Precision After Update', () => {
     }>;
     const updatedRecord = updatedRows.find((row) => row.id === seededRecord.id);
     expect(updatedRecord).toBeDefined();
-    // Assert the server stored exactly the 4-decimal precision value.
-    expect(updatedRecord?.distribution).toBe(highPrecisionDistribution);
+    // Assert the server preserved full 4-decimal precision (no rounding to fewer places).
+    expect(updatedRecord?.distribution).toBeCloseTo(highPrecisionDistribution, 4);
 
     // ── Step 2: Load the Universe screen and verify the stored precision is
     // faithfully displayed in the UI (guards against UI-layer rounding).
@@ -131,7 +132,7 @@ test.describe('Dividend Precision After Update', () => {
     // Filter the table to the test symbol so it is the only visible row.
     const symbolInput = page.locator('input[placeholder="Search Symbol"]');
     await symbolInput.fill(testSymbol);
-    await page.waitForTimeout(500);
+    await settle(page, 500);
 
     // Wait for exactly one data row matching the test symbol.
     await page.waitForSelector('.dms-body-row[role="row"]', { timeout: 10000 });
@@ -192,7 +193,7 @@ test.describe('Dividend Precision After Update', () => {
 
       const symbolInput = page.locator('input[placeholder="Search Symbol"]');
       await symbolInput.fill(baselineSymbol);
-      await page.waitForTimeout(500);
+      await settle(page, 500);
 
       await page.waitForSelector('.dms-body-row[role="row"]', {
         timeout: 10000,

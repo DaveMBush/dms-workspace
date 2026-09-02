@@ -1,5 +1,6 @@
 import { expect, Page, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
+import { settle } from './helpers/settle.helper';
 
 /**
  * Wait for accounts to load or empty state to appear
@@ -365,7 +366,7 @@ test.describe('Account CRUD Operations', () => {
 
       // Wait for database write to fully commit
       // (especially important in CI with potential SQLite locking)
-      await page.waitForTimeout(1000);
+      await settle(page, 1000);
 
       // Reload page and wait for accounts to load
       await page.reload();
@@ -373,7 +374,7 @@ test.describe('Account CRUD Operations', () => {
       await waitForAccountsPanel(page);
 
       // Give extra time for accounts list to populate in CI
-      await page.waitForTimeout(500);
+      await settle(page, 500);
 
       // Verify account still exists with increased timeout for CI
       const persistedAccount = page

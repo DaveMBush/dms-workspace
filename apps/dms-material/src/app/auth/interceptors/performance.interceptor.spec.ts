@@ -100,41 +100,19 @@ describe('PerformanceInterceptor', () => {
   });
 
   describe('operation detection', () => {
-    it('should detect auth login operation', () => {
-      httpClient.post('/api/auth/login', {}).subscribe();
+    it.each([
+      ['/api/auth/login', 'auth-login'],
+      ['/api/auth/refresh', 'auth-refresh'],
+      ['/api/auth/logout', 'auth-logout'],
+    ])('should detect %s operation', (url, expectedOperation) => {
+      httpClient.post(url, {}).subscribe();
 
-      const req = httpTestingController.expectOne('/api/auth/login');
+      const req = httpTestingController.expectOne(url);
       req.flush({});
 
       expect(mockPerformanceLogging.logPerformanceMetric).toHaveBeenCalledWith(
         expect.objectContaining({
-          operation: 'auth-login',
-        })
-      );
-    });
-
-    it('should detect auth refresh operation', () => {
-      httpClient.post('/api/auth/refresh', {}).subscribe();
-
-      const req = httpTestingController.expectOne('/api/auth/refresh');
-      req.flush({});
-
-      expect(mockPerformanceLogging.logPerformanceMetric).toHaveBeenCalledWith(
-        expect.objectContaining({
-          operation: 'auth-refresh',
-        })
-      );
-    });
-
-    it('should detect auth logout operation', () => {
-      httpClient.post('/api/auth/logout', {}).subscribe();
-
-      const req = httpTestingController.expectOne('/api/auth/logout');
-      req.flush({});
-
-      expect(mockPerformanceLogging.logPerformanceMetric).toHaveBeenCalledWith(
-        expect.objectContaining({
-          operation: 'auth-logout',
+          operation: expectedOperation,
         })
       );
     });

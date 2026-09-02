@@ -1,5 +1,6 @@
 import { expect, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
+import { settle } from './helpers/settle.helper';
 
 /**
  * Update Fields E2E Tests (TDD - GREEN Phase)
@@ -52,7 +53,7 @@ test.describe('Update Fields Flow', () => {
       const button = page.locator('[data-testid="update-fields-button"]');
       await button.click();
 
-      await page.waitForTimeout(2000);
+      await settle(page, 2000);
       expect(updateCallCount).toBe(1);
     });
 
@@ -82,7 +83,7 @@ test.describe('Update Fields Flow', () => {
       const button = page.locator('[data-testid="update-fields-button"]');
       await button.click();
 
-      await page.waitForTimeout(2000);
+      await settle(page, 2000);
       await expect(button).toBeEnabled();
     });
   });
@@ -185,7 +186,7 @@ test.describe('Update Fields Flow', () => {
       const button = page.locator('[data-testid="update-fields-button"]');
       await button.click();
 
-      await page.waitForTimeout(2000);
+      await settle(page, 2000);
       await expect(button).toBeEnabled();
     });
   });
@@ -207,10 +208,12 @@ test.describe('Update Fields Flow', () => {
 
       await button.click();
       await expect(button).toBeDisabled();
+      // eslint-disable-next-line sonarjs/no-forced-browser-interaction -- intentional: forced click on the disabled button must be ignored by the guard.
       await button.click({ force: true });
+      // eslint-disable-next-line sonarjs/no-forced-browser-interaction -- intentional: second forced click on the disabled button must also be ignored.
       await button.click({ force: true });
 
-      await page.waitForTimeout(2000);
+      await settle(page, 2000);
       expect(updateCallCount).toBe(1);
     });
   });

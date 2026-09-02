@@ -131,7 +131,7 @@ describe('buildAccountResponse - soldTrades lazy loading (Story 40.3)', () => {
 
     const body = JSON.parse(response.body);
     expect(body[0].soldTrades.indexes).toHaveLength(ACCOUNT_PAGE_SIZE);
-    expect(body[0].soldTrades.length).toBe(120);
+    expect(body[0].soldTrades).toHaveLength(120);
   });
 
   it('should filter sold trades by sell_date IS NOT NULL', async () => {
@@ -169,7 +169,7 @@ describe('buildAccountResponse - soldTrades lazy loading (Story 40.3)', () => {
 
     const body = JSON.parse(response.body);
     expect(body[0].soldTrades.indexes).toHaveLength(5);
-    expect(body[0].soldTrades.length).toBe(5);
+    expect(body[0].soldTrades).toHaveLength(5);
   });
 
   it('should return empty PartialArrayDefinition when no sold trades exist', async () => {

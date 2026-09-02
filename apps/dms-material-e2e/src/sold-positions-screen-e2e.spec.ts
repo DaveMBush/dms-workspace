@@ -1,6 +1,7 @@
 import { expect, Page, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 import { seedSoldPositionsE2eData } from './helpers/seed-sold-positions-e2e-data.helper';
+import { settle } from './helpers/settle.helper';
 
 /**
  * Helper: read sort state from the sort-filter localStorage key.
@@ -89,7 +90,7 @@ test.describe('Sold Positions Screen E2E', () => {
     test('should filter by Symbol', async ({ page }) => {
       const symbolInput = page.locator('input[placeholder="Search Symbol"]');
       await symbolInput.fill(symbols[0]);
-      await page.waitForTimeout(500);
+      await settle(page, 500);
 
       // The table should show only the matching symbol (column 1)
       const symbolCells = await getColumnTexts(page, 1);
@@ -113,7 +114,7 @@ test.describe('Sold Positions Screen E2E', () => {
     test('should sort by Sell Date', async ({ page }) => {
       const header = page.getByRole('columnheader', { name: 'Sell Date' });
       await header.click();
-      await page.waitForTimeout(500);
+      await settle(page, 500);
 
       const state = await getSortState(page, 'trades-closed');
       expect(state).not.toBeNull();

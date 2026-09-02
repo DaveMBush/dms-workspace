@@ -1,6 +1,7 @@
 import { expect, Page, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 import { seedClosePositionE2eData } from './helpers/seed-close-position-e2e-data.helper';
+import { settle } from './helpers/settle.helper';
 
 /**
  * Helper: wait for the Open Positions table and at least one data row.
@@ -69,7 +70,7 @@ test.describe('Close Position — Immediate Removal (Epic 107)', () => {
     await sellDatePicker.waitFor({ state: 'visible', timeout: 5000 });
     await sellDatePicker.fill('06/15/2026');
     await page.keyboard.press('Enter');
-    await page.waitForTimeout(300);
+    await settle(page, 300);
 
     // Row must still be visible after sell date alone (position not yet closed).
     await expect(row).toHaveCount(1);
@@ -88,7 +89,7 @@ test.describe('Close Position — Immediate Removal (Epic 107)', () => {
       timeout: 5000,
     });
     // Allow startEdit()'s setTimeout(0) focus call to complete.
-    await page.waitForTimeout(150);
+    await settle(page, 150);
     await page.keyboard.press('Control+a');
     await page.keyboard.type('150.00');
 

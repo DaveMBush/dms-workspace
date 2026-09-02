@@ -32,7 +32,7 @@ describe('Account openTrades PartialArrayDefinition (Story 40.3)', () => {
     };
     expect(openTrades.startIndex).toBe(0);
     expect(openTrades.indexes).toEqual(['trade-1', 'trade-2']);
-    expect(openTrades.length).toBe(10);
+    expect(openTrades).toHaveLength(10);
   });
 
   it('should have default row with PartialArrayDefinition shape for openTrades', () => {

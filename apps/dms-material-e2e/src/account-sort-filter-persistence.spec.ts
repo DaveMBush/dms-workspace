@@ -3,6 +3,7 @@ import { login } from './helpers/login.helper';
 import { seedDivDepositsE2eData } from './helpers/seed-div-deposits-e2e-data.helper';
 import { seedOpenPositionsE2eData } from './helpers/seed-open-positions-e2e-data.helper';
 import { seedSoldPositionsE2eData } from './helpers/seed-sold-positions-e2e-data.helper';
+import { settle } from './helpers/settle.helper';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -63,7 +64,7 @@ test.describe('Account Sort/Filter Persistence (Story 38.1)', () => {
       // Click "Buy Date" column header to apply ascending sort
       const header = page.locator('.dms-header-cell[data-column="buyDate"]');
       await header.click();
-      await page.waitForTimeout(500);
+      await settle(page, 500);
 
       // Verify sort indicator is active before reload
       await expect(header).toHaveAttribute('aria-sort', /ascending|descending/);
@@ -115,7 +116,7 @@ test.describe('Account Sort/Filter Persistence (Story 38.1)', () => {
       const symbolInput = page.getByPlaceholder('Search Symbol');
       await symbolInput.fill('TEST');
       // Wait for debounced save (300ms) plus buffer
-      await page.waitForTimeout(600);
+      await settle(page, 600);
 
       // Reload the page
       await page.reload();
@@ -164,7 +165,7 @@ test.describe('Account Sort/Filter Persistence (Story 38.1)', () => {
       // Click "Sell Date" column header to apply ascending sort
       const header = page.locator('.dms-header-cell[data-column="sell_date"]');
       await header.click();
-      await page.waitForTimeout(500);
+      await settle(page, 500);
 
       // Verify sort indicator is active before reload
       await expect(header).toHaveAttribute('aria-sort', /ascending|descending/);
@@ -216,7 +217,7 @@ test.describe('Account Sort/Filter Persistence (Story 38.1)', () => {
       const symbolInput = page.getByPlaceholder('Search Symbol');
       await symbolInput.fill('XYZFILTER');
       // Wait for debounced save (300ms) plus buffer
-      await page.waitForTimeout(600);
+      await settle(page, 600);
 
       // Reload the page
       await page.reload();
@@ -265,7 +266,7 @@ test.describe('Account Sort/Filter Persistence (Story 38.1)', () => {
       // Click "Amount" column header to apply ascending sort
       const header = page.locator('.dms-header-cell[data-column="amount"]');
       await header.click();
-      await page.waitForTimeout(500);
+      await settle(page, 500);
 
       // Verify sort indicator is active before reload
       await expect(header).toHaveAttribute('aria-sort', /ascending|descending/);

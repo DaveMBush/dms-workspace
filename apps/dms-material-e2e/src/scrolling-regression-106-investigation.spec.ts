@@ -35,6 +35,7 @@ import { seedScrollSoldPositionsData } from './helpers/seed-scroll-sold-position
 import { seedScrollUniverseData } from './helpers/seed-scroll-universe-data.helper';
 import { swapActiveAccountViaNavigation } from './helpers/swap-active-account-via-navigation.helper';
 import { swapUniverseAccount } from './helpers/swap-universe-account.helper';
+import { settle } from './helpers/settle.helper';
 
 // ─── Constants ─────────────────────────────────────────────────────────────────
 
@@ -150,7 +151,7 @@ async function navigateAndWaitForTable(page: Page, url: string): Promise<void> {
   await page.goto(url, { waitUntil: 'domcontentloaded' });
   await page.waitForSelector(VIEWPORT_SELECTOR, { timeout: 30000 });
   // Let Angular settle (signals, data load)
-  await page.waitForTimeout(2000);
+  await settle(page, 2000);
 }
 
 /** Scroll viewport back to top and wait for stable layout */
@@ -161,7 +162,7 @@ async function resetScrollToTop(page: Page): Promise<void> {
       el.scrollTop = 0;
     }
   }, VIEWPORT_SELECTOR);
-  await page.waitForTimeout(500);
+  await settle(page, 500);
 }
 
 /** Capture live-DOM evidence for contextId mechanism */
@@ -308,7 +309,7 @@ test.describe
     console.log('\n=== UNIVERSE: Account change ===');
     await resetScrollToTop(page);
     await swapUniverseAccount(page);
-    await page.waitForTimeout(1000); // let contextId signal fire
+    await settle(page, 1000); // let contextId signal fire
 
     const evidenceAfterSwap = await captureDomEvidence(page);
     console.log(
@@ -356,7 +357,7 @@ test.describe
       columnSelector: 'dms-base-table .dms-filter-row input[placeholder]',
       filterValue: 'USCRL0',
     });
-    await page.waitForTimeout(1000);
+    await settle(page, 1000);
 
     console.log('\n=== UNIVERSE: Pass 2 (post-filter-clear) ===');
     const pass2 = await softScrollPass(page, 'Universe-Pass2-post-filter');
@@ -391,7 +392,7 @@ test.describe
       toAccountId: openAccountId2,
       routeSuffix: 'open',
     });
-    await page.waitForTimeout(1000);
+    await settle(page, 1000);
 
     console.log('\n=== OPEN POSITIONS: Pass 2 (post-account-change) ===');
     const pass2 = await softScrollPass(page, 'OpenPos-Pass2-post-acct');
@@ -423,7 +424,7 @@ test.describe
       columnSelector: '[data-testid="symbol-search-input"]',
       filterValue: 'E2E-OP',
     });
-    await page.waitForTimeout(1000);
+    await settle(page, 1000);
 
     console.log('\n=== OPEN POSITIONS: Pass 2 (post-filter-clear) ===');
     const pass2 = await softScrollPass(page, 'OpenPos-Pass2-post-filter');
@@ -457,7 +458,7 @@ test.describe
       toAccountId: soldAccountId2,
       routeSuffix: 'sold',
     });
-    await page.waitForTimeout(1000);
+    await settle(page, 1000);
 
     console.log('\n=== SOLD POSITIONS: Pass 2 (post-account-change) ===');
     const pass2 = await softScrollPass(page, 'SoldPos-Pass2-post-acct');
@@ -494,9 +495,9 @@ test.describe
       .first();
     await soldFilterInput.click();
     await soldFilterInput.fill('USCRL');
-    await page.waitForTimeout(1500);
+    await settle(page, 1500);
     await soldFilterInput.clear();
-    await page.waitForTimeout(1500);
+    await settle(page, 1500);
 
     console.log('\n=== SOLD POSITIONS: Pass 2 (post-filter-clear) ===');
     const pass2 = await softScrollPass(page, 'SoldPos-Pass2-post-filter');
@@ -533,7 +534,7 @@ test.describe
       toAccountId: divDepositsAccountId2,
       routeSuffix: 'div-dep',
     });
-    await page.waitForTimeout(1000);
+    await settle(page, 1000);
 
     console.log('\n=== DIV DEPOSITS: Pass 2 (post-account-change) ===');
     const pass2 = await softScrollPass(page, 'DivDep-Pass2-post-acct');
@@ -570,9 +571,9 @@ test.describe
     // Screener has no account selector; navigate away and back to trigger contextId change.
     await page.goto('/global/universe');
     await page.waitForSelector(VIEWPORT_SELECTOR, { timeout: 10000 });
-    await page.waitForTimeout(500);
+    await settle(page, 500);
     await navigateAndWaitForTable(page, '/global/screener');
-    await page.waitForTimeout(1000);
+    await settle(page, 1000);
 
     console.log('\n=== SCREENER: Pass 2 (post-account-change) ===');
     const pass2 = await softScrollPass(page, 'Screener-Pass2-post-acct');
@@ -606,7 +607,7 @@ test.describe
       applyOptionText: 'Income',
       clearOptionText: 'All',
     });
-    await page.waitForTimeout(1000);
+    await settle(page, 1000);
 
     console.log('\n=== SCREENER: Pass 2 (post-filter-clear) ===');
     const pass2 = await softScrollPass(page, 'Screener-Pass2-post-filter');

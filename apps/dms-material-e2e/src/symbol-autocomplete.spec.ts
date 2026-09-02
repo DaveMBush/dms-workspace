@@ -1,4 +1,5 @@
 import { expect, test } from 'playwright/test';
+import { settle } from './helpers/settle.helper';
 
 // Skip these tests until SymbolAutocomplete is integrated into a feature page
 // These tests will be enabled when a feature using SymbolAutocomplete is implemented
@@ -68,7 +69,7 @@ test.describe.skip('Symbol Autocomplete Component', () => {
         .first();
       await input.click();
       await input.fill('ZZZZZZZZ');
-      await page.waitForTimeout(500);
+      await settle(page, 500);
       const options = page.locator('mat-option');
       const count = await options.count();
       expect(count).toBe(0);
@@ -105,7 +106,7 @@ test.describe.skip('Symbol Autocomplete Component', () => {
       await input.fill('P');
       await input.fill('L');
       // API should only be called once due to debounce
-      await page.waitForTimeout(500);
+      await settle(page, 500);
       // Verify only one search result
       const options = page.locator('mat-option');
       const count = await options.count();
@@ -133,7 +134,7 @@ test.describe.skip('Symbol Autocomplete Component', () => {
         .first();
       await input.click();
       await input.fill('AA');
-      await page.waitForTimeout(300);
+      await settle(page, 300);
       // Arrow down to select first option
       await input.press('ArrowDown');
       const firstOption = page
@@ -148,7 +149,7 @@ test.describe.skip('Symbol Autocomplete Component', () => {
         .first();
       await input.click();
       await input.fill('AA');
-      await page.waitForTimeout(300);
+      await settle(page, 300);
       // Select first option with arrow down
       await input.press('ArrowDown');
       // Press Enter to select
@@ -164,7 +165,7 @@ test.describe.skip('Symbol Autocomplete Component', () => {
         .first();
       await input.click();
       await input.fill('AA');
-      await page.waitForTimeout(300);
+      await settle(page, 300);
       // Press Escape
       await input.press('Escape');
       const dropdown = page.locator('mat-autocomplete').first();
@@ -180,7 +181,7 @@ test.describe.skip('Symbol Autocomplete Component', () => {
         .first();
       await input.click();
       await input.fill('AA');
-      await page.waitForTimeout(300);
+      await settle(page, 300);
       // Select first option
       await input.press('ArrowDown');
       // Press Tab to select and move focus
@@ -201,7 +202,7 @@ test.describe.skip('Symbol Autocomplete Component', () => {
         .first();
       await input.click();
       await input.fill('aapl');
-      await page.waitForTimeout(300);
+      await settle(page, 300);
       const options = page.locator('mat-option');
       await expect(options.first()).toBeVisible();
     });
@@ -214,7 +215,7 @@ test.describe.skip('Symbol Autocomplete Component', () => {
         .first();
       await input.click();
       await input.fill('BRK');
-      await page.waitForTimeout(300);
+      await settle(page, 300);
       const options = page.locator('mat-option');
       const count = await options.count();
       // Should find BRK.A and/or BRK.B
@@ -227,7 +228,7 @@ test.describe.skip('Symbol Autocomplete Component', () => {
         .first();
       await input.click();
       await input.fill('AA');
-      await page.waitForTimeout(300);
+      await settle(page, 300);
       const option = page.locator('mat-option').first();
       // Check if name is truncated
       const nameText = await option.locator('small').first().textContent();
@@ -249,7 +250,7 @@ test.describe.skip('Symbol Autocomplete Component', () => {
       await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
       await input.click();
       await input.fill('AA');
-      await page.waitForTimeout(300);
+      await settle(page, 300);
       const dropdown = page.locator('mat-autocomplete').first();
       const box = await dropdown.boundingBox();
       // Dropdown should be visible and within viewport
@@ -263,7 +264,7 @@ test.describe.skip('Symbol Autocomplete Component', () => {
         .first();
       await input.click();
       await input.fill('AA');
-      await page.waitForTimeout(300);
+      await settle(page, 300);
       // Click outside the dropdown
       await page.click('body', { position: { x: 10, y: 10 } });
       const dropdown = page.locator('mat-autocomplete').first();
@@ -278,7 +279,7 @@ test.describe.skip('Symbol Autocomplete Component', () => {
       await input.click();
       await input.fill('AA');
       // Wait for potential timeout
-      await page.waitForTimeout(10000);
+      await settle(page, 10000);
       // Component should still be functional
       await expect(input).toBeVisible();
     });
@@ -289,7 +290,7 @@ test.describe.skip('Symbol Autocomplete Component', () => {
         .first();
       await input.click();
       await input.fill('AA');
-      await page.waitForTimeout(300);
+      await settle(page, 300);
       // Component should remain functional even after error
       await expect(input).toBeVisible();
       // Should be able to clear and try again
@@ -303,7 +304,7 @@ test.describe.skip('Symbol Autocomplete Component', () => {
         .first();
       await input.click();
       await input.fill('AA');
-      await page.waitForTimeout(300);
+      await settle(page, 300);
       // Look for clear button (if implemented)
       const clearBtn = page
         .locator('button[aria-label="Clear"]')
@@ -326,7 +327,7 @@ test.describe.skip('Symbol Autocomplete Component', () => {
         .first();
       await input.click();
       await input.fill('AA');
-      await page.waitForTimeout(300);
+      await settle(page, 300);
       // Close dropdown
       await input.press('Escape');
       // Re-open by clicking input

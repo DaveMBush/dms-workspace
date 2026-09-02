@@ -1,5 +1,6 @@
 import { expect, Page, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
+import { settle } from './helpers/settle.helper';
 
 const ACCOUNT_UUID = '1677e04f-ef9b-4372-adb3-b740443088dc';
 
@@ -110,7 +111,7 @@ test.describe('Universe Table - Server-Side Sorting', () => {
     // Click the Symbol sort header
     const symbolHeader = page.getByRole('columnheader', { name: 'Symbol' });
     await symbolHeader.click();
-    await page.waitForTimeout(300);
+    await settle(page, 300);
 
     // Verify sort state was saved to localStorage as sortColumns
     const cols = await getSortColumnsState(page, 'universes');
@@ -123,13 +124,13 @@ test.describe('Universe Table - Server-Side Sorting', () => {
 
     // First click → asc
     await symbolHeader.click();
-    await page.waitForTimeout(300);
+    await settle(page, 300);
     let cols = await getSortColumnsState(page, 'universes');
     expect(cols).toEqual([{ column: 'symbol', direction: 'asc' }]);
 
     // Second click → desc
     await symbolHeader.click();
-    await page.waitForTimeout(300);
+    await settle(page, 300);
     cols = await getSortColumnsState(page, 'universes');
     expect(cols).toEqual([{ column: 'symbol', direction: 'desc' }]);
   });
@@ -139,7 +140,7 @@ test.describe('Universe Table - Server-Side Sorting', () => {
   }) => {
     const symbolHeader = page.getByRole('columnheader', { name: 'Symbol' });
     await symbolHeader.click();
-    await page.waitForTimeout(500);
+    await settle(page, 500);
 
     const cols = await getSortColumnsState(page, 'universes');
     expect(cols).not.toBeNull();
@@ -151,7 +152,7 @@ test.describe('Universe Table - Server-Side Sorting', () => {
       name: 'Risk Group',
     });
     await riskGroupHeader.click();
-    await page.waitForTimeout(300);
+    await settle(page, 300);
 
     // Verify sort state was saved
     const cols = await getSortColumnsState(page, 'universes');
@@ -170,7 +171,7 @@ test.describe('Universe Table - Server-Side Sorting', () => {
 
     // Click to sort
     await symbolHeader.click();
-    await page.waitForTimeout(300);
+    await settle(page, 300);
 
     // After sorting, verify state changed
     cols = await getSortColumnsState(page, 'universes');
@@ -194,7 +195,7 @@ test.describe('Universe Sort Persistence', () => {
     // Click Symbol to sort
     const symbolHeader = page.getByRole('columnheader', { name: 'Symbol' });
     await symbolHeader.click();
-    await page.waitForTimeout(500);
+    await settle(page, 500);
 
     // Confirm state is saved
     let cols = await getSortColumnsState(page, 'universes');
@@ -220,7 +221,7 @@ test.describe('Universe Sort Persistence', () => {
       name: 'Risk Group',
     });
     await riskGroupHeader.click();
-    await page.waitForTimeout(500);
+    await settle(page, 500);
 
     // Confirm state is saved
     let cols = await getSortColumnsState(page, 'universes');
@@ -249,7 +250,7 @@ test.describe('Universe Sort Persistence', () => {
     // Sort by Symbol ascending
     const symbolHeader = page.getByRole('columnheader', { name: 'Symbol' });
     await symbolHeader.click();
-    await page.waitForTimeout(500);
+    await settle(page, 500);
 
     // Navigate away
     await page.goto(`/account/${ACCOUNT_UUID}/open`);
@@ -327,7 +328,7 @@ test.describe('Open Positions - Sort Interceptor', () => {
 
     const buyDateButton = page.getByRole('columnheader', { name: 'Buy Date' });
     await buyDateButton.click();
-    await page.waitForTimeout(300);
+    await settle(page, 300);
 
     // Sort indicator should appear
     const sortIndicator = page.locator(
@@ -383,7 +384,7 @@ test.describe('Closed Positions - Sort Interceptor', () => {
       exact: true,
     });
     await sellDateButton.click();
-    await page.waitForTimeout(300);
+    await settle(page, 300);
 
     // Sort indicator should appear
     const sortIndicator = page.locator(
@@ -442,15 +443,15 @@ test.describe('Cross-Table Sort Independence', () => {
 
     // Click 1 → asc
     await symbolHeader.click();
-    await page.waitForTimeout(300);
+    await settle(page, 300);
 
     // Click 2 → desc
     await symbolHeader.click();
-    await page.waitForTimeout(300);
+    await settle(page, 300);
 
     // Click 3 → clear sort
     await symbolHeader.click();
-    await page.waitForTimeout(300);
+    await settle(page, 300);
 
     // Verify sort state was cleared from localStorage
     const cols = await getSortColumnsState(page, 'universes');

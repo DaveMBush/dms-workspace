@@ -121,7 +121,7 @@ describe('CusipCacheAdminService', function describeService() {
         count: 1,
       });
 
-      expect(service.searchResults().length).toBe(1);
+      expect(service.searchResults()).toHaveLength(1);
       expect(service.searchResults()[0].cusip).toBe('037833100');
     });
 
@@ -136,7 +136,7 @@ describe('CusipCacheAdminService', function describeService() {
       });
       req.flush({ entries: [], count: 0 });
 
-      expect(service.searchResults().length).toBe(0);
+      expect(service.searchResults()).toHaveLength(0);
     });
 
     it('should handle search errors', function shouldHandleSearchError() {
@@ -176,10 +176,10 @@ describe('CusipCacheAdminService', function describeService() {
         ],
         count: 1,
       });
-      expect(service.searchResults().length).toBe(1);
+      expect(service.searchResults()).toHaveLength(1);
 
       service.clearSearch();
-      expect(service.searchResults().length).toBe(0);
+      expect(service.searchResults()).toHaveLength(0);
     });
   });
 
@@ -280,7 +280,7 @@ describe('CusipCacheAdminService', function describeService() {
         total: 1,
       });
 
-      expect(service.auditEntries().entries.length).toBe(1);
+      expect(service.auditEntries().entries).toHaveLength(1);
       expect(service.auditEntries().total).toBe(1);
     });
 

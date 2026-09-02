@@ -136,7 +136,7 @@ describe('buildAccountResponse - openTrades lazy loading (Story 40.3)', () => {
 
     const body = JSON.parse(response.body);
     expect(body[0].openTrades.indexes).toHaveLength(ACCOUNT_PAGE_SIZE);
-    expect(body[0].openTrades.length).toBe(120);
+    expect(body[0].openTrades).toHaveLength(120);
   });
 
   it('should filter open trades by sell_date null', async () => {
@@ -190,7 +190,7 @@ describe('buildAccountResponse - openTrades lazy loading (Story 40.3)', () => {
 
     const body = JSON.parse(response.body);
     expect(body[0].openTrades.indexes).toHaveLength(5);
-    expect(body[0].openTrades.length).toBe(5);
+    expect(body[0].openTrades).toHaveLength(5);
   });
 
   it('should return empty PartialArrayDefinition when no open trades exist', async () => {

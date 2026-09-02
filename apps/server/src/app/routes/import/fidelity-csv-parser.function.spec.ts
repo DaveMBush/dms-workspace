@@ -206,33 +206,21 @@ describe('parseFidelityCsv', function () {
   });
 
   describe('malformed data handling', function () {
-    test('should throw error for non-numeric quantity', function () {
-      const csv = [
-        HEADER,
+    test.each([
+      [
+        'quantity',
         '02/15/2026,My Brokerage,12345678,YOU BOUGHT,SPY,SPDR S&P 500 ETF,Stock,450.25,abc,,,,-4502.50,02/15/2026',
-      ].join('\n');
-
-      expect(function () {
-        parseFidelityCsv(csv);
-      }).toThrow();
-    });
-
-    test('should throw error for non-numeric price', function () {
-      const csv = [
-        HEADER,
+      ],
+      [
+        'price',
         '02/15/2026,My Brokerage,12345678,YOU BOUGHT,SPY,SPDR S&P 500 ETF,Stock,not-a-price,10,,,,-4502.50,02/15/2026',
-      ].join('\n');
-
-      expect(function () {
-        parseFidelityCsv(csv);
-      }).toThrow();
-    });
-
-    test('should throw error for non-numeric total amount', function () {
-      const csv = [
-        HEADER,
+      ],
+      [
+        'total amount',
         '02/15/2026,My Brokerage,12345678,YOU BOUGHT,SPY,SPDR S&P 500 ETF,Stock,450.25,10,,,,invalid,02/15/2026',
-      ].join('\n');
+      ],
+    ])('should throw error for non-numeric %s', function (field, row) {
+      const csv = [HEADER, row].join('\n');
 
       expect(function () {
         parseFidelityCsv(csv);

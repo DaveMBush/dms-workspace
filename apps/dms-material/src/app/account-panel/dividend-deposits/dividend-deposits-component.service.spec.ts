@@ -130,7 +130,7 @@ describe('DividendDepositsComponentService - Virtual Data Access (AX.3)', () => 
   it('should return sparse array with length matching SmartArray total length', () => {
     const dividends = service.dividends();
 
-    expect(dividends.length).toBe(200);
+    expect(dividends).toHaveLength(200);
   });
 
   // AC: Test dividends computed returns sparse array with default visible range
@@ -144,7 +144,7 @@ describe('DividendDepositsComponentService - Virtual Data Access (AX.3)', () => 
     expect(dividends[49].id).toBe('dep-49');
 
     // Total length should match the full data array
-    expect(dividends.length).toBe(200);
+    expect(dividends).toHaveLength(200);
   });
 
   // AC: Test only items within visible range are transformed
@@ -190,7 +190,7 @@ describe('DividendDepositsComponentService - Virtual Data Access (AX.3)', () => 
     }
 
     // Array length equals total count
-    expect(dividends.length).toBe(200);
+    expect(dividends).toHaveLength(200);
   });
 
   // AC Story 94.2: symbols come directly from d.symbol, not from universeMap
@@ -223,7 +223,7 @@ describe('DividendDepositsComponentService - Virtual Data Access (AX.3)', () => 
     const dividends = service.dividends();
 
     // Should still have correct total length
-    expect(dividends.length).toBe(200);
+    expect(dividends).toHaveLength(200);
 
     // Only items 190-199 should be defined (data ends at 200)
     for (let i = 190; i < 200; i++) {
@@ -245,7 +245,7 @@ describe('DividendDepositsComponentService - Virtual Data Access (AX.3)', () => 
 
     const dividends = service.dividends();
 
-    expect(dividends.length).toBe(0);
+    expect(dividends).toHaveLength(0);
   });
 
   // AC: Test that visibleRange signal exists on service
@@ -285,7 +285,7 @@ describe('DividendDepositsComponentService - Virtual Data Access (AX.3)', () => 
 
     const dividends = service.dividends();
 
-    expect(dividends.length).toBe(1);
+    expect(dividends).toHaveLength(1);
     expect(dividends[0]).toBeDefined();
     expect(dividends[0].id).toBe('single-dep');
     expect(dividends[0].amount).toBe(42);
@@ -313,7 +313,7 @@ describe('DividendDepositsComponentService - Virtual Data Access (AX.3)', () => 
 
     const dividends = service.dividends();
 
-    expect(dividends.length).toBe(200);
+    expect(dividends).toHaveLength(200);
     for (let i = 195; i < 200; i++) {
       expect(dividends[i]).toBeDefined();
       expect(dividends[i].id).toBe(`dep-${i}`);

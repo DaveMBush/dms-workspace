@@ -135,7 +135,7 @@ describe('SummaryService', () => {
       );
       req.flush(mockGraph);
 
-      expect(service.graph().length).toBe(2);
+      expect(service.graph()).toHaveLength(2);
       expect(service.graph()[0].month).toBe('01-2025');
     });
   });
@@ -168,7 +168,7 @@ describe('SummaryService', () => {
       ]);
 
       const months = service.months();
-      expect(months.length).toBe(3);
+      expect(months).toHaveLength(3);
       expect(months[0]).toEqual({ label: '01/2025', value: '2025-01' });
       expect(months[1]).toEqual({ label: '02/2025', value: '2025-02' });
     });
@@ -285,7 +285,7 @@ describe('SummaryService', () => {
       service.fetchMonths();
       httpMock.expectNone('/api/summary/months');
 
-      expect(service.months().length).toBe(2);
+      expect(service.months()).toHaveLength(2);
     });
 
     it('should refresh months cache when invalidateMonthsCache is called', () => {
@@ -305,7 +305,7 @@ describe('SummaryService', () => {
         { month: '2025-02', label: '02/2025' },
       ]);
 
-      expect(service.months().length).toBe(2);
+      expect(service.months()).toHaveLength(2);
     });
 
     it('should set loading during months fetch', () => {
@@ -577,7 +577,7 @@ describe('SummaryService', () => {
       service.fetchYears();
       httpMock.expectNone('/api/summary/years');
 
-      expect(service.years().length).toBe(2);
+      expect(service.years()).toHaveLength(2);
     });
 
     it('should refresh years cache when invalidateYearsCache is called', () => {
@@ -592,7 +592,7 @@ describe('SummaryService', () => {
       const req2 = httpMock.expectOne('/api/summary/years');
       req2.flush([2025, 2024]);
 
-      expect(service.years().length).toBe(2);
+      expect(service.years()).toHaveLength(2);
     });
 
     it('should set error when years fetch fails', () => {

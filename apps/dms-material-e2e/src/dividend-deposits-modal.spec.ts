@@ -1,5 +1,6 @@
 import { expect, Page, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
+import { settle } from './helpers/settle.helper';
 
 // Account UUID is set in beforeAll by creating a fresh test account via API
 let testAccountId = '';
@@ -415,7 +416,7 @@ test.describe('Dividend Deposits', () => {
           .first(),
       ).toBeVisible({ timeout: 5000 });
       // Row should no longer be visible
-      await page.waitForTimeout(1000);
+      await settle(page, 1000);
       await expect(
         page.locator('.dms-body-row[role="row"]').filter({ hasText: '$77.77' }),
       ).toHaveCount(0);

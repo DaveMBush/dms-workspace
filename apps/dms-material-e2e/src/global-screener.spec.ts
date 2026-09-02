@@ -1,5 +1,6 @@
 import { expect, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
+import { settle } from './helpers/settle.helper';
 
 test.describe('Global Screener Component', () => {
   test.beforeEach(async ({ page }) => {
@@ -98,14 +99,14 @@ test.describe('Global Screener Component', () => {
       const filterSelect = page.locator('.header-filter mat-select').first();
       // First select Equities
       await filterSelect.click();
-      await page.waitForTimeout(300); // Wait for dropdown animation
+      await settle(page, 300); // Wait for dropdown animation
       await page.getByRole('option', { name: 'Equities' }).click();
-      await page.waitForTimeout(500); // Wait for selection to apply
+      await settle(page, 500); // Wait for selection to apply
       // Then select All to clear
       await filterSelect.click();
-      await page.waitForTimeout(300); // Wait for dropdown animation
+      await settle(page, 300); // Wait for dropdown animation
       await page.getByRole('option', { name: 'All' }).click();
-      await page.waitForTimeout(500); // Wait for selection to apply
+      await settle(page, 500); // Wait for selection to apply
       // Should show placeholder or All
       await expect(filterSelect).toBeVisible();
     });
@@ -114,7 +115,7 @@ test.describe('Global Screener Component', () => {
   test.describe('Symbol Links', () => {
     test('should render symbol links to cefconnect.com', async ({ page }) => {
       // Wait for table data to potentially load
-      await page.waitForTimeout(500);
+      await settle(page, 500);
       const symbolLinks = page.locator('a.symbol-link');
       const count = await symbolLinks.count();
       if (count > 0) {
@@ -178,17 +179,17 @@ test.describe('Global Screener Component', () => {
 
       // Rapidly change filters with minimal waits to test robustness
       await filterSelect.click();
-      await page.waitForTimeout(200); // Minimal wait for dropdown
+      await settle(page, 200); // Minimal wait for dropdown
       await page.getByRole('option', { name: 'Equities' }).click();
-      await page.waitForTimeout(300); // Minimal wait for filter application
+      await settle(page, 300); // Minimal wait for filter application
 
       await filterSelect.click();
-      await page.waitForTimeout(200);
+      await settle(page, 200);
       await page.getByRole('option', { name: 'Income', exact: true }).click();
-      await page.waitForTimeout(300);
+      await settle(page, 300);
 
       await filterSelect.click();
-      await page.waitForTimeout(200);
+      await settle(page, 200);
       await page.getByRole('option', { name: 'All' }).click();
       await page.waitForLoadState('networkidle'); // Wait for final API call to complete
 

@@ -120,20 +120,13 @@ describe('OpenPositionsComponent', () => {
     expect(component.columns.find((c) => c.field === 'symbol')).toBeTruthy();
   });
 
-  it('should have editable quantity column', () => {
-    const col = component.columns.find((c) => c.field === 'quantity');
-    expect(col?.editable).toBe(true);
-  });
-
-  it('should have editable price column', () => {
-    const col = component.columns.find((c) => c.field === 'buy');
-    expect(col?.editable).toBe(true);
-  });
-
-  it('should have editable date column', () => {
-    const col = component.columns.find((c) => c.field === 'buyDate');
-    expect(col?.editable).toBe(true);
-  });
+  it.each(['quantity', 'buy', 'buyDate'])(
+    'should have editable %s column',
+    (field) => {
+      const col = component.columns.find((c) => c.field === field);
+      expect(col?.editable).toBe(true);
+    },
+  );
 
   it('should call onAddPosition without error', () => {
     // onAddPosition was removed - component uses route and dialog
@@ -252,7 +245,7 @@ describe('OpenPositionsComponent', () => {
       const positions = component.selectOpenPositions$();
 
       // Should return the mock open positions
-      expect(positions.length).toBe(2);
+      expect(positions).toHaveLength(2);
       expect(positions.find((t) => t.id === '1')).toBeDefined();
       expect(positions.find((t) => t.id === '3')).toBeDefined();
     });
@@ -263,12 +256,12 @@ describe('OpenPositionsComponent', () => {
       const positions = component.selectOpenPositions$();
 
       expect(Array.isArray(positions)).toBe(true);
-      expect(positions.length).toBe(0);
+      expect(positions).toHaveLength(0);
     });
 
     it('should update selectOpenPositions$ when service changes', () => {
       const initialPositions = component.selectOpenPositions$();
-      expect(initialPositions.length).toBe(2);
+      expect(initialPositions).toHaveLength(2);
 
       // Add a new open position
       const newPosition: OpenPosition = {
@@ -295,7 +288,7 @@ describe('OpenPositionsComponent', () => {
       ]);
 
       const updatedPositions = component.selectOpenPositions$();
-      expect(updatedPositions.length).toBe(3);
+      expect(updatedPositions).toHaveLength(3);
       expect(updatedPositions.find((t) => t.id === '5')).toBeDefined();
     });
 
@@ -310,7 +303,7 @@ describe('OpenPositionsComponent', () => {
       const positions = component.selectOpenPositions$();
 
       // Client-side filtering removed - all positions pass through
-      expect(positions.length).toBe(mockOpenPositions.length);
+      expect(positions).toHaveLength(mockOpenPositions.length);
       // Search text is maintained as UI state for the interceptor
       expect(component.searchText()).toBe('AAPL');
     });
@@ -394,7 +387,7 @@ describe('OpenPositionsComponent', () => {
       expect(() => {
         const positions = component.selectOpenPositions$();
         expect(Array.isArray(positions)).toBe(true);
-        expect(positions.length).toBe(0);
+        expect(positions).toHaveLength(0);
       }).not.toThrow();
     });
 
@@ -931,7 +924,7 @@ describe('OpenPositionsComponent - Account Selection Integration', () => {
       fixture.detectChanges();
 
       const positions = component.selectOpenPositions$();
-      expect(positions.length).toBe(0);
+      expect(positions).toHaveLength(0);
     });
 
     it('should handle initial account selection on component creation', () => {
@@ -973,7 +966,7 @@ describe('OpenPositionsComponent - Account Selection Integration', () => {
       fixture.detectChanges();
 
       const positions = component.selectOpenPositions$();
-      expect(positions.length).toBe(1);
+      expect(positions).toHaveLength(1);
       expect(positions[0].symbol).toBe('AAPL');
     });
 
@@ -1042,7 +1035,7 @@ describe('OpenPositionsComponent - Account Selection Integration', () => {
       mockOpenPositionsService.selectOpenPositions.set(account1Positions);
       fixture.detectChanges();
 
-      expect(component.selectOpenPositions$().length).toBe(1);
+      expect(component.selectOpenPositions$()).toHaveLength(1);
 
       // Switch to second account
       mockCurrentAccountStore.selectCurrentAccountId.set('acc-2');
@@ -1050,7 +1043,7 @@ describe('OpenPositionsComponent - Account Selection Integration', () => {
       fixture.detectChanges();
 
       const positions = component.selectOpenPositions$();
-      expect(positions.length).toBe(2);
+      expect(positions).toHaveLength(2);
       expect(positions[0].symbol).toBe('MSFT');
       expect(positions[1].symbol).toBe('GOOGL');
     });
@@ -1081,14 +1074,14 @@ describe('OpenPositionsComponent - Account Selection Integration', () => {
       mockCurrentAccountStore.selectCurrentAccountId.set('acc-1');
       mockOpenPositionsService.selectOpenPositions.set(mockPositions);
       fixture.detectChanges();
-      expect(component.selectOpenPositions$().length).toBe(1);
+      expect(component.selectOpenPositions$()).toHaveLength(1);
 
       // Deselect account
       mockCurrentAccountStore.selectCurrentAccountId.set('');
       mockOpenPositionsService.selectOpenPositions.set([]);
       fixture.detectChanges();
 
-      expect(component.selectOpenPositions$().length).toBe(0);
+      expect(component.selectOpenPositions$()).toHaveLength(0);
     });
   });
 
@@ -1155,7 +1148,7 @@ describe('OpenPositionsComponent - Account Selection Integration', () => {
       fixture.detectChanges();
 
       const positions = component.selectOpenPositions$();
-      expect(positions.length).toBe(1);
+      expect(positions).toHaveLength(1);
       expect(positions[0].id).toBe('100');
       expect(positions[0].symbol).toBe('NVDA');
       expect(positions[0].quantity).toBe(20);
@@ -1224,7 +1217,7 @@ describe('OpenPositionsComponent - Account Selection Integration', () => {
 
       // All positions pass through (server-side filtering)
       const positions = component.selectOpenPositions$();
-      expect(positions.length).toBe(2);
+      expect(positions).toHaveLength(2);
       // Search text UI state is maintained
       expect(component.searchText()).toBe('AAPL');
     });
@@ -1238,7 +1231,7 @@ describe('OpenPositionsComponent - Account Selection Integration', () => {
 
       const positions = component.selectOpenPositions$();
       expect(Array.isArray(positions)).toBe(true);
-      expect(positions.length).toBe(0);
+      expect(positions).toHaveLength(0);
     });
   });
 
@@ -1286,7 +1279,7 @@ describe('OpenPositionsComponent - Account Selection Integration', () => {
       fixture.detectChanges();
 
       const filtered = component.selectOpenPositions$();
-      expect(filtered.length).toBe(1);
+      expect(filtered).toHaveLength(1);
       expect(filtered[0].symbol).toBe('AAPL');
     });
 
@@ -1488,7 +1481,7 @@ describe('OpenPositionsComponent - Client-Side Sorting Removal', () => {
           return call.length > 0;
         },
       );
-      expect(dataSortCalls.length).toBe(0);
+      expect(dataSortCalls).toHaveLength(0);
 
       sortSpy.mockRestore();
     });

@@ -31,6 +31,7 @@ import { assertStickyHeaderInvariant } from './helpers/assert-sticky-header-inva
 import { assertVisibleRowsNonEmpty } from './helpers/assert-visible-rows-non-empty.helper';
 import { login } from './helpers/login.helper';
 import { seedScrollUniverseData } from './helpers/seed-scroll-universe-data.helper';
+import { settle } from './helpers/settle.helper';
 
 const VIEWPORT_SELECTOR = 'cdk-virtual-scroll-viewport';
 // NOTE: must be a TH cell selector — Angular Material's stickRows applies
@@ -207,7 +208,7 @@ test.describe('Universe Scrolling Regression — blank rows on fast scroll', () 
     // Wait for the sort network round-trip to complete before scrolling.
     // A short debounce followed by networkidle is more reliable than
     // waitForSelector (rows persist from beforeEach and pass immediately).
-    await page.waitForTimeout(100);
+    await settle(page, 100);
     await page.waitForLoadState('networkidle');
 
     const viewport = page.locator(VIEWPORT_SELECTOR);
@@ -246,7 +247,7 @@ test.describe('Universe Scrolling Regression — blank rows on fast scroll', () 
     await symbolInput.fill('USCRL');
 
     // Wait for the filter network round-trip to complete before scrolling.
-    await page.waitForTimeout(100);
+    await settle(page, 100);
     await page.waitForLoadState('networkidle');
 
     const viewport = page.locator(VIEWPORT_SELECTOR);
@@ -291,13 +292,13 @@ test.describe('Universe Scrolling Regression — blank rows on fast scroll', () 
     // Three rapid toggles: asc → desc → asc.  Each triggers a server round-trip
     // and a new isLoading window — overlapping windows stress-test stability.
     await symbolHeader.click();
-    await page.waitForTimeout(100);
+    await settle(page, 100);
     await symbolHeader.click();
-    await page.waitForTimeout(100);
+    await settle(page, 100);
     await symbolHeader.click();
 
     // Wait for the final sort round-trip before scrolling.
-    await page.waitForTimeout(100);
+    await settle(page, 100);
     await page.waitForLoadState('networkidle');
 
     const viewport = page.locator(VIEWPORT_SELECTOR);
@@ -338,7 +339,7 @@ test.describe('Universe Scrolling Regression — blank rows on fast scroll', () 
     await symbolInput.fill('USCRL1');
 
     // Wait for the filter network round-trip to settle.
-    await page.waitForTimeout(100);
+    await settle(page, 100);
     await page.waitForLoadState('networkidle');
 
     const viewport = page.locator(VIEWPORT_SELECTOR);

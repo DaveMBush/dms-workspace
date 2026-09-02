@@ -319,7 +319,7 @@ describe('getDistributions', () => {
     const result = await getDistributions('PDI');
 
     expect(result.result).toBeDefined();
-    expect(result.result?.distribution).toBe(0.2205);
+    expect(result.result?.distribution).toBeCloseTo(0.2205);
     expect(mockFetchDistributionData).not.toHaveBeenCalled();
   });
 

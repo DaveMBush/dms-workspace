@@ -89,6 +89,7 @@ test.describe('Packaged Electron Smoke Test', () => {
   // -------------------------------------------------------------------------
   test.beforeAll(() => {
     if (!isRoot) {
+      // Skip: packaged Electron smoke needs root to set the chrome-sandbox SUID bit.
       test.skip(
         true,
         [
@@ -101,6 +102,7 @@ test.describe('Packaged Electron Smoke Test', () => {
     }
 
     if (!debPath) {
+      // Skip: no .deb artifact was built in this run.
       test.skip(
         true,
         [
@@ -112,7 +114,6 @@ test.describe('Packaged Electron Smoke Test', () => {
     }
 
     try {
-      // eslint-disable-next-line sonarjs/os-command -- debPath is a validated local file path from a controlled test environment
       const installLog = execSync(`dpkg -i "${debPath}" 2>&1`, {
         encoding: 'utf8',
       });
@@ -142,7 +143,6 @@ test.describe('Packaged Electron Smoke Test', () => {
 
     if (isRoot) {
       try {
-        // eslint-disable-next-line sonarjs/os-command -- dpkgPackageName is a constant defined in this test file
         execSync(`dpkg -r ${dpkgPackageName} 2>&1`, { encoding: 'utf8' });
       } catch {
         // Best-effort cleanup — dpkg -r may fail if the package was never
@@ -161,7 +161,6 @@ test.describe('Packaged Electron Smoke Test', () => {
         `The afterInstall hook from Story 102.1 may not have run.`,
     ).toBe(true);
 
-    // eslint-disable-next-line sonarjs/os-command -- chromeSandboxPath is a constant defined in this test file
     const statOutput = execSync(`stat -c '%U:%G %a' "${chromeSandboxPath}"`, {
       encoding: 'utf8',
     }).trim();

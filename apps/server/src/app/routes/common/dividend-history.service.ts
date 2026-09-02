@@ -63,14 +63,44 @@ async function fetchAndParseHtml(
   return parseDividendTable(html);
 }
 
+// Removes HTML tags with a linear scan (a regex like /<[^>]+>/g is flagged by
+// sonarjs/super-linear-regex for backtracking on adversarial input).
+function stripTags(text: string): string {
+  let result = '';
+  let inTag = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text.charAt(i);
+    if (ch === '<') {
+      inTag = true;
+    } else if (ch === '>') {
+      inTag = false;
+    } else if (!inTag) {
+      result += ch;
+    }
+  }
+  return result.trim();
+}
+
 function parseCellValues(cells: string): string[] {
   const cellValues: string[] = [];
-  const cellRegex = /<td[^>]*>([\s\S]*?)<\/td>/gi;
-  let cellMatch: RegExpExecArray | null;
-  while ((cellMatch = cellRegex.exec(cells)) !== null) {
-    // eslint-disable-next-line sonarjs/slow-regex -- safe: [^>]+ is bounded by > and cannot catastrophically backtrack
-    const text = cellMatch[1].replace(/<[^>]+>/g, '').trim();
-    cellValues.push(text);
+  // Linear index scan instead of a backtracking regex (sonarjs/super-linear-regex)
+  const haystack = cells.toLowerCase();
+  let searchFrom = 0;
+  for (;;) {
+    const tagStart = haystack.indexOf('<td', searchFrom);
+    if (tagStart === -1) {
+      break;
+    }
+    const contentStart = haystack.indexOf('>', tagStart + 3);
+    if (contentStart === -1) {
+      break;
+    }
+    const tagEnd = haystack.indexOf('</td>', contentStart + 1);
+    if (tagEnd === -1) {
+      break;
+    }
+    cellValues.push(stripTags(cells.slice(contentStart + 1, tagEnd)));
+    searchFrom = tagEnd + 4;
   }
   return cellValues;
 }

@@ -141,7 +141,7 @@ describe('SoldPositionsComponentService - Virtual Data Access (AX.11)', () => {
   it('should return sparse array with length matching SmartArray total length', () => {
     const positions = service.selectSoldPositions();
 
-    expect(positions.length).toBe(200);
+    expect(positions).toHaveLength(200);
   });
 
   // AC: Test selectSoldPositions returns sparse array with default visible range
@@ -155,7 +155,7 @@ describe('SoldPositionsComponentService - Virtual Data Access (AX.11)', () => {
     expect(positions[49].id).toBe('trade-49');
 
     // Total length should match the full data array
-    expect(positions.length).toBe(200);
+    expect(positions).toHaveLength(200);
   });
 
   // AC: Test only items within visible range are transformed
@@ -200,7 +200,7 @@ describe('SoldPositionsComponentService - Virtual Data Access (AX.11)', () => {
     }
 
     // Array length equals total count
-    expect(positions.length).toBe(200);
+    expect(positions).toHaveLength(200);
   });
 
   // AC: Test that trade.symbol is used directly
@@ -224,7 +224,7 @@ describe('SoldPositionsComponentService - Virtual Data Access (AX.11)', () => {
     const positions = service.selectSoldPositions();
 
     // Should still have correct total length
-    expect(positions.length).toBe(200);
+    expect(positions).toHaveLength(200);
 
     // Only items 190-199 should be defined (data ends at 200)
     for (let i = 190; i < 200; i++) {
@@ -246,7 +246,7 @@ describe('SoldPositionsComponentService - Virtual Data Access (AX.11)', () => {
 
     const positions = service.selectSoldPositions();
 
-    expect(positions.length).toBe(0);
+    expect(positions).toHaveLength(0);
   });
 
   // AC: Test that visibleRange signal exists on service
@@ -295,7 +295,7 @@ describe('SoldPositionsComponentService - Virtual Data Access (AX.11)', () => {
 
     const positions = service.selectSoldPositions();
 
-    expect(positions.length).toBe(1);
+    expect(positions).toHaveLength(1);
     expect(positions[0]).toBeDefined();
     expect(positions[0].id).toBe('single-sold');
     expect(positions[0].symbol).toBe('AAPL');
@@ -323,7 +323,7 @@ describe('SoldPositionsComponentService - Virtual Data Access (AX.11)', () => {
 
     const positions = service.selectSoldPositions();
 
-    expect(positions.length).toBe(200);
+    expect(positions).toHaveLength(200);
     for (let i = 195; i < 200; i++) {
       expect(positions[i]).toBeDefined();
       expect(positions[i].id).toBe(`trade-${i}`);

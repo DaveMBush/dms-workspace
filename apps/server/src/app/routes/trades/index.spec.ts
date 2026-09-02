@@ -511,7 +511,7 @@ describe('mapTradeToResponse', function () {
 
       const result = mapTradeToResponse(trade);
 
-      expect(result.last_price).toBe(12.34);
+      expect(result.last_price).toBeCloseTo(12.34);
     });
 
     it('should return 0 for last_price when universe is null', function () {

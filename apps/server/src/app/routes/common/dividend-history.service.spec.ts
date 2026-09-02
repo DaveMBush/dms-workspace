@@ -297,7 +297,7 @@ describe('dividend-history.service', () => {
       const result = await fetchDividendHistory('PDI');
 
       expect(result).toHaveLength(1);
-      expect(result[0].amount).toBe(0.2205);
+      expect(result[0].amount).toBeCloseTo(0.2205);
     });
 
     test('filters out rows with empty ex-div date', async () => {

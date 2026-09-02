@@ -221,26 +221,15 @@ describe('Transaction Validation', function () {
         expect(result.valid).toBe(false);
       });
 
-      test('should accept zero amount for dividends/deposits', async function () {
-        const mod = await import('./validate-amount.function');
-        const result = mod.validateAmount(0);
+      test.each([0, 999999999.99, 0.01])(
+        'should accept amount %s',
+        async function (amount) {
+          const mod = await import('./validate-amount.function');
+          const result = mod.validateAmount(amount);
 
-        expect(result).toEqual({ valid: true });
-      });
-
-      test('should handle very large numbers', async function () {
-        const mod = await import('./validate-amount.function');
-        const result = mod.validateAmount(999999999.99);
-
-        expect(result).toEqual({ valid: true });
-      });
-
-      test('should handle very small numbers (precision)', async function () {
-        const mod = await import('./validate-amount.function');
-        const result = mod.validateAmount(0.01);
-
-        expect(result).toEqual({ valid: true });
-      });
+          expect(result).toEqual({ valid: true });
+        }
+      );
     });
   });
 
@@ -252,62 +241,35 @@ describe('Transaction Validation', function () {
       expect(result).toEqual({ valid: true });
     });
 
-    test('should reject invalid date format', async function () {
+    test.each([
+      ['2026-02-15', 'format'],
+      ['12/31/2099', 'future'],
+      ['01/01/1900', 'old'],
+    ])('should reject %s date %s', async function (date, error) {
       const mod = await import('./validate-date.function');
-      const result = mod.validateDate('2026-02-15');
+      const result = mod.validateDate(date);
 
       expect(result).toEqual({
         valid: false,
-        error: expect.stringContaining('format'),
+        error: expect.stringContaining(error),
       });
     });
 
-    test('should reject future dates', async function () {
-      const mod = await import('./validate-date.function');
-      const result = mod.validateDate('12/31/2099');
+    test.each(['', '13/32/2026', 'not-a-date'])(
+      'should reject invalid date %s',
+      async function (date) {
+        const mod = await import('./validate-date.function');
+        const result = mod.validateDate(date);
 
-      expect(result).toEqual({
-        valid: false,
-        error: expect.stringContaining('future'),
-      });
-    });
-
-    test('should reject very old dates', async function () {
-      const mod = await import('./validate-date.function');
-      const result = mod.validateDate('01/01/1900');
-
-      expect(result).toEqual({
-        valid: false,
-        error: expect.stringContaining('old'),
-      });
-    });
-
-    test('should reject empty date string', async function () {
-      const mod = await import('./validate-date.function');
-      const result = mod.validateDate('');
-
-      expect(result.valid).toBe(false);
-    });
-
-    test('should reject malformed date like 13/32/2026', async function () {
-      const mod = await import('./validate-date.function');
-      const result = mod.validateDate('13/32/2026');
-
-      expect(result.valid).toBe(false);
-    });
+        expect(result.valid).toBe(false);
+      }
+    );
 
     test('should accept date in various valid formats', async function () {
       const mod = await import('./validate-date.function');
 
       expect(mod.validateDate('01/01/2020').valid).toBe(true);
       expect(mod.validateDate('12/31/2025').valid).toBe(true);
-    });
-
-    test('should reject date with text', async function () {
-      const mod = await import('./validate-date.function');
-      const result = mod.validateDate('not-a-date');
-
-      expect(result.valid).toBe(false);
     });
   });
 

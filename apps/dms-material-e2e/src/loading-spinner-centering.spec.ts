@@ -5,6 +5,7 @@
 
 import { expect, test } from '@playwright/test';
 import { login } from './helpers/login.helper';
+import { settle } from './helpers/settle.helper';
 
 test.describe('Loading Spinner Centering', () => {
   test.beforeEach(async ({ page }) => {
@@ -391,7 +392,7 @@ test.describe('Loading Spinner Centering', () => {
       const loadingOverlay = page.locator('[data-testid="loading-overlay"]');
       await loadingOverlay.waitFor({ state: 'visible', timeout: 5000 });
       // Allow CSS layout to settle before measuring
-      await page.waitForTimeout(200);
+      await settle(page, 200);
 
       // Verify overlay covers entire viewport via computed CSS (fixed inset-0)
       const overlayStyle = await page.evaluate(() => {

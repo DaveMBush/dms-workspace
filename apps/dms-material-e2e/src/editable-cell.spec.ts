@@ -1,4 +1,5 @@
 import { expect, test } from 'playwright/test';
+import { settle } from './helpers/settle.helper';
 
 // Skip these tests until EditableCell is integrated into a feature page
 // These tests will be enabled when a feature using EditableCell is implemented
@@ -77,7 +78,7 @@ test.describe.skip('Editable Cell Component', () => {
         .locator('.display-value[data-format="decimal"]')
         .first();
       const text = await decimalCell.textContent();
-      // eslint-disable-next-line sonarjs/slow-regex -- Simple regex for decimal format validation
+      // eslint-disable-next-line sonarjs/super-linear-regex -- \d+ is quadratic on digit-heavy input, but JS has no atomic quantifier and bounding it would change the match; input is a short cell value
       expect(text).toMatch(/\d+\.\d{2}/);
     });
   });
@@ -195,7 +196,7 @@ test.describe.skip('Editable Cell Component', () => {
       const input = page.locator('input[matInput]').first();
       await expect(input).toBeVisible();
       await page.evaluate(() => window.scrollBy(0, 1000));
-      await page.waitForTimeout(500);
+      await settle(page, 500);
       const inputVisible = await input.isVisible();
       expect(inputVisible).toBe(false);
     });

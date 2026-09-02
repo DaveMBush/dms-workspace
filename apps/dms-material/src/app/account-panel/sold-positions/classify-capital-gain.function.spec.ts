@@ -4,32 +4,11 @@ import { classifyCapitalGain } from './classify-capital-gain.function';
 
 describe('classifyCapitalGain', () => {
   describe('positive capital gains', () => {
-    it('should return "gain" for a standard profit', () => {
-      // Arrange: (180 - 150) * 100 = 3000
-      const capitalGain = 3000;
-
-      // Act
-      const result = classifyCapitalGain(capitalGain);
-
-      // Assert
-      expect(result).toBe('gain');
-    });
-
-    it('should return "gain" for a very large profit', () => {
-      // Arrange: (1500000 - 1000000) * 10
-      const capitalGain = 5000000;
-
-      // Act
-      const result = classifyCapitalGain(capitalGain);
-
-      // Assert
-      expect(result).toBe('gain');
-    });
-
-    it('should return "gain" for a fractional profit', () => {
-      // Arrange: fractional amount, still positive
-      const capitalGain = 0.01;
-
+    it.each([
+      [3000, 'standard profit'],
+      [5000000, 'very large profit'],
+      [0.01, 'fractional profit'],
+    ])('should return "gain" for a %s (%i)', (capitalGain) => {
       // Act
       const result = classifyCapitalGain(capitalGain);
 
@@ -39,32 +18,11 @@ describe('classifyCapitalGain', () => {
   });
 
   describe('negative capital gains (losses)', () => {
-    it('should return "loss" for a standard loss', () => {
-      // Arrange: (150 - 180) * 100 = -3000
-      const capitalGain = -3000;
-
-      // Act
-      const result = classifyCapitalGain(capitalGain);
-
-      // Assert
-      expect(result).toBe('loss');
-    });
-
-    it('should return "loss" for a very large loss', () => {
-      // Arrange: large loss amount
-      const capitalGain = -5000000;
-
-      // Act
-      const result = classifyCapitalGain(capitalGain);
-
-      // Assert
-      expect(result).toBe('loss');
-    });
-
-    it('should return "loss" for a fractional loss', () => {
-      // Arrange: small negative amount
-      const capitalGain = -0.01;
-
+    it.each([
+      [-3000, 'standard loss'],
+      [-5000000, 'very large loss'],
+      [-0.01, 'fractional loss'],
+    ])('should return "loss" for a %s (%i)', (capitalGain) => {
       // Act
       const result = classifyCapitalGain(capitalGain);
 

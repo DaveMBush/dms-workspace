@@ -1,5 +1,6 @@
 import { expect, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
+import { settle } from './helpers/settle.helper';
 
 const ACCOUNT_UUID = '1677e04f-ef9b-4372-adb3-b740443088dc';
 
@@ -63,8 +64,10 @@ test.describe('Summary Load Stability Regression', () => {
       // Record counts after initial load
       const initialCounts = { ...requestCounts };
 
-      // Wait for observation window (5 seconds) to detect any idle requests
-      await page.waitForTimeout(5000);
+      // Observation window (5s): assert no idle requests occur. Absence of
+      // events over a period cannot be awaited as a condition, so this is a
+      // deliberate fixed wait.
+      await settle(page, 5000);
 
       // Assert: No additional summary requests during idle period
       expect(requestCounts['summary']).toBe(initialCounts['summary']);
@@ -143,8 +146,9 @@ test.describe('Summary Load Stability Regression', () => {
         timeout: 15000,
       });
 
-      // Wait for initial requests to complete
-      await page.waitForTimeout(1000);
+      // Baseline settle before arming the request counter (no observable
+      // condition signals "all initial requests done").
+      await settle(page, 1000);
 
       // Track requests for month change
       let summaryRequests = 0;
@@ -173,7 +177,8 @@ test.describe('Summary Load Stability Regression', () => {
       expect(count).toBeGreaterThan(1);
       await options.nth(1).click();
       await page.waitForLoadState('networkidle');
-      await page.waitForTimeout(1000);
+      // Settle so any in-flight follow-up requests complete before asserting.
+      await settle(page, 1000);
 
       // Assert: Exactly one summary and one graph request
       expect(summaryRequests).toBe(1);
@@ -261,8 +266,9 @@ test.describe('Summary Load Stability Regression', () => {
         timeout: 15000,
       });
 
-      // Wait for initial requests to complete
-      await page.waitForTimeout(1000);
+      // Baseline settle before arming the request counter (no observable
+      // condition signals "all initial requests done").
+      await settle(page, 1000);
 
       // Track requests for year change
       let monthsRequests = 0;
@@ -286,7 +292,8 @@ test.describe('Summary Load Stability Regression', () => {
       if (count > 1) {
         await options.nth(1).click();
         await page.waitForLoadState('networkidle');
-        await page.waitForTimeout(1000);
+        // Settle so any in-flight follow-up requests complete before asserting.
+        await settle(page, 1000);
 
         // Assert: Exactly one months and one graph request
         expect(monthsRequests).toBe(1);
@@ -311,9 +318,11 @@ test.describe('Summary Load Stability Regression', () => {
       const statsGrid = page.locator('[data-testid="stats-grid"]');
       await expect(statsGrid).toBeVisible();
 
-      // Assert: Screen remains stable (no continuous repaint/reload)
-      // by verifying elements are still visible after observation period
-      await page.waitForTimeout(5000);
+      // Assert: Screen remains stable (no continuous repaint/reload) by
+      // verifying elements are still visible after an observation period. The
+      // "stays put for 5s" property cannot be awaited as a condition, so this
+      // is a deliberate fixed wait.
+      await settle(page, 5000);
 
       await expect(summaryCard).toBeVisible();
       await expect(statsGrid).toBeVisible();
@@ -385,7 +394,7 @@ test.describe('Summary Load Stability Regression', () => {
         await expect(statsGrid).toBeVisible();
 
         // Wait for observation period
-        await page.waitForTimeout(3000);
+        await settle(page, 3000);
 
         await expect(summaryCard).toBeVisible();
         await expect(statsGrid).toBeVisible();
@@ -423,7 +432,7 @@ test.describe('Summary Load Stability Regression', () => {
       const initialCount = requestCount;
 
       // Wait for observation window
-      await page.waitForTimeout(3000);
+      await settle(page, 3000);
 
       // Assert: No additional requests during idle period
       expect(requestCount).toBe(initialCount);

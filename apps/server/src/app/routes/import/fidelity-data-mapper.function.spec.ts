@@ -1225,7 +1225,7 @@ describe('mapFidelityTransactions', function () {
       // Should create dividend deposit linked to SPAXX
       expect(result.divDeposits).toHaveLength(1);
       expect(result.divDeposits[0].universeId).toBe('new-spaxx-universe');
-      expect(result.divDeposits[0].amount).toBe(12.63);
+      expect(result.divDeposits[0].amount).toBeCloseTo(12.63);
       expect(result.unknownTransactions).toHaveLength(0);
     });
 

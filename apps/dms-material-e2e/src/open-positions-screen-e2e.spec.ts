@@ -1,6 +1,7 @@
 import { expect, Page, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 import { seedOpenPositionsE2eData } from './helpers/seed-open-positions-e2e-data.helper';
+import { settle } from './helpers/settle.helper';
 
 /**
  * Helper: read sort state from the sort-filter localStorage key.
@@ -119,7 +120,7 @@ test.describe('Open Positions Screen E2E', () => {
     test('should sort by Buy Date', async ({ page }) => {
       const header = page.getByRole('columnheader', { name: 'Buy Date' });
       await header.click();
-      await page.waitForTimeout(500);
+      await settle(page, 500);
 
       const state = await getSortState(page, 'trades-open');
       expect(state).not.toBeNull();
@@ -130,7 +131,7 @@ test.describe('Open Positions Screen E2E', () => {
     test('should sort by Unrlz Gain %', async ({ page }) => {
       const header = page.getByRole('columnheader', { name: 'Unrlz Gain %' });
       await header.click();
-      await page.waitForTimeout(500);
+      await settle(page, 500);
 
       const state = await getSortState(page, 'trades-open');
       expect(state).not.toBeNull();
@@ -141,7 +142,7 @@ test.describe('Open Positions Screen E2E', () => {
     test('should sort by Unrlz Gain$', async ({ page }) => {
       const header = page.getByRole('columnheader', { name: 'Unrlz Gain$' });
       await header.click();
-      await page.waitForTimeout(500);
+      await settle(page, 500);
 
       const state = await getSortState(page, 'trades-open');
       expect(state).not.toBeNull();

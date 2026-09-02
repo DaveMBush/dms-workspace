@@ -90,34 +90,17 @@ describe('SoldPositionsComponent', () => {
   });
 
   it('should define columns', () => {
-    expect(component.columns.length).toBe(9);
+    expect(component.columns).toHaveLength(9);
     expect(component.columns.find((c) => c.field === 'symbol')).toBeTruthy();
   });
 
-  it('should have buy editable', () => {
-    const col = component.columns.find((c) => c.field === 'buy');
-    expect(col?.editable).toBe(true);
-  });
-
-  it('should have buy_date editable', () => {
-    const col = component.columns.find((c) => c.field === 'buy_date');
-    expect(col?.editable).toBe(true);
-  });
-
-  it('should have quantity editable', () => {
-    const col = component.columns.find((c) => c.field === 'quantity');
-    expect(col?.editable).toBe(true);
-  });
-
-  it('should have sell editable', () => {
-    const col = component.columns.find((c) => c.field === 'sell');
-    expect(col?.editable).toBe(true);
-  });
-
-  it('should have sell_date editable', () => {
-    const col = component.columns.find((c) => c.field === 'sell_date');
-    expect(col?.editable).toBe(true);
-  });
+  it.each(['buy', 'buy_date', 'quantity', 'sell', 'sell_date'])(
+    'should have %s editable',
+    (field) => {
+      const col = component.columns.find((c) => c.field === field);
+      expect(col?.editable).toBe(true);
+    },
+  );
 
   it('should have capitalGain column', () => {
     const col = component.columns.find((c) => c.field === 'capitalGain');
@@ -218,7 +201,7 @@ describe('SoldPositionsComponent', () => {
 
       // selectSoldPositions should filter to only trades with sell_date not null
       const soldPositions = mockSoldPositionsService.selectSoldPositions();
-      expect(soldPositions.length).toBe(2);
+      expect(soldPositions).toHaveLength(2);
       expect(soldPositions.every((p) => p.sell_date !== null)).toBe(true);
     });
 
@@ -251,7 +234,7 @@ describe('SoldPositionsComponent', () => {
 
       // selectSoldPositions should filter to only account 'acc-1' positions
       const soldPositions = mockSoldPositionsService.selectSoldPositions();
-      expect(soldPositions.length).toBe(1);
+      expect(soldPositions).toHaveLength(1);
       expect(soldPositions.every((p) => p.accountId === 'acc-1')).toBe(true);
     });
 
@@ -369,14 +352,14 @@ describe('SoldPositionsComponent', () => {
 
       // Initially showing acc-1
       mockSoldPositionsService.selectedAccountId.set('acc-1');
-      expect(mockSoldPositionsService.selectSoldPositions().length).toBe(1);
+      expect(mockSoldPositionsService.selectSoldPositions()).toHaveLength(1);
       expect(mockSoldPositionsService.selectSoldPositions()[0].accountId).toBe(
         'acc-1',
       );
 
       // Switch to acc-2, should reactively update
       mockSoldPositionsService.selectedAccountId.set('acc-2');
-      expect(mockSoldPositionsService.selectSoldPositions().length).toBe(1);
+      expect(mockSoldPositionsService.selectSoldPositions()).toHaveLength(1);
       expect(mockSoldPositionsService.selectSoldPositions()[0].accountId).toBe(
         'acc-2',
       );
@@ -454,7 +437,7 @@ describe('SoldPositionsComponent - Account Selection Integration', () => {
       fixture.detectChanges();
 
       const positions = component.displayedPositions();
-      expect(positions.length).toBe(0);
+      expect(positions).toHaveLength(0);
     });
 
     it('should handle initial account selection on component creation', () => {
@@ -493,7 +476,7 @@ describe('SoldPositionsComponent - Account Selection Integration', () => {
       fixture.detectChanges();
 
       const positions = component.displayedPositions();
-      expect(positions.length).toBe(1);
+      expect(positions).toHaveLength(1);
       expect(positions[0].symbol).toBe('AAPL');
     });
 
@@ -549,7 +532,7 @@ describe('SoldPositionsComponent - Account Selection Integration', () => {
       );
       fixture.detectChanges();
 
-      expect(component.displayedPositions().length).toBe(1);
+      expect(component.displayedPositions()).toHaveLength(1);
 
       // Switch to second account
       mockCurrentAccountStore.selectCurrentAccountId.set('acc-2');
@@ -559,7 +542,7 @@ describe('SoldPositionsComponent - Account Selection Integration', () => {
       fixture.detectChanges();
 
       const positions = component.displayedPositions();
-      expect(positions.length).toBe(2);
+      expect(positions).toHaveLength(2);
       expect(positions[0].symbol).toBe('MSFT');
       expect(positions[1].symbol).toBe('GOOGL');
     });
@@ -585,14 +568,14 @@ describe('SoldPositionsComponent - Account Selection Integration', () => {
       mockCurrentAccountStore.selectCurrentAccountId.set('acc-1');
       mockSoldPositionsComponentService.selectSoldPositions.set(mockPositions);
       fixture.detectChanges();
-      expect(component.displayedPositions().length).toBe(1);
+      expect(component.displayedPositions()).toHaveLength(1);
 
       // Deselect account
       mockCurrentAccountStore.selectCurrentAccountId.set('');
       mockSoldPositionsComponentService.selectSoldPositions.set([]);
       fixture.detectChanges();
 
-      expect(component.displayedPositions().length).toBe(0);
+      expect(component.displayedPositions()).toHaveLength(0);
     });
 
     it('should update capital gains for new account', () => {
@@ -630,7 +613,7 @@ describe('SoldPositionsComponent - Account Selection Integration', () => {
       fixture.detectChanges();
 
       const displayed = component.displayedPositions();
-      expect(displayed.length).toBe(2);
+      expect(displayed).toHaveLength(2);
       expect(displayed[0].capitalGain).toBe(3000);
       expect(displayed[1].capitalGain).toBe(-1000);
     });
@@ -696,7 +679,7 @@ describe('SoldPositionsComponent - Account Selection Integration', () => {
       fixture.detectChanges();
 
       const positions = component.displayedPositions();
-      expect(positions.length).toBe(1);
+      expect(positions).toHaveLength(1);
       expect(positions[0].id).toBe('100');
       expect(positions[0].symbol).toBe('NVDA');
       expect(positions[0].quantity).toBe(20);
@@ -725,7 +708,7 @@ describe('SoldPositionsComponent - Account Selection Integration', () => {
 
       const positions = component.displayedPositions();
       expect(Array.isArray(positions)).toBe(true);
-      expect(positions.length).toBe(0);
+      expect(positions).toHaveLength(0);
     });
   });
 
@@ -951,7 +934,7 @@ describe('SoldPositionsComponent - Client-Side Sorting Removal', () => {
           return call.length > 0;
         },
       );
-      expect(dataSortCalls.length).toBe(0);
+      expect(dataSortCalls).toHaveLength(0);
 
       sortSpy.mockRestore();
     });

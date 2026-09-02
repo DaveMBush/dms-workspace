@@ -161,7 +161,7 @@ describe('DividendDepositsComponent', () => {
   // AC 3: Tests verify table columns display correctly
   describe('columns', () => {
     it('should define exactly 5 columns', () => {
-      expect(component.columns.length).toBe(5);
+      expect(component.columns).toHaveLength(5);
     });
 
     it('should have symbol column with sortable true and correct width', () => {
@@ -241,14 +241,14 @@ describe('DividendDepositsComponent', () => {
         createDivDeposit({ id: 'dep-2', accountId: 'acc-1', amount: 200 }),
       ]);
 
-      expect(component.dividends$().length).toBe(2);
+      expect(component.dividends$()).toHaveLength(2);
     });
 
     // AC 5: Tests verify empty state when no dividends
     it('should display empty state when store has no dividends', () => {
       // Arrange: signal starts at [] (set in beforeEach)
       expect(component.dividends$()).toEqual([]);
-      expect(component.dividends$().length).toBe(0);
+      expect(component.dividends$()).toHaveLength(0);
     });
 
     // AC 2: Tests verify table filters by selected account
@@ -261,7 +261,7 @@ describe('DividendDepositsComponent', () => {
         createDivDeposit({ id: 'dep-3', accountId: 'acc-1', amount: 300 }),
       ]);
 
-      expect(component.dividends$().length).toBe(2);
+      expect(component.dividends$()).toHaveLength(2);
       expect(
         component.dividends$().every((d: DivDeposit) => d.accountId === 'acc-1')
       ).toBe(true);
@@ -286,7 +286,7 @@ describe('DividendDepositsComponent', () => {
       // Arrange: service returns empty array because selected account has no dividends
       mockDividendDepositsService.dividends.set([]);
 
-      expect(component.dividends$().length).toBe(0);
+      expect(component.dividends$()).toHaveLength(0);
     });
 
     it('should reactively update when store data changes', () => {
@@ -294,7 +294,7 @@ describe('DividendDepositsComponent', () => {
       mockDividendDepositsService.dividends.set([
         createDivDeposit({ id: 'dep-1', accountId: 'acc-1', amount: 100 }),
       ]);
-      expect(component.dividends$().length).toBe(1);
+      expect(component.dividends$()).toHaveLength(1);
 
       // Act: add a second dividend for the same account via signal update
       mockDividendDepositsService.dividends.set([
@@ -303,7 +303,7 @@ describe('DividendDepositsComponent', () => {
       ]);
 
       // Assert: component reactively reflects updated store state
-      expect(component.dividends$().length).toBe(2);
+      expect(component.dividends$()).toHaveLength(2);
     });
   });
 
@@ -905,7 +905,7 @@ describe('DividendDepositsComponent - Account Selection Integration', () => {
       fixture.detectChanges();
 
       const dividends = component.dividends$();
-      expect(dividends.length).toBe(0);
+      expect(dividends).toHaveLength(0);
     });
 
     it('should handle initial account selection on component creation', () => {
@@ -937,7 +937,7 @@ describe('DividendDepositsComponent - Account Selection Integration', () => {
       mockDividendDepositsService.dividends.set(account1Dividends);
 
       const dividends = component.dividends$();
-      expect(dividends.length).toBe(1);
+      expect(dividends).toHaveLength(1);
       expect(dividends[0].amount).toBe(100);
     });
 
@@ -971,7 +971,7 @@ describe('DividendDepositsComponent - Account Selection Integration', () => {
       expect(mockDividendDepositsService.selectedAccountId()).toBe('acc-1');
       mockDividendDepositsService.dividends.set(account1Dividends);
 
-      expect(component.dividends$().length).toBe(1);
+      expect(component.dividends$()).toHaveLength(1);
 
       // Switch to second account
       mockCurrentAccountStore.selectCurrentAccountId.set('acc-2');
@@ -980,7 +980,7 @@ describe('DividendDepositsComponent - Account Selection Integration', () => {
       mockDividendDepositsService.dividends.set(account2Dividends);
 
       const dividends = component.dividends$();
-      expect(dividends.length).toBe(2);
+      expect(dividends).toHaveLength(2);
       expect(dividends[0].amount).toBe(250);
       expect(dividends[1].amount).toBe(375);
     });
@@ -1000,7 +1000,7 @@ describe('DividendDepositsComponent - Account Selection Integration', () => {
       fixture.detectChanges();
       expect(mockDividendDepositsService.selectedAccountId()).toBe('acc-1');
       mockDividendDepositsService.dividends.set(mockDividends);
-      expect(component.dividends$().length).toBe(1);
+      expect(component.dividends$()).toHaveLength(1);
 
       // Deselect account
       mockCurrentAccountStore.selectCurrentAccountId.set('');
@@ -1008,7 +1008,7 @@ describe('DividendDepositsComponent - Account Selection Integration', () => {
       expect(mockDividendDepositsService.selectedAccountId()).toBe('');
       mockDividendDepositsService.dividends.set([]);
 
-      expect(component.dividends$().length).toBe(0);
+      expect(component.dividends$()).toHaveLength(0);
     });
 
     it('should update dividend amounts for new account', () => {
@@ -1032,7 +1032,7 @@ describe('DividendDepositsComponent - Account Selection Integration', () => {
       fixture.detectChanges();
 
       const displayed = component.dividends$();
-      expect(displayed.length).toBe(2);
+      expect(displayed).toHaveLength(2);
       expect(displayed[0].amount).toBe(500);
       expect(displayed[1].amount).toBe(150);
     });
@@ -1091,7 +1091,7 @@ describe('DividendDepositsComponent - Account Selection Integration', () => {
       fixture.detectChanges();
 
       const dividends = component.dividends$();
-      expect(dividends.length).toBe(1);
+      expect(dividends).toHaveLength(1);
       expect(dividends[0].id).toBe('dep-100');
       expect(dividends[0].amount).toBe(75);
     });
@@ -1125,7 +1125,7 @@ describe('DividendDepositsComponent - Account Selection Integration', () => {
 
       const dividends = component.dividends$();
       expect(Array.isArray(dividends)).toBe(true);
-      expect(dividends.length).toBe(0);
+      expect(dividends).toHaveLength(0);
     });
   });
 
@@ -1198,7 +1198,7 @@ describe('DividendDepositsComponent - Account Selection Integration', () => {
       fixture.detectChanges();
 
       // Component column definitions should be preserved
-      expect(component.columns.length).toBe(columnCount);
+      expect(component.columns).toHaveLength(columnCount);
     });
   });
 });

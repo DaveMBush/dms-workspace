@@ -3,6 +3,7 @@ import { login } from './helpers/login.helper';
 import { seedDivDepositsE2eData } from './helpers/seed-div-deposits-e2e-data.helper';
 import { seedOpenPositionsE2eData } from './helpers/seed-open-positions-e2e-data.helper';
 import { seedSoldPositionsE2eData } from './helpers/seed-sold-positions-e2e-data.helper';
+import { settle } from './helpers/settle.helper';
 
 /**
  * Helper: clear sort-filter state from localStorage.
@@ -96,7 +97,7 @@ test.describe('Account Tables - Sorting (Story 37.1 - Failing Tests)', () => {
       // Click "Buy Date" column header to trigger ascending sort
       const header = page.getByRole('columnheader', { name: 'Buy Date' });
       await header.click();
-      await page.waitForTimeout(800);
+      await settle(page, 800);
       await page.waitForLoadState('networkidle');
 
       const openPositionsTable = page.locator('dms-open-positions');
@@ -172,7 +173,7 @@ test.describe('Account Tables - Sorting (Story 37.1 - Failing Tests)', () => {
       // Click "Sell Date" column header to trigger ascending sort
       const header = page.getByRole('columnheader', { name: 'Sell Date' });
       await header.click();
-      await page.waitForTimeout(800);
+      await settle(page, 800);
       await page.waitForLoadState('networkidle');
 
       const soldPositionsTable = page.locator('dms-sold-positions');
@@ -248,7 +249,7 @@ test.describe('Account Tables - Sorting (Story 37.1 - Failing Tests)', () => {
       // Click "Amount" column header to trigger ascending sort
       const header = page.getByRole('columnheader', { name: 'Amount' });
       await header.click();
-      await page.waitForTimeout(800);
+      await settle(page, 800);
       await page.waitForLoadState('networkidle');
 
       // Read Amount column (col 3) text values after sort
