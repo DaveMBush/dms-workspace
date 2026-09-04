@@ -43,7 +43,7 @@
     "@fastify/autoload": "~6.5.0",
     "@fastify/cookie": "^11.0.2",
     "@fastify/cors": "^11.2.0",
-    "@fastify/multipart": "^9.4.0",
+    "@fastify/multipart": "^10.1.1",
     "@fastify/sensible": "~6.0.4",
     "@fastify/static": "^10.1.2",
     "@primeng/themes": "^21.0.4",
