@@ -16,9 +16,12 @@
 // Explicit flags always win.
 //
 // Steps (each idempotent — re-running is safe):
-//   1. In <root>: if the story file's `Status:` is not already `done`, set it to
-//      `done`, then `git add -A` + commit "chore(story <id>): mark done" and push
-//      (so the status flip lands on main with the merge). Skipped if already done.
+//   1. In <root>: set the story file's `Status:` to `done` — and, when a paired
+//      unit-test story ({N}.{M-1}) exists in the same epic dir, that one too —
+//      then `git add -A` + commit "chore(story <id>): mark done" and push (so the
+//      flip lands on main with the merge). This is now the single owner of the
+//      final flip: review leaves stories at `review`. Commit/push skipped if both
+//      were already `done` (re-run).
 //   2. Merge the PR into main (`gh pr merge --<method>`; default squash). If the
 //      PR is already merged/closed, skip and report it.
 //   3. Remove the story worktree (`git worktree remove`), delete the local branch
@@ -212,8 +215,12 @@ if (existsSync(epicDir)) {
 }
 
 // --- 1. Flip status to done + commit/push -----------------------------------
+// Review no longer flips status (it leaves the story at `review`); this is now
+// the single owner of the final flip, and it runs only after CodeRabbit + CI
+// pass. It marks BOTH the main story and its paired unit-test story ({N}.{M-1})
+// done so report-incomplete-epics (which counts only `done`) stays accurate.
 let statusBefore = null;
-let statusAfter = null;
+let statusAfter = 'done';
 let committedDone = false;
 if (!storyFileAbs || !existsSync(storyFileAbs)) {
   fail('story file not found in worktree', {
@@ -222,25 +229,54 @@ if (!storyFileAbs || !existsSync(storyFileAbs)) {
 }
 
 const storyText = readFileSync(storyFileAbs, 'utf8');
-const statusLineMatch = storyText.match(/^Status:\s*(\S+)/m);
-statusBefore = statusLineMatch ? statusLineMatch[1] : null;
-statusAfter = statusBefore === 'done' ? 'done' : 'done';
+statusBefore = (storyText.match(/^Status:\s*(\S+)/m) || [])[1] ?? null;
 
-if (statusBefore !== 'done') {
-  const updated = storyText.replace(/^Status:.*$/m, 'Status: done');
-  if (!dryRun) {
-    try {
-      writeFileSync(storyFileAbs, updated);
-      run('git', ['add', '-A']);
-      run('git', ['commit', '-m', `chore(story ${storyId}): mark done`]);
+// Paired unit-test story: {N}.{M-1}-*.md in the same epic directory.
+let pairedId = null;
+const subNum = Number(storyId.split('.')[1]);
+if (Number.isInteger(subNum) && subNum > 1) {
+  pairedId = `${storyId.split('.')[0]}.${subNum - 1}`;
+}
+let pairedFileAbs = null;
+if (pairedId && existsSync(epicDir)) {
+  const pf = readdirSync(epicDir).find(
+    (x) => x.endsWith('.md') && x.startsWith(`${pairedId}-`),
+  );
+  if (pf) pairedFileAbs = resolve(epicDir, pf);
+}
+
+const flipToDone = (absPath) => {
+  const text = readFileSync(absPath, 'utf8');
+  return text.replace(/^Status:.*$/m, 'Status: done');
+};
+
+if (!dryRun) {
+  try {
+    writeFileSync(storyFileAbs, flipToDone(storyFileAbs));
+    if (pairedFileAbs && existsSync(pairedFileAbs)) {
+      writeFileSync(pairedFileAbs, flipToDone(pairedFileAbs));
+    }
+    run('git', ['add', '-A']);
+    // Idempotent: --quiet exits 0 when nothing is staged. Skip commit/push if
+    // both files were already `done` (re-run) so a no-op doesn't fail the merge.
+    const staged = runAllowFail(projectRoot, 'git', [
+      'diff',
+      '--cached',
+      '--quiet',
+    ]);
+    if (!staged.ok) {
+      const commitMsg = pairedFileAbs
+        ? `chore(story ${storyId}): mark done (incl. unit-test story ${pairedId})`
+        : `chore(story ${storyId}): mark done`;
+      run('git', ['commit', '-m', commitMsg]);
       run('git', ['push', 'origin', branch]);
       committedDone = true;
-    } catch (e) {
-      fail('failed to commit/push status flip', {
-        stderr: String(e.stderr || e.message),
-        branch,
-      });
     }
+  } catch (e) {
+    fail('failed to commit/push status flip', {
+      stderr: String(e.stderr || e.message),
+      branch,
+    });
   }
 }
 

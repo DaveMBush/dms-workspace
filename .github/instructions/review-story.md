@@ -9,8 +9,9 @@ Hand it a story file path whose status is `review`. It adversarially reviews
 the code changes that implemented the story (three independent review layers),
 triages findings, and emits a machine-readable verdict:
 
-- **pass** — no actionable findings; flips the story (and its paired unit-test
-  story) to `done`.
+- **pass** — no actionable findings; leaves the story and its paired unit-test
+  story at `review` (the final flip to `done` is owned by merge-story-pr.mjs,
+  which runs only after CodeRabbit + CI pass).
 - **fail-rework** — real code issues found; appends them to the shared review
   log for the fix node (`fix-story-findings.md`) and leaves status at `review`.
 - **needs-human** — the story itself is wrong, incomplete, or ambiguous in a
@@ -34,10 +35,10 @@ is NOT run here — the pipeline runs its own verification step after fixes.
 | Output                                 | Location                                                                                                                                    |
 | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
 | Review log (every non-skipped verdict) | same epic directory: `{N}.{M}-review-findings.md` — append-only; each run adds one section, earlier sections are never rewritten or deleted |
-| Status update (pass only)              | story file `Status:` line → `done`; paired unit-test story too if present and at `review`                                                   |
+| Status update                          | none — this run never sets `done`; merge-story-pr.mjs owns the final flip to `done` (main story + paired unit-test story) after CodeRabbit + CI pass |
 
-Permitted story-file edits on pass: the `Status:` line only. Nothing else, in
-any verdict. Never rewrite ACs, Tasks, Dev Notes, or Dev Agent Record. The
+Permitted story-file edits: **none.** This run never touches a story file's
+`Status:` line in any verdict. Never rewrite ACs, Tasks, Dev Notes, or Dev Agent Record. The
 review log is shared with fix passes (they append their own sections) — this
 run may only add a new section at the end.
 
@@ -145,9 +146,10 @@ run may only add a new section at the end.
      `review`. The log section lists only this run's `patch` and `defer`
      findings; mark each with its bucket so the fix node knows which are
      actionable vs informational.
-   - Else → verdict **pass**. Append a short clean-run entry to the log, then
-     set the story's `Status:` line to `done`; if a paired unit-test story is
-     at `review`, set it to `done` too. Save.
+   - Else → verdict **pass**. Append a short clean-run entry to the log and
+     leave both the story and its paired unit-test story at `review`. Do NOT
+     set either status line — merge-story-pr.mjs flips them to `done` after
+     CodeRabbit + CI pass. Save only the review-log section.
 
 ## Review log format (append-only)
 
@@ -193,9 +195,10 @@ review-run section's F findings; earlier sections are context.
   judgment call yourself; record material ones in the report's `notes`.
 - Read-only with respect to implementation code: no edits to source files, no
   git mutations (no commit/push/branch/stash). Read-only git (`git diff`,
-  `git log`, `git show`, `git status`) is allowed. The only files this run may
-  touch are the review log (append one new section at the end; never modify
-  earlier sections) and the story `Status:` line (pass only).
+  `git log`, `git show`, `git status`) is allowed. The only file this run may
+  touch is the review log (append one new section at the end; never modify
+  earlier sections). This run NEVER edits a story file — not on pass, not in
+  any verdict. The final flip to `done` belongs to merge-story-pr.mjs.
 - Do not run the quality gate, builds, or test suites — review is static
   analysis of the diff plus targeted reads of surrounding code.
 - Every finding must cite evidence from the diff or a specific file/line. No
@@ -235,8 +238,9 @@ Example shape (values illustrative only):
 `"skipped"`:
 
 - `pass` — zero actionable findings this run (`counts.patch` and `counts.spec`
-  are both 0); story (and paired unit-test story) now at `done`. This is the
-  "review passed" signal for N8N, including on re-runs after fixes.
+  are both 0); story (and paired unit-test story) remain at `review`. This is
+  the "review passed" signal for N8N, including on re-runs after fixes. The
+  final flip to `done` happens in merge-story-pr.mjs after CodeRabbit + CI pass.
 - `fail-rework` — this run's patch findings appended to the review log for the
   fix node.
 - `needs-human` — spec-level issues in `notes`; human must amend the story,
