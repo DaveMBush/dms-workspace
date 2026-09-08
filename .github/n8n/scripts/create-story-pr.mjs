@@ -232,6 +232,7 @@ if (existingPr) {
     title,
   ].filter(Boolean);
   try {
+    // gh pr create has no --json flag (only list/view do); it prints the PR URL.
     const out = run('gh', [
       'pr',
       'create',
@@ -243,12 +244,13 @@ if (existingPr) {
       prTitle,
       '--body',
       bodyParts.join('\n'),
-      '--json',
-      'number,url,state',
     ]);
-    const created = JSON.parse(out);
-    prNumber = created.number;
-    prUrl = created.url;
+    const urlMatch = out.match(/github\.com\/\S+\/pull\/(\d+)/);
+    if (!urlMatch) {
+      fail('gh pr create succeeded but no PR URL in output', { stdout: out });
+    }
+    prNumber = Number(urlMatch[1]);
+    prUrl = urlMatch[0];
   } catch (e) {
     fail('gh pr create failed', {
       stderr: String(e.stderr || e.message),
