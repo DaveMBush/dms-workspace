@@ -144,7 +144,7 @@
     "eslint-plugin-jsdoc": "^62.9.0",
     "eslint-plugin-max-params-no-constructor": "0.0.4",
     "eslint-plugin-playwright": "^2.11.0",
-    "eslint-plugin-simple-import-sort": "12.1.1",
+    "eslint-plugin-simple-import-sort": "14.0.0",
     "eslint-plugin-sonarjs": "4.2.0",
     "eslint-plugin-unicorn": "64.0.0",
     "eslint-plugin-unused-imports": "4.4.1",
