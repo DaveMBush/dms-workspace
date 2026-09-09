@@ -7,12 +7,16 @@
 //     [--repo owner/name] [--timeout-ms 900000] [--poll-ms 30000]
 //
 // How "done" is detected (CodeRabbit's exact signal varies by config, so this
-// checks both mechanisms and reports what it sees):
+// checks three mechanisms and reports what it sees):
 //   1. A check-run on the PR head whose name matches /code.?rabbit/i reaches
 //      status=completed — authoritative; its conclusion decides clean vs issues.
 //   2. Otherwise, a review posted by `code-rabbit[bot]` on the current head sha,
 //      with the set of inline comments STABLE across two consecutive polls
 //      (guards against acting while CodeRabbit is still posting).
+//   3. Otherwise, an issue comment from the bot — the only signal it leaves on
+//      repos with <10 stars ("skip review" notice), where there is no check-run
+//      and no review at all. Stable across two polls; a skip notice maps to
+//      clean, any other walkthrough summary maps to issues.
 //
 // Actionable findings = PR review comments authored by `code-rabbit[bot]`.
 // The fix node evaluates each and rejects non-actionable ones.
@@ -120,6 +124,16 @@ function hasCodeRabbitReview(sha) {
   const reviews = ghApi(`pulls/${prNum}/reviews`);
   return (Array.isArray(reviews) ? reviews : []).some(
     (r) => r.commit_id === sha && r.user && /code.?rabbit/i.test(r.user.login),
+  );
+}
+
+// Issue comments authored by the CodeRabbit bot. On repos with <10 stars
+// CodeRabbit posts only a "skip review" issue comment — no check-run, no
+// review — so this is the only signal that it has finished (or declined).
+function codeRabbitIssueComments() {
+  const comments = ghApi(`issues/${prNum}/comments`);
+  return (Array.isArray(comments) ? comments : []).filter(
+    (c) => c.user && /code.?rabbit/i.test(c.user.login),
   );
 }
 
@@ -239,6 +253,45 @@ async function main() {
         process.exit(0);
       }
       prevCommentsKey = key;
+    } else {
+      // Path 3: no check-run and no review — CodeRabbit may have posted only an
+      // issue comment (e.g. the "skip review" notice on repos with <10 stars).
+      let issueComments = [];
+      try {
+        issueComments = codeRabbitIssueComments();
+      } catch {
+        /* non-fatal */
+      }
+      if (issueComments.length > 0) {
+        const key = JSON.stringify(
+          issueComments.map((c) => [c.id, c.body]),
+        );
+        if (prevCommentsKey !== null && prevCommentsKey === key) {
+          // Stable across two polls -> CodeRabbit is done. A "skip review"
+          // notice means it declined to review; anything else is a walkthrough
+          // summary that may carry findings.
+          const skipped = issueComments.some((c) =>
+            /does not receive automatic reviews|trigger review/i.test(c.body),
+          );
+          const state = skipped ? 'clean' : 'issues';
+          console.log(
+            JSON.stringify(
+              {
+                prNumber: prNum,
+                headSha: trackedSha,
+                state,
+                codeRabbitCheckName: null,
+                actionableComments: [],
+                rawChecks: checks,
+              },
+              null,
+              2,
+            ),
+          );
+          process.exit(0);
+        }
+        prevCommentsKey = key;
+      }
     }
 
     await sleep(pollMs);
