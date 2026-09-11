@@ -13,7 +13,7 @@ import { defineConfig } from 'vite';
  */
 function getTestedSourceFiles(): string[] {
   const tested = new Set<string>();
-  const root = __dirname;
+  const root = import.meta.dirname;
 
   function walk(dir: string): void {
     for (const entry of readdirSync(dir)) {
@@ -58,7 +58,7 @@ function getTestedSourceFiles(): string[] {
 }
 
 export default defineConfig(() => ({
-  root: __dirname,
+  root: import.meta.dirname,
   cacheDir: '../../node_modules/.vite/apps/dms-material',
   plugins: [angular(), nxViteTsPaths(), nxCopyAssetsPlugin(['*.md'])],
   // Uncomment this if you are using workers.
