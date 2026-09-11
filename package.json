@@ -129,7 +129,7 @@
     "@vitest/coverage-v8": "5.0.0",
     "@vitest/eslint-plugin": "^1.6.27",
     "@vitest/ui": "5.0.0",
-    "angular-eslint": "22.2.0",
+    "angular-eslint": "22.5.0",
     "autoprefixer": "^10.4.27",
     "electron": "^43.4.1",
     "electron-builder": "^26.0.0",
