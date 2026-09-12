@@ -7,7 +7,7 @@
 //   node .github/n8n/scripts/report-next-story.mjs --epic <n> [--root <dir>] [--include-skip]
 //
 // Statuses counted as NOT completed: ready-for-dev, in-progress, blocked (and any unknown value).
-// "done", "review" (implemented, awaiting human/adversarial review), and "skip" count as
+// "done" (implemented), and "skip" count as
 // completed unless --include-skip is given.
 //
 // Prints a single JSON object to stdout:
@@ -56,7 +56,7 @@ if (!existsSync(epicDir)) {
 
 // "review" is terminal for the implementation run: DF2 leaves stories there for a
 // human/adversarial review step, so the next-story loop must advance past them.
-const completedStatuses = new Set(['done', 'review']);
+const completedStatuses = new Set(['done']);
 if (!includeSkip) completedStatuses.add('skip');
 
 // Story files are named "<epic>.<story>-slug.md"; sort by numeric story number.
