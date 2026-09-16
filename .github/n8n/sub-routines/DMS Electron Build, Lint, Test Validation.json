@@ -7,7 +7,10 @@
       },
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.2,
-      "position": [-1392, -32],
+      "position": [
+        -1392,
+        -32
+      ],
       "id": "639ee680-7004-4bbd-b35c-76a30c052b6c",
       "name": "When Executed by Another Workflow",
       "onError": "continueRegularOutput"
@@ -53,7 +56,7 @@
                     "option": "lint"
                   },
                   {
-                    "option": "dms-material:chromium"
+                    "option": "e2e-chromium"
                   }
                 ]
               }
@@ -67,7 +70,10 @@
       },
       "type": "n8n-nodes-base.formTrigger",
       "typeVersion": 2.6,
-      "position": [-1360, -288],
+      "position": [
+        -1360,
+        -288
+      ],
       "id": "3d6e65e1-cbd2-4cb6-8c4f-1171f3bacf15",
       "name": "On form submission",
       "webhookId": "32959561-9bc0-43d0-979d-6f16d1e78613"
@@ -78,7 +84,10 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [-624, -224],
+      "position": [
+        -624,
+        -224
+      ],
       "id": "36a196a9-b512-422e-b737-b930a2d1eb21",
       "name": "Code in JavaScript"
     },
@@ -88,7 +97,10 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [496, -32],
+      "position": [
+        496,
+        -32
+      ],
       "id": "b352a716-bce1-4cc6-90bb-4dc094802da8",
       "name": "Code in JavaScript1"
     },
@@ -118,7 +130,10 @@
       },
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
-      "position": [-848, -128],
+      "position": [
+        -848,
+        -128
+      ],
       "id": "affb0a00-9683-4af9-b182-8c783147841b",
       "name": "If code == 0"
     },
@@ -148,7 +163,10 @@
       },
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
-      "position": [272, -32],
+      "position": [
+        272,
+        -32
+      ],
       "id": "1a4ee52f-078e-4eea-b0b1-2762a1839631",
       "name": "If code === 0"
     },
@@ -158,7 +176,10 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [-400, -96],
+      "position": [
+        -400,
+        -96
+      ],
       "id": "0ddaae89-59da-4b75-8a6a-1c3b978f5b39",
       "name": "Reduce to Record"
     },
@@ -169,7 +190,10 @@
       },
       "type": "n8n-nodes-base.ssh",
       "typeVersion": 1,
-      "position": [-1024, -128],
+      "position": [
+        -1024,
+        -128
+      ],
       "id": "fccb191a-1a34-405f-8241-4d912a4113bd",
       "name": "pnpm nx run {{Project}}:{{Executor}}",
       "credentials": {
@@ -197,7 +221,10 @@
       },
       "type": "n8n-nodes-base.dataTable",
       "typeVersion": 1.1,
-      "position": [-624, -32],
+      "position": [
+        -624,
+        -32
+      ],
       "id": "e00b01f1-6dec-4772-9763-188caf287086",
       "name": "Get Variable Rows"
     },
@@ -208,7 +235,10 @@
       },
       "type": "n8n-nodes-base.ssh",
       "typeVersion": 1,
-      "position": [-176, -96],
+      "position": [
+        -176,
+        -96
+      ],
       "id": "eb052f4e-73dd-436b-9d58-9fbf7e095243",
       "name": "CoPilot fix {{Project}}:{{Executor}}",
       "credentials": {
@@ -225,7 +255,10 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [-1216, -144],
+      "position": [
+        -1216,
+        -144
+      ],
       "id": "3a58130a-9243-43ff-badc-5f68ffe877b0",
       "name": "Code in JavaScript2"
     },
@@ -236,7 +269,10 @@
       },
       "type": "n8n-nodes-base.ssh",
       "typeVersion": 1,
-      "position": [48, -96],
+      "position": [
+        48,
+        -96
+      ],
       "id": "938dab09-b0cd-4b9e-bb7d-92a6da01cd3f",
       "name": "pnpm nx run {{Project}}:{{Executor}}1",
       "credentials": {
@@ -375,13 +411,13 @@
       ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1",
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "7b44b5b8-4b58-4690-89b7-cf0fd8cf16fa",
+  "versionId": "2dd73c8c-c8ae-4d1a-a3af-3af20fa8b762",
   "meta": {
     "instanceId": "efe7529a89851410cd052ec9508b6ab889cd60c3aa7db04a996939ffa07fd21d"
   },

@@ -6,7 +6,16 @@ fix-dms-material-electron-lint-prompt,When I run `pnpm nx run electron:lint` I s
 fix-dms-material-dms-material-test-prompt,When I run `pnpm nx run dms-material:test` I see issues with the unit tests. Run the command and attempt to fix the issues. You can assume the application under test is correct and that something is wrong with the tests.
 fix-dms-material-server-test-prompt,When I run `pnpm nx run server:test` I see issues with the unit tests. Run the command and attempt to fix the issues. You can assume the application under test is correct and that something is wrong with the tests.
 fix-dms-material-electron-test-prompt,There are issues when I run `pnpm nx run electron:test`  that I need you to fix.
-fix-dms-material-dms-material-e2e-e2e-chromium-prompt,"When I run `pnpm e2e:dms-material:chromium` I see e2e tests that are failing. I need for you to figure out why and fix the issues. "
+fix-dms-material-dms-material-e2e-e2e-chromium-prompt,"You've been working on the issue associated with this worktree/branch. Now, Playwright e2e fail in dms-material-e2e (chromium). Fix them one at a time. Use serial sub-agents to keep your context small.
+
+HARD RULE: never read or print an entire test log into your context. Full-suite logs are hundreds of KB and will overflow your context window and crash the run. All large output goes to files on disk; you only ever extract small slices (tail / grep) into context.
+
+1. Baseline: run pnpm e2e:dms-material:chromium --reporter=list > /tmp/e2e-full.log 2>&1 with a generous timeout (up to ~45 min). Do NOT read the whole file. Extract only the failed test names from Playwright's final summary section, e.g. tail -n 120 /tmp/e2e-full.log
+2. For each failing spec, re-run ONLY that file: pnpm nx run dms-material-e2e:e2e-chromium -- <spec-file> > /tmp/e2e-<name>.log 2>&1 (a single-spec run skips the storybook build, so it is much faster). Read only the tail of that log (tail -n 150) to get the error details.
+3. Fix ONE failure at a time. Prefer fixing application code; change a test only when the test itself is wrong or flaky (for settle delays use the existing settle() helper in apps/dms-material-e2e/src/helpers/settle.helper.ts). Do not weaken assertions, do not add .skip(), do not delete tests.
+4. Verify by re-running that single spec until it passes, then move to the next failing spec. Repeat until every previously failing spec passes individually.
+5. Final gate: run pnpm e2e:dms-material:chromium --reporter=list > /tmp/e2e-final.log 2>&1 and check only its tail/summary for a clean pass. If it still fails, repeat the loop from step 2 with the new failures.
+6. Stop when the full suite passes, or when you can make no further progress; end with a short plain-text summary of what was fixed and anything left failing."
 fix-dms-material-server-build-prompt,There is an issue when I run `pnpm nx run server:build` that I need you to fix.
 fix-dms-material-server-lint-prompt,When I run `pnpm nx run server:lint` I see lint issues. Run the command and attempt to fix the issues.
 fix-dms-material-dms-material-build-prompt,There is an issue when I run `pnpm nx run dms-material:build` that I need you to fix.
