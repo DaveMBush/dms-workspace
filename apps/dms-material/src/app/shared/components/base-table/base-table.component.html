@@ -2,62 +2,59 @@
 <!-- eslint-disable @angular-eslint/template/cyclomatic-complexity -->
 <div class="table-container">
   @if (loading()) {
-  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
   }
 
-  <div class="dms-table-shell" role="table" [attr.aria-label]="tableLabel()">
-    <!-- Story 114.2: header leaves vertical scroll subtree so .dms-outer-scroller
-         can keep far-right scrollbar ownership without pulling header vertically. -->
-    <div #headerScrollViewport class="dms-table-header-viewport">
-      <!-- Header region: NOT position:sticky — always above CDK viewport in document flow -->
-      <div
-        class="dms-table-header"
-        role="rowgroup"
-        data-testid="base-table-header"
-      >
-        @if (filterRowTemplate) {
-        <div class="dms-header-row dms-filter-row" role="row">
-          @if (selectable()) {
-          <div
-            class="dms-header-cell dms-select-cell"
-            role="columnheader"
-            [style.width.px]="SELECT_COLUMN_WIDTH"
-          ></div>
-          } @for (column of columns(); track column.field) {
-          <div
-            class="dms-header-cell"
-            role="columnheader"
-            [style.width.px]="column.width ?? DEFAULT_COLUMN_WIDTH"
-          >
-            <ng-container
-              [ngTemplateOutlet]="filterRowTemplate"
-              [ngTemplateOutletContext]="{ $implicit: column }"
-            ></ng-container>
-          </div>
-          }
-          <div class="dms-col-spacer" aria-hidden="true"></div>
-        </div>
-        }
-        <div class="dms-header-row dms-column-header-row" role="row">
-          @if (selectable()) {
-          <div
-            class="dms-header-cell dms-select-cell"
-            role="columnheader"
-            [style.width.px]="SELECT_COLUMN_WIDTH"
-          >
+  <cdk-virtual-scroll-viewport
+    #viewport
+    class="dms-table-body"
+    [itemSize]="rowHeight()"
+    [minBufferPx]="rowHeight() * bufferSize()"
+    [maxBufferPx]="rowHeight() * bufferSize() * 2"
+  >
+    <table
+      mat-table
+      [dataSource]="dataSource()"
+      [trackBy]="trackByFn"
+      [attr.aria-label]="tableLabel()"
+    >
+      <!-- Selection Column -->
+      @if (selectable()) {
+        <ng-container matColumnDef="select">
+          <th mat-header-cell *matHeaderCellDef class="dms-select-cell">
             @if (multiSelect()) {
-            <mat-checkbox
-              [checked]="isAllSelected()"
-              [indeterminate]="selection.hasValue() && !isAllSelected()"
-              (change)="toggleAllRows()"
-            ></mat-checkbox>
+              <mat-checkbox
+                [checked]="isAllSelected()"
+                [indeterminate]="selection.hasValue() && !isAllSelected()"
+                (change)="toggleAllRows()"
+              ></mat-checkbox>
             }
-          </div>
-          } @for (column of columns(); track column.field) {
-          <div
+          </th>
+          <td mat-cell *matCellDef="let row" class="dms-select-cell">
+            <mat-checkbox
+              [checked]="selection.isSelected(row)"
+              (click)="$event.stopPropagation()"
+              (change)="toggleSelection(row)"
+            ></mat-checkbox>
+          </td>
+        </ng-container>
+      }
+
+      <!-- Selection Filter Column (empty placeholder for filter row alignment) -->
+      @if (selectable() && filterRowTemplate) {
+        <ng-container matColumnDef="selectFilter">
+          <th mat-header-cell *matHeaderCellDef class="dms-select-cell"></th>
+        </ng-container>
+      }
+
+      <!-- Dynamic Columns -->
+      @for (column of columns(); track column.field) {
+        <ng-container [matColumnDef]="column.field">
+          <th
+            mat-header-cell
+            *matHeaderCellDef
             class="dms-header-cell"
             [class.dms-header-cell--sortable]="column.sortable"
-            role="columnheader"
             [attr.data-column]="column.field"
             [attr.tabindex]="column.sortable ? 0 : null"
             [style.width.px]="column.width ?? DEFAULT_COLUMN_WIDTH"
@@ -69,103 +66,98 @@
           >
             {{ column.header }}
             @if (sortRankMap()[column.field]) {
-            <span
-              class="sort-rank-indicator"
-              data-testid="sort-rank"
-              aria-hidden="true"
-              >{{ sortRankMap()[column.field] }}</span
-            >
+              <span
+                class="sort-rank-indicator"
+                data-testid="sort-rank"
+                aria-hidden="true"
+                >{{ sortRankMap()[column.field] }}</span
+              >
             }
-          </div>
-          }
-          <div class="dms-col-spacer" aria-hidden="true"></div>
-        </div>
-      </div>
-    </div>
+          </th>
+          <td
+            mat-cell
+            *matCellDef="let row; let i = index"
+            class="dms-body-cell"
+            [style.width.px]="column.width ?? DEFAULT_COLUMN_WIDTH"
+            [attr.data-column]="column.field"
+          >
+            <ng-container
+              [ngTemplateOutlet]="cellTemplate || defaultCell"
+              [ngTemplateOutletContext]="{
+                $implicit: row,
+                column: column,
+                index: i,
+              }"
+            ></ng-container>
+          </td>
+        </ng-container>
+      }
 
-    <!-- Epic 112 (Story 112.2): dms-outer-scroller keeps vertical-scroll ownership
-         so scrollbar stays pinned to far-right edge of available table area. -->
-    <div #outerScroller class="dms-outer-scroller" cdkVirtualScrollingElement>
-      <!-- Wrapper around the CDK viewport. The viewport host owns horizontal scroll,
-        while this wrapper keeps the body region clipped to the available width. -->
-      <div class="dms-table-scroll-container">
-        <!-- Body region: CDK virtual scroll handles vertical rendering.
-           overflow-x is hidden here — horizontal scrolling handled by body container. -->
-        <cdk-virtual-scroll-viewport
-          #viewport
-          class="dms-table-body"
-          [itemSize]="rowHeight()"
-          [minBufferPx]="rowHeight() * bufferSize()"
-          [maxBufferPx]="rowHeight() * bufferSize() * 2"
-        >
-          <div role="rowgroup">
-            <div
-              *cdkVirtualFor="
-                let row of dataSource();
-                let i = index;
-                trackBy: trackByFn
-              "
-              class="dms-body-row"
-              role="row"
-              tabindex="0"
-              [style.height.px]="rowHeight()"
-              [class.selected]="selection.isSelected(row)"
-              [class.expired]="isExpired$(row)"
-              [ngClass]="gainLossClassMap$(row)"
-              [attr.data-is-cef]="getIsCef$(row)"
-              [attr.data-has-position]="getHasPosition$(row)"
-              (click)="onRowClick(row)"
-              (keydown.enter)="
-                $event.target === $event.currentTarget && onRowClick(row)
-              "
-              (keydown.space)="
-                $event.target === $event.currentTarget &&
-                  $event.preventDefault();
-                $event.target === $event.currentTarget && onRowClick(row)
-              "
+      <!-- Filter Columns -->
+      @if (filterRowTemplate) {
+        @for (column of columns(); track column.field) {
+          <ng-container [matColumnDef]="column.field + 'Filter'">
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              class="dms-header-cell"
+              [style.width.px]="column.width ?? DEFAULT_COLUMN_WIDTH"
             >
-              @if (selectable()) {
-              <div
-                class="dms-body-cell dms-select-cell"
-                role="cell"
-                [style.width.px]="SELECT_COLUMN_WIDTH"
-              >
-                <mat-checkbox
-                  [checked]="selection.isSelected(row)"
-                  (change)="toggleSelection(row)"
-                  (click)="$event.stopPropagation()"
-                ></mat-checkbox>
-              </div>
-              } @for (column of columns(); track column.field) {
-              <div
-                class="dms-body-cell"
-                role="cell"
-                [style.width.px]="column.width ?? DEFAULT_COLUMN_WIDTH"
-                [attr.data-column]="column.field"
-              >
-                <ng-container
-                  [ngTemplateOutlet]="cellTemplate || defaultCell"
-                  [ngTemplateOutletContext]="{
-                    $implicit: row,
-                    column: column,
-                    index: i
-                  }"
-                ></ng-container>
-              </div>
-              }
-              <div class="dms-col-spacer" aria-hidden="true"></div>
-            </div>
-          </div>
-        </cdk-virtual-scroll-viewport>
-      </div>
-    </div>
-  </div>
+              <ng-container
+                [ngTemplateOutlet]="filterRowTemplate"
+                [ngTemplateOutletContext]="{ $implicit: column }"
+              ></ng-container>
+            </th>
+          </ng-container>
+        }
+      }
+
+      <!-- Filter Row -->
+      @if (filterRowTemplate) {
+        <tr
+          mat-header-row
+          *matHeaderRowDef="filterColumns(); sticky: true"
+          class="dms-filter-row"
+        ></tr>
+      }
+
+      <!-- Column Headers Row -->
+      <tr
+        mat-header-row
+        *matHeaderRowDef="displayedColumns(); sticky: true"
+        class="dms-column-header-row"
+      ></tr>
+
+      <!-- Body Rows -->
+      <tr
+        mat-row
+        *matRowDef="let row; columns: displayedColumns()"
+        class="dms-body-row"
+        [class.selected]="selection.isSelected(row)"
+        [class.expired]="isExpired$(row)"
+        [ngClass]="gainLossClassMap$(row)"
+        [attr.data-is-cef]="getIsCef$(row)"
+        [attr.data-has-position]="getHasPosition$(row)"
+        (click)="onRowClick(row)"
+      ></tr>
+    </table>
+  </cdk-virtual-scroll-viewport>
 </div>
 
 <!-- Default cell template -->
 <ng-template #defaultCell let-row let-column="column">
-  @switch (column.type) { @case ('currency') {
-  {{ row[column.field] | currency }} } @case ('date') {
-  {{ row[column.field] | date : 'shortDate' }} } @case ('number') {
-  {{ row[column.field] | number }} } @default { {{ row[column.field] }} } }
+  @switch (column.type) {
+    @case ('currency') {
+      {{ row[column.field] | currency }}
+    }
+    @case ('date') {
+      {{ row[column.field] | date: 'shortDate' }}
+    }
+    @case ('number') {
+      {{ row[column.field] | number }}
+    }
+    @default {
+      {{ row[column.field] }}
+    }
+  }
 </ng-template>

@@ -1,30 +1,38 @@
 /**
- * base-table-layout-regression.spec.ts — Epic 112
+ * base-table-layout-regression.spec.ts — Epic 112 (updated for mat-table + CDK virtual scroll)
  * ──────────────────────────────────────────────────────────────
  *
- * Regression suite for the four layout regressions fixed in Story 112.2.
+ * Regression suite for the four layout regressions fixed in Story 112.2,
+ * re-expressed against the new single-viewport architecture:
+ *   - dms-base-table .table-container (overflow:hidden, flex:1)
+ *     └── cdk-virtual-scroll-viewport (display:block, position:relative)
+ *           └── .cdk-virtual-scrollable (overflow:auto — THE scroller, both axes)
+ *                 └── .cdk-virtual-scroll-content-wrapper (position:absolute)
+ *                       └── mat-table (display:block)
+ *                             ├── thead > tr.mat-mdc-header-row (sticky top:0)
+ *                             │     └── th.mat-mdc-header-cell[role=columnheader]
+ *                             └── tbody > tr.mat-mdc-row[role=row]
+ *                                   └── td.mat-mdc-cell[role=cell]
  *
- * FOUR ASSERTIONS:
- *   (a) Scrollbar right-edge stays stable across horizontal scroll positions (R1)
- *       .dms-outer-scroller owns overflow-y:auto and is always full-width.
- *       Its right edge must NOT DRIFT when the body viewport scrolls horizontally.
- *       Before the fix the vertical scrollbar sat on the inner container and would
- *       shift right as the user scrolled left, exposing blank space (R1 regression).
- *   (b) Outer container fills its flex parent (R2)
- *       .dms-outer-scroller.clientWidth must equal its parentElement.clientWidth.
- *       Before the fix the outer container was only as wide as the table content,
- *       placing the scrollbar adjacent to the last column instead of the container edge.
- *   (c) Sum of column widths + spacer equals scroll container clientWidth (R3)
- *       .dms-col-spacer absorbs spare width so rows always span the container.
- *       Tested at 2200px viewport where content area (~1800px) exceeds column total
- *       (~1475px), ensuring the spacer has positive width to absorb.
- *   (d) Beyond-table background matches cell background (R4)
- *       .dms-body-row has background-color:var(--dms-surface); the spacer region
- *       is covered by the row background, matching the cell background.
+ * FOUR ASSERTIONS (mapped to new DOM):
+ *   (a) R1 — Scroll viewport right-edge stays stable across horizontal scroll.
+ *       The .cdk-virtual-scrollable element is a block-level child of its parent;
+ *       its bounding box must NOT shift when its own scrollLeft changes.
+ *       Additionally the sticky header row top position must remain fixed during
+ *       vertical scroll (header doesn't drift away from viewport top).
+ *   (b) R2 — Scroll viewport fills its flex parent width.
+ *       cdk-virtual-scroll-viewport.clientWidth ≈ .table-container.clientWidth.
+ *       Before the fix the container was truncated to table content width,
+ *       placing the scrollbar adjacent to the last column instead of the edge.
+ *   (c) R3 — Header/body cell alignment: each header cell's left position matches
+ *       the corresponding body cell's left position at all scroll positions.
+ *       (Replaces the old "spacer absorbs spare width" check; in mat-table the
+ *       background fill handles the beyond-columns area instead.)
+ *   (d) R4 — Beyond-table background matches cell background.
+ *       tr.mat-mdc-row backgroundColor === td.mat-mdc-cell backgroundColor,
+ *       so the area to the right of the last column blends seamlessly.
  *
- * CONSUMER: Universe (/global/universe) — used for all four assertions.
- *   Universe column total ≈ 1475px (narrow at 800px, wide at 1800px / 2200px).
- *
+ * CONSUMER: Universe (/global/universe).
  * BROWSERS: Chromium + Firefox (no .skip / .only annotations per AC6).
  */
 
@@ -33,191 +41,28 @@ import { login } from './helpers/login.helper';
 import { seedScrollUniverseData } from './helpers/seed-scroll-universe-data.helper';
 import { settle } from './helpers/settle.helper';
 
-// ─── Selectors ────────────────────────────────────────────────────────────────
+// ─── Selectors (new mat-table + CDK virtual scroll DOM) ──────────────────────
 
-/**
- * Epic 112 (Story 112.2): full-width outer scroll container — owns overflow-y:auto.
- * The vertical scrollbar lives on this element, permanently at the viewport right edge.
- */
-const outerScrollerSel = '.dms-outer-scroller';
+/** Outer flex container that clips the table. */
+const tableContainerSel = 'dms-base-table .table-container';
 
-/**
- * Body viewport owns horizontal scroll.
- * Story 114.2 keeps the vertical scrollbar on .dms-outer-scroller and mirrors
- * this viewport scrollLeft into the sibling header viewport.
- */
-const scrollContainerSel = '.dms-table-body';
+/** The CDK viewport wrapper (display:block, position:relative). */
+const cdkViewportSel = 'cdk-virtual-scroll-viewport';
 
-/** Header viewport receives wheel input and proxies horizontal motion into body viewport. */
-const headerViewportSel = '.dms-table-header-viewport';
+/** The actual scroll element — overflow:auto, owns both scrollbars. */
+const scrollerSel = '.cdk-virtual-scrollable';
 
-/** Detached header region inside the clipped header viewport. */
-const headerRegionSel = '[data-testid="base-table-header"]';
+/** Sticky column-label header row (not the filter row). */
+const headerRowSel = 'tr.mat-mdc-header-row.dms-column-header-row';
 
-/** Column-header cells in the column-label row (not the filter row). */
-const columnHeaderCellsSel =
-  '.dms-column-header-row .dms-header-cell[role="columnheader"]';
-
-/**
- * Flex spacer at the end of the column header row.
- * flex:1 — absorbs spare width so rows always span container width.
- */
-const colSpacerInHeaderSel = '.dms-column-header-row .dms-col-spacer';
+/** Header cells (column labels). */
+const headerCellSel = 'th.mat-mdc-header-cell[role="columnheader"]';
 
 /** Body data rows. */
-const bodyRowSel = '.dms-body-row[role="row"]';
+const bodyRowSel = 'tr.mat-mdc-row[role="row"]';
 
 /** Body cells inside a row. */
-const bodyCellSel = '.dms-body-cell[role="cell"]';
-
-// ─── Shared browser-side helpers ──────────────────────────────────────────────
-
-/**
- * Checks whether `.dms-outer-scroller`'s right edge has drifted from a
- * previously captured baseline.  Passed to `page.evaluate()` — must be a
- * self-contained, serialisable function (no outer-scope closures).
- */
-function _checkOuterScrollerDrift(arg: {
-  outerSel: string;
-  baselineRight: number;
-}): {
-  ok: boolean;
-  right: number;
-  baselineRight: number;
-  drift: number;
-} {
-  const { outerSel, baselineRight } = arg;
-  const el = document.querySelector<HTMLElement>(outerSel);
-  if (!el) {
-    return { ok: false, right: 0, baselineRight, drift: 9999 };
-  }
-  const right = el.getBoundingClientRect().right;
-  const drift = Math.abs(right - baselineRight);
-  return { ok: drift <= 2, right, baselineRight, drift };
-}
-
-interface HeaderViewportGeometryArgs {
-  outerSel: string;
-  headerViewportSel: string;
-  bodySel: string;
-  headerCellSel: string;
-  bodyRowSel: string;
-  bodyCellSel: string;
-  baselineOuterRight: number;
-  baselineHeaderTop: number;
-  baselineHeaderRight: number;
-  baselineHeaderCellLeft: number;
-  baselineBodyCellLeft: number;
-  previousBodyScrollLeft: number;
-}
-
-interface HeaderViewportGeometryResult {
-  ok: boolean;
-  outerRight: number;
-  outerRightDrift: number;
-  headerTop: number;
-  headerTopDrift: number;
-  headerRight: number;
-  headerRightDrift: number;
-  headerScrollLeft: number;
-  bodyScrollLeft: number;
-  scrollDelta: number;
-  scrollMirrorDiff: number;
-  headerCellShift: number;
-  bodyCellShift: number;
-  cellShiftDiff: number;
-}
-
-/**
- * Checks that detached header viewport stays fixed while outer scrollbar edge
- * remains pinned and header/body content stay horizontally aligned during
- * real horizontal scrolling.
- */
-function checkHeaderViewportAndOuterGeometry(
-  arg: HeaderViewportGeometryArgs,
-): HeaderViewportGeometryResult {
-  function createMissingHeaderViewportGeometryResult(): HeaderViewportGeometryResult {
-    return {
-      ok: false,
-      outerRight: 0,
-      outerRightDrift: 9999,
-      headerTop: 0,
-      headerTopDrift: 9999,
-      headerRight: 0,
-      headerRightDrift: 9999,
-      headerScrollLeft: 0,
-      bodyScrollLeft: 0,
-      scrollDelta: 0,
-      scrollMirrorDiff: 9999,
-      headerCellShift: 0,
-      bodyCellShift: 0,
-      cellShiftDiff: 9999,
-    };
-  }
-
-  function isStableHeaderViewportGeometry(
-    result: Omit<HeaderViewportGeometryResult, 'ok'>,
-  ): boolean {
-    return (
-      result.outerRightDrift <= 2 &&
-      result.headerTopDrift <= 1 &&
-      result.headerRightDrift <= 2 &&
-      result.scrollDelta > 1 &&
-      result.scrollMirrorDiff <= 1 &&
-      result.cellShiftDiff <= 1
-    );
-  }
-
-  function measureHeaderViewportGeometry():
-    Omit<HeaderViewportGeometryResult, 'ok'> | undefined {
-    const outer = document.querySelector<HTMLElement>(arg.outerSel);
-    const headerViewport = document.querySelector<HTMLElement>(
-      arg.headerViewportSel,
-    );
-    const body = document.querySelector<HTMLElement>(arg.bodySel);
-    const headerCell = document.querySelector<HTMLElement>(arg.headerCellSel);
-    const bodyRow = document.querySelector<HTMLElement>(arg.bodyRowSel);
-    const bodyCell = bodyRow?.querySelector<HTMLElement>(arg.bodyCellSel);
-
-    if (!outer || !headerViewport || !body || !headerCell || !bodyCell) {
-      return undefined;
-    }
-
-    const outerRect = outer.getBoundingClientRect();
-    const headerRect = headerViewport.getBoundingClientRect();
-    const headerCellRect = headerCell.getBoundingClientRect();
-    const bodyCellRect = bodyCell.getBoundingClientRect();
-    const headerCellShift = arg.baselineHeaderCellLeft - headerCellRect.left;
-    const bodyCellShift = arg.baselineBodyCellLeft - bodyCellRect.left;
-
-    return {
-      outerRight: outerRect.right,
-      outerRightDrift: Math.abs(outerRect.right - arg.baselineOuterRight),
-      headerTop: headerRect.top,
-      headerTopDrift: Math.abs(headerRect.top - arg.baselineHeaderTop),
-      headerRight: headerRect.right,
-      headerRightDrift: Math.abs(headerRect.right - arg.baselineHeaderRight),
-      headerScrollLeft: headerViewport.scrollLeft,
-      bodyScrollLeft: body.scrollLeft,
-      scrollDelta: body.scrollLeft - arg.previousBodyScrollLeft,
-      scrollMirrorDiff: Math.abs(headerViewport.scrollLeft - body.scrollLeft),
-      headerCellShift,
-      bodyCellShift,
-      cellShiftDiff: Math.abs(headerCellShift - bodyCellShift),
-    };
-  }
-
-  const measured = measureHeaderViewportGeometry();
-
-  if (!measured) {
-    return createMissingHeaderViewportGeometryResult();
-  }
-
-  return {
-    ok: isStableHeaderViewportGeometry(measured),
-    ...measured,
-  };
-}
+const bodyCellSel = 'td.mat-mdc-cell[role="cell"]';
 
 // ─── Suite Setup ─────────────────────────────────────────────────────────────
 
@@ -245,214 +90,286 @@ async function navigateToUniverse(page: Page): Promise<void> {
   await page.waitForSelector(bodyRowSel, { timeout: 15000 });
 }
 
-// ─── AC1 — Scrollbar right-edge on narrow viewport (800px) ────────────────────
+// ─── AC1 — Scroll viewport stability on narrow viewport (800px) ──────────────
 
-test.describe('Base Table Layout Regression — AC1: scrollbar right-edge on narrow viewport', () => {
+test.describe('Base Table Layout Regression — AC1: scroll viewport stability on narrow viewport', () => {
   test.beforeEach(async ({ page }) => {
     await page.setViewportSize({ width: 800, height: 900 });
     await navigateToUniverse(page);
   });
 
-  test('Universe: detached header stays fixed while far-right scrollbar stays pinned at 50% and 100% horizontal scroll', async ({
+  test('Universe: scroll viewport right-edge stays fixed while horizontal scroll advances to 50% and 100%', async ({
     page,
   }) => {
-    // Precondition: table must be wider than 800px to test horizontal scroll.
+    // Precondition: table must be wider than the viewport for horizontal scroll.
     const canScroll = await page
-      .locator(scrollContainerSel)
+      .locator(scrollerSel)
       .first()
       .evaluate(function checkScrollable(el: Element): boolean {
         return el.scrollWidth > el.clientWidth;
       });
 
     if (!canScroll) {
-      // Universe columns (≈1475px) must be wider than the 800px content area.
-      // If this branch is hit the seeder or layout changed — flag it as a failure.
       throw new Error(
-        'Precondition failed: .dms-table-body is not horizontally ' +
+        'Precondition failed: .cdk-virtual-scrollable is not horizontally ' +
           'scrollable at 800px viewport. Universe column total should exceed ' +
-          '800px; check column definitions and seeder.',
+          'the content area; check column definitions and seeder.',
       );
     }
 
-    // ── Capture baseline right edge at 0% scroll ──────────────────────
-    // NOTE: We assert drift stability (right edge must not move relative to
-    // baseline) rather than an absolute right ≈ window.innerWidth check.
-    // The app layout has a sidebar so outerScroller.right < window.innerWidth
-    // by design. The regression (R1) is that the right edge *moves* when the
-    // inner container scrolls horizontally — the drift guard catches exactly
-    // that without depending on sidebar width.
+    // ── Capture baseline geometry at scrollLeft=0 ───────────────────────
     const baseline = await page.evaluate(
-      function captureBaselineGeometry(arg: {
-        outerSel: string;
-        headerViewportSel: string;
+      function captureBaseline(arg: {
+        scrollerSel: string;
+        headerRowSel: string;
         headerCellSel: string;
-        bodySel: string;
         bodyRowSel: string;
         bodyCellSel: string;
       }): {
         ok: boolean;
-        outerRight: number;
-        headerTop: number;
-        headerRight: number;
-        headerCellLeft: number;
-        bodyCellLeft: number;
+        scrollerRight: number;
+        scrollerTop: number;
+        headerRowTop: number;
+        firstHeaderCellLeft: number;
+        firstBodyCellLeft: number;
       } {
-        const outer = document.querySelector<HTMLElement>(arg.outerSel);
-        const headerViewport = document.querySelector<HTMLElement>(
-          arg.headerViewportSel,
-        );
+        const scroller = document.querySelector<HTMLElement>(arg.scrollerSel);
+        const headerRow = document.querySelector<HTMLElement>(arg.headerRowSel);
         const headerCell = document.querySelector<HTMLElement>(
           arg.headerCellSel,
         );
-        const body = document.querySelector<HTMLElement>(arg.bodySel);
         const bodyRow = document.querySelector<HTMLElement>(arg.bodyRowSel);
         const bodyCell = bodyRow?.querySelector<HTMLElement>(arg.bodyCellSel);
 
-        if (!outer || !headerViewport || !headerCell || !body || !bodyCell) {
+        if (!scroller || !headerRow || !headerCell || !bodyCell) {
           return {
             ok: false,
-            outerRight: -9999,
-            headerTop: -9999,
-            headerRight: -9999,
-            headerCellLeft: -9999,
-            bodyCellLeft: -9999,
+            scrollerRight: -9999,
+            scrollerTop: -9999,
+            headerRowTop: -9999,
+            firstHeaderCellLeft: -9999,
+            firstBodyCellLeft: -9999,
           };
         }
 
-        body.scrollLeft = 0;
+        scroller.scrollLeft = 0;
 
-        const outerRect = outer.getBoundingClientRect();
-        const headerRect = headerViewport.getBoundingClientRect();
-        const headerCellRect = headerCell.getBoundingClientRect();
-        const bodyCellRect = bodyCell.getBoundingClientRect();
+        const sRect = scroller.getBoundingClientRect();
+        const hRowRect = headerRow.getBoundingClientRect();
+        const hCellRect = headerCell.getBoundingClientRect();
+        const bCellRect = bodyCell.getBoundingClientRect();
 
         return {
           ok: true,
-          outerRight: outerRect.right,
-          headerTop: headerRect.top,
-          headerRight: headerRect.right,
-          headerCellLeft: headerCellRect.left,
-          bodyCellLeft: bodyCellRect.left,
+          scrollerRight: sRect.right,
+          scrollerTop: sRect.top,
+          headerRowTop: hRowRect.top,
+          firstHeaderCellLeft: hCellRect.left,
+          firstBodyCellLeft: bCellRect.left,
         };
       },
-      {
-        outerSel: outerScrollerSel,
-        headerViewportSel,
-        headerCellSel: columnHeaderCellsSel,
-        bodySel: scrollContainerSel,
-        bodyRowSel,
-        bodyCellSel,
-      },
+      { scrollerSel, headerRowSel, headerCellSel, bodyRowSel, bodyCellSel },
     );
 
     if (!baseline.ok) {
       throw new Error(
-        'Precondition failed: outer scroller or detached header viewport not found in DOM',
+        'Precondition failed: scroll viewport or table rows not found in DOM',
       );
     }
 
-    // ── Scroll to 50% ─────────────────────────────────────────────────────
+    // ── Scroll to 50% horizontal ────────────────────────────────────────
     await page.evaluate(
-      function scrollToPercent(arg: {
-        containerSel: string;
-        percent: number;
-      }): void {
-        const { containerSel, percent } = arg;
-        const el = document.querySelector<HTMLElement>(containerSel);
+      function scrollToPercent(arg: { sel: string; percent: number }): void {
+        const el = document.querySelector<HTMLElement>(arg.sel);
         if (el) {
-          el.scrollLeft = (el.scrollWidth - el.clientWidth) * percent;
+          el.scrollLeft = (el.scrollWidth - el.clientWidth) * arg.percent;
         }
       },
-      { containerSel: scrollContainerSel, percent: 0.5 },
+      { sel: scrollerSel, percent: 0.5 },
     );
 
-    // Allow one frame for the layout to settle.
     await settle(page, 50);
 
-    const result50 = await page.evaluate(checkHeaderViewportAndOuterGeometry, {
-      outerSel: outerScrollerSel,
-      headerViewportSel,
-      bodySel: scrollContainerSel,
-      headerCellSel: columnHeaderCellsSel,
-      bodyRowSel,
-      bodyCellSel,
-      baselineOuterRight: baseline.outerRight,
-      baselineHeaderTop: baseline.headerTop,
-      baselineHeaderRight: baseline.headerRight,
-      baselineHeaderCellLeft: baseline.headerCellLeft,
-      baselineBodyCellLeft: baseline.bodyCellLeft,
-      previousBodyScrollLeft: 0,
-    });
+    const result50 = await page.evaluate(
+      function checkGeometry(arg: {
+        scrollerSel: string;
+        headerRowSel: string;
+        headerCellSel: string;
+        bodyRowSel: string;
+        bodyCellSel: string;
+        baselineScrollerRight: number;
+        baselineHeaderRowTop: number;
+        baselineFirstHeaderCellLeft: number;
+        baselineFirstBodyCellLeft: number;
+      }): {
+        ok: boolean;
+        scrollerRightDrift: number;
+        headerRowTopDrift: number;
+        cellAlignmentDiff: number;
+        scrollLeft: number;
+      } {
+        const scroller = document.querySelector<HTMLElement>(arg.scrollerSel);
+        const headerRow = document.querySelector<HTMLElement>(arg.headerRowSel);
+        const headerCell = document.querySelector<HTMLElement>(
+          arg.headerCellSel,
+        );
+        const bodyRow = document.querySelector<HTMLElement>(arg.bodyRowSel);
+        const bodyCell = bodyRow?.querySelector<HTMLElement>(arg.bodyCellSel);
+
+        if (!scroller || !headerRow || !headerCell || !bodyCell) {
+          return {
+            ok: false,
+            scrollerRightDrift: 9999,
+            headerRowTopDrift: 9999,
+            cellAlignmentDiff: 9999,
+            scrollLeft: -1,
+          };
+        }
+
+        const sRect = scroller.getBoundingClientRect();
+        const hRowRect = headerRow.getBoundingClientRect();
+        const hCellRect = headerCell.getBoundingClientRect();
+        const bCellRect = bodyCell.getBoundingClientRect();
+
+        return {
+          ok: true,
+          scrollerRightDrift: Math.abs(sRect.right - arg.baselineScrollerRight),
+          headerRowTopDrift: Math.abs(hRowRect.top - arg.baselineHeaderRowTop),
+          cellAlignmentDiff: Math.abs(hCellRect.left - bCellRect.left),
+          scrollLeft: scroller.scrollLeft,
+        };
+      },
+      {
+        scrollerSel,
+        headerRowSel,
+        headerCellSel,
+        bodyRowSel,
+        bodyCellSel,
+        baselineScrollerRight: baseline.scrollerRight,
+        baselineHeaderRowTop: baseline.headerRowTop,
+        baselineFirstHeaderCellLeft: baseline.firstHeaderCellLeft,
+        baselineFirstBodyCellLeft: baseline.firstBodyCellLeft,
+      },
+    );
 
     expect(
       result50.ok,
-      `At 50% horizontal scroll: outer right drift=${result50.outerRightDrift.toFixed(
-        2,
-      )}px, header top drift=${result50.headerTopDrift.toFixed(
-        2,
-      )}px, header right drift=${result50.headerRightDrift.toFixed(
-        2,
-      )}px, body scroll delta=${result50.scrollDelta.toFixed(
-        2,
-      )}px, header/body scroll diff=${result50.scrollMirrorDiff.toFixed(
-        2,
-      )}px, header/body cell shift diff=${result50.cellShiftDiff.toFixed(
-        2,
-      )}px. ` +
-        'Detached header viewport must stay visually fixed while horizontal ' +
-        'scroll advances and header/body content stay aligned.',
+      'Precondition failed at 50% scroll: elements not found',
     ).toBe(true);
+    expect(
+      result50.scrollerRightDrift,
+      `At 50% horizontal scroll (scrollLeft=${result50.scrollLeft.toFixed(1)}px): ` +
+        'scroller right-edge drifted by ' +
+        `${result50.scrollerRightDrift.toFixed(2)}px from baseline. ` +
+        'The scroll viewport bounding box must stay fixed while its content scrolls (R1).',
+    ).toBeLessThanOrEqual(1);
+    expect(
+      result50.headerRowTopDrift,
+      `At 50% horizontal scroll: sticky header row top drifted by ` +
+        `${result50.headerRowTopDrift.toFixed(2)}px. Header must stay pinned to viewport top (R1).`,
+    ).toBeLessThanOrEqual(1);
+    expect(
+      result50.cellAlignmentDiff,
+      `At 50% horizontal scroll: header/body first cell left positions differ by ` +
+        `${result50.cellAlignmentDiff.toFixed(2)}px. Header and body cells must stay aligned (R3).`,
+    ).toBeLessThanOrEqual(1);
 
-    // ── Scroll to 100% ────────────────────────────────────────────────────
-    await page.evaluate(function scrollToMax(containerSel: string): void {
-      const el = document.querySelector<HTMLElement>(containerSel);
+    // ── Scroll to 100% horizontal ───────────────────────────────────────
+    await page.evaluate(function scrollToMax(sel: string): void {
+      const el = document.querySelector<HTMLElement>(sel);
       if (el) {
         el.scrollLeft = el.scrollWidth - el.clientWidth;
       }
-    }, scrollContainerSel);
+    }, scrollerSel);
 
     await settle(page, 50);
 
-    const result100 = await page.evaluate(checkHeaderViewportAndOuterGeometry, {
-      outerSel: outerScrollerSel,
-      headerViewportSel,
-      bodySel: scrollContainerSel,
-      headerCellSel: columnHeaderCellsSel,
-      bodyRowSel,
-      bodyCellSel,
-      baselineOuterRight: baseline.outerRight,
-      baselineHeaderTop: baseline.headerTop,
-      baselineHeaderRight: baseline.headerRight,
-      baselineHeaderCellLeft: baseline.headerCellLeft,
-      baselineBodyCellLeft: baseline.bodyCellLeft,
-      previousBodyScrollLeft: result50.bodyScrollLeft,
-    });
+    const result100 = await page.evaluate(
+      function checkGeometryMax(arg: {
+        scrollerSel: string;
+        headerRowSel: string;
+        headerCellSel: string;
+        bodyRowSel: string;
+        bodyCellSel: string;
+        baselineScrollerRight: number;
+        baselineHeaderRowTop: number;
+      }): {
+        ok: boolean;
+        scrollerRightDrift: number;
+        headerRowTopDrift: number;
+        cellAlignmentDiff: number;
+        scrollLeft: number;
+      } {
+        const scroller = document.querySelector<HTMLElement>(arg.scrollerSel);
+        const headerRow = document.querySelector<HTMLElement>(arg.headerRowSel);
+        const headerCell = document.querySelector<HTMLElement>(
+          arg.headerCellSel,
+        );
+        const bodyRow = document.querySelector<HTMLElement>(arg.bodyRowSel);
+        const bodyCell = bodyRow?.querySelector<HTMLElement>(arg.bodyCellSel);
+
+        if (!scroller || !headerRow || !headerCell || !bodyCell) {
+          return {
+            ok: false,
+            scrollerRightDrift: 9999,
+            headerRowTopDrift: 9999,
+            cellAlignmentDiff: 9999,
+            scrollLeft: -1,
+          };
+        }
+
+        const sRect = scroller.getBoundingClientRect();
+        const hRowRect = headerRow.getBoundingClientRect();
+        const hCellRect = headerCell.getBoundingClientRect();
+        const bCellRect = bodyCell.getBoundingClientRect();
+
+        return {
+          ok: true,
+          scrollerRightDrift: Math.abs(sRect.right - arg.baselineScrollerRight),
+          headerRowTopDrift: Math.abs(hRowRect.top - arg.baselineHeaderRowTop),
+          cellAlignmentDiff: Math.abs(hCellRect.left - bCellRect.left),
+          scrollLeft: scroller.scrollLeft,
+        };
+      },
+      {
+        scrollerSel,
+        headerRowSel,
+        headerCellSel,
+        bodyRowSel,
+        bodyCellSel,
+        baselineScrollerRight: baseline.scrollerRight,
+        baselineHeaderRowTop: baseline.headerRowTop,
+      },
+    );
 
     expect(
       result100.ok,
-      `At 100% horizontal scroll: outer right drift=${result100.outerRightDrift.toFixed(
-        2,
-      )}px, header top drift=${result100.headerTopDrift.toFixed(
-        2,
-      )}px, header right drift=${result100.headerRightDrift.toFixed(
-        2,
-      )}px, body scroll delta=${result100.scrollDelta.toFixed(
-        2,
-      )}px, header/body scroll diff=${result100.scrollMirrorDiff.toFixed(
-        2,
-      )}px, header/body cell shift diff=${result100.cellShiftDiff.toFixed(
-        2,
-      )}px. ` +
-        'Detached header viewport and far-right scrollbar edge must remain stable ' +
-        'while header/body content stay aligned at max horizontal scroll.',
+      'Precondition failed at 100% scroll: elements not found',
     ).toBe(true);
+    expect(
+      result100.scrollerRightDrift,
+      `At 100% horizontal scroll (scrollLeft=${result100.scrollLeft.toFixed(1)}px): ` +
+        'scroller right-edge drifted by ' +
+        `${result100.scrollerRightDrift.toFixed(2)}px from baseline. ` +
+        'The scroll viewport bounding box must stay fixed at max scroll (R1).',
+    ).toBeLessThanOrEqual(1);
+    expect(
+      result100.headerRowTopDrift,
+      `At 100% horizontal scroll: sticky header row top drifted by ` +
+        `${result100.headerRowTopDrift.toFixed(2)}px (R1).`,
+    ).toBeLessThanOrEqual(1);
+    expect(
+      result100.cellAlignmentDiff,
+      `At 100% horizontal scroll: header/body first cell left positions differ by ` +
+        `${result100.cellAlignmentDiff.toFixed(2)}px (R3).`,
+    ).toBeLessThanOrEqual(1);
   });
 
-  test('Universe: wheel input over detached header forwards horizontal scroll into body viewport', async ({
+  test('Universe: wheel input over sticky header scrolls the table horizontally', async ({
     page,
   }) => {
     const canScroll = await page
-      .locator(scrollContainerSel)
+      .locator(scrollerSel)
       .first()
       .evaluate(function checkScrollable(el: Element): boolean {
         return el.scrollWidth > el.clientWidth;
@@ -460,249 +377,162 @@ test.describe('Base Table Layout Regression — AC1: scrollbar right-edge on nar
 
     if (!canScroll) {
       throw new Error(
-        'Precondition failed: .dms-table-body is not horizontally ' +
-          'scrollable at 800px viewport. Universe column total should exceed ' +
-          '800px; check column definitions and seeder.',
+        'Precondition failed: .cdk-virtual-scrollable is not horizontally ' +
+          'scrollable at 800px viewport.',
       );
     }
 
-    const before = await page.evaluate(
-      function captureScrollState(arg: {
-        headerSel: string;
-        bodySel: string;
-      }): { headerScrollLeft: number; bodyScrollLeft: number } {
-        const header = document.querySelector<HTMLElement>(arg.headerSel);
-        const body = document.querySelector<HTMLElement>(arg.bodySel);
+    const before = await page.evaluate(function captureState(
+      sel: string,
+    ): number {
+      const el = document.querySelector<HTMLElement>(sel);
+      if (!el) {
+        throw new Error('Precondition failed: scroller not found');
+      }
+      el.scrollLeft = 0;
+      return el.scrollLeft;
+    }, scrollerSel);
 
-        if (!header || !body) {
-          throw new Error(
-            'Precondition failed: detached header or body viewport not found',
-          );
-        }
-
-        body.scrollLeft = 0;
-        return {
-          headerScrollLeft: header.scrollLeft,
-          bodyScrollLeft: body.scrollLeft,
-        };
-      },
-      { headerSel: headerViewportSel, bodySel: scrollContainerSel },
-    );
-
-    await page.locator(headerViewportSel).hover();
+    // Hover over the sticky header row (inside the scroll viewport).
+    await page.locator(headerRowSel).hover();
     await page.mouse.wheel(240, 0);
+
     await page.waitForFunction(
-      function waitForMirroredHorizontalScroll(arg: {
-        headerSel: string;
-        bodySel: string;
-        previousBodyScrollLeft: number;
-      }): boolean {
-        const header = document.querySelector<HTMLElement>(arg.headerSel);
-        const body = document.querySelector<HTMLElement>(arg.bodySel);
-
-        if (!header || !body) {
-          return false;
-        }
-
-        return (
-          body.scrollLeft > arg.previousBodyScrollLeft + 1 &&
-          Math.abs(header.scrollLeft - body.scrollLeft) <= 1
-        );
+      function waitForScroll(arg: { sel: string; prev: number }): boolean {
+        const el = document.querySelector<HTMLElement>(arg.sel);
+        return !!el && el.scrollLeft > arg.prev + 1;
       },
-      {
-        headerSel: headerViewportSel,
-        bodySel: scrollContainerSel,
-        previousBodyScrollLeft: before.bodyScrollLeft,
-      },
+      { sel: scrollerSel, prev: before },
       { timeout: 2000 },
     );
 
-    const after = await page.evaluate(
-      function captureScrollState(arg: {
-        headerSel: string;
-        bodySel: string;
-      }): { headerScrollLeft: number; bodyScrollLeft: number } {
-        const header = document.querySelector<HTMLElement>(arg.headerSel);
-        const body = document.querySelector<HTMLElement>(arg.bodySel);
-
-        if (!header || !body) {
-          throw new Error(
-            'Precondition failed: detached header or body viewport not found',
-          );
-        }
-
-        return {
-          headerScrollLeft: header.scrollLeft,
-          bodyScrollLeft: body.scrollLeft,
-        };
-      },
-      { headerSel: headerViewportSel, bodySel: scrollContainerSel },
-    );
+    const afterValue = await page.evaluate(function getScroll(
+      sel: string,
+    ): number {
+      return document.querySelector<HTMLElement>(sel)?.scrollLeft ?? -1;
+    }, scrollerSel);
 
     expect(
-      after.bodyScrollLeft,
-      `Header wheel input should move the body viewport horizontally. ` +
-        `Observed body scrollLeft before=${before.bodyScrollLeft.toFixed(2)} ` +
-        `after=${after.bodyScrollLeft.toFixed(2)}.`,
-    ).toBeGreaterThan(before.bodyScrollLeft + 1);
-
-    expect(
-      Math.abs(after.headerScrollLeft - after.bodyScrollLeft),
-      `Header and body scrollLeft must stay synchronized after wheel forwarding. ` +
-        `Observed header=${after.headerScrollLeft.toFixed(2)} ` +
-        `body=${after.bodyScrollLeft.toFixed(2)}.`,
-    ).toBeLessThanOrEqual(1);
+      afterValue,
+      `Wheel over sticky header should scroll the table horizontally. ` +
+        `Observed scrollLeft before=${before.toFixed(2)} after=${afterValue.toFixed(2)}.`,
+    ).toBeGreaterThan(before + 1);
   });
 });
 
-// ─── AC2 — Container-width on wide viewport (1800px) ─────────────────────────
+// ─── AC2 — Container width on wide viewport (1800px) ─────────────────────────
 
-test.describe('Base Table Layout Regression — AC2: outer container width on wide viewport', () => {
+test.describe('Base Table Layout Regression — AC2: scroll viewport fills parent on wide viewport', () => {
   test.beforeEach(async ({ page }) => {
     await page.setViewportSize({ width: 1800, height: 900 });
     await navigateToUniverse(page);
   });
 
-  test('Universe: outer scroll container fills its flex parent (not truncated to table width)', async ({
+  test('Universe: CDK scroll viewport fills its flex parent (not truncated to table width)', async ({
     page,
   }) => {
-    const result = await page.evaluate(function checkOuterScrollerFillsParent(
-      outerSel: string,
-    ): {
-      ok: boolean;
-      outerClientWidth: number;
-      parentClientWidth: number;
-      diff: number;
-    } {
-      const el = document.querySelector<HTMLElement>(outerSel);
-      const parent = el?.parentElement;
-      if (!el || !parent) {
-        return {
-          ok: false,
-          outerClientWidth: 0,
-          parentClientWidth: 0,
-          diff: 9999,
-        };
-      }
-      const outerClientWidth = el.clientWidth;
-      const parentClientWidth = parent.clientWidth;
-      const diff = Math.abs(outerClientWidth - parentClientWidth);
-      return { ok: diff <= 2, outerClientWidth, parentClientWidth, diff };
-    }, outerScrollerSel);
+    const result = await page.evaluate(
+      function checkViewportFillsParent(arg: {
+        containerSel: string;
+        cdkViewportSel: string;
+      }): {
+        ok: boolean;
+        containerWidth: number;
+        viewportWidth: number;
+        diff: number;
+      } {
+        const container = document.querySelector<HTMLElement>(arg.containerSel);
+        const viewport = document.querySelector<HTMLElement>(
+          arg.cdkViewportSel,
+        );
+
+        if (!container || !viewport) {
+          return { ok: false, containerWidth: 0, viewportWidth: 0, diff: 9999 };
+        }
+
+        const cw = container.clientWidth;
+        const vw = viewport.clientWidth;
+        const diff = Math.abs(cw - vw);
+        return { ok: diff <= 2, containerWidth: cw, viewportWidth: vw, diff };
+      },
+      { containerSel: tableContainerSel, cdkViewportSel },
+    );
 
     expect(
       result.ok,
-      `outer-scroller.clientWidth=${result.outerClientWidth}px ` +
-        `parentElement.clientWidth=${result.parentClientWidth}px ` +
+      `cdk-virtual-scroll-viewport.clientWidth=${result.viewportWidth}px ` +
+        `.table-container.clientWidth=${result.containerWidth}px ` +
         `diff=${result.diff.toFixed(2)}px (must be ≤2px). ` +
-        'At 1800px viewport the scrollable outer container must span its full ' +
-        'flex parent — it must NOT be truncated to the table content width ' +
-        '(R2 regression guard, ~1475px for Universe columns).',
+        'At 1800px viewport the scroll viewport must span its full flex parent — ' +
+        'it must NOT be truncated to the table content width (R2 regression guard).',
     ).toBe(true);
   });
 
-  test('Universe: wide viewport keeps far-right scrollbar placement and header/body width-fill alignment', async ({
+  test('Universe: wide viewport keeps header/body alignment and stable geometry at 2200px', async ({
     page,
   }) => {
     await page.setViewportSize({ width: 2200, height: 900 });
     await navigateToUniverse(page);
 
     const result = await page.evaluate(
-      function checkWideViewportLayout(arg: {
-        outerSel: string;
-        headerViewportSel: string;
-        headerRegionSel: string;
-        bodySel: string;
+      function checkWideLayout(arg: {
+        containerSel: string;
+        cdkViewportSel: string;
+        scrollerSel: string;
+        headerRowSel: string;
         bodyRowSel: string;
       }): {
         ok: boolean;
         message: string;
-        outerParentDiff: number;
-        outerRightDiff: number;
-        viewportWidthDiff: number;
-        rowWidthDiff: number;
+        viewportParentDiff: number;
+        headerBodyAlignDiff: number;
       } {
-        const outer = document.querySelector<HTMLElement>(arg.outerSel);
-        const headerViewport = document.querySelector<HTMLElement>(
-          arg.headerViewportSel,
+        const container = document.querySelector<HTMLElement>(arg.containerSel);
+        const viewport = document.querySelector<HTMLElement>(
+          arg.cdkViewportSel,
         );
-        const headerRegion = document.querySelector<HTMLElement>(
-          arg.headerRegionSel,
-        );
-        const body = document.querySelector<HTMLElement>(arg.bodySel);
+        const scroller = document.querySelector<HTMLElement>(arg.scrollerSel);
+        const headerRow = document.querySelector<HTMLElement>(arg.headerRowSel);
         const bodyRow = document.querySelector<HTMLElement>(arg.bodyRowSel);
-        const outerParent = outer?.parentElement as HTMLElement | null;
 
-        const missingParts = [
-          ['outer', outer],
-          ['parent', outerParent],
-          ['headerViewport', headerViewport],
-          ['headerRegion', headerRegion],
-          ['body', body],
-          ['bodyRow', bodyRow],
-        ]
-          .filter(function isMissing(entry): boolean {
-            return !entry[1];
-          })
-          .map(function getMissingName(entry): string {
-            return entry[0];
-          });
-
-        if (missingParts.length > 0) {
+        if (!container || !viewport || !scroller || !headerRow || !bodyRow) {
           return {
             ok: false,
-            message: `precondition unmet: ${missingParts.join(', ')}`,
-            outerParentDiff: 9999,
-            outerRightDiff: 9999,
-            viewportWidthDiff: 9999,
-            rowWidthDiff: 9999,
+            message: 'precondition unmet: missing elements',
+            viewportParentDiff: 9999,
+            headerBodyAlignDiff: 9999,
           };
         }
 
-        const outerRect = outer.getBoundingClientRect();
-        const outerParentRect = outerParent.getBoundingClientRect();
-        const headerViewportRect = headerViewport.getBoundingClientRect();
-        const headerRegionRect = headerRegion.getBoundingClientRect();
-        const bodyRect = body.getBoundingClientRect();
-        const bodyRowRect = bodyRow.getBoundingClientRect();
+        const vpDiff = Math.abs(viewport.clientWidth - container.clientWidth);
 
-        const outerParentDiff = Math.abs(
-          outer.clientWidth - outerParent.clientWidth,
+        // Check first header cell vs first body cell alignment.
+        const hCell = headerRow.querySelector<HTMLElement>(
+          'th[role="columnheader"]',
         );
-        const outerRightDiff = Math.abs(
-          outerRect.right - outerParentRect.right,
-        );
-        const viewportWidthDiff = Math.abs(
-          headerViewportRect.width - body.clientWidth,
-        );
-        const rowWidthDiff = Math.max(
-          Math.abs(headerRegionRect.width - headerViewportRect.width),
-          Math.abs(bodyRowRect.width - bodyRect.width),
-        );
-
-        const checks = [
-          outerParentDiff <= 2,
-          outerRightDiff <= 2,
-          viewportWidthDiff <= 2,
-          rowWidthDiff <= 2,
-        ];
+        const bCell = bodyRow.querySelector<HTMLElement>('td[role="cell"]');
+        let alignDiff = 0;
+        if (hCell && bCell) {
+          alignDiff = Math.abs(
+            hCell.getBoundingClientRect().left -
+              bCell.getBoundingClientRect().left,
+          );
+        } else {
+          alignDiff = 9999;
+        }
 
         return {
-          ok: checks.every(function isPassing(check): boolean {
-            return check;
-          }),
+          ok: vpDiff <= 2 && alignDiff <= 1,
           message: '',
-          outerParentDiff,
-          outerRightDiff,
-          viewportWidthDiff,
-          rowWidthDiff,
+          viewportParentDiff: vpDiff,
+          headerBodyAlignDiff: alignDiff,
         };
       },
       {
-        outerSel: outerScrollerSel,
-        headerViewportSel,
-        headerRegionSel,
-        bodySel: scrollContainerSel,
+        containerSel: tableContainerSel,
+        cdkViewportSel,
+        scrollerSel,
+        headerRowSel,
         bodyRowSel,
       },
     );
@@ -710,112 +540,80 @@ test.describe('Base Table Layout Regression — AC2: outer container width on wi
     expect(
       result.ok,
       result.message ||
-        `Wide viewport layout mismatch: outerParentDiff=${result.outerParentDiff.toFixed(
-          2,
-        )}px, outerRightDiff=${result.outerRightDiff.toFixed(
-          2,
-        )}px, viewportWidthDiff=${result.viewportWidthDiff.toFixed(
-          2,
-        )}px, rowWidthDiff=${result.rowWidthDiff.toFixed(2)}px. ` +
-          'Outer scroller must fill available width, scrollbar edge must stay at far right, ' +
-          'and detached header/body regions must keep width-fill alignment.',
+        `Wide viewport layout mismatch: viewportParentDiff=${result.viewportParentDiff.toFixed(2)}px, ` +
+          `headerBodyAlignDiff=${result.headerBodyAlignDiff.toFixed(2)}px. ` +
+          'Scroll viewport must fill parent and header/body cells must stay aligned (R2+R3).',
     ).toBe(true);
   });
 });
 
-// ─── AC3 — Column fill on very wide viewport (2200px) ────────────────────────
+// ─── AC3 — Column alignment on very wide viewport (2200px) ──────────────────
 
-test.describe('Base Table Layout Regression — AC3: column fill on wide viewport', () => {
+test.describe('Base Table Layout Regression — AC3: column alignment on wide viewport', () => {
   test.beforeEach(async ({ page }) => {
-    // 2200px ensures the content area (~1800px after sidebar) exceeds the
-    // Universe column total (~1475px), so the spacer has positive width to absorb.
     await page.setViewportSize({ width: 2200, height: 900 });
     await navigateToUniverse(page);
   });
 
-  test('Universe: sum of column widths plus spacer equals scroll container clientWidth', async ({
+  test('Universe: all header cells align with corresponding body cells at zero scroll', async ({
     page,
   }) => {
     const result = await page.evaluate(
-      function checkColumnFill(arg: {
-        containerSel: string;
-        headerCellsSel: string;
-        spacerSel: string;
+      function checkColumnAlignment(arg: {
+        scrollerSel: string;
+        headerCellSel: string;
+        bodyRowSel: string;
+        bodyCellSel: string;
       }): {
         ok: boolean;
         message: string;
-        totalWidth: number;
-        containerClientWidth: number;
         colCount: number;
-        spacerWidth: number;
-        diff: number;
+        maxDiff: number;
       } {
-        const { containerSel, headerCellsSel, spacerSel } = arg;
-        const container = document.querySelector<HTMLElement>(containerSel);
-        const headerCells = Array.from(
-          document.querySelectorAll<HTMLElement>(headerCellsSel),
-        );
-        const spacer = document.querySelector<HTMLElement>(spacerSel);
+        const scroller = document.querySelector<HTMLElement>(arg.scrollerSel);
+        if (scroller) {
+          scroller.scrollLeft = 0;
+        }
 
-        if (!container || headerCells.length === 0 || !spacer) {
+        const headerCells = Array.from(
+          document.querySelectorAll<HTMLElement>(arg.headerCellSel),
+        );
+        const bodyRow = document.querySelector<HTMLElement>(arg.bodyRowSel);
+        const bodyCells = bodyRow
+          ? Array.from(bodyRow.querySelectorAll<HTMLElement>(arg.bodyCellSel))
+          : [];
+
+        if (headerCells.length === 0 || bodyCells.length === 0) {
           return {
             ok: false,
-            message:
-              'precondition unmet: container=' +
-              !!container +
-              ' cells=' +
-              headerCells.length +
-              ' spacer=' +
-              !!spacer,
-            totalWidth: 0,
-            containerClientWidth: 0,
+            message: 'precondition unmet: no cells found',
             colCount: 0,
-            spacerWidth: 0,
-            diff: 9999,
+            maxDiff: 9999,
           };
         }
 
-        const sumCols = headerCells.reduce(function sumWidths(
-          acc: number,
-          el: HTMLElement,
-        ): number {
-          return acc + el.getBoundingClientRect().width;
-        }, 0);
-        const spacerWidth = spacer.getBoundingClientRect().width;
-        const totalWidth = sumCols + spacerWidth;
-        const containerClientWidth = container.clientWidth;
-        const diff = Math.abs(totalWidth - containerClientWidth);
+        const count = Math.min(headerCells.length, bodyCells.length);
+        let maxDiff = 0;
+        for (let i = 0; i < count; i++) {
+          const hLeft = headerCells[i].getBoundingClientRect().left;
+          const bLeft = bodyCells[i].getBoundingClientRect().left;
+          const diff = Math.abs(hLeft - bLeft);
+          if (diff > maxDiff) {
+            maxDiff = diff;
+          }
+        }
 
-        return {
-          ok: diff <= 2,
-          message: '',
-          totalWidth,
-          containerClientWidth,
-          colCount: headerCells.length,
-          spacerWidth,
-          diff,
-        };
+        return { ok: maxDiff <= 1, message: '', colCount: count, maxDiff };
       },
-      {
-        containerSel: scrollContainerSel,
-        headerCellsSel: columnHeaderCellsSel,
-        spacerSel: colSpacerInHeaderSel,
-      },
+      { scrollerSel, headerCellSel, bodyRowSel, bodyCellSel },
     );
 
     expect(
       result.ok,
       result.message ||
-        `Column fill assertion failed: ` +
-          `sumCols+spacer=${result.totalWidth.toFixed(2)}px ` +
-          `(${result.colCount} cols + spacer=${result.spacerWidth.toFixed(
-            2,
-          )}px) ` +
-          `container.clientWidth=${result.containerClientWidth}px ` +
-          `diff=${result.diff.toFixed(2)}px (must be ≤2px). ` +
-          'At 2200px viewport the content area exceeds Universe column total, ' +
-          'so .dms-col-spacer (flex:1 0 auto) must absorb all spare horizontal ' +
-          'width so the row spans the full container (R3 regression guard).',
+        `Column alignment failed: ${result.colCount} columns checked, ` +
+          `max header/body left-position diff=${result.maxDiff.toFixed(2)}px (must be ≤1px). ` +
+          'Each header cell must align with its corresponding body cell (R3 regression guard).',
     ).toBe(true);
   });
 });
@@ -841,8 +639,7 @@ test.describe('Base Table Layout Regression — AC4: beyond-table background mat
         cellBg: string;
         rowBg: string;
       } {
-        const { bodyRowSel: rowSel, bodyCellSel: cellSel } = arg;
-        const bodyRow = document.querySelector<HTMLElement>(rowSel);
+        const bodyRow = document.querySelector<HTMLElement>(arg.bodyRowSel);
         if (!bodyRow) {
           return {
             ok: false,
@@ -851,7 +648,7 @@ test.describe('Base Table Layout Regression — AC4: beyond-table background mat
             rowBg: '',
           };
         }
-        const bodyCell = bodyRow.querySelector<HTMLElement>(cellSel);
+        const bodyCell = bodyRow.querySelector<HTMLElement>(arg.bodyCellSel);
         if (!bodyCell) {
           return {
             ok: false,
@@ -864,12 +661,7 @@ test.describe('Base Table Layout Regression — AC4: beyond-table background mat
         const cellBg = window.getComputedStyle(bodyCell).backgroundColor;
         const rowBg = window.getComputedStyle(bodyRow).backgroundColor;
 
-        return {
-          ok: cellBg === rowBg,
-          message: '',
-          cellBg,
-          rowBg,
-        };
+        return { ok: cellBg === rowBg, message: '', cellBg, rowBg };
       },
       { bodyRowSel, bodyCellSel },
     );
@@ -880,10 +672,8 @@ test.describe('Base Table Layout Regression — AC4: beyond-table background mat
         `Background color mismatch: ` +
           `bodyCell.backgroundColor="${result.cellBg}" ` +
           `bodyRow.backgroundColor="${result.rowBg}". ` +
-          'Both must resolve to the same surface color (var(--dms-surface)). ' +
-          '.dms-body-row has background-color:var(--dms-surface) so the area ' +
-          'beyond the last column (covered by .dms-col-spacer) matches cell ' +
-          'background (R4 regression guard).',
+          'Both must resolve to the same surface color (var(--dms-surface)) so the area ' +
+          'beyond the last column matches cell background (R4 regression guard).',
     ).toBe(true);
   });
 });

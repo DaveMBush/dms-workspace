@@ -3,7 +3,9 @@ import { login } from './helpers/login.helper';
 import { seedScrollOpenPositionsData } from './helpers/seed-scroll-open-positions-data.helper';
 import { verifyMonotonicScroll } from './helpers/verify-smooth-scroll';
 
-const VIEWPORT_SELECTOR = '.dms-outer-scroller';
+// Story 1.2: the vertical scroll container is now the cdk-virtual-scroll-viewport
+// (class .dms-table-body); the old detached .dms-outer-scroller region was removed.
+const VIEWPORT_SELECTOR = '.dms-table-body';
 
 // ─── Open Positions Smooth Scroll Tests ──────────────────────────────────────
 
