@@ -32,9 +32,9 @@ test.describe('Universe Column Filter Width', () => {
     });
     await expect(symbolHeader).toBeVisible({ timeout: 10000 });
 
-    // The Symbol filter form field is in the filter row
+    // The Symbol filter form field is in the filter row (a <tr> inside the mat-table)
     const symbolFilterField = page
-      .locator('div.dms-filter-row .dms-header-cell')
+      .locator('tr.dms-filter-row th.dms-header-cell')
       .filter({ has: page.locator('input[placeholder="Search Symbol"]') })
       .locator('mat-form-field');
     await expect(symbolFilterField).toBeVisible({ timeout: 10000 });
@@ -65,9 +65,9 @@ test.describe('Universe Column Filter Width', () => {
     });
     await expect(yieldHeader).toBeVisible({ timeout: 10000 });
 
-    // The Yield % filter form field is in the filter row
+    // The Yield % filter form field is in the filter row (a <tr> inside the mat-table)
     const yieldFilterField = page
-      .locator('div.dms-filter-row .dms-header-cell')
+      .locator('tr.dms-filter-row th.dms-header-cell')
       .filter({ has: page.locator('input[placeholder="Min Yield %"]') })
       .locator('mat-form-field');
     await expect(yieldFilterField).toBeVisible({ timeout: 10000 });

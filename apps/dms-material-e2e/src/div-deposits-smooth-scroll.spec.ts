@@ -3,7 +3,9 @@ import { login } from './helpers/login.helper';
 import { seedScrollDivDepositsData } from './helpers/seed-scroll-div-deposits-data.helper';
 import { verifyMonotonicScroll } from './helpers/verify-smooth-scroll';
 
-const viewportSelector = '.dms-outer-scroller';
+// Story 1.2: the vertical scroll container is now the cdk-virtual-scroll-viewport
+// (class .dms-table-body); the old detached .dms-outer-scroller region was removed.
+const viewportSelector = '.dms-table-body';
 
 // ─── Dividend Deposits Smooth Scroll Tests ────────────────────────────────────
 

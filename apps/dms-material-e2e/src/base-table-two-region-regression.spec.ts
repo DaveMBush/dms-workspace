@@ -2,17 +2,25 @@
  * base-table-two-region-regression.spec.ts — Epic 111 (Round 10)
  * ──────────────────────────────────────────────────────────────
  *
- * Regression suite for the two-region base-table layout introduced in Story 111.2.
+ * Regression suite for the base-table layout, re-expressed against the new
+ * single-viewport mat-table architecture (Story 1.2): header and body live in
+ * ONE <table mat-table> inside a cdk-virtual-scroll-viewport; Material's
+ * sticky header rows pin the column labels to the top of the scroller.
  *
  * FOUR INVARIANTS PER CONSUMER SCREEN:
- *   (a) Header region computed position is NOT 'sticky'
- *       Epic 111's structural fix: removing position:sticky eliminates scroll jank entirely.
+ *   (a) The column-header row is pinned via position:sticky — on either the <tr>
+ *       row or its <th> cells, depending on MDC/CDK version — inside the single
+ *       scroll viewport (Material sticky rows). This is the mechanism that
+ *       replaced the old two-region layout; losing it re-introduces the
+ *       header-scroll-away defect.
  *   (b) Header and body column widths match within 1px (shared fixed-column-width model)
  *       Validates that ColumnDef.width drives both header cells and body cells identically.
- *   (c) Synchronized horizontal scroll (when body content exceeds viewport width)
- *       .dms-table-body owns horizontal scroll while the sibling header viewport mirrors it.
- *   (d) Post-context-change: header top stays at scroll-container top during slow vertical scroll
- *       The header is in document flow, never position:sticky, so it cannot drift with CDK content.
+ *   (c) Synchronized horizontal scroll (when content exceeds viewport width)
+ *       The single .cdk-virtual-scrollable scroller moves header and body together —
+ *       first header cell and first body cell must shift by equal deltas within 1px.
+ *   (d) Post-context-change: sticky column-header row stays pinned to the scroller top
+ *       during slow vertical scroll, at its expected offset (filter-row height when a
+ *       filter row is present). Any drift means the header left the sticky mechanism.
  *
  * CONSUMERS (Story 111.1 inventory):
  *   Universe           /global/universe
@@ -42,25 +50,14 @@ import { swapUniverseAccount } from './helpers/swap-universe-account.helper';
 // ─── Selectors ────────────────────────────────────────────────────────────────
 
 /**
- * Stable test-id added to the header region in Story 111.4 (allowable additive change).
- * Mirrors the `data-testid="base-table-header"` attribute on .dms-table-header.
+ * Single scroll viewport. Story 1.2 collapsed the old two-region layout into one
+ * cdk-virtual-scroll-viewport that owns both vertical and horizontal scrolling;
+ * header rows and body rows are siblings inside a single <table mat-table>.
  */
-const HEADER_REGION_SEL = '[data-testid="base-table-header"]';
+const VIEWPORT_SEL = '.dms-table-body';
 
-/** Non-scrolling table shell that owns header + body regions. */
-const TABLE_SHELL_SEL = '.dms-table-shell';
-
-/**
- * Body horizontal-scroll owner.
- * Story 114.2 mirrors this viewport scrollLeft into the sibling header viewport.
- */
-const SCROLL_CONTAINER_SEL = '.dms-table-body';
-
-/** Detached header viewport clipped to the same visible width as the body viewport. */
-const HEADER_VIEWPORT_SEL = '.dms-table-header-viewport';
-
-/** Full-width outer vertical scroller delegated via cdkVirtualScrollingElement. */
-const VIEWPORT_SEL = '.dms-outer-scroller';
+/** The inner CDK scroller element that actually carries overflow + scrollLeft. */
+const SCROLLABLE_SEL = '.cdk-virtual-scrollable';
 
 /** Column-header cells in the column-label row (not the filter row). */
 const COLUMN_HEADER_CELLS_SEL =
@@ -75,35 +72,70 @@ const BODY_CELL_SEL = '.dms-body-cell[role="cell"]';
 // ─── Invariant Assertion Helpers ─────────────────────────────────────────────
 
 /**
- * (a) Header region computed position must NOT be 'sticky'.
+ * (a) The column-header row must be pinned via position:sticky.
  *
- * position:sticky was the structural root cause of all nine prior scrolling
- * epics (29, 31, 44, 60, 64, 87, 101, 105, 106). Story 111.2 replaced it with
- * a plain div above the CDK viewport. This assertion permanently guards that
- * no future refactor silently re-introduces sticky on the header region.
+ * Story 1.2 replaced the old two-region layout with a single-viewport mat-table
+ * whose header rows use Material's sticky-row support (`*matHeaderRowDef="...;
+ * sticky: true"`). Depending on the MDC/CDK version, `position:sticky` is applied
+ * either to the `<tr>` row or to each `<th>` cell of a sticky row. This assertion
+ * accepts EITHER placement so it guards the mechanism without over-constraining
+ * the implementation detail — if neither the row nor any header cell computes to
+ * position:sticky, the column labels would scroll away with the body and the
+ * whole single-viewport design has regressed.
  */
-async function assertHeaderNotSticky(page: Page): Promise<void> {
-  const position = await page
-    .locator(HEADER_REGION_SEL)
-    .first()
-    .evaluate(function getComputedPositionValue(el: Element): string {
-      return window.getComputedStyle(el).position;
-    });
+async function assertHeaderSticky(page: Page): Promise<void> {
+  const result = await page.evaluate(
+    function checkHeaderSticky(arg: {
+      headerRowSel: string;
+      headerCellsSel: string;
+    }): {
+      ok: boolean;
+      rowSticky: boolean;
+      stickyCellCount: number;
+      totalCells: number;
+    } {
+      const row = document.querySelector<HTMLElement>(arg.headerRowSel);
+      const cells = Array.from(
+        document.querySelectorAll<HTMLElement>(arg.headerCellsSel),
+      );
+      let stickyCellCount = 0;
+      for (const cell of cells) {
+        if (window.getComputedStyle(cell).position === 'sticky') {
+          stickyCellCount++;
+        }
+      }
+      const rowSticky =
+        !!row && window.getComputedStyle(row).position === 'sticky';
+      return {
+        ok: rowSticky || stickyCellCount > 0,
+        rowSticky,
+        stickyCellCount,
+        totalCells: cells.length,
+      };
+    },
+    {
+      headerRowSel: '.dms-column-header-row',
+      headerCellsSel: COLUMN_HEADER_CELLS_SEL,
+    },
+  );
+
   expect(
-    position,
-    'Header region computed position must not be "sticky". ' +
-      'Epic 111 (Story 111.2) removed position:sticky by introducing the two-region layout. ' +
-      'Re-introducing sticky would re-enable the scroll jank artifacts this epic exists to prevent.',
-  ).not.toBe('sticky');
+    result.ok,
+    'Column-header row is not pinned via position:sticky (row sticky=' +
+      `${result.rowSticky}, sticky cells=${result.stickyCellCount}/${result.totalCells}). ` +
+      'Story 1.2 pins the column-label row via Material sticky rows — if neither the ' +
+      'row nor its cells compute to position:sticky, the header would scroll away ' +
+      'with the body.',
+  ).toBe(true);
 }
 
 /**
  * (b) Per-column header/body widths and whole-row parity must match.
  *
- * Story 111.2 introduced a shared fixed-column-width model: both header cells
+ * Story 1.2 introduced a shared fixed-column-width model: both header cells
  * and body cells use [style.width.px]="column.width" from the same ColumnDef.
  * This assertion verifies the model produces aligned columns in the rendered DOM
- * and that detached header/body regions keep matching visible and content widths.
+ * and that the single table keeps matching visible widths across regions.
  * Tolerance of 1px accounts for sub-pixel rounding on hi-DPI displays.
  */
 async function assertColumnWidthParity(page: Page): Promise<void> {
@@ -112,21 +144,10 @@ async function assertColumnWidthParity(page: Page): Promise<void> {
       headerCellsSel: string;
       bodyRowSel: string;
       bodyCellSel: string;
-      headerViewportSel: string;
-      bodyViewportSel: string;
     }): { ok: boolean; message: string } {
-      const {
-        headerCellsSel,
-        bodyRowSel,
-        bodyCellSel,
-        headerViewportSel,
-        bodyViewportSel,
-      } = arg;
+      const { headerCellsSel, bodyRowSel, bodyCellSel } = arg;
       const headerCells = Array.from(document.querySelectorAll(headerCellsSel));
       const bodyRow = document.querySelector(bodyRowSel);
-      const headerViewport =
-        document.querySelector<HTMLElement>(headerViewportSel);
-      const bodyViewport = document.querySelector<HTMLElement>(bodyViewportSel);
       if (!bodyRow) {
         // Precondition unmet: body rows must be present to verify column widths.
         return {
@@ -166,35 +187,11 @@ async function assertColumnWidthParity(page: Page): Promise<void> {
         }
       }
 
-      const missingParts = [
-        ['headerViewport', headerViewport],
-        ['bodyViewport', bodyViewport],
-        ['headerRow', headerRow],
-      ]
-        .filter(function isMissing(entry): boolean {
-          return !entry[1];
-        })
-        .map(function getMissingName(entry): string {
-          return entry[0];
-        });
-
-      if (missingParts.length > 0) {
+      if (!headerRow) {
         return {
           ok: false,
-          message: `precondition unmet: ${missingParts.join(', ')}`,
+          message: 'precondition unmet: column-header row not found',
         };
-      }
-
-      const headerViewportWidth = headerViewport.getBoundingClientRect().width;
-      const bodyViewportWidth = bodyViewport.clientWidth;
-      const viewportDiff = Math.abs(headerViewportWidth - bodyViewportWidth);
-      if (viewportDiff > 2) {
-        violations.push(
-          `viewport: header=${headerViewportWidth.toFixed(
-            2,
-          )}px body=${bodyViewportWidth.toFixed(2)}px ` +
-            `delta=${viewportDiff.toFixed(2)}px`,
-        );
       }
 
       const headerRowWidth = headerRow.getBoundingClientRect().width;
@@ -217,23 +214,22 @@ async function assertColumnWidthParity(page: Page): Promise<void> {
       headerCellsSel: COLUMN_HEADER_CELLS_SEL,
       bodyRowSel: BODY_ROW_SEL,
       bodyCellSel: BODY_CELL_SEL,
-      headerViewportSel: HEADER_VIEWPORT_SEL,
-      bodyViewportSel: SCROLL_CONTAINER_SEL,
     },
   );
   expect(
     result.ok,
     `Column width parity violation (tolerance: 1px):\n${result.message}\n` +
-      'Header/body cells must share fixed widths from ColumnDef.width, and the ' +
-      'detached header/body regions must preserve matching visible and content widths.',
+      'Header/body cells must share fixed widths from ColumnDef.width within the ' +
+      'single mat-table.',
   ).toBe(true);
 }
 
 /**
  * (c) Synchronized horizontal scroll.
  *
- * Story 114.2 keeps one body horizontal-scroll owner and mirrors that scrollLeft
- * into the sibling header viewport. This assertion verifies:
+ * Story 1.2 keeps one scroller (.cdk-virtual-scrollable inside the viewport)
+ * that owns both header and body, so they move together by construction. This
+ * assertion verifies:
  *   1. Scrolling right by ≤50px shifts both the first header cell and the first
  *      body cell by the same delta within 1px.
  *   2. Resetting scrollLeft to 0 returns both cells to their original positions
@@ -245,7 +241,7 @@ async function assertColumnWidthParity(page: Page): Promise<void> {
  */
 async function assertHorizontalScrollSync(page: Page): Promise<void> {
   const canScroll = await page
-    .locator(SCROLL_CONTAINER_SEL)
+    .locator(SCROLLABLE_SEL)
     .first()
     .evaluate(function checkScrollable(el: Element): boolean {
       return el.scrollWidth > el.clientWidth;
@@ -259,8 +255,9 @@ async function assertHorizontalScrollSync(page: Page): Promise<void> {
 
   const result = await page.evaluate(
     async function checkHScrollSync(arg: {
-      containerSel: string;
+      scrollerSel: string;
       headerCellSel: string;
+      bodyRowSel: string;
       bodyCellSel: string;
     }): Promise<{
       ok: boolean;
@@ -270,7 +267,7 @@ async function assertHorizontalScrollSync(page: Page): Promise<void> {
       syncDiff: number;
       resetDiff: number;
     }> {
-      const { containerSel, headerCellSel, bodyCellSel } = arg;
+      const { scrollerSel, headerCellSel, bodyRowSel, bodyCellSel } = arg;
       return new Promise(function executor(
         resolve: (value: {
           ok: boolean;
@@ -281,19 +278,17 @@ async function assertHorizontalScrollSync(page: Page): Promise<void> {
           resetDiff: number;
         }) => void,
       ): void {
-        const container = document.querySelector<HTMLElement>(containerSel);
+        const scroller = document.querySelector<HTMLElement>(scrollerSel);
         const headerCell = document.querySelector<HTMLElement>(headerCellSel);
-        const bodyRow = document.querySelector<HTMLElement>(
-          '.dms-body-row[role="row"]',
-        );
+        const bodyRow = document.querySelector<HTMLElement>(bodyRowSel);
         const bodyCell = bodyRow?.querySelector<HTMLElement>(bodyCellSel);
 
-        if (!container || !headerCell || !bodyCell) {
+        if (!scroller || !headerCell || !bodyCell) {
           resolve({
             ok: false,
             message:
-              'precondition unmet: required elements not found (container=' +
-              !!container +
+              'precondition unmet: required elements not found (scroller=' +
+              !!scroller +
               ' headerCell=' +
               !!headerCell +
               ' bodyCell=' +
@@ -309,13 +304,13 @@ async function assertHorizontalScrollSync(page: Page): Promise<void> {
 
         const hBefore = headerCell.getBoundingClientRect().left;
         const bBefore = bodyCell.getBoundingClientRect().left;
-        const available = container.scrollWidth - container.clientWidth;
+        const available = scroller.scrollWidth - scroller.clientWidth;
         const targetScroll =
           available > 0
             ? Math.max(1, Math.min(50, Math.ceil(available / 2)))
             : 0;
 
-        container.scrollLeft = targetScroll;
+        scroller.scrollLeft = targetScroll;
 
         requestAnimationFrame(function afterScroll(): void {
           const hAfter = headerCell.getBoundingClientRect().left;
@@ -325,7 +320,7 @@ async function assertHorizontalScrollSync(page: Page): Promise<void> {
           const bDelta = bBefore - bAfter;
           const syncDiff = Math.abs(hDelta - bDelta);
 
-          container.scrollLeft = 0;
+          scroller.scrollLeft = 0;
 
           requestAnimationFrame(function afterReset(): void {
             const hReset = headerCell.getBoundingClientRect().left;
@@ -350,8 +345,9 @@ async function assertHorizontalScrollSync(page: Page): Promise<void> {
       });
     },
     {
-      containerSel: SCROLL_CONTAINER_SEL,
+      scrollerSel: SCROLLABLE_SEL,
       headerCellSel: COLUMN_HEADER_CELLS_SEL,
+      bodyRowSel: BODY_ROW_SEL,
       bodyCellSel: BODY_CELL_SEL,
     },
   );
@@ -360,7 +356,7 @@ async function assertHorizontalScrollSync(page: Page): Promise<void> {
     result.ok,
     `Horizontal scroll synchronization failed: ${result.message}. ` +
       'Header and body must shift by equal deltas (≤1px difference) — ' +
-      'body owns horizontal scroll and header must mirror that offset.',
+      'the single scroller moves both regions together.',
   ).toBe(true);
 }
 
@@ -369,14 +365,21 @@ async function assertHorizontalScrollSync(page: Page): Promise<void> {
  *
  * After an in-place data-context change (account-swap or filter-change), the
  * CDK viewport receives a new dataset and may re-measure its internal state.
- * This assertion slow-scrolls the CDK viewport (4px/step for up to 3s) and
- * on every rAF frame verifies:
+ * This assertion slow-scrolls the viewport (4px/step for up to 3s) and on every
+ * rAF frame verifies that a sticky column-header cell stays pinned at its
+ * expected offset from the scroller top:
  *
- *   header.getBoundingClientRect().top === tableShell.getBoundingClientRect().top ± 1px
+ *   headerCell.top - scrollerTop === baselineOffset ± 1px
  *
- * Story 114.2 keeps the header as a sibling above the outer vertical scroller.
- * Any violation means the header re-entered the vertical scroll subtree or some
- * other layout change is translating it during body scroll.
+ * where baselineOffset is measured before scrolling (0 when no filter row, or
+ * the filter-row height when one is present). Any drift means the header left
+ * the sticky mechanism and scrolled away with the body.
+ *
+ * NOTE: we measure a header CELL, not the `<tr>` row. For a native mat-table,
+ * CDK's sticky support pins each `<th>` cell (and rewrites its inline `top`
+ * during virtual scroll); the row element itself is never part of that
+ * mechanism and its bounding rect follows the scroll. Measuring the row would
+ * report drift equal to -scrollTop even when the header is correctly pinned.
  */
 async function assertPostContextChangeInvariant(
   page: Page,
@@ -390,13 +393,12 @@ async function assertPostContextChangeInvariant(
 
   const result = await page.evaluate(
     async function slowScrollAndCheckHeaderPosition(arg: {
-      viewportSel: string;
-      headerSel: string;
-      shellSel: string;
+      scrollerSel: string;
+      headerCellSel: string;
       scrollMs: number;
       stepPx: number;
     }): Promise<{ ok: boolean; violations: string[]; frames: number }> {
-      const { viewportSel, headerSel, shellSel, scrollMs, stepPx } = arg;
+      const { scrollerSel, headerCellSel, scrollMs, stepPx } = arg;
       return new Promise(function executor(
         resolve: (value: {
           ok: boolean;
@@ -404,20 +406,50 @@ async function assertPostContextChangeInvariant(
           frames: number;
         }) => void,
       ): void {
-        const viewport = document.querySelector<HTMLElement>(viewportSel);
-        const header = document.querySelector<HTMLElement>(headerSel);
-        const shell = document.querySelector<HTMLElement>(shellSel);
+        const scroller = document.querySelector<HTMLElement>(scrollerSel);
+        // Measure a sticky header CELL. The `<tr>` row is not part of CDK's
+        // native-table sticky mechanism (only the cells are pinned), so its
+        // rect would drift with the scroll and produce false violations.
+        const headerCell = document.querySelector<HTMLElement>(headerCellSel);
 
-        if (!viewport || !header || !shell) {
+        if (!scroller || !headerCell) {
           resolve({
             ok: false,
             violations: [
-              `selector not found: viewport=${!!viewport} header=${!!header} shell=${!!shell}`,
+              `selector not found: scroller=${!!scroller} headerCell=${!!headerCell}`,
             ],
             frames: 0,
           });
           return;
         }
+
+        const maxScroll = scroller.scrollHeight - scroller.clientHeight;
+        if (maxScroll <= 0) {
+          // Precondition unmet: scrollable content is required to verify the invariant.
+          resolve({
+            ok: false,
+            violations: [
+              'precondition unmet: no scrollable content after context change (maxScroll=' +
+                maxScroll +
+                ')',
+            ],
+            frames: 0,
+          });
+          return;
+        }
+
+        // Non-null aliases for the nested step()/onFrame() closures — TS does not
+        // carry control-flow narrowing of `scroller`/`headerCell` into function bodies.
+        const scrollerEl = scroller;
+        const headerCellEl = headerCell;
+
+        // Baseline offset of the sticky header cell from the scroller top. The
+        // column-header row is the SECOND sticky row (the filter row sits above
+        // it), so its pinned offset equals the filter-row height — a constant
+        // that must not drift as the body scrolls beneath it.
+        const scrollerTop = scrollerEl.getBoundingClientRect().top;
+        const baselineOffset =
+          headerCellEl.getBoundingClientRect().top - scrollerTop;
 
         const violations: string[] = [];
         let frames = 0;
@@ -433,40 +465,27 @@ async function assertPostContextChangeInvariant(
             return;
           }
 
-          const maxScroll = viewport.scrollHeight - viewport.clientHeight;
-          if (maxScroll <= 0) {
-            // Precondition unmet: scrollable content is required to verify the invariant.
-            resolve({
-              ok: false,
-              violations: [
-                'precondition unmet: no scrollable content after context change (maxScroll=' +
-                  maxScroll +
-                  ')',
-              ],
-              frames,
-            });
-            return;
-          }
-
-          viewport.scrollTop = Math.min(viewport.scrollTop + stepPx, maxScroll);
+          scrollerEl.scrollTop = Math.min(
+            scrollerEl.scrollTop + stepPx,
+            maxScroll,
+          );
 
           requestAnimationFrame(function onFrame(): void {
             frames++;
-            const headerTop = header.getBoundingClientRect().top;
-            const shellTop = shell.getBoundingClientRect().top;
-            const diff = Math.abs(headerTop - shellTop);
+            const headerTop = headerCellEl.getBoundingClientRect().top;
+            const currentOffset = headerTop - scrollerTop;
+            const diff = Math.abs(currentOffset - baselineOffset);
 
             if (diff > 1) {
               violations.push(
-                `scrollTop=${viewport.scrollTop}: ` +
-                  `headerTop=${headerTop.toFixed(
-                    2,
-                  )} shellTop=${shellTop.toFixed(2)} ` +
-                  `diff=${diff.toFixed(2)}`,
+                `scrollTop=${scrollerEl.scrollTop}: ` +
+                  `headerOffset=${currentOffset.toFixed(2)}px ` +
+                  `baseline=${baselineOffset.toFixed(2)}px ` +
+                  `drift=${diff.toFixed(2)}px`,
               );
             }
 
-            if (viewport.scrollTop >= maxScroll) {
+            if (scrollerEl.scrollTop >= maxScroll) {
               resolve({ ok: violations.length === 0, violations, frames });
               return;
             }
@@ -479,9 +498,8 @@ async function assertPostContextChangeInvariant(
       });
     },
     {
-      viewportSel: VIEWPORT_SEL,
-      headerSel: HEADER_REGION_SEL,
-      shellSel: TABLE_SHELL_SEL,
+      scrollerSel: SCROLLABLE_SEL,
+      headerCellSel: COLUMN_HEADER_CELLS_SEL,
       scrollMs: 3000,
       stepPx: 4,
     },
@@ -489,22 +507,22 @@ async function assertPostContextChangeInvariant(
 
   expect(
     result.ok,
-    `Header drifted from table-shell top after context change ` +
+    `Sticky column-header cell drifted from its pinned offset after context change ` +
       `(${result.violations.length} violation(s) across ${result.frames} frames):\n` +
       result.violations.join('\n') +
-      '\nThe two-region header must remain outside the outer vertical scroller — ' +
-      'it must never shift during body scrolling.',
+      '\nThe header must stay pinned to the scroller top via position:sticky — ' +
+      'it must never scroll away with the body.',
   ).toBe(true);
 }
 
 /**
- * Run all four two-region invariants against the currently loaded screen.
+ * Run all four single-viewport invariants against the currently loaded screen.
  */
 async function runTwoRegionInvariants(
   page: Page,
   contextChange: () => Promise<void>,
 ): Promise<void> {
-  await assertHeaderNotSticky(page);
+  await assertHeaderSticky(page);
   await assertColumnWidthParity(page);
   await assertHorizontalScrollSync(page);
   await assertPostContextChangeInvariant(page, contextChange);
@@ -512,7 +530,7 @@ async function runTwoRegionInvariants(
 
 // ─── Universe ─────────────────────────────────────────────────────────────────
 
-test.describe('Universe — two-region layout regression', () => {
+test.describe('Universe — single-viewport mat-table regression', () => {
   let universeCleanup: () => Promise<void>;
   let openPositionsCleanup: () => Promise<void>;
 
@@ -545,7 +563,7 @@ test.describe('Universe — two-region layout regression', () => {
   });
 
   test(
-    'Universe: (a) header not sticky, (b) column widths aligned, ' +
+    'Universe: (a) header sticky, (b) column widths aligned, ' +
       '(c) h-scroll sync, (d) post-account-swap header invariant',
     async ({ page }) => {
       await runTwoRegionInvariants(page, async function doContextChange() {
@@ -559,7 +577,7 @@ test.describe('Universe — two-region layout regression', () => {
 
 // ─── Screener ─────────────────────────────────────────────────────────────────
 
-test.describe('Screener — two-region layout regression', () => {
+test.describe('Screener — single-viewport mat-table regression', () => {
   let cleanup: () => Promise<void>;
 
   test.beforeAll(async () => {
@@ -583,7 +601,7 @@ test.describe('Screener — two-region layout regression', () => {
   });
 
   test(
-    'Screener: (a) header not sticky, (b) column widths aligned, ' +
+    'Screener: (a) header sticky, (b) column widths aligned, ' +
       '(c) h-scroll sync, (d) post-risk-group-filter header invariant',
     async ({ page }) => {
       await runTwoRegionInvariants(page, async function doContextChange() {
@@ -601,7 +619,7 @@ test.describe('Screener — two-region layout regression', () => {
 
 // ─── Open Positions ───────────────────────────────────────────────────────────
 
-test.describe('Open Positions — two-region layout regression', () => {
+test.describe('Open Positions — single-viewport mat-table regression', () => {
   let cleanup1: () => Promise<void>;
   let cleanup2: () => Promise<void>;
   let accountId1: string;
@@ -634,7 +652,7 @@ test.describe('Open Positions — two-region layout regression', () => {
   });
 
   test(
-    'Open Positions: (a) header not sticky, (b) column widths aligned, ' +
+    'Open Positions: (a) header sticky, (b) column widths aligned, ' +
       '(c) h-scroll sync, (d) post-account-swap header invariant',
     async ({ page }) => {
       await runTwoRegionInvariants(page, async function doContextChange() {
@@ -652,7 +670,7 @@ test.describe('Open Positions — two-region layout regression', () => {
 
 // ─── Sold Positions ───────────────────────────────────────────────────────────
 
-test.describe('Sold Positions — two-region layout regression', () => {
+test.describe('Sold Positions — single-viewport mat-table regression', () => {
   let cleanup1: () => Promise<void>;
   let cleanup2: () => Promise<void>;
   let accountId1: string;
@@ -684,10 +702,11 @@ test.describe('Sold Positions — two-region layout regression', () => {
   });
 
   test(
-    'Sold Positions: (a) header not sticky, (b) column widths aligned, ' +
+    'Sold Positions: (a) header sticky, (b) column widths aligned, ' +
       '(c) h-scroll sync, (d) post-account-swap header invariant',
     async ({ page }) => {
       await runTwoRegionInvariants(page, async function doContextChange() {
+        // Context-change: navigate to /account/{id2}/sold.
         await swapActiveAccountViaNavigation(page, {
           toAccountId: accountId2,
           routeSuffix: 'sold',
@@ -699,7 +718,7 @@ test.describe('Sold Positions — two-region layout regression', () => {
 
 // ─── Dividend Deposits ────────────────────────────────────────────────────────
 
-test.describe('Dividend Deposits — two-region layout regression', () => {
+test.describe('Dividend Deposits — single-viewport mat-table regression', () => {
   let cleanup1: () => Promise<void>;
   let cleanup2: () => Promise<void>;
   let accountId1: string;
@@ -731,7 +750,7 @@ test.describe('Dividend Deposits — two-region layout regression', () => {
   });
 
   test(
-    'Dividend Deposits: (a) header not sticky, (b) column widths aligned, ' +
+    'Dividend Deposits: (a) header sticky, (b) column widths aligned, ' +
       '(c) h-scroll sync, (d) post-account-swap header invariant',
     async ({ page }) => {
       await runTwoRegionInvariants(page, async function doContextChange() {

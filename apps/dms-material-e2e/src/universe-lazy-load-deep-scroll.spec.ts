@@ -89,7 +89,10 @@ import { login } from './helpers/login.helper';
 import { seedDeepScrollUniverseData } from './helpers/seed-deep-scroll-universe-data.helper';
 import { settle } from './helpers/settle.helper';
 
-const VIEWPORT_SELECTOR = '.dms-outer-scroller';
+// Story 1.2: the vertical scroll container is now the cdk-virtual-scroll-viewport
+// (class .dms-table-body, which CDK tags with .cdk-virtual-scrollable / overflow:auto);
+// the old detached .dms-outer-scroller region was removed in the mat-table redesign.
+const VIEWPORT_SELECTOR = '.dms-table-body';
 const ROW_SELECTOR = '.dms-body-row[role="row"]';
 const SYMBOL_CELL_SELECTOR =
   '.dms-body-row[role="row"] .dms-body-cell[data-column="symbol"]';

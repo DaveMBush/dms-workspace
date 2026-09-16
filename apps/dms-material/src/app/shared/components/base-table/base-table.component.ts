@@ -25,11 +25,11 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { Sort } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { debounceTime } from 'rxjs';
 
 import { SortColumn } from '../../services/sort-column.interface';
-import { bindHeaderInteractions } from './base-table-scroll.utils';
 import { compareValues } from './base-table-sort.utils';
 import { ColumnDef } from './column-def.interface';
 
@@ -48,6 +48,7 @@ import { ColumnDef } from './column-def.interface';
   imports: [
     CommonModule,
     ScrollingModule,
+    MatTableModule,
     MatProgressBarModule,
     MatCheckboxModule,
     MatTooltipModule,
@@ -101,12 +102,6 @@ export class BaseTableComponent<
   // ViewChild for virtual scroll viewport
   viewport = viewChild<CdkVirtualScrollViewport>('viewport');
 
-  headerScrollViewport = viewChild<ElementRef<HTMLElement>>(
-    'headerScrollViewport',
-  );
-
-  outerScroller = viewChild<ElementRef<HTMLElement>>('outerScroller');
-
   // Internal state
   selection = new SelectionModel<T>(true, []);
   private sortState = signal<Sort | null>(null);
@@ -116,7 +111,7 @@ export class BaseTableComponent<
 
   // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for computed signal
   readonly sortRankMap = computed(() => {
-    const columns = this.sortColumns();
+    const columns = this.sortColumns() ?? [];
     const map: Record<string, string> = {};
     for (let i = 0; i < columns.length; i++) {
       const rank = i + 1;
@@ -153,7 +148,7 @@ export class BaseTableComponent<
     effect(
       // eslint-disable-next-line @smarttools/no-anonymous-functions -- Required for effect
       () => {
-        const columns = this.sortColumns();
+        const columns = this.sortColumns() ?? [];
         if (columns.length > 0) {
           this.sortState.set({
             active: columns[0].column,
@@ -180,11 +175,6 @@ export class BaseTableComponent<
 
   ngAfterViewInit(): void {
     const viewportValue = this.viewport();
-    const headerScrollViewportValue =
-      this.headerScrollViewport()?.nativeElement;
-    const bodyHorizontalScrollerValue =
-      viewportValue?.elementRef?.nativeElement;
-    const outerScrollerValue = this.outerScroller()?.nativeElement;
 
     if (viewportValue) {
       viewportValue.renderedRangeStream
@@ -194,15 +184,6 @@ export class BaseTableComponent<
             this.renderedRangeChange.emit(range);
           }.bind(this),
         );
-    }
-
-    if (headerScrollViewportValue && bodyHorizontalScrollerValue) {
-      bindHeaderInteractions(
-        this.destroyRef,
-        headerScrollViewportValue,
-        bodyHorizontalScrollerValue,
-        outerScrollerValue,
-      );
     }
   }
 
@@ -313,7 +294,7 @@ export class BaseTableComponent<
     if (column.sortable !== true) {
       return;
     }
-    const primarySort = this.sortColumns()[0];
+    const primarySort = (this.sortColumns() ?? [])[0];
     if (primarySort?.column === column.field) {
       if (primarySort.direction === 'asc') {
         this.onSort({ active: column.field, direction: 'desc' });
@@ -326,7 +307,7 @@ export class BaseTableComponent<
   }
 
   getAriaSort(column: ColumnDef): string | null {
-    const primarySort = this.sortColumns()[0];
+    const primarySort = (this.sortColumns() ?? [])[0];
     if (primarySort?.column === column.field) {
       return primarySort.direction === 'asc' ? 'ascending' : 'descending';
     }

@@ -1,6 +1,12 @@
-// Pin all data rows to a single consistent height so CDK virtual scroll
-// receives a stable itemSize regardless of cell content.
+// BaseTable renders <table mat-table> inside a cdk-virtual-scroll-viewport.
+// The viewport owns vertical scrolling (itemSize = rowHeight); Material's
+// sticky header-row support keeps the column headers pinned above it. Native
+// table layout is otherwise left to MatTableModule defaults; the .dms-* classes
+// below only add state colours, truncation, and sort affordances.
+
 :host {
+  // Pin all data rows to a single consistent height so CDK virtual scroll
+  // receives a stable itemSize regardless of cell content.
   --mat-table-row-item-container-height: 57px;
   display: block;
   min-width: 0;
@@ -17,130 +23,13 @@
   position: relative;
   height: 100%;
   width: 100%;
-  display: flex;
-  flex-direction: column;
   min-width: 0;
   overflow: hidden;
 }
 
-.dms-table-shell {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  min-height: 0;
-  min-width: 0;
-  width: 100%;
-}
-
-/**
- * SCROLLING REGRESSION HISTORY — DO NOT SIMPLIFY THIS CODE:
- * Epic 29:  rowHeight mismatch → CDK total scroll height wrong
- * Epic 31:  contain:strict on .virtual-scroll-viewport → jump on CDK viewport recalc
- *           Fixed by replacing contain:strict with contain:paint (correct at the time).
- * Epic 44:  CSS transitions + extra CD cycles → CDK recalculated mid-animation
- *           Also removed will-change:transform from .virtual-scroll-viewport.
- * Epic 60:  isLoading=true rows filtered → array shrank → CDK recalculated total height
- * Epic 64:  Edge case follow-up to Epic 60 (different code path)
- * Epic 87:  Account-panel placeholder symbol:'' → blank cells during fast scroll
- * Epic 101: contain:paint on .virtual-scroll-viewport caused slow-scroll sticky drift.
- *   CSS Containment Level 2 (Chrome 114+, Firefox 109+) changed contain:paint to imply
- *   contain:layout. This independent-formatting-context boundary, combined with CDK's
- *   transform:translateY() on .cdk-virtual-scroll-content-wrapper, caused the browser's
- *   sticky-position resolver to compute anchor offsets relative to the transformed
- *   coordinate space instead of the scrollport. During 4px/step slow scroll, the resolver
- *   fires between CDK transform updates, producing frames where the header drifts below
- *   or above the viewport top (header-scrolls-with-content and header-under-header).
- *   Fix (Story 101.2): remove contain:paint entirely. overflow:auto/hidden already
- *   provides the paint boundary CDK needs; the explicit contain property is redundant
- *   and was breaking position:sticky on all five CDK virtual-scroll hosts.
- * Epic 105: Sticky header drift reappears AFTER an in-place account- or filter-change
- *   on all five CDK virtual-scroll screens. Root cause was a selector/measurement mismatch
- *   in the regression spec: `tr.mat-mdc-header-row` was measured instead of the sticky
- *   `th.mat-mdc-header-cell`. Chrome returns the `<tr>`'s natural-flow bounding-box
- *   (y = viewportTop − scrollTop), producing false sticky-drift violations regardless of
- *   whether sticky is working correctly. Confirmed by live-DOM diagnostic at scrollTop=4:
- *   `tr.y=124` (natural-flow), `th.y=128` (sticky, correctly at viewportTop).
- *   Fix (Story 105.2): BaseTableComponent.contextId input — screen components bind a key
- *   that changes on every account/filter context change; an effect scrolls to index 0,
- *   resetting the viewport to a clean state before sticky heights are re-measured.
- *   No CSS changes required; the existing layout is correct. See SCROLLING REGRESSION
- *   HISTORY in base-table.component.ts for the TypeScript-side details.
- * Epic 111: (Story 111.2) Eliminated position:sticky-based header drift structurally.
- *   Replaced mat-table + sticky <th> with a two-region layout: .dms-table-header <div>
- *   sits above cdk-virtual-scroll-viewport in document flow so the header can never drift
- *   with virtual-scroll content. MatTableModule and MatSortModule removed from imports[];
- *   sort implemented via onHeaderClick()/getAriaSort(). Column widths changed from
- *   string (e.g. '80px') to number (e.g. 80) for uniform [style.width.px] binding.
- *   Single outer .dms-table-scroll-container (overflow-x:auto) keeps header and body
- *   horizontally aligned without a JS sync mechanism.
- *   Selector updates applied to all regression specs:
- *   th.mat-mdc-header-cell → .dms-header-cell[role="columnheader"]
- *   tr.mat-mdc-row → .dms-body-row[role="row"]
- *
- * Epic 112: (Story 112.2) Fixed three layout regressions introduced by Epic 111.
- *   R1/R2 — scrollbar drift: overflow-y moved from .dms-table-body to a new
- *     .dms-outer-scroller wrapper that is always full-viewport-width. The wrapper
- *     carries cdkVirtualScrollingElement so CDK delegates scroll-event detection
- *     to it instead of the CDK viewport. .dms-table-body overflow-y changed to
- *     visible — CDK spacer still provides total virtual height so the outer scroller
- *     scrolls through the full content. Vertical scrollbar is now permanently at the
- *     right edge of the screen regardless of horizontal scroll position.
- *   R3 — columns don't fill container: cell bindings kept as exact [style.width.px];
- *     flex-grow:0 on cells prevents them from stretching; a .dms-col-spacer (flex:1)
- *     at the end of each row absorbs spare width so rows always span the container
- *     width while column widths remain identical between header and body.
- *   R4 — beyond-table background mismatch: background-color:var(--dms-surface) added
- *     to .dms-body-row; the row background now covers the full row width (past the
- *     last cell) with the correct surface colour. Cell-level backgrounds continue to
- *     override for hover / selected / gain / loss states as before.
- *
- * Structural constraints:
- *   1. CDK virtual scroll requires a STABLE array length. SmartNgRX marks rows
- *      isLoading=true during in-flight requests; filtering those rows out shrinks the
- *      array and causes CDK to recalculate total height, jumping the viewport. Always
- *      keep placeholder/loading rows in the array. Placeholder rows must use a non-empty
- *      symbol (e.g. '\u2026') so blank-cell regression guards do not false-positive.
- *   2. .dms-table-body (CDK viewport) has overflow-y:visible (Epic 112). CDK scroll
- *      detection is delegated to .dms-outer-scroller via cdkVirtualScrollingElement.
- *      The CDK spacer sets the total virtual height so .dms-outer-scroller can scroll.
- *      MUST NOT apply layout containment (contain:layout or any shorthand that implies
- *      it). CDK positions visible rows via transform:translateY on the content-wrapper;
- *      layout containment would break CDK’s scroll height calculation.
- *   3. .dms-table-body MUST have overflow-x:hidden so horizontal scrolling is handled
- *      exclusively by the outer .dms-table-scroll-container. This prevents double
- *      horizontal scrollbars and ensures the header and body scroll as one unit.
- */
-
-// Story 114.2: header viewport stays outside vertical scroll subtree. It clips
-// horizontally, mirrors body scrollLeft from TS, and forwards wheel gestures so
-// scroll interaction still works while pointer is over header region.
-.dms-table-header-viewport {
-  flex-shrink: 0;
-  min-width: 0;
-  width: 100%;
-  overflow-x: hidden;
-  overflow-y: hidden;
-}
-
-// Epic 112 (Story 112.2): full-width outer scroll container that pins the vertical
-// scrollbar to the right edge of the screen. Story 114.2 keeps that ownership and
-// removes header from this subtree so vertical scroll no longer translates header.
-.dms-outer-scroller {
-  flex: 1;
-  min-width: 0;
-  width: 100%;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
-// Single body horizontal scroll owner. Header stays in sibling viewport and mirrors
-// this element's scrollLeft so body remains only user-visible horizontal scrollbar.
-.dms-table-scroll-container {
-  overflow-x: hidden;
-  overflow-y: hidden;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
+// The CDK viewport fills the container and owns vertical scroll.
+.dms-table-body {
+  height: 100%;
   width: 100%;
 }
 
@@ -152,36 +41,19 @@ mat-progress-bar {
   z-index: 10;
 }
 
-// Header region — NOT position:sticky. Always above CDK viewport in document flow.
-.dms-table-header {
-  flex-shrink: 0;
-  min-width: 100%;
-  width: max-content;
-}
-
-.dms-header-row {
-  display: flex;
-  flex-direction: row;
-  min-width: 100%;
-  background-color: var(--dms-surface);
-
-  // box-shadow replaces the collapsed border line that sticky <th> borders provided:
-  // on a flex-layout div, a plain border-bottom persists during horizontal scroll.
-  box-shadow: 0 1px 0 0
-    color-mix(in srgb, var(--dms-text-primary) 12%, transparent);
+// mat-table fills the viewport so bound column widths are preserved.
+.dms-table-body table.mat-mdc-table {
+  width: 100%;
+  border-collapse: collapse;
 }
 
 .dms-header-cell {
-  flex-shrink: 0;
-  flex-grow: 0;
   padding: 8px 16px;
   font-weight: 600;
   background-color: var(--dms-surface);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  display: flex;
-  align-items: center;
 
   .sort-rank-indicator {
     font-size: 0.75em;
@@ -198,26 +70,9 @@ mat-progress-bar {
 .dms-filter-row .dms-header-cell {
   padding: 4px 8px;
   font-weight: normal;
-  box-shadow: none;
-}
-
-// Body region: CDK virtual scroll viewport.
-// Epic 112: overflow-y changed to visible — vertical scroll delegated to
-// .dms-outer-scroller via cdkVirtualScrollingElement. CDK spacer provides total
-// virtual height; the outer scroller sees the full height and scrolls through it.
-// overflow-x:hidden still defers horizontal scrolling to .dms-table-scroll-container.
-// MUST NOT have contain:layout (see SCROLLING REGRESSION HISTORY, Epic 101/111/112).
-.dms-table-body {
-  width: 100%;
-  min-width: 100%;
-  overflow-y: visible;
-  overflow-x: auto;
 }
 
 .dms-body-row {
-  display: flex;
-  flex-direction: row;
-  min-width: 100%;
   cursor: pointer;
   background-color: var(--dms-surface);
 
@@ -227,26 +82,10 @@ mat-progress-bar {
       var(--dms-text-primary) 4%,
       transparent
     );
-
-    .dms-body-cell {
-      background-color: color-mix(
-        in srgb,
-        var(--dms-surface) 96%,
-        var(--dms-text-primary)
-      );
-    }
   }
 
   &.selected {
     background-color: rgba(var(--dms-primary-500), 0.1);
-
-    .dms-body-cell {
-      background-color: color-mix(
-        in srgb,
-        var(--dms-primary-500) 10%,
-        var(--dms-surface)
-      );
-    }
   }
 
   // Capital gain/loss classification colors — WCAG AA compliant
@@ -272,51 +111,16 @@ mat-progress-bar {
 }
 
 .dms-body-cell {
-  flex-shrink: 0;
-  flex-grow: 0;
   padding: 8px 16px;
-
-  // Prevent transparent cell backgrounds that cause visual artifacts during scroll.
-  background-color: var(--dms-surface);
-  background-clip: padding-box;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  display: flex;
-  align-items: center;
-  contain: content;
 }
 
 .dms-select-cell {
-  flex-grow: 0;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  text-align: center;
 }
 
-// Flex spacer at end of each row — absorbs spare width so columns fill the
-// viewport without using flex-grow on data cells (which would break column
-// width parity between header and body rows).
-.dms-col-spacer {
-  flex: 1 0 auto;
-  min-width: 0;
-}
-
-.dark-theme {
-  .dms-body-row:hover {
-    background-color: color-mix(
-      in srgb,
-      var(--dms-text-primary) 4%,
-      transparent
-    );
-
-    .dms-body-cell {
-      background-color: color-mix(
-        in srgb,
-        var(--dms-surface) 96%,
-        var(--dms-text-primary)
-      );
-    }
-  }
+.dark-theme .dms-body-row:hover {
+  background-color: color-mix(in srgb, var(--dms-text-primary) 4%, transparent);
 }
