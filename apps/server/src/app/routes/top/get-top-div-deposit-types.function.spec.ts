@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { getTopDivDepositTypes } from './get-top-div-deposit-types.function';
 
 const { findMany, create } = vi.hoisted(() => ({
   findMany: vi.fn(),
@@ -10,8 +11,6 @@ vi.mock('../../prisma/prisma-client', () => ({
     divDepositType: { findMany, create },
   },
 }));
-
-import { getTopDivDepositTypes } from './get-top-div-deposit-types.function';
 
 // Canonical-seed guards (Story 2.1 AC #3). These assert behavior that is already
 // true today and must stay green both before and after Story 2.2, so they are
@@ -27,10 +26,7 @@ describe('getTopDivDepositTypes', () => {
     // First read: empty. Second read (after seeding): the two created rows.
     findMany
       .mockResolvedValueOnce([])
-      .mockResolvedValueOnce([
-        { id: 'div-id' },
-        { id: 'dep-id' },
-      ]);
+      .mockResolvedValueOnce([{ id: 'div-id' }, { id: 'dep-id' }]);
 
     const ids = await getTopDivDepositTypes();
 
@@ -41,11 +37,7 @@ describe('getTopDivDepositTypes', () => {
   });
 
   it('does not create when types already exist and returns all ids', async () => {
-    findMany.mockResolvedValue([
-      { id: 'a' },
-      { id: 'b' },
-      { id: 'c' },
-    ]);
+    findMany.mockResolvedValue([{ id: 'a' }, { id: 'b' }, { id: 'c' }]);
 
     const ids = await getTopDivDepositTypes();
 

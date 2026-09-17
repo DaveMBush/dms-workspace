@@ -5,7 +5,6 @@
  * This script seeds a fresh PostgreSQL database with initial data
  * for development and testing environments.
  */
-
 import { PrismaClient } from '@prisma/client';
 
 interface SeedConfig {
@@ -25,7 +24,7 @@ class DatabaseSeeder {
   async seed(): Promise<void> {
     try {
       console.log(
-        `🌱 Seeding PostgreSQL database for ${this.config.environment} environment...`
+        `🌱 Seeding PostgreSQL database for ${this.config.environment} environment...`,
       );
 
       await this.seedAccounts();
@@ -149,7 +148,7 @@ class DatabaseSeeder {
 
     if (accounts.length === 0 || riskGroups.length === 0) {
       console.warn(
-        '⚠️  No accounts or risk groups found, skipping development data'
+        '⚠️  No accounts or risk groups found, skipping development data',
       );
       return;
     }
@@ -291,7 +290,7 @@ class DatabaseSeeder {
     }
 
     console.log(
-      `✅ Seeded ${universeData.length} universe entries, ${sampleTrades.length} trades, and ${screenerData.length} screener entries`
+      `✅ Seeded ${universeData.length} universe entries, ${sampleTrades.length} trades, and ${screenerData.length} screener entries`,
     );
   }
 }
