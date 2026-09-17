@@ -87,7 +87,7 @@ class DatabaseSeeder {
     console.log(`✅ Seeded ${riskGroups.length} risk groups`);
   }
 
-  private async seedDivDepositTypes(): Promise<void> {
+  async seedDivDepositTypes(): Promise<void> {
     console.log('💰 Seeding dividend deposit types...');
 
     const divDepositTypes = [
