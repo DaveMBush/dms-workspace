@@ -863,6 +863,15 @@ const eslintConfig = async () => {
         '@smarttools/no-anonymous-functions': 'off',
       },
     },
+    {
+      // Standalone CLI tools in repo-root `scripts/` (seed, backup, deploy
+      // helpers) are entry points run via tsx. Their console output is their
+      // user-facing interface, so allow console statements there.
+      files: ['scripts/**/*.ts'],
+      rules: {
+        'no-console': 'off',
+      },
+    },
   ];
 };
 
