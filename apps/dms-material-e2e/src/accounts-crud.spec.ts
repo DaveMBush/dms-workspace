@@ -149,6 +149,10 @@ test.describe('Account CRUD Operations', () => {
       const input = page.locator('[data-testid="node-editor-input"]');
       // Wait for the input to be visible and focused before filling
       await expect(input).toBeVisible({ timeout: 5000 });
+      // Wait until ngModel has written the default value. Clearing before that
+      // initial write races ahead of it (clearing an empty field emits no change),
+      // leaving editingContent populated so Enter would save instead of failing validation.
+      await expect(input).toHaveValue('New Account', { timeout: 3000 });
       await input.clear();
 
       // Try to save with Enter

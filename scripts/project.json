@@ -1,0 +1,23 @@
+{
+  "name": "scripts",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "scripts",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "test": {
+      "executor": "@nx/vitest:test",
+      "options": {
+        "passWithNoTests": true,
+        "cwd": "scripts"
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "scripts",
+        "command": "eslint . --ignore-pattern 'check-duplicates.ts' --ignore-pattern 'test-constraints.ts'"
+      }
+    }
+  }
+}
