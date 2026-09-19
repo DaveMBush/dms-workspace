@@ -16,7 +16,7 @@
       "executor": "nx:run-commands",
       "options": {
         "cwd": "scripts",
-        "command": "eslint . --ignore-pattern 'check-duplicates.ts' --ignore-pattern 'test-constraints.ts'"
+        "command": "eslint . --ignore-pattern 'check-duplicates.ts' --ignore-pattern 'test-constraints.ts' --ignore-pattern 'coverage'"
       }
     }
   }
