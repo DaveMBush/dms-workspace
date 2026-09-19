@@ -45,6 +45,27 @@ class DatabaseSeeder {
     }
   }
 
+  async seedDivDepositTypes(): Promise<void> {
+    console.log('💰 Seeding dividend deposit types...');
+
+    const divDepositTypes = [
+      { name: 'Dividend' },
+      { name: 'Interest' },
+      { name: 'Capital Gains' },
+      { name: 'Return of Capital' },
+    ];
+
+    for (const type of divDepositTypes) {
+      await this.prisma.divDepositType.upsert({
+        where: { id: type.name }, // Assuming we use name as unique identifier
+        update: {},
+        create: type,
+      });
+    }
+
+    console.log(`✅ Seeded ${divDepositTypes.length} dividend deposit types`);
+  }
+
   private async seedAccounts(): Promise<void> {
     console.log('👤 Seeding accounts...');
 
@@ -84,27 +105,6 @@ class DatabaseSeeder {
     }
 
     console.log(`✅ Seeded ${riskGroups.length} risk groups`);
-  }
-
-  async seedDivDepositTypes(): Promise<void> {
-    console.log('💰 Seeding dividend deposit types...');
-
-    const divDepositTypes = [
-      { name: 'Dividend' },
-      { name: 'Interest' },
-      { name: 'Capital Gains' },
-      { name: 'Return of Capital' },
-    ];
-
-    for (const type of divDepositTypes) {
-      await this.prisma.divDepositType.upsert({
-        where: { id: type.name }, // Assuming we use name as unique identifier
-        update: {},
-        create: type,
-      });
-    }
-
-    console.log(`✅ Seeded ${divDepositTypes.length} dividend deposit types`);
   }
 
   private async seedHolidays(): Promise<void> {
@@ -153,7 +153,19 @@ class DatabaseSeeder {
       return;
     }
 
-    // Seed universe data
+    const createdUniverse = await this.seedUniverseData(riskGroups);
+    const tradeCount = await this.seedSampleTrades(accounts, createdUniverse);
+    await this.seedDividendDeposits(accounts, divDepositTypes, createdUniverse);
+    const screenerCount = await this.seedScreenerData(riskGroups);
+
+    console.log(
+      `✅ Seeded ${createdUniverse.length} universe entries, ${tradeCount} trades, and ${screenerCount} screener entries`,
+    );
+  }
+
+  private async seedUniverseData(
+    riskGroups: { id: string }[],
+  ): Promise<{ id: string }[]> {
     const universeData = [
       {
         symbol: 'AAPL',
@@ -185,7 +197,7 @@ class DatabaseSeeder {
       },
     ];
 
-    const createdUniverse = [];
+    const createdUniverse: { id: string }[] = [];
     for (const stock of universeData) {
       const created = await this.prisma.universe.upsert({
         where: { symbol: stock.symbol },
@@ -195,7 +207,13 @@ class DatabaseSeeder {
       createdUniverse.push(created);
     }
 
-    // Seed some sample trades
+    return createdUniverse;
+  }
+
+  private async seedSampleTrades(
+    accounts: { id: string }[],
+    createdUniverse: { id: string }[],
+  ): Promise<number> {
     const sampleTrades = [
       {
         universeId: createdUniverse[0].id,
@@ -230,40 +248,52 @@ class DatabaseSeeder {
       await this.prisma.trades.create({ data: trade });
     }
 
-    // Seed dividend deposits
-    if (divDepositTypes.length > 0) {
-      const dividendDeposits = [
-        {
-          date: new Date('2024-01-31'),
-          amount: 25.0,
-          accountId: accounts[0].id,
-          divDepositTypeId: divDepositTypes[0].id,
-          universeId: createdUniverse[0].id,
-        },
-        {
-          date: new Date('2024-02-28'),
-          amount: 15.0,
-          accountId: accounts[0].id,
-          divDepositTypeId: divDepositTypes[0].id,
-          universeId: createdUniverse[1].id,
-        },
-        {
-          date: new Date('2024-03-31'),
-          amount: 56.0,
-          accountId: accounts[1].id,
-          divDepositTypeId: divDepositTypes[0].id,
-          universeId: createdUniverse[3].id,
-        },
-      ];
+    return sampleTrades.length;
+  }
 
-      for (const deposit of dividendDeposits) {
-        await this.prisma.divDeposits.create({ data: deposit });
-      }
-
-      console.log(`✅ Seeded ${dividendDeposits.length} dividend deposits`);
+  private async seedDividendDeposits(
+    accounts: { id: string }[],
+    divDepositTypes: { id: string }[],
+    createdUniverse: { id: string }[],
+  ): Promise<void> {
+    if (divDepositTypes.length === 0) {
+      return;
     }
 
-    // Seed screener data
+    const dividendDeposits = [
+      {
+        date: new Date('2024-01-31'),
+        amount: 25.0,
+        accountId: accounts[0].id,
+        divDepositTypeId: divDepositTypes[0].id,
+        universeId: createdUniverse[0].id,
+      },
+      {
+        date: new Date('2024-02-28'),
+        amount: 15.0,
+        accountId: accounts[0].id,
+        divDepositTypeId: divDepositTypes[0].id,
+        universeId: createdUniverse[1].id,
+      },
+      {
+        date: new Date('2024-03-31'),
+        amount: 56.0,
+        accountId: accounts[1].id,
+        divDepositTypeId: divDepositTypes[0].id,
+        universeId: createdUniverse[3].id,
+      },
+    ];
+
+    for (const deposit of dividendDeposits) {
+      await this.prisma.divDeposits.create({ data: deposit });
+    }
+
+    console.log(`✅ Seeded ${dividendDeposits.length} dividend deposits`);
+  }
+
+  private async seedScreenerData(
+    riskGroups: { id: string }[],
+  ): Promise<number> {
     const screenerData = [
       {
         symbol: 'NVDA',
@@ -289,13 +319,11 @@ class DatabaseSeeder {
       });
     }
 
-    console.log(
-      `✅ Seeded ${universeData.length} universe entries, ${sampleTrades.length} trades, and ${screenerData.length} screener entries`,
-    );
+    return screenerData.length;
   }
 }
 
-async function main() {
+async function main(): Promise<void> {
   const config: SeedConfig = {
     environment: (process.env.NODE_ENV as 'dev' | 'staging' | 'test') || 'dev',
     verbose: process.env.VERBOSE === 'true',
@@ -322,4 +350,4 @@ if (require.main === module) {
   main().catch(console.error);
 }
 
-export { DatabaseSeeder, SeedConfig };
+export { DatabaseSeeder };

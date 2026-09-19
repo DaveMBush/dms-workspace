@@ -11,6 +11,13 @@
         "passWithNoTests": true,
         "cwd": "scripts"
       }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "scripts",
+        "command": "eslint . --ignore-pattern 'check-duplicates.ts' --ignore-pattern 'test-constraints.ts'"
+      }
     }
   }
 }

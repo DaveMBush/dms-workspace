@@ -1,3 +1,4 @@
+/* eslint-disable vitest/no-disabled-tests -- Red-phase TDD (Story 2.1): intentionally skipped until Story 2.2 removes "Return of Capital" */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { DatabaseSeeder } from './seed-postgres';
 
@@ -17,6 +18,7 @@ vi.mock('@prisma/client', () => {
   // A constructor returning an object makes every `new PrismaClient()` yield the
   // same reference, so DatabaseSeeder's private prisma and these tests observe
   // the exact same mocked `divDepositType.upsert`.
+  /* eslint-disable-next-line @typescript-eslint/no-extraneous-class -- mock needs a class for `new` semantics */
   class MockPrismaClient {
     constructor() {
       return { divDepositType: { upsert } };
@@ -24,8 +26,6 @@ vi.mock('@prisma/client', () => {
   }
   return { PrismaClient: MockPrismaClient };
 });
-
-const config = { environment: 'dev' as const, verbose: false };
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -36,7 +36,7 @@ describe('seedDivDepositTypes', () => {
   // exists and seeds through prisma.divDepositType.upsert. It does not assert on
   // the specific types, so it stays green across both stories.
   it('seeds div deposit types via prisma.divDepositType.upsert', async () => {
-    const seeder = new DatabaseSeeder(config);
+    const seeder = new DatabaseSeeder({ environment: 'dev', verbose: false });
 
     await seeder.seedDivDepositTypes();
 
@@ -51,7 +51,7 @@ describe('seedDivDepositTypes', () => {
   // ---------------------------------------------------------------------------
 
   it.skip('seeds exactly three types: Dividend, Interest, Capital Gains', async () => {
-    const seeder = new DatabaseSeeder(config);
+    const seeder = new DatabaseSeeder({ environment: 'dev', verbose: false });
 
     await seeder.seedDivDepositTypes();
 
@@ -63,7 +63,7 @@ describe('seedDivDepositTypes', () => {
   });
 
   it.skip('does not seed a "Return of Capital" type', async () => {
-    const seeder = new DatabaseSeeder(config);
+    const seeder = new DatabaseSeeder({ environment: 'dev', verbose: false });
 
     await seeder.seedDivDepositTypes();
 
