@@ -1,15 +1,13 @@
-/* eslint-disable vitest/no-disabled-tests -- Red-phase TDD (Story 2.1): intentionally skipped until Story 2.2 removes "Return of Capital" */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { DatabaseSeeder } from './seed-postgres';
 
 /**
  * Unit tests for scripts/seed-postgres.ts — Story 2.1 (issue #1391).
  *
- * Red-phase TDD scaffold: the assertions that depend on Story 2.2 removing
- * "Return of Capital" are marked `it.skip` so CI stays green BEFORE the removal
- * lands. Story 2.2's first task removes these skip markers, confirms they fail
- * against the current seed (which still contains "Return of Capital"), then makes
- * them pass by deleting that entry from `divDepositTypes`.
+ * Red-phase TDD scaffold: the assertions that depend on removing "Return of
+ * Capital" were marked `it.skip` until Story 2.2 landed. Story 2.2 removed the
+ * skip markers and deleted the entry from `divDepositTypes`, so all tests here
+ * now run and pass.
  */
 
 const { upsert } = vi.hoisted(() => ({ upsert: vi.fn() }));
@@ -43,14 +41,9 @@ describe('seedDivDepositTypes', () => {
     expect(upsert).toHaveBeenCalled();
   });
 
-  // ---------------------------------------------------------------------------
-  // Red-phase (Story 2.1 AC #1, #2): these encode the post-removal contract and
-  // are intentionally skipped until Story 2.2 deletes "Return of Capital". They
-  // must be un-skipped in Story 2.2, where they turn green. Do NOT weaken or
-  // delete any assertion to keep CI green — skip markers only.
-  // ---------------------------------------------------------------------------
+  // Story 2.1 AC #1, #2: post-removal contract (unskipped by Story 2.2).
 
-  it.skip('seeds exactly three types: Dividend, Interest, Capital Gains', async () => {
+  it('seeds exactly three types: Dividend, Interest, Capital Gains', async () => {
     const seeder = new DatabaseSeeder({ environment: 'dev', verbose: false });
 
     await seeder.seedDivDepositTypes();
@@ -62,7 +55,7 @@ describe('seedDivDepositTypes', () => {
     expect(names).toEqual(['Dividend', 'Interest', 'Capital Gains']);
   });
 
-  it.skip('does not seed a "Return of Capital" type', async () => {
+  it('does not seed a "Return of Capital" type', async () => {
     const seeder = new DatabaseSeeder({ environment: 'dev', verbose: false });
 
     await seeder.seedDivDepositTypes();

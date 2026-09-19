@@ -219,7 +219,7 @@ Enumeration of dividend deposit types.
 ```prisma
 model divDepositType {
   id          String       @id @default(cuid())
-  name        String       @unique    // e.g. "Dividend", "Capital Gain", "Return of Capital"
+  name        String       @unique    // e.g. "Dividend", "Capital Gain"
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
   version     Int          @default(0)

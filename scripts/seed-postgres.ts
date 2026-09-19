@@ -52,7 +52,6 @@ class DatabaseSeeder {
       { name: 'Dividend' },
       { name: 'Interest' },
       { name: 'Capital Gains' },
-      { name: 'Return of Capital' },
     ];
 
     for (const type of divDepositTypes) {
