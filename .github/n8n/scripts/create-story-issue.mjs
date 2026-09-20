@@ -1,6 +1,9 @@
 #!/usr/bin/env node
-// Creates a GitHub issue from a story file, then creates a branch off origin/main
-// named after the issue and attaches a local git worktree to it.
+// Creates a GitHub issue from a story file, then creates a branch named after
+// the issue and attaches a local git worktree to it. On a fresh start the
+// branch is cut from origin/main; on a resume (the branch already exists on
+// origin) the worktree re-attaches to the pushed tip so in-progress state is
+// carried forward instead of being recreated from main.
 //
 // Usage:
 //   node .github/n8n/scripts/create-story-issue.mjs --story <id> [--root <dir>]
@@ -14,7 +17,8 @@
 //   1. Read story file _bmad-output/implementation-artifacts/stories/epic-<n>/<id>-*.md
 //   2. Create GitHub issue "Story <id>: <title>" with the full story as body
 //      (searches for an existing open issue with the same title first)
-//   3. git fetch origin main; branch "issue-<num>-<slug>" from origin/main
+//   3. git fetch origin; branch "issue-<num>-<slug>" from origin/main, or re-attach
+//      to origin/<branch> when that ref already exists (resume)
 //   4. git worktree add at <parent-of-root>/<basename(root)>-issue-<num>
 //      (override location with --worktree-dir <dir>)
 //
@@ -22,7 +26,7 @@
 //   {"issueNumber": 42, "issueUrl": "...", "branch": "issue-42-slug", "worktreePath": "/abs/path"}
 // Exit 0 = success, 1 = operational error (story/epic missing, gh or git failure), 2 = usage error.
 import { execFileSync } from 'node:child_process';
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, rmSync } from 'node:fs';
 import { basename, dirname, resolve } from 'node:path';
 
 const args = process.argv.slice(2);
@@ -157,10 +161,13 @@ const slug =
     .slice(0, 40) || storyId.replace(/\./g, '-');
 const branch = `issue-${issueNumber}-${slug}`;
 
+// Fetch all branches so existing issue-* branch tips are available locally —
+// a resume must re-attach the worktree to the pushed in-progress commit, not
+// recreate the branch from origin/main.
 try {
-  run('git', ['fetch', 'origin', 'main']);
+  run('git', ['fetch', 'origin']);
 } catch (e) {
-  fail('git fetch origin main failed', {
+  fail('git fetch origin failed', {
     stderr: String(e.stderr || e.message),
   });
 }
@@ -173,22 +180,30 @@ const defaultWt = resolve(
 const worktreePath = worktreeDirOverride ?? defaultWt;
 
 try {
-  if (existsSync(worktreePath)) {
-    // Re-run: verify it is a worktree of this repo on the expected branch.
-    const wtList = run('git', ['worktree', 'list', '--porcelain']);
-    const entries = wtList
-      .split('\n\n')
-      .filter(Boolean)
-      .map((block) => {
-        const p = block.match(/^worktree (.+)$/m)?.[1];
-        const b = block
-          .match(/^branch (.+)$/m)?.[1]
-          ?.replace('refs/heads/', '');
-        return { path: p, branch: b };
-      });
-    const existingWt = entries.find((e) => e.path === worktreePath);
+  const wtList = run('git', ['worktree', 'list', '--porcelain']);
+  const entries = wtList
+    .split('\n\n')
+    .filter(Boolean)
+    .map((block) => {
+      const p = block.match(/^worktree (.+)$/m)?.[1];
+      const b = block
+        .match(/^branch (.+)$/m)?.[1]
+        ?.replace('refs/heads/', '');
+      return { path: p, branch: b };
+    });
+  const existingWt = entries.find((e) => e.path === worktreePath);
+
+  if (existsSync(worktreePath) && !existingWt) {
+    // Orphaned directory left by a crashed run — not in the worktree list.
+    console.log(
+      `Orphaned directory at ${worktreePath} — removing and recreating worktree.`,
+    );
+    rmSync(worktreePath, { recursive: true, force: true });
+  }
+
+  if (existingWt) {
+    // Re-run on a live worktree: verify it is on the expected branch.
     if (
-      existingWt &&
       existingWt.branch !== `refs/heads/${branch}` &&
       existingWt.branch !== branch
     ) {
@@ -198,18 +213,29 @@ try {
       });
     }
   } else {
-    const branchExists = run('git', ['branch', '--list', branch]) === branch;
-    if (branchExists) {
+    const localBranch = run('git', ['branch', '--list', branch]) === branch;
+    let remoteBranch = false;
+    try {
+      run('git', ['rev-parse', '--verify', `refs/remotes/origin/${branch}`]);
+      remoteBranch = true;
+    } catch {
+      /* ref does not exist */
+    }
+    if (localBranch) {
       run('git', ['worktree', 'add', worktreePath, branch]);
-    } else {
+    } else if (remoteBranch) {
+      // Resume: re-attach to the pushed tip (carries in-progress state).
       run('git', [
         'worktree',
         'add',
+        '--track',
         '-b',
         branch,
         worktreePath,
-        'origin/main',
+        `origin/${branch}`,
       ]);
+    } else {
+      run('git', ['worktree', 'add', '-b', branch, worktreePath, 'origin/main']);
     }
   }
 } catch (e) {

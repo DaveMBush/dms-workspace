@@ -60,7 +60,17 @@ ends at `review`).
    `{N}.{M-1}-*.md` (the number immediately below this story's). If it exists
    and has `Status: skip`, read it completely — its Acceptance Criteria and
    Tasks define the exact test files and cases to write first (red phase).
-3. Set the story's `Status:` line to `in-progress`. Save.
+3. Set the story's `Status:` line to `in-progress`. Save, then persist it so a
+   crashed run can be resumed — commit and push ONLY the story file:
+
+   ```bash
+   git add _bmad-output/implementation-artifacts/stories/<story-file>
+   git commit -m "Story <id>: mark in-progress"
+   git push origin HEAD
+   ```
+
+   If the push fails (network/auth), note it in Completion Notes List and
+   continue — do not HALT on this.
 4. Load context on demand from the References section: architecture spine ADs,
    coding standards, prior commits (`git show <sha>:<path>` is allowed — read
    only), and any source files named in Dev Notes. Read what a task needs when
@@ -76,6 +86,18 @@ ends at `review`).
    - Run targeted tests for the touched project after each task before moving
      on (`pnpm exec nx test <project>` or the story's own Task 5-style verify
      step). Never proceed to the next task while a test is red.
+   - **Checkpoint:** once a task/subtask is green, mark its checkbox `[x]` in
+     the story file and commit + push everything (code + story file):
+
+     ```bash
+     git add -A
+     git commit -m "Story <id>: checkpoint after task <n>"
+     git push origin HEAD
+     ```
+
+     A crashed run resumes from the last pushed checkpoint — checked tasks are
+     never redone. If a push fails, note it in Completion Notes List and
+     continue; do not HALT on this.
 6. When all tasks are checked, run the full quality gate: `pnpm all` (lint +
    build + unit/integration tests with coverage + e2e for affected projects).
    Fix failures and re-run until green or you hit a HALT condition below.
@@ -101,7 +123,15 @@ Stop implementing when any of these is true:
 
 On HALT: set `Status:` to `blocked`, record the exact blocker (failing command,
 error output summary, what was tried) in Completion Notes List, save the story
-file, and print the final report with `result: "blocked"`. Do not attempt
+file, then persist it — commit and push ONLY the story file (same as step 3):
+
+```bash
+git add _bmad-output/implementation-artifacts/stories/<story-file>
+git commit -m "Story <id>: mark blocked"
+git push origin HEAD
+```
+
+Then print the final report with `result: "blocked"`. Do not attempt
 workarounds that bypass failing tests or quality gates.
 
 ## Hard Rules
@@ -114,9 +144,14 @@ workarounds that bypass failing tests or quality gates.
 - Never skip, disable, or weaken an existing test (no `.skip`, `xit`, deleted
   assertions) to make a run green. If a pre-existing test is genuinely broken
   by this change, that is a HALT condition, not something to silence.
-- No git mutations: do NOT commit, push, branch, rebase, or create worktrees.
-  Read-only git (`git show`, `git log`, `git diff`) is allowed for context.
-  Version control of your changes is handled by the pipeline after this run.
+- No git mutations EXCEPT checkpoint commits: do NOT branch, rebase, or create
+  worktrees — with one exception. Committing and pushing on the story's own
+  branch is allowed at three points so a crashed run can be resumed from
+  durable state: step 3 (`in-progress` flip, story file only), after each green
+  task (checkpoint, code + story file), and HALT (`blocked` flip, story file
+  only). No other commits. The final `review` state is committed by the
+  pipeline after this run. Read-only git (`git show`, `git log`, `git diff`)
+  is allowed for context.
 - Work only in the current directory (the story's working tree). All file
   writes are small and incremental — one file per write, no bulk multi-file
   dumps.
