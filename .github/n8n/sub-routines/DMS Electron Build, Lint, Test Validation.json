@@ -230,7 +230,7 @@
     },
     {
       "parameters": {
-        "command": "=QWEN_CODE_UNATTENDED_RETRY=1 qwen -p \"{{ $json[\"prompt\"] }}\" --model {{ $json[\"model\"] }} --yolo",
+        "command": "=QWEN_CODE_UNATTENDED_RETRY=1 QWEN_CODE_SUPPRESS_YOLO_WARNING=1 qwen-am -p \"{{ $json[\"prompt\"]\\n\\nKeep in mind the requirements for the issue attached to this branch. }}\" --model {{ $json[\"model\"] }} --yolo",
         "cwd": "={{ $('Code in JavaScript2').item.json.cwd }}"
       },
       "type": "n8n-nodes-base.ssh",
@@ -417,7 +417,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "2dd73c8c-c8ae-4d1a-a3af-3af20fa8b762",
+  "versionId": "f6cb13ad-5781-4e20-80f0-9bc439d055bb",
   "meta": {
     "instanceId": "efe7529a89851410cd052ec9508b6ab889cd60c3aa7db04a996939ffa07fd21d"
   },

@@ -33,8 +33,8 @@
       "type": "n8n-nodes-base.ssh",
       "typeVersion": 1,
       "position": [
-        208,
-        2256
+        192,
+        2112
       ],
       "id": "661b389b-2cd9-456e-94f5-a87d3d3242d3",
       "name": "Find Next Epic",
@@ -150,7 +150,7 @@
     },
     {
       "parameters": {
-        "command": "=QWEN_CODE_SUPPRESS_YOLO_WARNING=1 QWEN_CODE_UNATTENDED_RETRY=1 qwen -p \"Read .github/instructions/execute-story.md and follow it exactly to implement the story at _bmad-output/implementation-artifacts/stories/{{ $('Parse Story').item.json.nextStory.file }}. Work only in this directory. Never ask questions; complete everything in one run, then print the final report as specified.\" --model {{ $('Reduce to Record').item.json.model }} --yolo",
+        "command": "=QWEN_CODE_UNATTENDED_RETRY=1 QWEN_CODE_SUPPRESS_YOLO_WARNING=1 qwen-am -p \"Read .github/instructions/execute-story.md and follow it exactly to implement the story at _bmad-output/implementation-artifacts/stories/{{ $('Parse Story').item.json.nextStory.file }}. Work only in this directory. Never ask questions; complete everything in one run, then print the final report as specified.\" --model {{ $('Reduce to Record').item.json.model }} --yolo",
         "cwd": "={{ $('Parse Worktree Location').item.json.worktreePath }}"
       },
       "type": "n8n-nodes-base.ssh",
@@ -262,7 +262,7 @@
     },
     {
       "parameters": {
-        "command": "=QWEN_CODE_UNATTENDED_RETRY=1 qwen -p \"Read .github/instructions/review-story.md and follow it exactly to review the story at _bmad-output/implementation-artifacts/stories/{{ $('Parse Story').item.json.nextStory.file }}. Work only in this directory. Never ask questions; complete everything in one run, then print the final report as specified.\" --model {{ $('Reduce to Record').item.json.model }} --yolo",
+        "command": "=QWEN_CODE_UNATTENDED_RETRY=1 QWEN_CODE_SUPPRESS_YOLO_WARNING=1 qwen-am -p \"Read .github/instructions/review-story.md and follow it exactly to review the story at _bmad-output/implementation-artifacts/stories/{{ $('Parse Story').item.json.nextStory.file }}. Work only in this directory. Never ask questions; complete everything in one run, then print the final report as specified.\" --model {{ $('Reduce to Record').item.json.model }} --yolo",
         "cwd": "={{ $('Parse Worktree Location').item.json.worktreePath }}"
       },
       "type": "n8n-nodes-base.ssh",
@@ -283,7 +283,7 @@
     },
     {
       "parameters": {
-        "jsCode": "if($json.code !== 0) {\n  return {\n    statusAfter: 'error'\n  }\n}\ntry {\nvar splitArray = $json.stdout.split('=== DF2 FINAL REPORT ===');\nvar json = splitArray[splitArray.length - 1];\nreturn JSON.parse(json);\n} catch {\n  return {\n    statusAfter: 'error'\n  }\n}"
+        "jsCode": "if($json.code !== 0) {\n  return {\n    statusAfter: 'error'\n  }\n}\ntry {\nvar splitArray = $json.stdout.split('=== DF2 FINAL REPORT ===');\nvar json = splitArray[splitArray.length - 1];\nvar parse = JSON.parse(json);\n  if(parse.statusAfter === 'done') {\n    parse.statusAfter = 'review';\n  }\n  return parse;\n} catch {\n  return {\n    statusAfter: 'error'\n  }\n}"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -319,8 +319,8 @@
           "conditions": [
             {
               "id": "fd37112c-7e14-492e-967b-6dbebd4cb2bc",
-              "leftValue": "={{ $json.result }}",
-              "rightValue": "pass",
+              "leftValue": "={{ $json.statusAfter }}",
+              "rightValue": "complete",
               "operator": {
                 "type": "string",
                 "operation": "equals",
@@ -338,7 +338,7 @@
               }
             }
           ],
-          "combinator": "and"
+          "combinator": "or"
         },
         "options": {}
       },
@@ -353,14 +353,14 @@
     },
     {
       "parameters": {
-        "command": "=QWEN_CODE_UNATTENDED_RETRY=1 qwen -p \"Read .github/instructions/fix-story-findings.md and follow it exactly to fix the story at _bmad-output/implementation-artifacts/stories/{{ $('Parse Story').item.json.nextStory.file }}. Work only in this directory. Never ask questions; complete everything in one run, then print the final report as specified.\" --model {{ $('Reduce to Record').item.json.model }} --yolo",
+        "command": "=QWEN_CODE_UNATTENDED_RETRY=1 QWEN_CODE_SUPPRESS_YOLO_WARNING=1 qwen-am -p \"Read .github/instructions/fix-story-findings.md and follow it exactly to fix the story at _bmad-output/implementation-artifacts/stories/{{ $('Parse Story').item.json.nextStory.file }}. Work only in this directory. Never ask questions; complete everything in one run, then print the final report as specified.\" --model {{ $('Reduce to Record').item.json.model }} --yolo",
         "cwd": "={{ $('Parse Worktree Location').item.json.worktreePath }}"
       },
       "type": "n8n-nodes-base.ssh",
       "typeVersion": 1,
       "position": [
         4240,
-        1728
+        1760
       ],
       "id": "e0510aa1-18dd-4ce4-be2f-c09a839245cc",
       "name": "Fix Review Issues",
@@ -401,7 +401,7 @@
       "typeVersion": 2.3,
       "position": [
         4688,
-        1744
+        1776
       ],
       "id": "5ca82cff-689d-4a4e-8b13-ccd2aea92a8d",
       "name": "If3"
@@ -413,8 +413,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        4464,
-        1680
+        4480,
+        1776
       ],
       "id": "bb669f93-93c5-4c15-bc73-061d8cdd1357",
       "name": "Parse Fix Return"
@@ -604,7 +604,7 @@
     },
     {
       "parameters": {
-        "command": "=QWEN_CODE_UNATTENDED_RETRY=1 qwen -p \"Read .github/instructions/fix-code-rabbit-findings.md PR number: {{ $node[\"Parse PR Return\"].json.prNumber }}. Work only in this directory. Never ask questions; complete everything in one run, then print the final report as specified. Follow instructions exactly.\" --model {{ $('Reduce to Record').item.json.model }} --yolo",
+        "command": "=QWEN_CODE_UNATTENDED_RETRY=1 QWEN_CODE_SUPPRESS_YOLO_WARNING=1 qwen-am -p \"Read .github/instructions/fix-code-rabbit-findings.md PR number: {{ $node[\"Parse PR Return\"].json.prNumber }}. Work only in this directory. Never ask questions; complete everything in one run, then print the final report as specified. Follow instructions exactly.\" --model {{ $('Reduce to Record').item.json.model }} --yolo",
         "cwd": "={{ $('Parse Worktree Location').item.json.worktreePath }}"
       },
       "type": "n8n-nodes-base.ssh",
@@ -705,7 +705,7 @@
     },
     {
       "parameters": {
-        "command": "=QWEN_CODE_UNATTENDED_RETRY=1 qwen -p \"Read .github/instructions/fix-ci-failures.md PR number: {{ $node[\"Parse PR Return\"].json.prNumber }}. \nFailing steps: {{ JSON.stringify($node[\"Parse Wait for CI\"].json.failedSteps) }}\nWork only in this directory. Never ask questions; complete everything in one run, then print the final report as specified. Follow instructions exactly.\" --model {{ $('Reduce to Record').item.json.model }} --yolo",
+        "command": "=QWEN_CODE_UNATTENDED_RETRY=1 QWEN_CODE_SUPPRESS_YOLO_WARNING=1 qwen-am -p \"Read .github/instructions/fix-ci-failures.md PR number: {{ $node[\"Parse PR Return\"].json.prNumber }}. \nFailing steps: {{ JSON.stringify($node[\"Parse Wait for CI\"].json.failedSteps) }}\nWork only in this directory. Never ask questions; complete everything in one run, then print the final report as specified. Follow instructions exactly.\" --model {{ $('Reduce to Record').item.json.model }} --yolo",
         "cwd": "={{ $('Parse Worktree Location').item.json.worktreePath }}"
       },
       "type": "n8n-nodes-base.ssh",
@@ -1032,6 +1032,15 @@
                 "operation": "equals",
                 "name": "filter.operator.equals"
               }
+            },
+            {
+              "id": "125a9fa5-9f5a-4119-87d4-6a4feaa8cfad",
+              "leftValue": "={{ $('Parse Story').item.json.nextStory.status }}",
+              "rightValue": "review",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
             }
           ],
           "combinator": "or"
@@ -1046,40 +1055,6 @@
       ],
       "id": "59191dce-28b3-45b2-bbb8-d814147a4d1d",
       "name": "If7"
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 3
-          },
-          "conditions": [
-            {
-              "id": "542c3283-1dc9-49b6-b50c-c2da9abed441",
-              "leftValue": "={{ $json.statusAfter }}",
-              "rightValue": "review",
-              "operator": {
-                "type": "string",
-                "operation": "equals",
-                "name": "filter.operator.equals"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.3,
-      "position": [
-        3568,
-        1936
-      ],
-      "id": "a2e75662-b63c-49f6-bf5c-9d64be8e0c0d",
-      "name": "If8"
     }
   ],
   "pinData": {},
@@ -1562,7 +1537,7 @@
       "main": [
         [
           {
-            "node": "If8",
+            "node": "Code Review",
             "type": "main",
             "index": 0
           }
@@ -1608,24 +1583,6 @@
           }
         ]
       ]
-    },
-    "If8": {
-      "main": [
-        [
-          {
-            "node": "Code Review",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "If2",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
     }
   },
   "active": false,
@@ -1634,7 +1591,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "1a5a6256-3834-4278-85cd-7c4b6209f2f3",
+  "versionId": "6797d48d-ece6-4863-8cb6-6e00a54b2858",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "efe7529a89851410cd052ec9508b6ab889cd60c3aa7db04a996939ffa07fd21d"

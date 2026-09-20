@@ -7,7 +7,10 @@
       },
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.2,
-      "position": [-512, 96],
+      "position": [
+        -512,
+        96
+      ],
       "id": "3731dd0d-0a91-4c02-bdef-5cf5e71746ed",
       "name": "When Executed by Another Workflow",
       "onError": "continueRegularOutput"
@@ -27,7 +30,10 @@
       },
       "type": "n8n-nodes-base.formTrigger",
       "typeVersion": 2.6,
-      "position": [-480, -160],
+      "position": [
+        -480,
+        -160
+      ],
       "id": "c5ef88ce-a09a-4c2b-bcb7-8311515c7901",
       "name": "On form submission",
       "webhookId": "2bcf63eb-d548-41e4-b6de-5238715f0183"
@@ -38,7 +44,10 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [256, -96],
+      "position": [
+        256,
+        -96
+      ],
       "id": "7594d5db-acf5-4610-8245-e7184d53c930",
       "name": "Code in JavaScript"
     },
@@ -48,7 +57,10 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [1376, 96],
+      "position": [
+        1376,
+        96
+      ],
       "id": "30d4079c-34a9-416f-b734-c9eebe1cf2be",
       "name": "Code in JavaScript1"
     },
@@ -78,7 +90,10 @@
       },
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
-      "position": [32, 0],
+      "position": [
+        32,
+        0
+      ],
       "id": "75d082fb-9ac2-4470-aa3a-916832dc333e",
       "name": "If code == 0"
     },
@@ -108,7 +123,10 @@
       },
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
-      "position": [1152, 96],
+      "position": [
+        1152,
+        96
+      ],
       "id": "e6b8a392-fcda-4337-b1ce-6c937646d742",
       "name": "If code === 0"
     },
@@ -118,7 +136,10 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [480, 32],
+      "position": [
+        480,
+        32
+      ],
       "id": "67b803e2-feea-47c8-970a-64771873f6b1",
       "name": "Reduce to Record"
     },
@@ -139,7 +160,10 @@
       },
       "type": "n8n-nodes-base.dataTable",
       "typeVersion": 1.1,
-      "position": [256, 96],
+      "position": [
+        256,
+        96
+      ],
       "id": "5b0f4eae-0c3a-4c83-9eb9-7f13a2ef1fcf",
       "name": "Get Variable Rows"
     },
@@ -149,7 +173,10 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [-336, -16],
+      "position": [
+        -336,
+        -16
+      ],
       "id": "f01f74af-0205-4829-b665-4df09628326a",
       "name": "Code in JavaScript2"
     },
@@ -160,7 +187,10 @@
       },
       "type": "n8n-nodes-base.ssh",
       "typeVersion": 1,
-      "position": [-144, 0],
+      "position": [
+        -144,
+        0
+      ],
       "id": "8ddee327-ec28-47d7-aaa3-b3ad8a6b4b48",
       "name": "pnpm dupcheck",
       "credentials": {
@@ -173,12 +203,15 @@
     },
     {
       "parameters": {
-        "command": "=QWEN_CODE_UNATTENDED_RETRY=1 qwen -p \"There are duplicate code issues found when I run `pnpm dupcheck` that I need for you to fix\" --model {{ $json[\"model\"] }} --yolo",
+        "command": "=QWEN_CODE_UNATTENDED_RETRY=1 QWEN_CODE_SUPPRESS_YOLO_WARNING=1 qwen-am -p \"There are duplicate code issues found when I run `pnpm dupcheck` that I need for you to fix\" --model {{ $json[\"model\"] }} --yolo",
         "cwd": "={{ $('Code in JavaScript2').item.json.cwd }}"
       },
       "type": "n8n-nodes-base.ssh",
       "typeVersion": 1,
-      "position": [704, 32],
+      "position": [
+        704,
+        32
+      ],
       "id": "f12c6b10-3605-4746-b995-fd620e7bb1bc",
       "name": "CoPilot fix DupCheck",
       "credentials": {
@@ -196,7 +229,10 @@
       },
       "type": "n8n-nodes-base.ssh",
       "typeVersion": 1,
-      "position": [928, 32],
+      "position": [
+        928,
+        32
+      ],
       "id": "947a7a67-a775-44d7-9a73-860a1fb1e195",
       "name": "pnpm dupcheck (b)",
       "credentials": {
@@ -335,13 +371,13 @@
       ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1",
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "3c71304b-a214-49ec-bd75-495d1441e95d",
+  "versionId": "837b1032-e3f4-429a-8fec-098fa20dbb99",
   "meta": {
     "instanceId": "efe7529a89851410cd052ec9508b6ab889cd60c3aa7db04a996939ffa07fd21d"
   },

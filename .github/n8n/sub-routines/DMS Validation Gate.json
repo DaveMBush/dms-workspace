@@ -959,6 +959,80 @@
       ],
       "id": "853b4c9e-1603-4187-bb33-193eb47afb21",
       "name": "If2"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{\n  Project: \"scripts\",\n  Executor: \"lint\",\n  cwd: $('CWD').first().json.cwd\n}]"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -672,
+        -752
+      ],
+      "id": "7d81cab5-e245-416d-b992-513785da9136",
+      "name": "Server:Build parameters1"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "cyajXDFXKwu7HIlO",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/cyajXDFXKwu7HIlO",
+          "cachedResultName": "DMS Electron Build, Lint, Test Validation"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -480,
+        -752
+      ],
+      "id": "b5d9c917-759d-4b77-a9ca-06e46ad1f416",
+      "name": "Call 'DMS Electron Build, Lint, Test Validation'11"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "df007bc8-7a0f-4242-9ffd-5ed5c871fcdc",
+              "leftValue": "={{ $json.result }}",
+              "rightValue": "pass",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -272,
+        -752
+      ],
+      "id": "075ef288-1f65-47f0-8864-b26839176b8e",
+      "name": "If19"
     }
   ],
   "pinData": {},
@@ -967,7 +1041,7 @@
       "main": [
         [
           {
-            "node": "Server:Build parameters",
+            "node": "Server:Build parameters1",
             "type": "main",
             "index": 0
           }
@@ -1480,6 +1554,46 @@
           }
         ]
       ]
+    },
+    "Server:Build parameters1": {
+      "main": [
+        [
+          {
+            "node": "Call 'DMS Electron Build, Lint, Test Validation'11",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'DMS Electron Build, Lint, Test Validation'11": {
+      "main": [
+        [
+          {
+            "node": "If19",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If19": {
+      "main": [
+        [
+          {
+            "node": "Server:Build parameters",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "pnpm format",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
@@ -1488,7 +1602,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "141cb127-960a-420f-bad8-31abe07c3a72",
+  "versionId": "c365e8d1-d505-478d-8198-302a021946ec",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "efe7529a89851410cd052ec9508b6ab889cd60c3aa7db04a996939ffa07fd21d"

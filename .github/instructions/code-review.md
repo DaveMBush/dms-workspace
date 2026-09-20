@@ -6,11 +6,15 @@ excludeAgent: ['coding-agent']
 
 # Generic Code Review Instructions
 
-Comprehensive code review guidelines for GitHub Copilot that can be adapted to any project. These instructions follow best practices from prompt engineering and provide a structured approach to code quality, security, testing, and architecture review.
+Comprehensive code review guidelines that can be adapted to any project. These instructions follow best practices from prompt engineering and provide a structured approach to code quality, security, testing, and architecture review.
 
 ## Review Language
 
 When performing a code review, respond in **English**.
+
+## Sub Agents
+
+Whenever possible, use sequenial sub-agents to break down the review process into smaller, manageable tasks and reduce excessive context in a single review.
 
 ## Review Priorities
 

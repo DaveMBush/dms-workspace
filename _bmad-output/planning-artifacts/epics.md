@@ -89,3 +89,60 @@ So that the app models a single income concept per the PRD glossary and AD-7.
 **Then** the Postgres seed no longer creates a "Return of Capital" `divDepositType`
 **And** the `docs/data-models.md` deposit-type example no longer lists "Return of Capital"
 **And** no remaining code path, spec, or UI string treats Return of Capital as a distinct deposit type
+
+---
+
+> Epic 3 is generated from `.github/epic-descriptions/epics-2026-09-19.md` (a later source file than the one above).
+> Context docs cited: ARCHITECTURE-SPINE (ADs), PRD (FRs).
+
+## Epic 3: Table Layout Improvements — div-based mat-table conversion
+
+Epic 1 converted `dms-base-table` to `<table mat-table>` (native table element + Material directive) but kept native sticky headers, and existing unit/e2e tests that asserted the native `<table>`/`<tr>`/`<td>` markup forced it back away from divs. This Epic completes the conversion to Material's **div-based** custom-element syntax (`<mat-table>`, `<mat-header-cell>`, `<mat-cell>`, `<mat-row>`) so the table renders as a single standard `mat-table` of `<div>`s with natively sticky headers — removing the native-table sticky-header quirks and any residual two-region workaround. The existing tests that assert the old native markup are updated (or skipped) to target the div-based format, so they no longer force the implementation back to tables.
+
+**ADs covered:** AD-4
+**FRs covered:** FR-2, FR-3, FR-4, FR-5, FR-7
+
+### Story 3.1: Unit tests for the div-based mat-table conversion
+
+As a developer,
+I want red-phase unit-test assertions that `BaseTableComponent` renders Material's **div-based** `<mat-table>` markup (no native `<table>`/`<th>`/`<td>`/`<tr>` elements) while preserving the load-bearing `.dms-*` classes, ARIA roles, and `data-column` attributes,
+So that Story 3.2 has a defined contract to make pass when it converts the template from Epic 1's `<table mat-table>` element form to the div-based custom-element syntax.
+
+**Acceptance Criteria:**
+
+**Given** the `BaseTableComponent` is rendered in the Angular test harness with Epic 1's `<table mat-table>` template
+**When** the unit-test suite for `base-table-mat-table.spec.ts` runs
+**Then** it asserts a div-based Material table (`mat-table[role="table"]` / `.mat-mdc-table`) exists inside the viewport and that native `table`/`th`/`td`/`tr` elements are absent from the component DOM
+**And** it asserts the load-bearing selectors survive: `.dms-header-cell[role="columnheader"][data-column]`, `.dms-body-row[role="row"]`, `.dms-body-cell[data-column]`
+**And** it asserts the column-header row computes to a sticky position so it pins above the viewport body
+**And** every div-based assertion is marked `it.skip` (red-phase by skip) while the existing class/role/data-column assertions stay unskipped and green
+
+### Story 3.2: Convert DMS BaseTable to div-based mat-table
+
+As a developer,
+I want `BaseTableComponent`'s template converted from Epic 1's `<table mat-table>` element form (native `<table>`/`<th>`/`<td>`/`<tr>`) to Material's **div-based** custom-element syntax (`<mat-table>`, `<mat-header-cell>`, `<mat-cell>`, `<mat-row>`),
+So that the table renders as a single standard `mat-table` of `<div>`s with natively sticky headers — removing the native-table sticky-header quirks and any residual two-region workaround — while every load-bearing `.dms-*` class, ARIA role, `data-column` attribute, and event binding is preserved so existing unit tests and ~50 consumer e2e specs keep passing.
+
+**Acceptance Criteria:**
+
+**Given** the current `apps/dms-material/src/app/shared/components/base-table/base-table.component.html` uses `<table mat-table>` with native `<th>`/`<td>`/`<tr>` elements
+**When** it is converted to the div-based Material syntax (`<mat-table>`, `<mat-header-cell>`, `<mat-cell>`, `<mat-row>`)
+**Then** no native `<table>`/`<th>`/`<td>`/`<tr>` elements remain in the template and every attribute, binding, class, event, `data-column`, and ARIA role is preserved exactly
+**And** Material's host-bound roles (`role="columnheader"`, `role="row"`) are intact on the div-based elements so `.dms-header-cell[role="columnheader"]` / `.dms-body-row[role="row"]` still resolve
+**And** the SCSS native-element selector (`.dms-table-body table.mat-mdc-table`) is updated to target `<mat-table>` and any residual two-region sticky CSS is removed — Material's native sticky headers own pinning
+**And** Story 3.1's red-phase unit assertions are unskipped and green, and the project builds cleanly
+
+### Story 3.3: E2E test for the div-based mat-table layout
+
+As a user,
+I want the data tables to render and interact correctly after the **div-based** `mat-table` conversion (Story 3.2),
+So that I can sort, select, scroll, and inline-edit in every table surface without regressions — with a fresh e2e spec proving the div-based layout works end-to-end, and the handful of consumer specs that still target native `<table>`/`<tr>`/`<td>` selectors updated to the new markup.
+
+**Acceptance Criteria:**
+
+**Given** the app is running and a table surface (open-positions or global-universe) is loaded with seeded data
+**When** the Playwright e2e suite drives the div-based table
+**Then** the `.mat-mdc-table` container renders inside the viewport with NO native `<table>` element, body rows are `[role="row"].dms-body-row`, and header cells are `[role="columnheader"].dms-header-cell`
+**And** scrolling keeps the column-header row pinned above the body (Material's native sticky headers) while virtual scroll renders additional rows
+**And** sorting toggles direction with the rank badge, and selection toggles row state
+**And** the four consumer specs that still target native-table selectors (`open-positions`, `symbol-filter-header`, `base-table-layout-regression` header selector, `universe-table-workflows`) are updated to div-based equivalents, while the ~50 class/role-based consumer specs and the `dms-base-table` host-selector specs pass unchanged
