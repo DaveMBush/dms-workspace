@@ -11,6 +11,25 @@ and leaves the story at `Status: review` for the human/adversarial review
 step. Closing the story (`done`) is NOT this run's job — only a reviewer does
 that later.
 
+## Architecture: orchestrator + sequential sub-agents
+
+This run is an ORCHESTRATOR with a limited context window. It keeps only
+contract-critical state in its own context (story status, task list, per-task
+summaries) and delegates each implementation task to ONE sub-agent at a time —
+**sequential sub-agents, never in parallel**. Each sub-agent gets a fresh
+context containing exactly what that one task needs; when it returns, its
+context is discarded. The orchestrator NEVER implements code itself: no
+writing or editing source or test files directly.
+
+Division of labor:
+
+- **Orchestrator (this run):** status flips, git commits/pushes, story file
+  edits (checkboxes, Dev Agent Record), quality gate runs, final report.
+- **Sub-agent (one per task attempt):** reads the files its task needs,
+  writes/edits code and tests for that one task only, runs targeted tests,
+  returns a structured summary. Never commits, never touches git, never edits
+  the story file.
+
 ## Inputs
 
 | Input                                      | Location                                                                        |
@@ -71,23 +90,20 @@ ends at `review`).
 
    If the push fails (network/auth), note it in Completion Notes List and
    continue — do not HALT on this.
-4. Load context on demand from the References section: architecture spine ADs,
-   coding standards, prior commits (`git show <sha>:<path>` is allowed — read
-   only), and any source files named in Dev Notes. Read what a task needs when
-   you reach that task; do not preload the whole repo.
-5. Implement tasks in exact written order, one at a time:
-   - **Red:** for each task/subtask, write or extend the failing tests first
-     (from the paired unit-test story's spec where it applies). Run them and
-     confirm they fail for the expected reason.
-   - **Green:** implement the minimal code to make those tests pass. Handle
-     error conditions and edge cases named in Dev Notes.
-   - **Refactor:** clean up while keeping tests green, following coding
-     standards and the ADs cited in Dev Notes.
-   - Run targeted tests for the touched project after each task before moving
-     on (`pnpm exec nx test <project>` or the story's own Task 5-style verify
-     step). Never proceed to the next task while a test is red.
-   - **Checkpoint:** once a task/subtask is green, mark its checkbox `[x]` in
-     the story file and commit + push everything (code + story file):
+4. For each unchecked task/subtask, in exact written order:
+   - Build the sub-agent brief from the template below: story path, the task's
+     text verbatim, the paired unit-test story's spec for that task (if any),
+     and the references/Dev Notes it needs. Nothing else.
+   - Launch ONE sub-agent with that brief. Wait for it to finish before
+     starting anything else — sequential sub-agents, never in parallel.
+   - On return: run the `testCommand` the sub-agent reported, yourself. If its
+     output contradicts a green result, or the summary is missing/incomplete,
+     treat the attempt as failed. A failed attempt means relaunching a NEW
+     sub-agent for the same task with the failure included in the brief — max
+     3 attempts per task/subtask; HALT on the next failure (see below).
+   - Once verified green: mark the checkbox `[x]` in the story file, append
+     the sub-agent's summary to the Dev Agent Record notes you are accumulating,
+     then commit + push everything (code + story file):
 
      ```bash
      git add -A
@@ -98,23 +114,66 @@ ends at `review`).
      A crashed run resumes from the last pushed checkpoint — checked tasks are
      never redone. If a push fails, note it in Completion Notes List and
      continue; do not HALT on this.
-6. When all tasks are checked, run the full quality gate: `pnpm all` (lint +
-   build + unit/integration tests with coverage + e2e for affected projects).
-   Fix failures and re-run until green or you hit a HALT condition below.
-7. Update the story file: mark every completed task/subtask `[x]`, fill in
-   Dev Agent Record (Agent Model Used, Completion Notes List — what was
-   actually implemented and tested plus any judgment calls with rationale,
-   File List — every new/modified/deleted path relative to repo root), and set
-   `Status:` to `review`. If a paired unit-test story was filled in this run,
-   do the same for it (its tests now exist and pass; it also ends at
-   `review`). Save.
-8. Print the final report (format below) as the last output of the run.
+5. When all tasks are checked, run the full quality gate yourself: `pnpm all`
+   (lint + build + unit/integration tests with coverage + e2e for affected
+   projects). If it fails, launch ONE sub-agent with the failing output and
+   the area to fix (same brief template; its "task" is the failure), re-run
+   the gate, repeat — max 3 full re-runs per root cause, then HALT. Never
+   proceed while red.
+6. Update the story file: mark every completed task/subtask `[x]`, fill in
+   Dev Agent Record (Agent Model Used, Completion Notes List — accumulated
+   sub-agent summaries plus any judgment calls with rationale, File List —
+   every new/modified/deleted path relative to repo root), and set `Status:`
+   to `review`. If a paired unit-test story was filled in this run, do the
+   same for it (its tests now exist and pass; it also ends at `review`). Save.
+7. Print the final report (format below) as the last output of the run.
+
+## Sub-agent brief template
+
+Every sub-agent receives exactly this — fill the placeholders, add nothing
+else:
+
+```text
+You are implementing ONE task of a larger story. Work only on this task — no
+other tasks, no refactors beyond it, no new dependencies.
+
+Story file: <path> — read its Dev Notes and References sections for context.
+Task (verbatim): <the task/subtask text from the story file>
+Test spec (if applicable): <the paired unit-test story's AC/tasks covering this task>
+Files you may touch: <files named by the task/Dev Notes; if none are named, only files this task requires>
+
+Rules:
+- Red first: where the task calls for tests, write or extend the failing
+  tests before implementing. Run them and confirm they fail for the expected
+  reason.
+- Green: implement the minimal code to make those tests pass. Handle error
+  conditions and edge cases named in Dev Notes.
+- Refactor only within this task's files, keeping tests green.
+- Run `pnpm exec nx test <project>` (or the story's own verify command) before
+  finishing; do not finish while red.
+- Small incremental writes — one file per write. Read files on demand; prefer
+  targeted grep over dumping large files.
+- Never skip, disable, or weaken an existing test (no `.skip`, `xit`, deleted
+  assertions). A pre-existing test broken by this change is a blocker to
+  report, not something to silence.
+- No git commands at all — no add/commit/push/log/show; read files directly.
+
+Return exactly:
+TASK RESULT
+status: green | red | blocked
+filesChanged: <paths relative to repo root>
+testCommand: <exact command you ran last>
+testResult: pass | fail (<one-line summary>)
+judgmentCalls: <bullets, or "none">
+blocker: <if status is red/blocked — exact error output summary and what was tried; otherwise omit this line>
+```
 
 ## HALT Conditions
 
 Stop implementing when any of these is true:
 
-- 3 consecutive failed attempts on the same task/subtask.
+- 3 consecutive failed attempts on the same task/subtask (each sub-agent
+  relaunch counts as one attempt).
 - A regression in an existing test that you cannot fix without changing
   behavior outside this story's scope.
 - The story requires a new dependency, schema migration, or configuration not
@@ -139,6 +198,9 @@ workarounds that bypass failing tests or quality gates.
 - Never ask a question. Never present a menu. Never wait for approval. Make
   every judgment call yourself using the story file + referenced documents;
   record each one in Completion Notes List with rationale.
+- The orchestrator never writes source or test files itself — all
+  implementation goes through sequential sub-agents, one at a time, waiting
+  for each to finish before launching the next. Never in parallel.
 - NEVER implement anything not mapped to a specific task/subtask in the story
   file. No extra features, no refactors beyond the tasks, no dependency adds.
 - Never skip, disable, or weaken an existing test (no `.skip`, `xit`, deleted
@@ -155,10 +217,9 @@ workarounds that bypass failing tests or quality gates.
 - Work only in the current directory (the story's working tree). All file
   writes are small and incremental — one file per write, no bulk multi-file
   dumps.
-- The model has limited context: work in small chunks, read files on demand,
-  prefer targeted grep/read over dumping large files. If you must delegate a
-  self-contained subtask to a sub-agent, run sub-agents sequentially, never in
-  parallel.
+- Context discipline: read the story file once; get per-task details from
+  sub-agent summaries rather than re-reading large files into your own
+  context.
 
 ## Final Report (always printed last)
 
@@ -186,13 +247,13 @@ Example shape (values below are illustrative only):
 ```text
 === DF2 FINAL REPORT ===
 {
-  "storyId": "1.2",
-  "title": "Convert DMS base table to Angular Material mat-table",
+  "storyId": "3.1",
+  "title": "Unit tests for the div-based mat-table conversion",
   "result": "review",
   "statusBefore": "ready-for-dev",
   "statusAfter": "review",
   "pairedUnitTestStory": null,
-  "filesChanged": ["apps/dms/src/app/components/base-table/base-table.component.ts"],
+  "filesChanged": ["apps/dms-material/src/app/shared/components/base-table/base-table-mat-table.spec.ts"],
   "qualityGate": {"command": "pnpm all", "passed": true},
   "notes": []
 }
