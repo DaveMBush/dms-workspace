@@ -171,6 +171,27 @@
     },
     {
       "parameters": {
+        "command": "=QWEN_CODE_UNATTENDED_RETRY=1 QWEN_CODE_SUPPRESS_YOLO_WARNING=1 qwen-am -p \"Read .github/instructions/finalize-story.md and follow it exactly for the story at _bmad-output/implementation-artifacts/stories/{{ $('Parse Story').item.json.nextStory.file }}. Work only in this directory. Never ask questions; complete everything in one run, then print the final report as specified.\" --model {{ $('Reduce to Record').item.json.model }} --yolo",
+        "cwd": "={{ $('Parse Worktree Location').item.json.worktreePath }}"
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        2560,
+        2112
+      ],
+      "id": "2ae33456-556b-4cc1-a241-2a7bd73dbdce",
+      "name": "Finalize Story",
+      "credentials": {
+        "sshPassword": {
+          "id": "2M7LU3ql52s8ShX2",
+          "name": "SSH Password account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
         "operation": "get",
         "dataTableId": {
           "__rl": true,
@@ -1174,7 +1195,7 @@
       "main": [
         [
           {
-            "node": "Parse Story Return",
+            "node": "Finalize Story",
             "type": "main",
             "index": 0
           }
@@ -1578,6 +1599,17 @@
         [
           {
             "node": "pnpm i",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Finalize Story": {
+      "main": [
+        [
+          {
+            "node": "Parse Story Return",
             "type": "main",
             "index": 0
           }
