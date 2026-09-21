@@ -240,6 +240,23 @@ describe('BaseTableComponent - mat-table behavior guards (Story 1.2)', () => {
     ).not.toBeNull();
   });
 
+  // Red-phase contract for Story 3.2's div-based conversion: skipped until the
+  // template renders <mat-table> (divs) instead of <table mat-table>. Under the
+  // current native <table> form, position:sticky on the header row is not
+  // guaranteed in jsdom, so this stays red-phase by skip.
+  redIt.skip('should apply position:sticky to the column-header row so headers stay visible while scrolling (AC #5, red-phase for Story 3.2)', async () => {
+    fixture.detectChanges();
+    // CDK virtual scroll delivers the rendered range on an animation frame; wait
+    // for a real rAF so the header row is in the DOM before asserting.
+    await nextFrame();
+    const el = fixture.nativeElement as HTMLElement;
+    const headerRow =
+      el.querySelector('tr.dms-column-header-row') ??
+      (el.querySelector('th[mat-header-cell]')?.closest('tr') ?? null);
+    expect(headerRow).not.toBeNull();
+    expect(getComputedStyle(headerRow as Element).position).toBe('sticky');
+  });
+
   it('should render one header cell per column with data-column and the column header text (AC #1, #8)', () => {
     fixture.detectChanges();
     const el = fixture.nativeElement as HTMLElement;
