@@ -6,7 +6,12 @@ import {
   TestBed,
   tick,
 } from '@angular/core/testing';
-import { vi } from 'vitest';
+// redIt: alias for vitest's own `it`, used ONLY for .skip() registrations. The
+// injected global `it` (zone.js-patched) silently drops `.skip()` calls, so a
+// skipped test written with the global would never register at all. Active tests
+// stay on the global `it`; importing vitest's `it` for an ACTIVE test breaks
+// ProxyZone under fakeAsync.
+import { it as redIt, vi } from 'vitest';
 import { BaseTableComponent } from './base-table.component';
 import type { ColumnDef } from './column-def.interface';
 
@@ -218,6 +223,21 @@ describe('BaseTableComponent - mat-table behavior guards (Story 1.2)', () => {
     expect(el.querySelector('.dms-table-header')).toBeNull();
     expect(el.querySelector('.dms-outer-scroller')).toBeNull();
     expect(el.querySelector('.dms-table-scroll-container')).toBeNull();
+  });
+
+  // Red-phase contract for Story 3.2's div-based conversion: skipped until the
+  // template renders <mat-table> (divs) instead of <table mat-table>.
+  redIt.skip('should render a div-based mat-table inside the cdk-virtual-scroll-viewport (AC #1, red-phase for Story 3.2)', async () => {
+    fixture.detectChanges();
+    // CDK virtual scroll delivers the rendered range on an animation frame; wait
+    // for a real rAF so the table is in the DOM before asserting.
+    await nextFrame();
+    const el = fixture.nativeElement as HTMLElement;
+    expect(
+      el.querySelector(
+        'cdk-virtual-scroll-viewport mat-table[role="table"], cdk-virtual-scroll-viewport .mat-mdc-table',
+      ),
+    ).not.toBeNull();
   });
 
   it('should render one header cell per column with data-column and the column header text (AC #1, #8)', () => {
