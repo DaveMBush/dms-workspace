@@ -1,3 +1,4 @@
+import { Component, Input } from '@angular/core';
 import {
   ComponentFixture,
   discardPeriodicTasks,
@@ -12,6 +13,7 @@ import {
 // stay on the global `it`; importing vitest's `it` for an ACTIVE test breaks
 // ProxyZone under fakeAsync.
 import { it as redIt, vi } from 'vitest';
+import type { SortColumn } from '../../services/sort-column.interface';
 import { BaseTableComponent } from './base-table.component';
 import type { ColumnDef } from './column-def.interface';
 
@@ -227,6 +229,7 @@ describe('BaseTableComponent - mat-table behavior guards (Story 1.2)', () => {
 
   // Red-phase contract for Story 3.2's div-based conversion: skipped until the
   // template renders <mat-table> (divs) instead of <table mat-table>.
+  // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
   redIt.skip('should render a div-based mat-table inside the cdk-virtual-scroll-viewport (AC #1, red-phase for Story 3.2)', async () => {
     fixture.detectChanges();
     // CDK virtual scroll delivers the rendered range on an animation frame; wait
@@ -244,6 +247,7 @@ describe('BaseTableComponent - mat-table behavior guards (Story 1.2)', () => {
   // template renders <mat-table> (divs) instead of <table mat-table>. Under the
   // current native <table> form, position:sticky on the header row is not
   // guaranteed in jsdom, so this stays red-phase by skip.
+  // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
   redIt.skip('should apply position:sticky to the column-header row so headers stay visible while scrolling (AC #5, red-phase for Story 3.2)', async () => {
     fixture.detectChanges();
     // CDK virtual scroll delivers the rendered range on an animation frame; wait
@@ -254,7 +258,7 @@ describe('BaseTableComponent - mat-table behavior guards (Story 1.2)', () => {
       el.querySelector('tr.dms-column-header-row') ??
       (el.querySelector('th[mat-header-cell]')?.closest('tr') ?? null);
     expect(headerRow).not.toBeNull();
-    expect(getComputedStyle(headerRow as Element).position).toBe('sticky');
+    expect(getComputedStyle(headerRow!).position).toBe('sticky');
   });
 
   it('should render one header cell per column with data-column and the column header text (AC #1, #8)', () => {
@@ -323,5 +327,116 @@ describe('BaseTableComponent - mat-table behavior guards (Story 1.2)', () => {
     fixture.detectChanges();
     const el = fixture.nativeElement as HTMLElement;
     expect(el.querySelector('th input[type="checkbox"]')).not.toBeNull();
+  });
+});
+
+// Host harness for the TemplateRef-based inputs (Story 3.1, Task 3). The
+// component reads cellTemplate/filterRowTemplate via @ContentChild, so they
+// must be projected as <ng-template> content — a plain [input] binding cannot
+// carry a TemplateRef. This mirrors how real consumers (e.g. open-positions)
+// use the table.
+interface HostTableRow {
+  id: string;
+  name?: string;
+}
+
+@Component({
+  selector: 'dms-test-base-table-host',
+  // BaseTableComponent must be in the host's own imports: TestBed.configureTestingModule
+  // does not make a component known to another component's template.
+  imports: [BaseTableComponent],
+  template: `
+    <dms-base-table
+      [columns]="columns"
+      [data]="data"
+      [selectable]="selectable"
+      [multiSelect]="multiSelect"
+      [sortColumns]="sortColumns"
+    >
+      <ng-template #cellTemplate let-row let-column="column">
+        {{ row[column.field] }}-custom
+      </ng-template>
+      <ng-template #filterRowTemplate let-col>
+        {{ col.header }} filter
+      </ng-template>
+    </dms-base-table>
+  `,
+})
+class TestHostComponent {
+  @Input() columns: ColumnDef[] = [];
+  @Input() data: HostTableRow[] = [];
+  @Input() selectable = false;
+  @Input() multiSelect = true;
+  @Input() sortColumns: SortColumn[] = [];
+}
+
+describe('BaseTableComponent - host harness with TemplateRef inputs (Story 3.1, Task 3)', () => {
+  let fixture: ComponentFixture<TestHostComponent>;
+
+  const columns: ColumnDef[] = [
+    { field: 'name', header: 'Name' },
+    { field: 'value', header: 'Value' },
+  ];
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [BaseTableComponent, TestHostComponent],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(TestHostComponent);
+    // Render the host template once so <dms-base-table> (and its static
+    // cdk-virtual-scroll-viewport) exist in the DOM.
+    fixture.detectChanges();
+    // jsdom has no layout engine, so the cdk-virtual-scroll-viewport reports a
+    // zero clientHeight and CDK renders no body rows. Give it a real height (as
+    // in the sibling describe) before change detection so *matRowDef body rows
+    // are created for the custom-cell assertions. The viewport host is static,
+    // so it exists after that first render pass.
+    const viewportEl = fixture.nativeElement.querySelector(
+      'cdk-virtual-scroll-viewport',
+    );
+    Object.defineProperty(viewportEl, 'clientHeight', {
+      configurable: true,
+      value: 570,
+    });
+  });
+
+  it('should render custom cell content via the provided cellTemplate', async () => {
+    const host = fixture.componentInstance;
+    host.columns = columns;
+    host.data = [{ id: '1', name: 'Row One' }];
+    fixture.detectChanges();
+    // CDK virtual scroll delivers the rendered range on an animation frame; wait
+    // for a real rAF so the *matRowDef body row (with its custom cell content) is
+    // in the DOM before asserting.
+    await nextFrame();
+    fixture.detectChanges();
+    const el = fixture.nativeElement as HTMLElement;
+    const nameCell = el.querySelector('td[data-column="name"]');
+    expect(nameCell).not.toBeNull();
+    // The projected #cellTemplate renders "<value>-custom", proving the custom
+    // template replaced the default per-type rendering.
+    expect((nameCell as HTMLElement).textContent?.trim()).toBe(
+      'Row One-custom',
+    );
+  });
+
+  it('should render filter inputs in the filter row when filterRowTemplate is set', async () => {
+    const host = fixture.componentInstance;
+    host.columns = columns;
+    host.data = [{ id: '1', name: 'Row One' }];
+    fixture.detectChanges();
+    // The filter row is a header row (*matHeaderRowDef) and renders without
+    // virtual scroll, but wait one frame to be safe.
+    await nextFrame();
+    fixture.detectChanges();
+    const el = fixture.nativeElement as HTMLElement;
+    const filterRow = el.querySelector('tr.dms-filter-row');
+    expect(filterRow).not.toBeNull();
+    // The projected #filterRowTemplate renders "<header> filter" per column, so
+    // the first column's filter cell carries "Name filter".
+    expect((filterRow as HTMLElement).textContent?.trim()).toContain(
+      'Name filter',
+    );
   });
 });
