@@ -261,13 +261,16 @@ describe('BaseTableComponent - mat-table behavior guards (Story 1.2)', () => {
     fixture.detectChanges();
     await nextFrame();
     const el = fixture.nativeElement as HTMLElement;
-    // Header cells are selected by class + data-column, not element type.
-    expect(el.querySelector('.dms-header-cell[data-column="name"]')).not.toBeNull();
+    // Header cells resolve via class + ARIA role + data-column, not element type.
+    expect(el.querySelectorAll('.dms-header-cell[role="columnheader"][data-column]')).not.toHaveLength(0);
+    expect(el.querySelector('.dms-header-cell[role="columnheader"][data-column="name"]')).not.toBeNull();
+    expect(el.querySelector('.dms-header-cell[role="columnheader"][data-column="value"]')).not.toBeNull();
     // Body rows keep role=row and the stable .dms-body-row class.
     const row = el.querySelector('.dms-body-row[role="row"]');
     expect(row).not.toBeNull();
-    // Each body cell keeps its data-column attribute.
-    expect((row as HTMLElement).querySelector('[data-column="name"]')).not.toBeNull();
+    // Each body cell keeps its data-column attribute on a .dms-body-cell element.
+    expect(el.querySelector('.dms-body-cell[data-column="name"]')).not.toBeNull();
+    expect((row as HTMLElement).querySelector('.dms-body-cell[data-column="name"]')).not.toBeNull();
   });
 
   it('should render one header cell per column with data-column and the column header text (AC #1, #8)', () => {
@@ -445,7 +448,7 @@ describe('BaseTableComponent - host harness with TemplateRef inputs (Story 3.1, 
     await nextFrame();
     fixture.detectChanges();
     const el = fixture.nativeElement as HTMLElement;
-    const nameCell = el.querySelector('td[data-column="name"]');
+    const nameCell = el.querySelector('.dms-body-cell[data-column="name"]');
     expect(nameCell).not.toBeNull();
     // The projected #cellTemplate renders "<value>-custom", proving the custom
     // template replaced the default per-type rendering.
@@ -464,7 +467,7 @@ describe('BaseTableComponent - host harness with TemplateRef inputs (Story 3.1, 
     await nextFrame();
     fixture.detectChanges();
     const el = fixture.nativeElement as HTMLElement;
-    const filterRow = el.querySelector('tr.dms-filter-row');
+    const filterRow = el.querySelector('.dms-filter-row[role="row"]');
     expect(filterRow).not.toBeNull();
     // The projected #filterRowTemplate renders "<header> filter" per column, so
     // the first column's filter cell carries "Name filter".
