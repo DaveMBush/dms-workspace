@@ -203,75 +203,106 @@ describe('BaseTableComponent - mat-table behavior guards (Story 1.2)', () => {
   // Red-phase contract for Story 3.2's div-based conversion: skipped until the
   // template renders <mat-table> (divs) instead of <table mat-table>.
   // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
-  redIt.skip('should render a div-based mat-table inside the cdk-virtual-scroll-viewport (AC #1, red-phase for Story 3.2)', async () => {
-    fixture.detectChanges();
-    // CDK virtual scroll delivers the rendered range on an animation frame; wait
-    // for a real rAF so the table is in the DOM before asserting.
-    await nextFrame();
-    const el = fixture.nativeElement as HTMLElement;
-    expect(
-      el.querySelector(
-        'cdk-virtual-scroll-viewport mat-table[role="table"], cdk-virtual-scroll-viewport .mat-mdc-table',
-      ),
-    ).not.toBeNull();
-  });
+  redIt.skip(
+    'should render a div-based mat-table inside the cdk-virtual-scroll-viewport (AC #1, red-phase for Story 3.2)',
+    async () => {
+      fixture.detectChanges();
+      // CDK virtual scroll delivers the rendered range on an animation frame; wait
+      // for a real rAF so the table is in the DOM before asserting.
+      await nextFrame();
+      const el = fixture.nativeElement as HTMLElement;
+      expect(
+        el.querySelector(
+          'cdk-virtual-scroll-viewport mat-table[role="table"], cdk-virtual-scroll-viewport .mat-mdc-table',
+        ),
+      ).not.toBeNull();
+    },
+  );
 
   // Red-phase contract for Story 3.2's div-based conversion: skipped until the
   // template renders <mat-table> (divs) instead of <table mat-table>. Under the
   // current native <table> form, position:sticky on the header row is not
   // guaranteed in jsdom, so this stays red-phase by skip.
   // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
-  redIt.skip('should apply position:sticky to the column-header row so headers stay visible while scrolling (AC #5, red-phase for Story 3.2)', async () => {
-    fixture.detectChanges();
-    // CDK virtual scroll delivers the rendered range on an animation frame; wait
-    // for a real rAF so the header row is in the DOM before asserting.
-    await nextFrame();
-    const el = fixture.nativeElement as HTMLElement;
-    const headerRow =
-      el.querySelector('tr.dms-column-header-row') ??
-      (el.querySelector('th[mat-header-cell]')?.closest('tr') ?? null);
-    expect(headerRow).not.toBeNull();
-    expect(getComputedStyle(headerRow!).position).toBe('sticky');
-  });
+  redIt.skip(
+    'should apply position:sticky to the column-header row so headers stay visible while scrolling (AC #5, red-phase for Story 3.2)',
+    async () => {
+      fixture.detectChanges();
+      // CDK virtual scroll delivers the rendered range on an animation frame; wait
+      // for a real rAF so the header row is in the DOM before asserting.
+      await nextFrame();
+      const el = fixture.nativeElement as HTMLElement;
+      const headerRow =
+        el.querySelector('tr.dms-column-header-row') ??
+        el.querySelector('th[mat-header-cell]')?.closest('tr') ??
+        null;
+      expect(headerRow).not.toBeNull();
+      expect(getComputedStyle(headerRow!).position).toBe('sticky');
+    },
+  );
 
   // Red-phase contract for Story 3.2's div-based conversion: skipped until the
   // template renders <mat-table> (divs) instead of <table mat-table>. Under the
   // current native <table> form these elements are present, so this stays red.
   // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
-  redIt.skip('should not render any native table elements (AC #2)', async () => {
-    fixture.detectChanges();
-    // CDK virtual scroll delivers the rendered range on an animation frame; wait
-    // for a real rAF so the body row + cells are in the DOM before asserting.
-    await nextFrame();
-    const el = fixture.nativeElement as HTMLElement;
-    expect(el.querySelector('table')).toBeNull();
-    expect(el.querySelector('th')).toBeNull();
-    expect(el.querySelector('td')).toBeNull();
-    expect(el.querySelector('thead')).toBeNull();
-    expect(el.querySelector('tbody')).toBeNull();
-    expect(el.querySelector('tr')).toBeNull();
-  });
+  redIt.skip(
+    'should not render any native table elements (AC #2)',
+    async () => {
+      fixture.detectChanges();
+      // CDK virtual scroll delivers the rendered range on an animation frame; wait
+      // for a real rAF so the body row + cells are in the DOM before asserting.
+      await nextFrame();
+      const el = fixture.nativeElement as HTMLElement;
+      expect(el.querySelector('table')).toBeNull();
+      expect(el.querySelector('th')).toBeNull();
+      expect(el.querySelector('td')).toBeNull();
+      expect(el.querySelector('thead')).toBeNull();
+      expect(el.querySelector('tbody')).toBeNull();
+      expect(el.querySelector('tr')).toBeNull();
+    },
+  );
 
   // Red-phase contract for Story 3.2's div-based conversion: skipped until the
   // template renders <mat-table> (divs) instead of <table mat-table>. These are
   // the stable selectors that must survive the conversion; they pass under both
   // forms, so this stays red only to pin them for Story 3.2's GREEN phase.
   // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
-  redIt.skip('should keep stable selectors working after the div-based conversion (AC #3)', async () => {
-    fixture.detectChanges();
-    await nextFrame();
-    const el = fixture.nativeElement as HTMLElement;
-    // Header cells resolve via class + ARIA role + data-column, not element type.
-    expect(el.querySelectorAll('.dms-header-cell[role="columnheader"][data-column]')).not.toHaveLength(0);
-    expect(el.querySelector('.dms-header-cell[role="columnheader"][data-column="name"]')).not.toBeNull();
-    expect(el.querySelector('.dms-header-cell[role="columnheader"][data-column="value"]')).not.toBeNull();
-    // Body rows keep role=row and the stable .dms-body-row class.
-    const row = el.querySelector('.dms-body-row[role="row"]');
-    expect(row).not.toBeNull();
-    // Each body cell keeps its data-column attribute on a .dms-body-cell element.
-    expect(el.querySelector('.dms-body-cell[data-column="name"]')).not.toBeNull();
-    expect((row as HTMLElement).querySelector('.dms-body-cell[data-column="name"]')).not.toBeNull();
-  });
+  redIt.skip(
+    'should keep stable selectors working after the div-based conversion (AC #3)',
+    async () => {
+      fixture.detectChanges();
+      await nextFrame();
+      const el = fixture.nativeElement as HTMLElement;
+      // Header cells resolve via class + ARIA role + data-column, not element type.
+      expect(
+        el.querySelectorAll(
+          '.dms-header-cell[role="columnheader"][data-column]',
+        ),
+      ).not.toHaveLength(0);
+      expect(
+        el.querySelector(
+          '.dms-header-cell[role="columnheader"][data-column="name"]',
+        ),
+      ).not.toBeNull();
+      expect(
+        el.querySelector(
+          '.dms-header-cell[role="columnheader"][data-column="value"]',
+        ),
+      ).not.toBeNull();
+      // Body rows keep role=row and the stable .dms-body-row class.
+      const row = el.querySelector('.dms-body-row[role="row"]');
+      expect(row).not.toBeNull();
+      // Each body cell keeps its data-column attribute on a .dms-body-cell element.
+      expect(
+        el.querySelector('.dms-body-cell[data-column="name"]'),
+      ).not.toBeNull();
+      expect(
+        (row as HTMLElement).querySelector(
+          '.dms-body-cell[data-column="name"]',
+        ),
+      ).not.toBeNull();
+    },
+  );
 
   it('should render one header cell per column with data-column and the column header text (AC #1, #8)', () => {
     fixture.detectChanges();
@@ -282,7 +313,9 @@ describe('BaseTableComponent - mat-table behavior guards (Story 1.2)', () => {
     const nameHeader = el.querySelector('.dms-header-cell[data-column="name"]');
     expect(nameHeader).not.toBeNull();
     expect((nameHeader as HTMLElement).textContent?.trim()).toBe('Name');
-    const valueHeader = el.querySelector('.dms-header-cell[data-column="value"]');
+    const valueHeader = el.querySelector(
+      '.dms-header-cell[data-column="value"]',
+    );
     expect(valueHeader).not.toBeNull();
     expect((valueHeader as HTMLElement).textContent?.trim()).toBe('Value');
   });
@@ -325,7 +358,9 @@ describe('BaseTableComponent - mat-table behavior guards (Story 1.2)', () => {
     // Select by the stable .dms-header-cell class + data-column attribute so this
     // guard survives Story 3.2's div-based conversion (the <th> element type is not
     // guaranteed to remain). The click handler binds to the cell regardless of tag.
-    const nameHeader = el.querySelector('.dms-header-cell[data-column="name"]')!;
+    const nameHeader = el.querySelector(
+      '.dms-header-cell[data-column="name"]',
+    )!;
     expect(nameHeader).not.toBeNull();
     nameHeader.click();
     expect(spy).toHaveBeenCalledWith({ active: 'name', direction: 'asc' });
@@ -358,7 +393,9 @@ describe('BaseTableComponent - mat-table behavior guards (Story 1.2)', () => {
     // guaranteed to remain). Scoping to the column-header row also excludes the
     // separate filter row, which has no checkbox.
     expect(
-      el.querySelector('.dms-column-header-row[role="row"] input[type="checkbox"]'),
+      el.querySelector(
+        '.dms-column-header-row[role="row"] input[type="checkbox"]',
+      ),
     ).not.toBeNull();
   });
 });
@@ -374,10 +411,10 @@ interface HostTableRow {
 }
 
 @Component({
-  // Test-only host; selector uses the app "dmb" prefix so @angular-eslint/
+  // Test-only host; selector uses the app "dms" prefix so @angular-eslint/
   // component-selector passes (the **/*.spec.ts override does not relax it).
   // Instantiated by class reference, never by this string.
-  selector: 'dmb-test-base-table-host',
+  selector: 'dms-test-base-table-host',
   // BaseTableComponent must be in the host's own imports: TestBed.configureTestingModule
   // does not make a component known to another component's template.
   imports: [BaseTableComponent],
