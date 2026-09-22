@@ -200,101 +200,85 @@ describe('BaseTableComponent - mat-table behavior guards (Story 1.2)', () => {
   // table directive applies these), so this is a guard pinning that the
   // viewport-wrapped table survives Tasks 1–2, not a red-phase failure. The
   // genuinely-red assertions for the div conversion are AC #2 and AC #5 below.
-  it(
-    'should render a div-based mat-table inside the cdk-virtual-scroll-viewport (AC #1, red-phase for Story 3.2)',
-    async () => {
-      fixture.detectChanges();
-      // CDK virtual scroll delivers the rendered range on an animation frame; wait
-      // for a real rAF so the table is in the DOM before asserting.
-      await nextFrame();
-      const el = fixture.nativeElement as HTMLElement;
-      expect(
-        el.querySelector(
-          'cdk-virtual-scroll-viewport mat-table[role="table"], cdk-virtual-scroll-viewport .mat-mdc-table',
-        ),
-      ).not.toBeNull();
-    },
-  );
+  it('should render a div-based mat-table inside the cdk-virtual-scroll-viewport (AC #1, red-phase for Story 3.2)', async () => {
+    fixture.detectChanges();
+    // CDK virtual scroll delivers the rendered range on an animation frame; wait
+    // for a real rAF so the table is in the DOM before asserting.
+    await nextFrame();
+    const el = fixture.nativeElement as HTMLElement;
+    expect(
+      el.querySelector(
+        'cdk-virtual-scroll-viewport mat-table[role="table"], cdk-virtual-scroll-viewport .mat-mdc-table',
+      ),
+    ).not.toBeNull();
+  });
 
   // Red-phase contract for Story 3.2's div-based conversion: unskipped in Task 0;
   // fails against the current <table mat-table> template until Tasks 1–2 convert it.
-  it(
-    'should apply position:sticky to the column-header row so headers stay visible while scrolling (AC #5, red-phase for Story 3.2)',
-    async () => {
-      fixture.detectChanges();
-      // CDK virtual scroll delivers the rendered range on an animation frame; wait
-      // for a real rAF so the header row is in the DOM before asserting.
-      await nextFrame();
-      const el = fixture.nativeElement as HTMLElement;
-      // Structure-agnostic locator: div-based mat-table renders <mat-header-row>,
-      // not a native <tr>; the class is the stable contract (Story 3.2 Task 3.2).
-      const headerRow = el.querySelector('.dms-column-header-row');
-      expect(headerRow).not.toBeNull();
-      expect(getComputedStyle(headerRow!).position).toBe('sticky');
-    },
-  );
+  it('should apply position:sticky to the column-header row so headers stay visible while scrolling (AC #5, red-phase for Story 3.2)', async () => {
+    fixture.detectChanges();
+    // CDK virtual scroll delivers the rendered range on an animation frame; wait
+    // for a real rAF so the header row is in the DOM before asserting.
+    await nextFrame();
+    const el = fixture.nativeElement as HTMLElement;
+    // Structure-agnostic locator: div-based mat-table renders <mat-header-row>,
+    // not a native <tr>; the class is the stable contract (Story 3.2 Task 3.2).
+    const headerRow = el.querySelector('.dms-column-header-row');
+    expect(headerRow).not.toBeNull();
+    expect(getComputedStyle(headerRow!).position).toBe('sticky');
+  });
 
   // Red-phase contract for Story 3.2's div-based conversion: unskipped in Task 0;
   // fails against the current <table mat-table> template until Tasks 1–2 convert it.
-  it(
-    'should not render any native table elements (AC #2)',
-    async () => {
-      fixture.detectChanges();
-      // CDK virtual scroll delivers the rendered range on an animation frame; wait
-      // for a real rAF so the body row + cells are in the DOM before asserting.
-      await nextFrame();
-      const el = fixture.nativeElement as HTMLElement;
-      expect(el.querySelector('table')).toBeNull();
-      expect(el.querySelector('th')).toBeNull();
-      expect(el.querySelector('td')).toBeNull();
-      expect(el.querySelector('thead')).toBeNull();
-      expect(el.querySelector('tbody')).toBeNull();
-      expect(el.querySelector('tr')).toBeNull();
-    },
-  );
+  it('should not render any native table elements (AC #2)', async () => {
+    fixture.detectChanges();
+    // CDK virtual scroll delivers the rendered range on an animation frame; wait
+    // for a real rAF so the body row + cells are in the DOM before asserting.
+    await nextFrame();
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('table')).toBeNull();
+    expect(el.querySelector('th')).toBeNull();
+    expect(el.querySelector('td')).toBeNull();
+    expect(el.querySelector('thead')).toBeNull();
+    expect(el.querySelector('tbody')).toBeNull();
+    expect(el.querySelector('tr')).toBeNull();
+  });
 
   // Red-phase contract for Story 3.2's div-based conversion: unskipped in Task 0;
   // pins the stable class/role/data-column selectors that must survive Tasks 1–2.
-  it(
-    'should keep stable selectors working after the div-based conversion (AC #3)',
-    async () => {
-      fixture.detectChanges();
-      await nextFrame();
-      // CDK virtual scroll renders body rows on rAF; a second change-detection
-      // pass flushes their [attr.data-column] bindings onto the freshly created
-      // cells before we assert. (Matches the sibling "body row" guard.)
-      fixture.detectChanges();
-      const el = fixture.nativeElement as HTMLElement;
-      // Header cells resolve via class + ARIA role + data-column, not element type.
-      expect(
-        el.querySelectorAll(
-          '.dms-header-cell[role="columnheader"][data-column]',
-        ),
-      ).not.toHaveLength(0);
-      expect(
-        el.querySelector(
-          '.dms-header-cell[role="columnheader"][data-column="name"]',
-        ),
-      ).not.toBeNull();
-      expect(
-        el.querySelector(
-          '.dms-header-cell[role="columnheader"][data-column="value"]',
-        ),
-      ).not.toBeNull();
-      // Body rows keep role=row and the stable .dms-body-row class.
-      const row = el.querySelector('.dms-body-row[role="row"]');
-      expect(row).not.toBeNull();
-      // Each body cell keeps its data-column attribute on a .dms-body-cell element.
-      expect(
-        el.querySelector('.dms-body-cell[data-column="name"]'),
-      ).not.toBeNull();
-      expect(
-        (row as HTMLElement).querySelector(
-          '.dms-body-cell[data-column="name"]',
-        ),
-      ).not.toBeNull();
-    },
-  );
+  it('should keep stable selectors working after the div-based conversion (AC #3)', async () => {
+    fixture.detectChanges();
+    await nextFrame();
+    // CDK virtual scroll renders body rows on rAF; a second change-detection
+    // pass flushes their [attr.data-column] bindings onto the freshly created
+    // cells before we assert. (Matches the sibling "body row" guard.)
+    fixture.detectChanges();
+    const el = fixture.nativeElement as HTMLElement;
+    // Header cells resolve via class + ARIA role + data-column, not element type.
+    expect(
+      el.querySelectorAll('.dms-header-cell[role="columnheader"][data-column]'),
+    ).not.toHaveLength(0);
+    expect(
+      el.querySelector(
+        '.dms-header-cell[role="columnheader"][data-column="name"]',
+      ),
+    ).not.toBeNull();
+    expect(
+      el.querySelector(
+        '.dms-header-cell[role="columnheader"][data-column="value"]',
+      ),
+    ).not.toBeNull();
+    // Body rows keep role=row and the stable .dms-body-row class.
+    const row = el.querySelector('.dms-body-row[role="row"]');
+    expect(row).not.toBeNull();
+    // Each body cell keeps its data-column attribute on a .dms-body-cell element.
+    expect(
+      el.querySelector('.dms-body-cell[data-column="name"]'),
+    ).not.toBeNull();
+    expect(
+      (row as HTMLElement).querySelector('.dms-body-cell[data-column="name"]'),
+    ).not.toBeNull();
+  });
 
   it('should render one header cell per column with data-column and the column header text (AC #1, #8)', () => {
     fixture.detectChanges();

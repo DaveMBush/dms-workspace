@@ -42,7 +42,10 @@
       <!-- Selection Filter Column (empty placeholder for filter row alignment) -->
       @if (selectable() && filterRowTemplate) {
         <ng-container matColumnDef="selectFilter">
-          <mat-header-cell *matHeaderCellDef class="dms-select-cell"></mat-header-cell>
+          <mat-header-cell
+            *matHeaderCellDef
+            class="dms-select-cell"
+          ></mat-header-cell>
         </ng-container>
       }
 

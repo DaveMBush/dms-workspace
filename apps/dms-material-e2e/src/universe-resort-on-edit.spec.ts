@@ -44,9 +44,7 @@ test.describe('Universe Re-sort After Cell Edit', () => {
     const firstRowSymbol = page
       .locator('.dms-body-row[role="row"]')
       .first()
-      .locator(
-        `.dms-body-cell:nth-child(${UNIVERSE_COLUMN_INDEX.symbol})`,
-      );
+      .locator(`.dms-body-cell:nth-child(${UNIVERSE_COLUMN_INDEX.symbol})`);
     const originalSymbol = await firstRowSymbol.textContent();
 
     // Click the first row's ex-date cell to enter edit mode

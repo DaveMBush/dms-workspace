@@ -63,7 +63,8 @@ const headerRowSel = '.dms-column-header-row';
 // Scoped to the column-label row: .dms-header-cell is also applied to the
 // filter-row's header cells, so an unscoped global query would double-count.
 /** Header cells (column labels). */
-const headerCellSel = '.dms-column-header-row .dms-header-cell[role="columnheader"]';
+const headerCellSel =
+  '.dms-column-header-row .dms-header-cell[role="columnheader"]';
 
 /** Body data rows. */
 const bodyRowSel = '.dms-body-row[role="row"]';
