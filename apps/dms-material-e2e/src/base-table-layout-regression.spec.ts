@@ -8,11 +8,11 @@
  *     └── cdk-virtual-scroll-viewport (display:block, position:relative)
  *           └── .cdk-virtual-scrollable (overflow:auto — THE scroller, both axes)
  *                 └── .cdk-virtual-scroll-content-wrapper (position:absolute)
- *                       └── mat-table (display:block)
- *                             ├── thead > tr.mat-mdc-header-row (sticky top:0)
- *                             │     └── th.mat-mdc-header-cell[role=columnheader]
- *                             └── tbody > tr.mat-mdc-row[role=row]
- *                                   └── td.mat-mdc-cell[role=cell]
+ *                       └── mat-table (display:block) — div-based, no native <table>
+ *                             ├── .dms-column-header-row (sticky top:0)
+ *                             │     └── .dms-header-cell[role=columnheader]
+ *                             └── .dms-body-row[role=row]
+ *                                   └── .dms-body-cell[role=cell]
  *
  * FOUR ASSERTIONS (mapped to new DOM):
  *   (a) R1 — Scroll viewport right-edge stays stable across horizontal scroll.
@@ -29,7 +29,7 @@
  *       (Replaces the old "spacer absorbs spare width" check; in mat-table the
  *       background fill handles the beyond-columns area instead.)
  *   (d) R4 — Beyond-table background matches cell background.
- *       tr.mat-mdc-row backgroundColor === td.mat-mdc-cell backgroundColor,
+ *       .dms-body-row backgroundColor === .dms-body-cell backgroundColor,
  *       so the area to the right of the last column blends seamlessly.
  *
  * CONSUMER: Universe (/global/universe).
@@ -52,17 +52,24 @@ const cdkViewportSel = 'cdk-virtual-scroll-viewport';
 /** The actual scroll element — overflow:auto, owns both scrollbars. */
 const scrollerSel = '.cdk-virtual-scrollable';
 
-/** Sticky column-label header row (not the filter row). */
-const headerRowSel = 'tr.mat-mdc-header-row.dms-column-header-row';
+// Story 3.2: mat-table now renders div-based custom elements (no native
+// <table>/<tr>/<th>/<td>). Rows keep role="row"; header cells keep
+// role="columnheader" but body cells emit NO role, so we anchor on the
+// preserved .dms-* classes instead of element/role selectors.
 
+/** Sticky column-label header row (not the filter row). */
+const headerRowSel = '.dms-column-header-row';
+
+// Scoped to the column-label row: .dms-header-cell is also applied to the
+// filter-row's header cells, so an unscoped global query would double-count.
 /** Header cells (column labels). */
-const headerCellSel = 'th.mat-mdc-header-cell[role="columnheader"]';
+const headerCellSel = '.dms-column-header-row .dms-header-cell[role="columnheader"]';
 
 /** Body data rows. */
-const bodyRowSel = 'tr.mat-mdc-row[role="row"]';
+const bodyRowSel = '.dms-body-row[role="row"]';
 
 /** Body cells inside a row. */
-const bodyCellSel = 'td.mat-mdc-cell[role="cell"]';
+const bodyCellSel = '.dms-body-cell[role="cell"]';
 
 // ─── Suite Setup ─────────────────────────────────────────────────────────────
 
@@ -507,10 +514,8 @@ test.describe('Base Table Layout Regression — AC2: scroll viewport fills paren
         const vpDiff = Math.abs(viewport.clientWidth - container.clientWidth);
 
         // Check first header cell vs first body cell alignment.
-        const hCell = headerRow.querySelector<HTMLElement>(
-          'th[role="columnheader"]',
-        );
-        const bCell = bodyRow.querySelector<HTMLElement>('td[role="cell"]');
+        const hCell = headerRow.querySelector<HTMLElement>('.dms-header-cell');
+        const bCell = bodyRow.querySelector<HTMLElement>('.dms-body-cell');
         let alignDiff = 0;
         if (hCell && bCell) {
           alignDiff = Math.abs(

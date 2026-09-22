@@ -123,9 +123,13 @@ test.describe('Universe Table Workflows', () => {
     });
 
     test('should display symbol data in symbol column', async ({ page }) => {
-      const symbolCell = page.locator(
-        '.dms-body-row[role="row"]:first-child .dms-body-cell[data-column="symbol"]',
-      );
+      // Body rows are no longer :first-child of their parent (header/filter
+      // rows precede them in the div-based mat-table), so select the first
+      // body row explicitly.
+      const symbolCell = page
+        .locator('.dms-body-row[role="row"]')
+        .first()
+        .locator('.dms-body-cell[data-column="symbol"]');
       await expect(symbolCell).toBeVisible();
       const text = await symbolCell.textContent();
       expect(text?.trim()).toBeTruthy();
@@ -144,9 +148,13 @@ test.describe('Universe Table Workflows', () => {
     test('should display distribution values formatted as currency', async ({
       page,
     }) => {
-      const distributionCell = page.locator(
-        '.dms-body-row[role="row"]:first-child .dms-body-cell[data-column="distribution"]',
-      );
+      // Body rows are no longer :first-child of their parent (header/filter
+      // rows precede them in the div-based mat-table), so select the first
+      // body row explicitly.
+      const distributionCell = page
+        .locator('.dms-body-row[role="row"]')
+        .first()
+        .locator('.dms-body-cell[data-column="distribution"]');
       await expect(distributionCell).toBeVisible();
       const text = await distributionCell.textContent();
       // Distribution is shown as a number (e.g., 1.25 not $1.25) in editable cell
@@ -156,9 +164,13 @@ test.describe('Universe Table Workflows', () => {
     test('should display yield percentage with two decimals', async ({
       page,
     }) => {
-      const yieldCell = page.locator(
-        '.dms-body-row[role="row"]:first-child .dms-body-cell[data-column="yield_percent"]',
-      );
+      // Body rows are no longer :first-child of their parent (header/filter
+      // rows precede them in the div-based mat-table), so select the first
+      // body row explicitly.
+      const yieldCell = page
+        .locator('.dms-body-row[role="row"]')
+        .first()
+        .locator('.dms-body-cell[data-column="yield_percent"]');
       await expect(yieldCell).toBeVisible();
       const text = await yieldCell.textContent();
       // Percentage format check (e.g., 5.25% or 5.25)
@@ -167,9 +179,13 @@ test.describe('Universe Table Workflows', () => {
     });
 
     test('should display ex-date in correct format', async ({ page }) => {
-      const exDateCell = page.locator(
-        '.dms-body-row[role="row"]:first-child .dms-body-cell[data-column="ex_date"]',
-      );
+      // Body rows are no longer :first-child of their parent (header/filter
+      // rows precede them in the div-based mat-table), so select the first
+      // body row explicitly.
+      const exDateCell = page
+        .locator('.dms-body-row[role="row"]')
+        .first()
+        .locator('.dms-body-cell[data-column="ex_date"]');
       await expect(exDateCell).toBeVisible();
       const text = await exDateCell.textContent();
       // Date format check (e.g., MM/DD/YYYY or YYYY-MM-DD)
@@ -177,9 +193,13 @@ test.describe('Universe Table Workflows', () => {
     });
 
     test('should display action buttons in last column', async ({ page }) => {
-      const actionsCell = page.locator(
-        '.dms-body-row[role="row"]:first-child .dms-body-cell[data-column="actions"]',
-      );
+      // Body rows are no longer :first-child of their parent (header/filter
+      // rows precede them in the div-based mat-table), so select the first
+      // body row explicitly.
+      const actionsCell = page
+        .locator('.dms-body-row[role="row"]')
+        .first()
+        .locator('.dms-body-cell[data-column="actions"]');
       await expect(actionsCell).toBeVisible();
     });
   });

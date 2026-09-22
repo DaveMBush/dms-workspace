@@ -584,9 +584,9 @@ test.describe('Accessibility - Screen Reader Support', () => {
     });
 
     // table should have headers
-    // Story 1.2: the two-region .dms-table-shell div was removed; mat-table now
-    // renders a native <table> (implicit role=table) with aria-label on it.
-    const table = page.locator('dms-base-table table').first();
+    // Story 3.2: mat-table now renders as a div-based <mat-table> (no native
+    // <table>) with aria-label on it; header cells keep role="columnheader".
+    const table = page.locator('dms-base-table mat-table').first();
     const headers = table.locator('.dms-header-cell[role="columnheader"]');
     const headerCount = await headers.count();
     expect(headerCount).toBeGreaterThan(0);
