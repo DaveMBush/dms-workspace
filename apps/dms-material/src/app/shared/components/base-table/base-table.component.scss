@@ -1,7 +1,7 @@
-// BaseTable renders <table mat-table> inside a cdk-virtual-scroll-viewport.
+// BaseTable renders a div-based <mat-table> inside a cdk-virtual-scroll-viewport.
 // The viewport owns vertical scrolling (itemSize = rowHeight); Material's
-// sticky header-row support keeps the column headers pinned above it. Native
-// table layout is otherwise left to MatTableModule defaults; the .dms-* classes
+// sticky header-row support keeps the column headers pinned above it. Table
+// layout is otherwise left to MatTableModule defaults; the .dms-* classes
 // below only add state colours, truncation, and sort affordances.
 
 :host {
@@ -42,9 +42,8 @@ mat-progress-bar {
 }
 
 // mat-table fills the viewport so bound column widths are preserved.
-.dms-table-body table.mat-mdc-table {
+.dms-table-body mat-table.mat-mdc-table {
   width: 100%;
-  border-collapse: collapse;
 }
 
 .dms-header-cell {
