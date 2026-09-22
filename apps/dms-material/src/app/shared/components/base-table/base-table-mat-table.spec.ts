@@ -226,10 +226,9 @@ describe('BaseTableComponent - mat-table behavior guards (Story 1.2)', () => {
       // for a real rAF so the header row is in the DOM before asserting.
       await nextFrame();
       const el = fixture.nativeElement as HTMLElement;
-      const headerRow =
-        el.querySelector('tr.dms-column-header-row') ??
-        el.querySelector('th[mat-header-cell]')?.closest('tr') ??
-        null;
+      // Structure-agnostic locator: div-based mat-table renders <mat-header-row>,
+      // not a native <tr>; the class is the stable contract (Story 3.2 Task 3.2).
+      const headerRow = el.querySelector('.dms-column-header-row');
       expect(headerRow).not.toBeNull();
       expect(getComputedStyle(headerRow!).position).toBe('sticky');
     },
