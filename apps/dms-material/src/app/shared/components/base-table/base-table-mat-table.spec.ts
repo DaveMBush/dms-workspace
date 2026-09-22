@@ -7,12 +7,7 @@ import {
   TestBed,
   tick,
 } from '@angular/core/testing';
-// redIt: alias for vitest's own `it`, used ONLY for .skip() registrations. The
-// injected global `it` (zone.js-patched) silently drops `.skip()` calls, so a
-// skipped test written with the global would never register at all. Active tests
-// stay on the global `it`; importing vitest's `it` for an ACTIVE test breaks
-// ProxyZone under fakeAsync.
-import { it as redIt, vi } from 'vitest';
+import { vi } from 'vitest';
 import type { SortColumn } from '../../services/sort-column.interface';
 import { BaseTableComponent } from './base-table.component';
 import type { ColumnDef } from './column-def.interface';
@@ -200,10 +195,12 @@ describe('BaseTableComponent - mat-table behavior guards (Story 1.2)', () => {
     discardPeriodicTasks();
   }));
 
-  // Red-phase contract for Story 3.2's div-based conversion: skipped until the
-  // template renders <mat-table> (divs) instead of <table mat-table>.
-  // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
-  redIt.skip(
+  // Unskipped in Task 0. NOTE: passes under BOTH forms — <table mat-table>
+  // already satisfies the [role="table"] / .mat-mdc-table selector (Material's
+  // table directive applies these), so this is a guard pinning that the
+  // viewport-wrapped table survives Tasks 1–2, not a red-phase failure. The
+  // genuinely-red assertions for the div conversion are AC #2 and AC #5 below.
+  it(
     'should render a div-based mat-table inside the cdk-virtual-scroll-viewport (AC #1, red-phase for Story 3.2)',
     async () => {
       fixture.detectChanges();
@@ -219,12 +216,9 @@ describe('BaseTableComponent - mat-table behavior guards (Story 1.2)', () => {
     },
   );
 
-  // Red-phase contract for Story 3.2's div-based conversion: skipped until the
-  // template renders <mat-table> (divs) instead of <table mat-table>. Under the
-  // current native <table> form, position:sticky on the header row is not
-  // guaranteed in jsdom, so this stays red-phase by skip.
-  // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
-  redIt.skip(
+  // Red-phase contract for Story 3.2's div-based conversion: unskipped in Task 0;
+  // fails against the current <table mat-table> template until Tasks 1–2 convert it.
+  it(
     'should apply position:sticky to the column-header row so headers stay visible while scrolling (AC #5, red-phase for Story 3.2)',
     async () => {
       fixture.detectChanges();
@@ -241,11 +235,9 @@ describe('BaseTableComponent - mat-table behavior guards (Story 1.2)', () => {
     },
   );
 
-  // Red-phase contract for Story 3.2's div-based conversion: skipped until the
-  // template renders <mat-table> (divs) instead of <table mat-table>. Under the
-  // current native <table> form these elements are present, so this stays red.
-  // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
-  redIt.skip(
+  // Red-phase contract for Story 3.2's div-based conversion: unskipped in Task 0;
+  // fails against the current <table mat-table> template until Tasks 1–2 convert it.
+  it(
     'should not render any native table elements (AC #2)',
     async () => {
       fixture.detectChanges();
@@ -262,16 +254,17 @@ describe('BaseTableComponent - mat-table behavior guards (Story 1.2)', () => {
     },
   );
 
-  // Red-phase contract for Story 3.2's div-based conversion: skipped until the
-  // template renders <mat-table> (divs) instead of <table mat-table>. These are
-  // the stable selectors that must survive the conversion; they pass under both
-  // forms, so this stays red only to pin them for Story 3.2's GREEN phase.
-  // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
-  redIt.skip(
+  // Red-phase contract for Story 3.2's div-based conversion: unskipped in Task 0;
+  // pins the stable class/role/data-column selectors that must survive Tasks 1–2.
+  it(
     'should keep stable selectors working after the div-based conversion (AC #3)',
     async () => {
       fixture.detectChanges();
       await nextFrame();
+      // CDK virtual scroll renders body rows on rAF; a second change-detection
+      // pass flushes their [attr.data-column] bindings onto the freshly created
+      // cells before we assert. (Matches the sibling "body row" guard.)
+      fixture.detectChanges();
       const el = fixture.nativeElement as HTMLElement;
       // Header cells resolve via class + ARIA role + data-column, not element type.
       expect(
