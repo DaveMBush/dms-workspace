@@ -12,8 +12,7 @@
     [minBufferPx]="rowHeight() * bufferSize()"
     [maxBufferPx]="rowHeight() * bufferSize() * 2"
   >
-    <table
-      mat-table
+    <mat-table
       [dataSource]="dataSource()"
       [trackBy]="trackByFn"
       [attr.aria-label]="tableLabel()"
@@ -21,7 +20,7 @@
       <!-- Selection Column -->
       @if (selectable()) {
         <ng-container matColumnDef="select">
-          <th mat-header-cell *matHeaderCellDef class="dms-select-cell">
+          <mat-header-cell *matHeaderCellDef class="dms-select-cell">
             @if (multiSelect()) {
               <mat-checkbox
                 [checked]="isAllSelected()"
@@ -29,29 +28,31 @@
                 (change)="toggleAllRows()"
               ></mat-checkbox>
             }
-          </th>
-          <td mat-cell *matCellDef="let row" class="dms-select-cell">
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row" class="dms-select-cell">
             <mat-checkbox
               [checked]="selection.isSelected(row)"
               (click)="$event.stopPropagation()"
               (change)="toggleSelection(row)"
             ></mat-checkbox>
-          </td>
+          </mat-cell>
         </ng-container>
       }
 
       <!-- Selection Filter Column (empty placeholder for filter row alignment) -->
       @if (selectable() && filterRowTemplate) {
         <ng-container matColumnDef="selectFilter">
-          <th mat-header-cell *matHeaderCellDef class="dms-select-cell"></th>
+          <mat-header-cell
+            *matHeaderCellDef
+            class="dms-select-cell"
+          ></mat-header-cell>
         </ng-container>
       }
 
       <!-- Dynamic Columns -->
       @for (column of columns(); track column.field) {
         <ng-container [matColumnDef]="column.field">
-          <th
-            mat-header-cell
+          <mat-header-cell
             *matHeaderCellDef
             class="dms-header-cell"
             [class.dms-header-cell--sortable]="column.sortable"
@@ -73,9 +74,8 @@
                 >{{ sortRankMap()[column.field] }}</span
               >
             }
-          </th>
-          <td
-            mat-cell
+          </mat-header-cell>
+          <mat-cell
             *matCellDef="let row; let i = index"
             class="dms-body-cell"
             [style.width.px]="column.width ?? DEFAULT_COLUMN_WIDTH"
@@ -89,7 +89,7 @@
                 index: i,
               }"
             ></ng-container>
-          </td>
+          </mat-cell>
         </ng-container>
       }
 
@@ -97,8 +97,7 @@
       @if (filterRowTemplate) {
         @for (column of columns(); track column.field) {
           <ng-container [matColumnDef]="column.field + 'Filter'">
-            <th
-              mat-header-cell
+            <mat-header-cell
               *matHeaderCellDef
               class="dms-header-cell"
               [style.width.px]="column.width ?? DEFAULT_COLUMN_WIDTH"
@@ -107,30 +106,27 @@
                 [ngTemplateOutlet]="filterRowTemplate"
                 [ngTemplateOutletContext]="{ $implicit: column }"
               ></ng-container>
-            </th>
+            </mat-header-cell>
           </ng-container>
         }
       }
 
       <!-- Filter Row -->
       @if (filterRowTemplate) {
-        <tr
-          mat-header-row
+        <mat-header-row
           *matHeaderRowDef="filterColumns(); sticky: true"
           class="dms-filter-row"
-        ></tr>
+        ></mat-header-row>
       }
 
       <!-- Column Headers Row -->
-      <tr
-        mat-header-row
+      <mat-header-row
         *matHeaderRowDef="displayedColumns(); sticky: true"
         class="dms-column-header-row"
-      ></tr>
+      ></mat-header-row>
 
       <!-- Body Rows -->
-      <tr
-        mat-row
+      <mat-row
         *matRowDef="let row; columns: displayedColumns()"
         class="dms-body-row"
         [class.selected]="selection.isSelected(row)"
@@ -139,8 +135,8 @@
         [attr.data-is-cef]="getIsCef$(row)"
         [attr.data-has-position]="getHasPosition$(row)"
         (click)="onRowClick(row)"
-      ></tr>
-    </table>
+      ></mat-row>
+    </mat-table>
   </cdk-virtual-scroll-viewport>
 </div>
 

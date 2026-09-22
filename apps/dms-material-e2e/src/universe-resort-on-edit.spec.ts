@@ -38,10 +38,13 @@ test.describe('Universe Re-sort After Cell Edit', () => {
     const sortDir = await exDateHeader.getAttribute('aria-sort');
     expect(sortDir).toMatch(/ascending|descending/);
 
-    // Record the first row's symbol before editing
-    const firstRowSymbol = page.locator(
-      `.dms-body-row[role="row"]:first-child .dms-body-cell:nth-child(${UNIVERSE_COLUMN_INDEX.symbol})`,
-    );
+    // Record the first row's symbol before editing.
+    // Note: body rows are no longer :first-child of their parent (header/filter
+    // rows precede them in the native <table>), so use .first() instead.
+    const firstRowSymbol = page
+      .locator('.dms-body-row[role="row"]')
+      .first()
+      .locator(`.dms-body-cell:nth-child(${UNIVERSE_COLUMN_INDEX.symbol})`);
     const originalSymbol = await firstRowSymbol.textContent();
 
     // Click the first row's ex-date cell to enter edit mode
