@@ -54,8 +54,9 @@ const scrollerSel = '.cdk-virtual-scrollable';
 
 // Story 3.2: mat-table now renders div-based custom elements (no native
 // <table>/<tr>/<th>/<td>). Rows keep role="row"; header cells keep
-// role="columnheader" but body cells emit NO role, so we anchor on the
-// preserved .dms-* classes instead of element/role selectors.
+// role="columnheader" and body cells get role="cell" (set by CdkCell in its
+// constructor). We anchor on the preserved .dms-* classes so selectors stay
+// stable even if Material changes how it emits roles.
 
 /** Sticky column-label header row (not the filter row). */
 const headerRowSel = '.dms-column-header-row';
