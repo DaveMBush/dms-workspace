@@ -32,7 +32,7 @@ test.describe('Symbol Filter Header Component', () => {
     const filterField = page.locator('mat-select');
     await filterField.click();
     await page.locator('mat-option', { hasText: 'All' }).click();
-    const tableRows = page.locator('table tbody tr');
+    const tableRows = page.locator('.dms-body-row[role="row"]');
     await expect(tableRows).not.toHaveCount(0);
   });
 
