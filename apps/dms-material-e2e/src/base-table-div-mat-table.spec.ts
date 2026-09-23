@@ -50,7 +50,9 @@ test.describe('div-based mat-table layout (Story 3.3)', () => {
 
   // ─── AC #1: div-based mat-table layout assertions ──────────────────────
 
-  test('renders as a div-based Material table with no native <table> element', async ({ page }) => {
+  test('renders as a div-based Material table with no native <table> element', async ({
+    page,
+  }) => {
     const host = page.locator('dms-base-table');
 
     // Table container present inside cdk-virtual-scroll-viewport (div-based mat-table)
@@ -66,7 +68,9 @@ test.describe('div-based mat-table layout (Story 3.3)', () => {
     }
 
     // Body rows are [role="row"].dms-body-row
-    await expect(host.locator('.dms-body-row[role="row"]').first()).toBeVisible();
+    await expect(
+      host.locator('.dms-body-row[role="row"]').first(),
+    ).toBeVisible();
 
     // Header cells resolve via class + ARIA role + data-column (AC #3 stable selectors)
     const headerCells = host.locator(
@@ -77,7 +81,9 @@ test.describe('div-based mat-table layout (Story 3.3)', () => {
 
   // ─── AC #2: sticky header behavior ──────────────────────────────────────
 
-  test('column header row stays pinned while scrolling the viewport', async ({ page }) => {
+  test('column header row stays pinned while scrolling the viewport', async ({
+    page,
+  }) => {
     const host = page.locator('dms-base-table');
     const headerRow = host.locator('.dms-column-header-row');
     await expect(headerRow).toBeVisible();
@@ -86,24 +92,28 @@ test.describe('div-based mat-table layout (Story 3.3)', () => {
     // `.mat-mdc-table-sticky { position: sticky !important; }` to the header
     // cells (and, in some versions, the row). Assert at least one of them is
     // actually sticky — that is the mechanism keeping the header pinned.
-    const stickyInfo = await host.evaluate((): {
-      rowSticky: boolean;
-      stickyCellCount: number;
-    } => {
-      const row = document.querySelector<HTMLElement>('.dms-column-header-row');
-      if (!row) {
-        return { rowSticky: false, stickyCellCount: 0 };
-      }
-      const cells = Array.from(
-        row.querySelectorAll<HTMLElement>('[role="columnheader"]'),
-      );
-      const isSticky = (el: HTMLElement): boolean =>
-        getComputedStyle(el).position === 'sticky';
-      return {
-        rowSticky: isSticky(row),
-        stickyCellCount: cells.filter(isSticky).length,
-      };
-    });
+    const stickyInfo = await host.evaluate(
+      (): {
+        rowSticky: boolean;
+        stickyCellCount: number;
+      } => {
+        const row = document.querySelector<HTMLElement>(
+          '.dms-column-header-row',
+        );
+        if (!row) {
+          return { rowSticky: false, stickyCellCount: 0 };
+        }
+        const cells = Array.from(
+          row.querySelectorAll<HTMLElement>('[role="columnheader"]'),
+        );
+        const isSticky = (el: HTMLElement): boolean =>
+          getComputedStyle(el).position === 'sticky';
+        return {
+          rowSticky: isSticky(row),
+          stickyCellCount: cells.filter(isSticky).length,
+        };
+      },
+    );
     expect(
       stickyInfo.rowSticky || stickyInfo.stickyCellCount > 0,
       `expected the header row or its cells to be position:sticky (row=${String(stickyInfo.rowSticky)}, stickyCells=${String(stickyInfo.stickyCellCount)})`,
@@ -136,7 +146,9 @@ test.describe('div-based mat-table layout (Story 3.3)', () => {
 
   // ─── AC #3: sorting ─────────────────────────────────────────────────────
 
-  test('clicking a sortable header toggles direction and shows rank badge', async ({ page }) => {
+  test('clicking a sortable header toggles direction and shows rank badge', async ({
+    page,
+  }) => {
     const host = page.locator('dms-base-table');
     const symbolHeader = host.locator('.dms-header-cell[data-column="symbol"]');
     await expect(symbolHeader).toBeVisible();
@@ -165,7 +177,9 @@ test.describe('div-based mat-table layout (Story 3.3)', () => {
 
   // ─── AC #3: selection (via Storybook — no consumer screen enables selectable) ──
 
-  test('select-all and per-row checkboxes toggle row state', async ({ page }) => {
+  test('select-all and per-row checkboxes toggle row state', async ({
+    page,
+  }) => {
     // If-guard early-return (NOT test.skip — that trips the no-skipped-tests
     // gate). Storybook is only booted for full-suite / "storybook" runs; when
     // this spec runs by explicit path it's down, so bail out cleanly. In a
@@ -229,7 +243,9 @@ test.describe('div-based mat-table layout (Story 3.3)', () => {
 
   // ─── AC #3: virtual scroll ──────────────────────────────────────────────
 
-  test('scrolling renders additional rows without breaking layout', async ({ page }) => {
+  test('scrolling renders additional rows without breaking layout', async ({
+    page,
+  }) => {
     const host = page.locator('dms-base-table');
 
     // Initial visible row count (virtual scroll renders a window of rows)
@@ -246,7 +262,9 @@ test.describe('div-based mat-table layout (Story 3.3)', () => {
     await settle(page, 800);
 
     // Rows should still be rendered after scroll (virtual scroll re-renders)
-    const afterScrollRows = await host.locator('.dms-body-row[role="row"]').count();
+    const afterScrollRows = await host
+      .locator('.dms-body-row[role="row"]')
+      .count();
     expect(afterScrollRows).toBeGreaterThan(0);
 
     // Layout integrity: body cells have non-zero dimensions

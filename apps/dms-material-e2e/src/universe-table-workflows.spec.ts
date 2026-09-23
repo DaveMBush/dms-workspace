@@ -486,7 +486,9 @@ test.describe('Universe Table Workflows', () => {
       const deleteButton = page
         .locator('[data-testid="delete-symbol-0"]')
         .first();
-      const rowsBefore = await page.locator('.dms-body-row[role="row"]').count();
+      const rowsBefore = await page
+        .locator('.dms-body-row[role="row"]')
+        .count();
 
       await deleteButton.click();
 
@@ -504,10 +506,14 @@ test.describe('Universe Table Workflows', () => {
       const deleteButton = page
         .locator('[data-testid="delete-symbol-0"]')
         .first();
-      const rowsBefore = await page.locator('.dms-body-row[role="row"]').count();
+      const rowsBefore = await page
+        .locator('.dms-body-row[role="row"]')
+        .count();
 
       // Get symbol name for notification check
-      const symbolCell = page.locator('.dms-body-row[role="row"]:first-child .dms-body-cell:first-child');
+      const symbolCell = page.locator(
+        '.dms-body-row[role="row"]:first-child .dms-body-cell:first-child',
+      );
       const _symbolName = await symbolCell.textContent();
       await deleteButton.click();
 
@@ -527,7 +533,9 @@ test.describe('Universe Table Workflows', () => {
       const deleteButton = page
         .locator('[data-testid="delete-symbol-0"]')
         .first();
-      const symbolCell = page.locator('.dms-body-row[role="row"]:first-child .dms-body-cell:first-child');
+      const symbolCell = page.locator(
+        '.dms-body-row[role="row"]:first-child .dms-body-cell:first-child',
+      );
       const symbolName = await symbolCell.textContent();
 
       await deleteButton.click();
@@ -593,7 +601,9 @@ test.describe('Universe Table Workflows', () => {
     test.skip('should add symbol to table on successful submission', async ({
       page,
     }) => {
-      const rowsBefore = await page.locator('.dms-body-row[role="row"]').count();
+      const rowsBefore = await page
+        .locator('.dms-body-row[role="row"]')
+        .count();
 
       const addButton = page.locator('[data-testid="add-symbol-button"]');
       await addButton.click();
@@ -639,7 +649,9 @@ test.describe('Universe Table Workflows', () => {
 
       // Get existing symbol from table
       const firstSymbol = await page
-        .locator('.dms-body-row[role="row"]:first-child .dms-body-cell:first-child')
+        .locator(
+          '.dms-body-row[role="row"]:first-child .dms-body-cell:first-child',
+        )
         .textContent();
 
       const symbolInput = page.locator('[data-testid="symbol-input"]');
