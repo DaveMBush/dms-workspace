@@ -486,14 +486,14 @@ test.describe('Universe Table Workflows', () => {
       const deleteButton = page
         .locator('[data-testid="delete-symbol-0"]')
         .first();
-      const rowsBefore = await page.locator('tbody tr').count();
+      const rowsBefore = await page.locator('.dms-body-row[role="row"]').count();
 
       await deleteButton.click();
 
       const cancelButton = page.locator('button:has-text("Cancel")');
       await cancelButton.click();
 
-      const rowsAfter = await page.locator('tbody tr').count();
+      const rowsAfter = await page.locator('.dms-body-row[role="row"]').count();
       expect(rowsAfter).toBe(rowsBefore);
     });
 
@@ -504,10 +504,10 @@ test.describe('Universe Table Workflows', () => {
       const deleteButton = page
         .locator('[data-testid="delete-symbol-0"]')
         .first();
-      const rowsBefore = await page.locator('tbody tr').count();
+      const rowsBefore = await page.locator('.dms-body-row[role="row"]').count();
 
       // Get symbol name for notification check
-      const symbolCell = page.locator('tbody tr:first-child td:first-child');
+      const symbolCell = page.locator('.dms-body-row[role="row"]:first-child .dms-body-cell:first-child');
       const _symbolName = await symbolCell.textContent();
       await deleteButton.click();
 
@@ -516,7 +516,7 @@ test.describe('Universe Table Workflows', () => {
 
       // Row should be removed
       await settle(page, 500);
-      const rowsAfter = await page.locator('tbody tr').count();
+      const rowsAfter = await page.locator('.dms-body-row[role="row"]').count();
       expect(rowsAfter).toBe(rowsBefore - 1);
     });
 
@@ -527,7 +527,7 @@ test.describe('Universe Table Workflows', () => {
       const deleteButton = page
         .locator('[data-testid="delete-symbol-0"]')
         .first();
-      const symbolCell = page.locator('tbody tr:first-child td:first-child');
+      const symbolCell = page.locator('.dms-body-row[role="row"]:first-child .dms-body-cell:first-child');
       const symbolName = await symbolCell.textContent();
 
       await deleteButton.click();
@@ -593,7 +593,7 @@ test.describe('Universe Table Workflows', () => {
     test.skip('should add symbol to table on successful submission', async ({
       page,
     }) => {
-      const rowsBefore = await page.locator('tbody tr').count();
+      const rowsBefore = await page.locator('.dms-body-row[role="row"]').count();
 
       const addButton = page.locator('[data-testid="add-symbol-button"]');
       await addButton.click();
@@ -610,7 +610,7 @@ test.describe('Universe Table Workflows', () => {
 
       // Table should have new row
       await settle(page, 1000);
-      const rowsAfter = await page.locator('tbody tr').count();
+      const rowsAfter = await page.locator('.dms-body-row[role="row"]').count();
       expect(rowsAfter).toBe(rowsBefore + 1);
     });
 
@@ -639,7 +639,7 @@ test.describe('Universe Table Workflows', () => {
 
       // Get existing symbol from table
       const firstSymbol = await page
-        .locator('tbody tr:first-child td:first-child')
+        .locator('.dms-body-row[role="row"]:first-child .dms-body-cell:first-child')
         .textContent();
 
       const symbolInput = page.locator('[data-testid="symbol-input"]');
@@ -756,7 +756,7 @@ test.describe('Universe Table Workflows', () => {
       page,
     }) => {
       // Get baseline count
-      const rows = page.locator('tbody tr');
+      const rows = page.locator('.dms-body-row[role="row"]');
       const baselineCount = await rows.count();
 
       const symbolInput = page.locator('input[placeholder="Search Symbol"]');
@@ -784,7 +784,7 @@ test.describe('Universe Table Workflows', () => {
     test('should filter by yield and expired status together', async ({
       page,
     }) => {
-      const rows = page.locator('tbody tr');
+      const rows = page.locator('.dms-body-row[role="row"]');
       const baselineCount = await rows.count();
 
       const yieldInput = page.locator('input[placeholder="Min Yield %"]');
@@ -813,7 +813,7 @@ test.describe('Universe Table Workflows', () => {
     });
 
     test('should apply all filters simultaneously', async ({ page }) => {
-      const rows = page.locator('tbody tr');
+      const rows = page.locator('.dms-body-row[role="row"]');
       const baselineCount = await rows.count();
 
       const symbolInput = page.locator('input[placeholder="Search Symbol"]');
@@ -1013,7 +1013,7 @@ test.describe('Universe Table Workflows', () => {
 
       // Should not crash and show no results or empty state
       await settle(page, 500); // Allow filter to apply
-      const rows = page.locator('tbody tr');
+      const rows = page.locator('.dms-body-row[role="row"]');
       const count = await rows.count();
 
       // Special characters likely won't match any symbols

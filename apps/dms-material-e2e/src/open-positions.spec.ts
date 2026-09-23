@@ -543,8 +543,7 @@ test.describe('Open Positions', () => {
       const firstSymbol = await table
         .locator('.dms-body-row[role="row"]')
         .first()
-        .locator('td')
-        .first()
+        .locator('.dms-body-cell[data-column="symbol"]')
         .textContent();
       expect(firstSymbol?.toUpperCase()).toContain('A');
     }
