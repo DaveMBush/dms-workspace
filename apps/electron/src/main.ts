@@ -107,24 +107,32 @@ function startServer(port: number): Promise<void> {
     resolve: () => void,
     reject: (err: Error) => void
   ): void {
-    const nodeExecPath =
+    const explicitNode =
       process.env['DMS_NODE_EXEC_PATH'] ?? process.env['npm_node_execpath'];
 
-    if (nodeExecPath === undefined || nodeExecPath.length === 0) {
-      reject(
-        new Error(
-          'Missing DMS_NODE_EXEC_PATH or npm_node_execpath; refusing to fork the server with the Electron binary'
-        )
-      );
-      return;
+    let execPath: string;
+    const childEnv: NodeJS.ProcessEnv = { ...process.env };
+
+    if (explicitNode !== undefined && explicitNode.length > 0) {
+      // Dev / smoke-test path: use the explicitly provided plain-Node binary.
+      execPath = explicitNode;
+    } else {
+      // Packaged app with no Node on PATH: run the server using this Electron
+      // binary as a plain Node runtime so the app is self-contained (no Node
+      // toolchain required) and matches the ABI @electron/rebuild used for
+      // native deps such as better-sqlite3.
+      execPath = process.execPath;
+      childEnv['ELECTRON_RUN_AS_NODE'] = '1';
     }
 
     const { serverPath, serverCwd, staticDir } = resolveServerPaths();
+    childEnv['PORT'] = String(port);
+    childEnv['STATIC_DIR'] = staticDir;
 
     serverProcess = fork(serverPath, [], {
       cwd: serverCwd,
-      env: { ...process.env, PORT: String(port), STATIC_DIR: staticDir },
-      execPath: nodeExecPath,
+      env: childEnv,
+      execPath,
       silent: false,
     });
 

@@ -38,6 +38,10 @@ extraResources:
     to: apps/server/node_modules/.pnpm/better-sqlite3@12.11.1/node_modules/better-sqlite3/build/Release/better_sqlite3.node
 
 linux:
+  # Without this, electron-builder falls back to the scoped package name
+  # (@dms-workspace/electron -> "@dms-workspaceelectron"), which the AppImage
+  # builder rejects. Match productName so the internal binary is "dms".
+  executableName: DMS
   target:
     - AppImage
     - deb

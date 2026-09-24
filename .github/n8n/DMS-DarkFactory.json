@@ -33,8 +33,8 @@
       "type": "n8n-nodes-base.ssh",
       "typeVersion": 1,
       "position": [
-        192,
-        2112
+        208,
+        2256
       ],
       "id": "661b389b-2cd9-456e-94f5-a87d3d3242d3",
       "name": "Find Next Epic",
@@ -171,27 +171,6 @@
     },
     {
       "parameters": {
-        "command": "=QWEN_CODE_UNATTENDED_RETRY=1 QWEN_CODE_SUPPRESS_YOLO_WARNING=1 qwen-am -p \"Read .github/instructions/finalize-story.md and follow it exactly for the story at _bmad-output/implementation-artifacts/stories/{{ $('Parse Story').item.json.nextStory.file }}. Work only in this directory. Never ask questions; complete everything in one run, then print the final report as specified.\" --model {{ $('Reduce to Record').item.json.model }} --yolo",
-        "cwd": "={{ $('Parse Worktree Location').item.json.worktreePath }}"
-      },
-      "type": "n8n-nodes-base.ssh",
-      "typeVersion": 1,
-      "position": [
-        2560,
-        2112
-      ],
-      "id": "2ae33456-556b-4cc1-a241-2a7bd73dbdce",
-      "name": "Finalize Story",
-      "credentials": {
-        "sshPassword": {
-          "id": "2M7LU3ql52s8ShX2",
-          "name": "SSH Password account"
-        }
-      },
-      "onError": "continueRegularOutput"
-    },
-    {
-      "parameters": {
         "operation": "get",
         "dataTableId": {
           "__rl": true,
@@ -262,7 +241,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        2896,
+        3120,
         2112
       ],
       "id": "59b69cb5-c8cd-4634-aaa4-ac3053b6cf5a",
@@ -275,7 +254,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3120,
+        3344,
         2032
       ],
       "id": "25449b8f-dd50-4bd2-9f46-b2a275848751",
@@ -289,7 +268,7 @@
       "type": "n8n-nodes-base.ssh",
       "typeVersion": 1,
       "position": [
-        3568,
+        3792,
         1600
       ],
       "id": "d40feb3e-4bea-47ef-aa67-eecb96521cb2",
@@ -309,7 +288,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2672,
+        2896,
         2112
       ],
       "id": "a81c981f-c6c3-44d1-ad84-cfe51cf79ea6",
@@ -322,7 +301,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3792,
+        4016,
         1600
       ],
       "id": "0b5102a2-b1fa-466c-bfe4-56208ab8276c",
@@ -366,7 +345,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        4016,
+        4240,
         1600
       ],
       "id": "6aec9cf1-be73-433f-a490-d203a5c48b91",
@@ -380,8 +359,8 @@
       "type": "n8n-nodes-base.ssh",
       "typeVersion": 1,
       "position": [
-        4240,
-        1760
+        4464,
+        1728
       ],
       "id": "e0510aa1-18dd-4ce4-be2f-c09a839245cc",
       "name": "Fix Review Issues",
@@ -421,8 +400,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        4688,
-        1776
+        4912,
+        1744
       ],
       "id": "5ca82cff-689d-4a4e-8b13-ccd2aea92a8d",
       "name": "If3"
@@ -434,8 +413,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        4480,
-        1776
+        4688,
+        1680
       ],
       "id": "bb669f93-93c5-4c15-bc73-061d8cdd1357",
       "name": "Parse Fix Return"
@@ -448,7 +427,7 @@
       "type": "n8n-nodes-base.ssh",
       "typeVersion": 1,
       "position": [
-        4240,
+        4464,
         1408
       ],
       "id": "7941f7da-1dd9-4ac9-a958-765993bbf187",
@@ -468,7 +447,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        4464,
+        4688,
         1408
       ],
       "id": "3666ea6e-6e8b-4b5b-a38f-ffdd4009535b",
@@ -482,7 +461,7 @@
       "type": "n8n-nodes-base.ssh",
       "typeVersion": 1,
       "position": [
-        4688,
+        4912,
         1408
       ],
       "id": "5392c25e-38fc-4e0f-8480-8066b8c38979",
@@ -502,7 +481,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        4912,
+        5136,
         1264
       ],
       "id": "6b411b93-e297-42e0-847c-1c57cdd01c16",
@@ -617,8 +596,8 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        5136,
-        1392
+        5360,
+        1376
       ],
       "id": "cca43076-ed41-43bc-aa7a-a2e48f3c7514",
       "name": "Switch"
@@ -631,7 +610,7 @@
       "type": "n8n-nodes-base.ssh",
       "typeVersion": 1,
       "position": [
-        5360,
+        5584,
         1584
       ],
       "id": "e1a67c23-3fa3-4b8d-99ca-2d5d65786cf5",
@@ -651,7 +630,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        5584,
+        5808,
         1504
       ],
       "id": "bac5b41e-3a90-4875-8e4d-29d2776c3e24",
@@ -684,7 +663,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        5808,
+        6032,
         1584
       ],
       "id": "0578becd-2f70-4f1d-8d1c-980cbe42ed77",
@@ -698,7 +677,7 @@
       "type": "n8n-nodes-base.ssh",
       "typeVersion": 1,
       "position": [
-        5360,
+        5584,
         1168
       ],
       "id": "a2f64555-df74-4481-8eec-202ccbf9965c",
@@ -718,7 +697,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        5584,
+        5808,
         1040
       ],
       "id": "8ccb9e7f-5a54-4316-a853-c0b431c8f89f",
@@ -732,7 +711,7 @@
       "type": "n8n-nodes-base.ssh",
       "typeVersion": 1,
       "position": [
-        6032,
+        6256,
         1200
       ],
       "id": "5830d059-da33-46ed-b625-fcf52a1400e1",
@@ -855,7 +834,7 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        5808,
+        6032,
         1072
       ],
       "id": "5519abe1-d181-4767-9b9f-d07281f5da99",
@@ -868,7 +847,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        6256,
+        6480,
         1200
       ],
       "id": "c4e9efea-79eb-4361-8b5a-c0bf3534c8c1",
@@ -902,7 +881,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        6480,
+        6704,
         1504
       ],
       "id": "45e94652-4410-443d-83e2-c60d2e23ac6d",
@@ -916,7 +895,7 @@
       "type": "n8n-nodes-base.ssh",
       "typeVersion": 1,
       "position": [
-        6032,
+        6256,
         1008
       ],
       "id": "29554aa8-e79c-4a4f-b12c-dbc1e3151660",
@@ -985,7 +964,7 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.3,
       "position": [
-        3344,
+        3568,
         1936
       ],
       "id": "b84b3245-0a8c-4158-9889-37d557e3cad7",
@@ -993,7 +972,7 @@
     },
     {
       "parameters": {
-        "jsCode": "if($input.first().json.code !== 0) {\n  throw Error(\"There was a problem creating story and worktree\");\n}\nreturn JSON.parse($input.first().json.stdout)"
+        "jsCode": "if($input.first().json.code !== 0) {\n  return true;\n}\nreturn JSON.parse($input.first().json.stdout)"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -1002,7 +981,8 @@
         2032
       ],
       "id": "d717e229-dc84-4e5a-874a-f5541329632a",
-      "name": "Parse Worktree Location"
+      "name": "Parse Worktree Location",
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -1076,6 +1056,27 @@
       ],
       "id": "59191dce-28b3-45b2-bbb8-d814147a4d1d",
       "name": "If7"
+    },
+    {
+      "parameters": {
+        "command": "=QWEN_CODE_UNATTENDED_RETRY=1 QWEN_CODE_SUPPRESS_YOLO_WARNING=1 qwen-am -p \"Read .github/instructions/finalize-story.md and follow it exactly for the story at _bmad-output/implementation-artifacts/stories/{{ $('Parse Story').item.json.nextStory.file }}. Work only in this directory. Never ask questions; complete everything in one run, then print the final report as specified.\" --model {{ $('Reduce to Record').item.json.model }} --yolo",
+        "cwd": "={{ $('Parse Worktree Location').item.json.worktreePath }}"
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        2672,
+        2112
+      ],
+      "id": "98d38052-a249-42b8-9e8c-8c5fa43e2eb5",
+      "name": "finalize-story.md",
+      "credentials": {
+        "sshPassword": {
+          "id": "2M7LU3ql52s8ShX2",
+          "name": "SSH Password account"
+        }
+      },
+      "onError": "continueRegularOutput"
     }
   ],
   "pinData": {},
@@ -1195,7 +1196,7 @@
       "main": [
         [
           {
-            "node": "Finalize Story",
+            "node": "finalize-story.md",
             "type": "main",
             "index": 0
           }
@@ -1605,7 +1606,7 @@
         ]
       ]
     },
-    "Finalize Story": {
+    "finalize-story.md": {
       "main": [
         [
           {
@@ -1623,7 +1624,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "6797d48d-ece6-4863-8cb6-6e00a54b2858",
+  "versionId": "add85762-be6a-4479-b16e-9f2052a8b2f0",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "efe7529a89851410cd052ec9508b6ab889cd60c3aa7db04a996939ffa07fd21d"
