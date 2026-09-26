@@ -3,6 +3,12 @@ productName: DMS
 electronVersion: '41.2.1'
 artifactName: '${productName}-${version}-${arch}.${ext}'
 
+# Copy the server's prod node_modules into resources after packing. electron-builder's
+# extraResources copy hardcodes an exclusion for any root-level node_modules, so without
+# this hook the packaged server cannot resolve its dependencies (fastify/@fastify/static/
+# prisma) and all static files 404. See scripts/after-pack.js.
+afterPack: scripts/after-pack.js
+
 directories:
   output: ../../dist/electron-dist
 

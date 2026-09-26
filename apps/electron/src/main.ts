@@ -1,6 +1,7 @@
 import { ChildProcess, fork } from 'child_process';
 import { app, BrowserWindow, dialog, ipcMain, session, shell } from 'electron';
 import http from 'http';
+import os from 'os';
 import path from 'path';
 
 import { resolveDbPath } from './utils/db-path';
@@ -58,9 +59,13 @@ interface ServerPaths {
 
 function resolveServerPaths(): ServerPaths {
   if (app.isPackaged) {
+    // The server's cwd must be writable: the loggers create <cwd>/logs at
+    // startup. process.resourcesPath sits inside the AppImage's read-only
+    // squashfs mount, so use ~/.dms instead — already created by ensureDbFile()
+    // before startServer(), and where the SQLite DB lives.
     return {
       serverPath: path.join(process.resourcesPath, 'apps/server/main.js'),
-      serverCwd: process.resourcesPath,
+      serverCwd: path.join(os.homedir(), '.dms'),
       staticDir: path.join(process.resourcesPath, 'apps/dms-material/browser'),
     };
   }
@@ -123,6 +128,14 @@ function startServer(port: number): Promise<void> {
       // native deps such as better-sqlite3.
       execPath = process.execPath;
       childEnv['ELECTRON_RUN_AS_NODE'] = '1';
+    }
+
+    // Packaged apps launch from a bare desktop shell with no NODE_ENV; the
+    // server refuses to start without one and would otherwise fall back to AWS
+    // Parameter Store for its DB config. Default to development so it uses the
+    // local SQLite DATABASE_URL set by initDatabase(). An explicit value wins.
+    if (!childEnv['NODE_ENV']) {
+      childEnv['NODE_ENV'] = 'development';
     }
 
     const { serverPath, serverCwd, staticDir } = resolveServerPaths();

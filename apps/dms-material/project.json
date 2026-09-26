@@ -9,7 +9,7 @@
     "build": {
       "executor": "@angular/build:application",
       "outputs": ["{options.outputPath}"],
-      "defaultConfiguration": "production",
+      "defaultConfiguration": "electron",
       "options": {
         "outputPath": "dist/apps/dms-material",
         "browser": "apps/dms-material/src/main.ts",
@@ -57,6 +57,31 @@
           "optimization": false,
           "extractLicenses": false,
           "sourceMap": true
+        },
+        "electron": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "2mb",
+              "maximumError": "5mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "4kb",
+              "maximumError": "8kb"
+            }
+          ],
+          "outputHashing": "all",
+          "sourceMap": false,
+          "namedChunks": false,
+          "extractLicenses": true,
+          "optimization": true,
+          "fileReplacements": [
+            {
+              "replace": "apps/dms-material/src/environments/environment.ts",
+              "with": "apps/dms-material/src/environments/environment.electron.ts"
+            }
+          ]
         }
       }
     },

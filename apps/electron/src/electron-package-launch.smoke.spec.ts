@@ -266,11 +266,27 @@ describe('Packaged Electron launch — Linux AppImage', () => {
       stdio: 'ignore',
     });
     const extractedRoot = path.join(extractionDir, 'squashfs-root');
-    const executable = fs
-      .readdirSync(extractedRoot)
-      .find(function isElectronBinary(entry: string): boolean {
-        return entry.startsWith('@') && !entry.endsWith('.desktop');
-      });
+    // The Electron binary is the largest executable in squashfs-root (named after
+    // productName, e.g. "DMS"). Select by size rather than name so this works no
+    // matter how electron-builder names the binary.
+    let executable: string | undefined;
+    let bestSize = -1;
+    for (const entry of fs.readdirSync(extractedRoot)) {
+      if (entry.endsWith('.desktop') || entry === 'AppRun') continue;
+      const full = path.join(extractionDir, 'squashfs-root', entry);
+      let st: fs.Stats;
+      try {
+        st = fs.statSync(full);
+        fs.accessSync(full, fs.constants.X_OK);
+      } catch {
+        continue; // symlink / dir / non-executable — skip
+      }
+      if (!st.isFile()) continue;
+      if (st.size > bestSize) {
+        bestSize = st.size;
+        executable = entry;
+      }
+    }
     if (executable === undefined) {
       throw new Error(
         `Packaged Electron executable not found in ${extractedRoot}`,

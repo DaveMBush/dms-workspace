@@ -49,7 +49,7 @@
         "{workspaceRoot}/dist/electron-dist"
       ],
       "options": {
-        "command": "pnpm --dir ../../dist/apps/server install --prod --offline --ignore-workspace || true; node scripts/prepare-server-runtime.js && ../../node_modules/.bin/electron-builder --config electron-builder.yml --linux",
+        "command": "pnpm --dir ../../dist/apps/server install --prod --offline --ignore-workspace || true; node scripts/prepare-server-runtime.js && node scripts/build-electron-binding.js && ../../node_modules/.bin/electron-builder --config electron-builder.yml --linux",
         "cwd": "apps/electron"
       },
       "dependsOn": [
