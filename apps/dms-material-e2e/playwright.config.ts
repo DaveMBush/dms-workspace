@@ -203,7 +203,10 @@ export default defineConfig({
     {
       name: 'electron',
       testMatch: ['**/electron-*.spec.ts'],
-      testIgnore: ['**/electron-smoke.spec.ts'],
+      testIgnore: [
+        '**/electron-smoke.spec.ts',
+        '**/electron-env-guard.spec.ts',
+      ],
       // No baseURL — the test launches Electron directly
       use: {},
     },
@@ -214,6 +217,14 @@ export default defineConfig({
       // Release-gate test: installs the packaged .deb; requires root (sudo).
       // Run via: sudo pnpm e2e:electron:smoke
       // NOT included in the default pnpm all pipeline.
+      use: {},
+    },
+
+    {
+      name: 'electron-env-guard',
+      testMatch: ['**/electron-env-guard.spec.ts'],
+      // Release-gate guard proving the desktop build bakes in mock auth (not the
+      // web production/Cognito environment). Manual, like electron-smoke.
       use: {},
     },
 

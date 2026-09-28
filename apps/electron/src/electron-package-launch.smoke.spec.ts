@@ -16,10 +16,10 @@
 import { ChildProcess, execFileSync, spawn } from 'child_process';
 import fs from 'fs';
 import http from 'http';
+import { createRequire } from 'module';
 import * as net from 'net';
 import os from 'os';
 import path from 'path';
-import betterSqlite3 from 'better-sqlite3';
 import {
   afterAll,
   afterEach,
@@ -110,6 +110,14 @@ function pollHealth(
           setTimeout(attempt, 1000);
         }
       });
+
+      // Without this handler a request whose socket is accepted but never
+      // answered (e.g. Chromium's network stack still warming up under xvfb)
+      // fires 'timeout' and then hangs forever — attempt() is never rescheduled
+      // and pollHealth runs past its own cap into vitest's test timeout.
+      req.on('timeout', function onTimeout(): void {
+        req.destroy();
+      });
     }
 
     attempt();
@@ -181,6 +189,33 @@ function killProcess(proc: ChildProcess): Promise<void> {
   });
 }
 
+/** Minimal structural view of node:sqlite's DatabaseSync (Node >= 24). */
+interface SqliteStatement {
+  get(...params: unknown[]): unknown;
+}
+
+interface SqliteDatabase {
+  prepare(sql: string): SqliteStatement;
+  close(): void;
+}
+
+function openSqliteReadonly(dbPath: string): SqliteDatabase {
+  // Use Node's built-in node:sqlite (Node >= 24, see root package.json engines)
+  // instead of the workspace better-sqlite3. @electron/rebuild recompiles
+  // better-sqlite3 to Electron's ABI during packaging, so this system/vitest Node
+  // process can no longer load it — but node:sqlite is built into Node and has no
+  // native .node file, so it reads the DB regardless of which ABI the app's copy
+  // was rebuilt for. createRequire keeps this CJS-friendly under vitest.
+  const requireModule = createRequire(__filename);
+  // node:sqlite's DatabaseSync is PascalCase, which the naming-convention rule
+  // rejects as a type property name — so index it via a string key instead.
+  const nodeSqlite = requireModule('node:sqlite') as Record<
+    string,
+    new (...args: unknown[]) => SqliteDatabase
+  >;
+  return new nodeSqlite['DatabaseSync'](dbPath, { readOnly: true });
+}
+
 /**
  * Assert schema integrity of the SQLite database after first launch.
  * Checks _prisma_migrations completeness and all model tables existence.
@@ -191,7 +226,7 @@ function assertDbSchema(dbPath: string): void {
     0,
   );
 
-  const db = new betterSqlite3(dbPath, { readonly: true });
+  const db = openSqliteReadonly(dbPath);
   try {
     const unfinished = db
       .prepare(
@@ -221,6 +256,43 @@ function assertDbSchema(dbPath: string): void {
   } finally {
     db.close();
   }
+}
+
+/**
+ * Find the largest executable file in an extracted AppImage squashfs-root. The
+ * Electron binary is the largest executable (named after productName, e.g.
+ * "DMS"); selecting by size works no matter how electron-builder names it.
+ */
+function findLargestExecutable(extractedRoot: string): string {
+  let bestName = '';
+  let bestSize = -1;
+  for (const entry of fs.readdirSync(extractedRoot)) {
+    if (entry.endsWith('.desktop') || entry === 'AppRun') {
+      continue;
+    }
+    const full = path.join(extractedRoot, entry);
+    let st: fs.Stats;
+    try {
+      st = fs.statSync(full);
+      fs.accessSync(full, fs.constants.X_OK);
+    } catch {
+      // symlink / dir / non-executable — skip
+      continue;
+    }
+    if (!st.isFile()) {
+      continue;
+    }
+    if (st.size > bestSize) {
+      bestSize = st.size;
+      bestName = entry;
+    }
+  }
+  if (bestName === '') {
+    throw new Error(
+      `Packaged Electron executable not found in ${extractedRoot}`,
+    );
+  }
+  return bestName;
 }
 
 // ─── Linux AppImage smoke test ────────────────────────────────────────────────
@@ -269,29 +341,7 @@ describe('Packaged Electron launch — Linux AppImage', () => {
     // The Electron binary is the largest executable in squashfs-root (named after
     // productName, e.g. "DMS"). Select by size rather than name so this works no
     // matter how electron-builder names the binary.
-    let executable: string | undefined;
-    let bestSize = -1;
-    for (const entry of fs.readdirSync(extractedRoot)) {
-      if (entry.endsWith('.desktop') || entry === 'AppRun') continue;
-      const full = path.join(extractionDir, 'squashfs-root', entry);
-      let st: fs.Stats;
-      try {
-        st = fs.statSync(full);
-        fs.accessSync(full, fs.constants.X_OK);
-      } catch {
-        continue; // symlink / dir / non-executable — skip
-      }
-      if (!st.isFile()) continue;
-      if (st.size > bestSize) {
-        bestSize = st.size;
-        executable = entry;
-      }
-    }
-    if (executable === undefined) {
-      throw new Error(
-        `Packaged Electron executable not found in ${extractedRoot}`,
-      );
-    }
+    const executable = findLargestExecutable(extractedRoot);
     appRunPath = path.join(extractedRoot, executable);
   });
 
@@ -360,13 +410,28 @@ describe('Packaged Electron launch — Linux AppImage', () => {
       args = electronArgs;
     }
 
-    const nodeExecPath = process.env['DMS_NODE_EXEC_PATH'] ?? process.execPath;
-
+    // Do NOT let the app fork its server on a system/vitest Node. The packaged
+    // app's native deps (e.g. better-sqlite3) are rebuilt for Electron's ABI via
+    // @electron/rebuild, so the server must run on the bundled Electron binary as
+    // a plain Node runtime (ELECTRON_RUN_AS_NODE), which main.ts selects when no
+    // explicit node path is provided. main.ts falls back to BOTH DMS_NODE_EXEC_PATH
+    // and npm_node_execpath; under pnpm/vitest the latter points at system Node,
+    // so we strip both from the child env. Forcing a system Node makes the native
+    // module fail to load (NODE_MODULE_VERSION mismatch) and the server never
+    // starts — exactly the failure this smoke test must not reproduce, since real
+    // users have no Node installed and always take the self-contained path.
+    // NODE_ENV is stripped too: vitest sets it to 'test', which changes the
+    // packaged app's runtime config (CORS origins, health behavior) so /api/health
+    // never responds. A real desktop launch has no NODE_ENV, and main.ts defaults
+    // to development when it is absent — that is the path this test must exercise.
+    const spawnEnv: NodeJS.ProcessEnv = { ...process.env };
+    delete spawnEnv['DMS_NODE_EXEC_PATH'];
+    delete spawnEnv['npm_node_execpath'];
+    delete spawnEnv['NODE_ENV'];
     child = spawn(cmd, args, {
       env: {
-        ...process.env,
+        ...spawnEnv,
         DMS_SMOKE_PORT: String(port),
-        DMS_NODE_EXEC_PATH: nodeExecPath,
         HOME: tempHome,
       },
       stdio: 'pipe',
@@ -580,17 +645,23 @@ describe('Packaged Electron launch — macOS DMG', () => {
       // eslint-disable-next-line sonarjs/file-permissions -- the macOS executable must be marked as executable; 0o755 is the standard permission
       fs.chmodSync(execPath, 0o755);
 
-      const nodeExecPath =
-        process.env['DMS_NODE_EXEC_PATH'] ?? process.execPath;
-
+      // Do NOT let the app fork its server on a system/vitest Node — see the
+      // Linux block above. main.ts falls back to BOTH DMS_NODE_EXEC_PATH and
+      // npm_node_execpath; under pnpm/vitest the latter points at system Node, so
+      // strip both from the child env. The packaged app must run its server on the
+      // bundled Electron binary (self-contained), or the Electron-ABI native deps
+      // fail to load. NODE_ENV is stripped too — see the Linux block for why.
+      const macSpawnEnv: NodeJS.ProcessEnv = { ...process.env };
+      delete macSpawnEnv['DMS_NODE_EXEC_PATH'];
+      delete macSpawnEnv['npm_node_execpath'];
+      delete macSpawnEnv['NODE_ENV'];
       child = spawn(
         execPath,
         ['--no-sandbox', `--user-data-dir=${userDataDir}`],
         {
           env: {
-            ...process.env,
+            ...macSpawnEnv,
             DMS_SMOKE_PORT: String(port),
-            DMS_NODE_EXEC_PATH: nodeExecPath,
             HOME: tempHome,
           },
           stdio: 'pipe',
@@ -737,14 +808,20 @@ describe('Packaged Electron launch — Windows NSIS', () => {
         );
       }
 
-      const nodeExecPath =
-        process.env['DMS_NODE_EXEC_PATH'] ?? process.execPath;
-
+      // Do NOT let the app fork its server on a system/vitest Node — see the
+      // Linux block above. main.ts falls back to BOTH DMS_NODE_EXEC_PATH and
+      // npm_node_execpath; under pnpm/vitest the latter points at system Node, so
+      // strip both from the child env. The packaged app must run its server on the
+      // bundled Electron binary (self-contained), or the Electron-ABI native deps
+      // fail to load. NODE_ENV is stripped too — see the Linux block for why.
+      const winSpawnEnv: NodeJS.ProcessEnv = { ...process.env };
+      delete winSpawnEnv['DMS_NODE_EXEC_PATH'];
+      delete winSpawnEnv['npm_node_execpath'];
+      delete winSpawnEnv['NODE_ENV'];
       child = spawn(dmsExe, [`--user-data-dir=${userDataDir}`], {
         env: {
-          ...process.env,
+          ...winSpawnEnv,
           DMS_SMOKE_PORT: String(port),
-          DMS_NODE_EXEC_PATH: nodeExecPath,
           USERPROFILE: tempHome,
           HOMEPATH: tempHome,
         },

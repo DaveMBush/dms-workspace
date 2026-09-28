@@ -1,11 +1,10 @@
 import { ChildProcess, fork } from 'child_process';
-import { app, BrowserWindow, dialog, ipcMain, session, shell } from 'electron';
-import http from 'http';
 import os from 'os';
 import path from 'path';
-
+import { app, BrowserWindow, dialog, ipcMain, session, shell } from 'electron';
 import { resolveDbPath } from './utils/db-path';
 import { ensureDbFile } from './utils/ensure-db-file';
+import { waitForServerHealth } from './utils/health-check';
 import { findAvailablePort } from './utils/port';
 import { runMigrations } from './utils/run-migrations';
 
@@ -20,35 +19,6 @@ function openExternal(url: string): void {
     return;
   }
   void shell.openExternal(url);
-}
-
-function healthCheck(port: number): Promise<void> {
-  return new Promise(function doHealthCheck(
-    resolve: () => void,
-    reject: (err: Error) => void
-  ): void {
-    const req = http.get(
-      `http://127.0.0.1:${port}/api/health`,
-      { timeout: 2000 },
-      function onResponse(res): void {
-        if (res.statusCode === 200) {
-          res.resume();
-          resolve();
-        } else {
-          res.resume();
-          reject(
-            new Error(
-              `Health check failed with status: ${res.statusCode ?? 'unknown'}`
-            )
-          );
-        }
-      }
-    );
-    req.on('timeout', function onTimeout(): void {
-      req.destroy(new Error('Health check request timed out'));
-    });
-    req.on('error', reject);
-  });
 }
 
 interface ServerPaths {
@@ -81,7 +51,7 @@ function attachServerProcessListeners(
   proc: ChildProcess,
   timeout: ReturnType<typeof setTimeout>,
   resolve: () => void,
-  reject: (err: Error) => void
+  reject: (err: Error) => void,
 ): void {
   proc.on('message', function onMessage(msg: Buffer | object | string): void {
     if (msg === 'ready') {
@@ -101,8 +71,8 @@ function attachServerProcessListeners(
       new Error(
         `Server process exited with code ${
           code ?? 'null'
-        } before signalling ready`
-      )
+        } before signalling ready`,
+      ),
     );
   });
 }
@@ -110,7 +80,7 @@ function attachServerProcessListeners(
 function startServer(port: number): Promise<void> {
   return new Promise(function doStartServer(
     resolve: () => void,
-    reject: (err: Error) => void
+    reject: (err: Error) => void,
   ): void {
     const explicitNode =
       process.env['DMS_NODE_EXEC_PATH'] ?? process.env['npm_node_execpath'];
@@ -168,7 +138,7 @@ function isLocalAppUrl(url: string, port: number): boolean {
 function handleWillNavigate(
   event: Electron.Event,
   url: string,
-  port: number
+  port: number,
 ): void {
   if (!isLocalAppUrl(url, port)) {
     event.preventDefault();
@@ -195,7 +165,7 @@ function configureContentSecurityPolicy(port: number): void {
           ],
         },
       });
-    }
+    },
   );
 }
 
@@ -215,11 +185,11 @@ function createWindow(port: number): void {
     'will-navigate',
     function onWillNavigate(event: Electron.Event, url: string): void {
       handleWillNavigate(event, url, port);
-    }
+    },
   );
 
   win.webContents.setWindowOpenHandler(function onWindowOpen(
-    details: Electron.HandlerDetails
+    details: Electron.HandlerDetails,
   ): Electron.WindowOpenHandlerResponse {
     if (isLocalAppUrl(details.url, port)) {
       void win.loadURL(details.url);
@@ -285,8 +255,8 @@ async function initDatabase(dbPath: string): Promise<boolean> {
     showFatalError(
       'Database Initialisation Failed',
       `Could not create the database directory or file at ${dbPath}.\n\n${String(
-        err
-      )}`
+        err,
+      )}`,
     );
     return false;
   }
@@ -298,7 +268,7 @@ async function initDatabase(dbPath: string): Promise<boolean> {
   } catch (err) {
     showFatalError(
       'Database Migration Failed',
-      `Could not update the database schema.\n\n${String(err)}`
+      `Could not update the database schema.\n\n${String(err)}`,
     );
     return false;
   }
@@ -330,7 +300,7 @@ async function init(): Promise<void> {
     await startServer(port);
     console.log(`[electron] Fastify started on port ${port}`);
 
-    await healthCheck(port);
+    await waitForServerHealth(port);
     console.log(`[electron] Health check passed on port ${port}`);
 
     await app.whenReady();
