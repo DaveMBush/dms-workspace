@@ -146,3 +146,80 @@ So that I can sort, select, scroll, and inline-edit in every table surface witho
 **And** scrolling keeps the column-header row pinned above the body (Material's native sticky headers) while virtual scroll renders additional rows
 **And** sorting toggles direction with the rank badge, and selection toggles row state
 **And** the four consumer specs that still target native-table selectors (`open-positions`, `symbol-filter-header`, `base-table-layout-regression` header selector, `universe-table-workflows`) are updated to div-based equivalents, while the ~50 class/role-based consumer specs and the `dms-base-table` host-selector specs pass unchanged
+
+---
+
+> Epic 4 is generated from `.github/epic-descriptions/epics-2026-09-30.md`.
+> Context docs cited: ARCHITECTURE-SPINE (ADs), PRD (FRs).
+
+## Epic 4: Fix add-position / add-div-deposit navigation crash (SmartNgRX state corruption)
+
+After this Epic, adding a new position on the Open Positions screen or adding a dividend/deposit on the Dividend Deposits screen no longer corrupts in-memory state: navigating to Sold Positions, Dividend Deposits, or any other route after an add renders normally with no exception, and the added row appears correctly in its table and persists across a page reload. The root cause is that SmartNgRX's `SmartArray.add()` → `addToStore()` reconstructs the parent Account entity's virtual-array field (`openTrades` / `divDeposits`) as `{ indexes, length }` only — dropping `startIndex` — so any later read of that virtual array (e.g. a computed signal re-evaluated on route change) throws.
+
+**ADs covered:** AD-2
+**FRs covered:** FR-2, FR-3, FR-5, FR-7
+
+### Story 4.1: Unit tests for add-position / add-div-deposit SmartNgRX state integrity (red-phase)
+
+As a developer,
+I want red-phase unit-test assertions that the parent `Account` entity's virtual-array field (`openTrades` / `divDeposits`) retains all three properties — `startIndex`, `indexes`, and `length` — after calling SmartNgRX's `SmartArray.add()`,
+So that Story 4.2 has a defined, executable contract to make pass when it fixes the state corruption in the add-position and add-div-deposit flows.
+
+**Acceptance Criteria:**
+
+**Given** the `AddPositionService.createDialogCloseHandler(...)` path processes a valid dialog result against an account with existing open trades
+**When** the post-add unit test reads the parent `Account` entity's `openTrades` field from the SmartNgRX store
+**Then** `startIndex` is a number (not `undefined`), `indexes` is an array whose last element equals the new trade's id, and `length` equals the prior length + 1
+**And** the parallel assertion set for `DividendDepositsComponentService.addDivDeposit(...)` verifies the parent `Account` entity's `divDeposits` field has all three properties defined with the same invariants
+
+**Given** an add (position or dividend deposit) has completed in the unit test
+**When** the computed signal that reads the virtual array is re-evaluated (`OpenPositionsComponentService.selectOpenPositions()` for trades; `DividendDepositsComponentService.dividends()` for deposits)
+**Then** it does not throw — iterating every valid index returns a row object or string placeholder id, never an exception from a missing/undefined `startIndex`
+
+**Given** the red-phase assertions above are written into the spec files
+**When** `nx test dms-material` runs immediately after this story
+**Then** all new assertions are marked `.skip()` (`it.skip`) so CI stays green while the bug still exists, and every pre-existing test in `open-positions-component.service.spec.ts` and `dividend-deposits-component.service.spec.ts` remains unskipped and green
+
+### Story 4.2: Fix add-position / add-div-deposit SmartNgRX virtual-array state corruption
+
+As a user (Dave),
+I want adding a position or dividend deposit to not corrupt the in-memory `Account` entity's virtual-array state,
+So that navigating away from the screen after an add does not throw an exception and my data is accurate and durable.
+
+**Acceptance Criteria:**
+
+**Given** SmartNgRX's `BaseArrayProxy.addToStore()` reconstructs the parent virtual-array field as `{ indexes, length }` only — omitting `startIndex` (verified in installed `@smarttools/smart-core`)
+**When** the fix is applied at the lowest correct layer so that after `.add()`, the parent Account entity's `openTrades` / `divDeposits` retains all three properties: `startIndex` (a number), `indexes` (array with the new id appended), and `length` (prior + 1)
+**Then** no property is dropped or set to `undefined` for either add path
+
+**Given** Story 4.1's red-phase unit assertions are unskipped
+**When** `nx test dms-material` runs after the fix
+**Then** all of Story 4.1's state-integrity and no-throw assertions pass, and no pre-existing test regresses
+
+**Given** an add completes (HTTP round-trip + store reconciliation) in the running app
+**When** the user navigates away from Open Positions or Dividend Deposits to another route
+**Then** no exception is thrown and the view renders normally — verified by unit-level no-throw assertions; the e2e verification of this behavior belongs to Story 4.3
+
+### Story 4.3: E2E test for add-position / add-div-deposit then navigate
+
+As a user (Dave),
+I want an end-to-end proof that adding a position or dividend deposit and then navigating away does not crash the app,
+So that I can trust both add flows in real use — including persistence of the added row.
+
+**Acceptance Criteria:**
+
+**Given** the app is running with seeded data and an account panel is open on the Open Positions screen
+**When** a position is added via the Add Position dialog and the user navigates to Sold Positions (or Dividend Deposits)
+**Then** zero `pageerror` events and zero `console.error` events are captured for the whole flow, and the target route renders its table normally
+
+**Given** the app is running with seeded data and an account panel is open on the Dividend Deposits screen
+**When** a dividend deposit is added and the user navigates to Open Positions (or Sold Positions)
+**Then** zero `pageerror` events and zero `console.error` events are captured for the whole flow, and the target route renders its table normally
+
+**Given** an add has completed in either flow
+**When** the page is reloaded (`page.reload()`)
+**Then** the added row is still present with correct data (symbol, quantity, price, date for positions; date, amount, type for deposits) — server round-trip confirmed
+**And** the existing e2e specs `open-positions.spec.ts` and `dividend-deposits-modal.spec.ts` pass unchanged alongside the new spec
+
+---
+
