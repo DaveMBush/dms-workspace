@@ -2,53 +2,57 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { EnvironmentInjector } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { castTo, FacadeBase, facadeRegistry, rootInjector } from '@smarttools/smart-core';
-import { provideSmartFeatureSignalEntities, provideSmartNgRX } from '@smarttools/smart-signals';
+import {
+  castTo,
+  FacadeBase,
+  facadeRegistry,
+  rootInjector,
+} from '@smarttools/smart-core';
+import {
+  provideSmartFeatureSignalEntities,
+  provideSmartNgRX,
+} from '@smarttools/smart-signals';
 import { beforeAll, describe, expect, it } from 'vitest';
-
+import { accountEffectsServiceToken } from '../../store/accounts/account-effect-service-token';
+// Effect service modules are safe to import statically: they extend EffectService
+// and inject HttpClient, but do NOT call createSmartSignal (only selectors do).
+import { AccountEffectsService } from '../../store/accounts/account-effect.service';
 // NOTE: NO static imports of any selector module that calls createSmartSignal.
 // Those run facadeRegistry.register(feature, entity) at import time, before the
 // facade constructor is registered by provideSmartFeatureSignalEntities' bootstrap
 // microtask. We import them dynamically AFTER bootstrap + microtask flush instead.
 
 import { Account } from '../../store/accounts/account.interface';
-import { DivDeposit } from '../../store/div-deposits/div-deposit.interface';
+// Entity definitions (safe to import statically: only interfaces + tokens).
+import { accountsDefinition } from '../../store/accounts/accounts-definition.const';
+import { divDepositTypesDefinition } from '../../store/div-deposit-types/div-deposit-types-definition.const';
+import { divDepositTypesEffectsServiceToken } from '../../store/div-deposit-types/div-deposit-types-effect-service-token';
+import { DivDepositTypesEffectsService } from '../../store/div-deposit-types/div-deposit-types-effect.service';
+import { divDepositDefinition } from '../../store/div-deposits/div-deposit-definition.const';
+import { divDepositsEffectsServiceToken } from '../../store/div-deposits/div-deposits-effect-service-token';
+import { DivDepositsEffectsService } from '../../store/div-deposits/div-deposits-effect.service';
+import { riskGroupDefinition } from '../../store/risk-group/risk-group-definition.const';
+import { riskGroupEffectsServiceToken } from '../../store/risk-group/risk-group-effect-service-token';
+import { RiskGroupEffectsService } from '../../store/risk-group/risk-group-effect.service';
+import { screenDefinition } from '../../store/screen/screen-definition.const';
+import { screenEffectsServiceToken } from '../../store/screen/screen-effect-service-token';
+import { ScreenEffectsService } from '../../store/screen/screen-effect.service';
+import { topDefinition } from '../../store/top/top-definition.const';
+import { topEffectsServiceToken } from '../../store/top/top-effect-service-token';
+import { TopEffectsService } from '../../store/top/top-effect.service';
+import { openTradesDefinition } from '../../store/trades/open-trades-definition.const';
+import { soldTradesDefinition } from '../../store/trades/sold-trades-definition.const';
+import { tradeEffectsServiceToken } from '../../store/trades/trade-effect-service-token';
+import { TradeEffectsService } from '../../store/trades/trade-effect.service';
+import { universeDefinition } from '../../store/universe/universe-definition.const';
+import { universeEffectsServiceToken } from '../../store/universe/universe-effect-service-token';
+import { UniverseEffectsService } from '../../store/universe/universe-effect.service';
 // Type-only: the VALUE import of DividendDepositsComponentService reaches
 // createSmartSignal('app','top') at module load (via currentAccountSignalStore),
 // which runs before bootstrap registers the facade and crashes collection. We
 // dynamic-import it in beforeAll after bootstrap instead. `import type` is erased
 // at runtime, so it does not trigger that registration.
 import type { DividendDepositsComponentService } from './dividend-deposits-component.service';
-
-// Effect service modules are safe to import statically: they extend EffectService
-// and inject HttpClient, but do NOT call createSmartSignal (only selectors do).
-import { AccountEffectsService } from '../../store/accounts/account-effect.service';
-import { accountEffectsServiceToken } from '../../store/accounts/account-effect-service-token';
-import { TradeEffectsService } from '../../store/trades/trade-effect.service';
-import { tradeEffectsServiceToken } from '../../store/trades/trade-effect-service-token';
-import { TopEffectsService } from '../../store/top/top-effect.service';
-import { topEffectsServiceToken } from '../../store/top/top-effect-service-token';
-import { UniverseEffectsService } from '../../store/universe/universe-effect.service';
-import { universeEffectsServiceToken } from '../../store/universe/universe-effect-service-token';
-import { ScreenEffectsService } from '../../store/screen/screen-effect.service';
-import { screenEffectsServiceToken } from '../../store/screen/screen-effect-service-token';
-import { DivDepositsEffectsService } from '../../store/div-deposits/div-deposits-effect.service';
-import { divDepositsEffectsServiceToken } from '../../store/div-deposits/div-deposits-effect-service-token';
-import { DivDepositTypesEffectsService } from '../../store/div-deposit-types/div-deposit-types-effect.service';
-import { divDepositTypesEffectsServiceToken } from '../../store/div-deposit-types/div-deposit-types-effect-service-token';
-import { RiskGroupEffectsService } from '../../store/risk-group/risk-group-effect.service';
-import { riskGroupEffectsServiceToken } from '../../store/risk-group/risk-group-effect-service-token';
-
-// Entity definitions (safe to import statically: only interfaces + tokens).
-import { accountsDefinition } from '../../store/accounts/accounts-definition.const';
-import { openTradesDefinition } from '../../store/trades/open-trades-definition.const';
-import { soldTradesDefinition } from '../../store/trades/sold-trades-definition.const';
-import { divDepositDefinition } from '../../store/div-deposits/div-deposit-definition.const';
-import { divDepositTypesDefinition } from '../../store/div-deposit-types/div-deposit-types-definition.const';
-import { riskGroupDefinition } from '../../store/risk-group/risk-group-definition.const';
-import { screenDefinition } from '../../store/screen/screen-definition.const';
-import { topDefinition } from '../../store/top/top-definition.const';
-import { universeDefinition } from '../../store/universe/universe-definition.const';
 
 interface AccountsFacade extends FacadeBase<Account> {
   entityState: {
@@ -88,14 +92,29 @@ describe('DividendDepositsComponentService divDeposits state integrity (Story 4.
         provideHttpClient(),
         provideHttpClientTesting(),
         // Effect services resolved from root injector by provideSmartFeatureSignalEntities.
-        { provide: accountEffectsServiceToken, useClass: AccountEffectsService },
+        {
+          provide: accountEffectsServiceToken,
+          useClass: AccountEffectsService,
+        },
         { provide: tradeEffectsServiceToken, useClass: TradeEffectsService },
         { provide: topEffectsServiceToken, useClass: TopEffectsService },
-        { provide: universeEffectsServiceToken, useClass: UniverseEffectsService },
+        {
+          provide: universeEffectsServiceToken,
+          useClass: UniverseEffectsService,
+        },
         { provide: screenEffectsServiceToken, useClass: ScreenEffectsService },
-        { provide: divDepositsEffectsServiceToken, useClass: DivDepositsEffectsService },
-        { provide: divDepositTypesEffectsServiceToken, useClass: DivDepositTypesEffectsService },
-        { provide: riskGroupEffectsServiceToken, useClass: RiskGroupEffectsService },
+        {
+          provide: divDepositsEffectsServiceToken,
+          useClass: DivDepositsEffectsService,
+        },
+        {
+          provide: divDepositTypesEffectsServiceToken,
+          useClass: DivDepositTypesEffectsService,
+        },
+        {
+          provide: riskGroupEffectsServiceToken,
+          useClass: RiskGroupEffectsService,
+        },
         // Register the entity definitions (mirrors app.routes.ts). This schedules
         // the facade-registration microtask for each entity at bootstrap.
         provideSmartFeatureSignalEntities('app', [
@@ -124,16 +143,16 @@ describe('DividendDepositsComponentService divDeposits state integrity (Story 4.
     // Import AFTER bootstrap: both modules reach createSmartSignal('app','top') and
     // would crash collection if imported statically at module load (before the facade
     // constructor is registered). See the type-only import note above.
-    const { DividendDepositsComponentService } = await import(
-      './dividend-deposits-component.service'
-    );
-    const { currentAccountSignalStore } = await import(
-      '../../store/current-account/current-account.signal-store'
-    );
+    const { DividendDepositsComponentService } =
+      await import('./dividend-deposits-component.service');
+    const { currentAccountSignalStore } =
+      await import('../../store/current-account/current-account.signal-store');
 
     service = TestBed.inject(DividendDepositsComponentService);
     currentAccountStore = currentAccountSignalStore;
-    accountsFacade = castTo<AccountsFacade>(facadeRegistry.register('app', 'accounts'));
+    accountsFacade = castTo<AccountsFacade>(
+      facadeRegistry.register('app', 'accounts'),
+    );
   });
 
   /** Seed a fresh account with empty child virtual arrays and return its id. */
@@ -150,9 +169,17 @@ describe('DividendDepositsComponentService divDeposits state integrity (Story 4.
   }
 
   /** Read the stored divDeposits virtual array for an account back from the facade. */
-  function readDivDeposits(id: string): { startIndex?: number; indexes: string[]; length: number } {
+  function readDivDeposits(id: string): {
+    startIndex?: number;
+    indexes: string[];
+    length: number;
+  } {
     const after = accountsFacade.entityState.entityMap()[id];
-    return after.divDeposits as unknown as { startIndex?: number; indexes: string[]; length: number };
+    return after.divDeposits as unknown as {
+      startIndex?: number;
+      indexes: string[];
+      length: number;
+    };
   }
 
   /** Point the service's currentAccount at the seeded account. */
@@ -163,6 +190,7 @@ describe('DividendDepositsComponentService divDeposits state integrity (Story 4.
   // RED PHASE (Story 4.1 AC#4): skipped until SmartArray.add()/addToStore preserves
   // startIndex on the parent virtual array. Unskipped, this fails with:
   //   AssertionError: expected 'undefined' to be 'number'
+  // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
   it.skip('keeps divDeposits.startIndex a number after SmartArray.add() persists the new deposit', async () => {
     seedCounter += 1;
     const accountId = `acc-div-integrity-${seedCounter}`;
@@ -178,6 +206,7 @@ describe('DividendDepositsComponentService divDeposits state integrity (Story 4.
 
   // RED PHASE (Story 4.1 AC#4): skipped per story — part of the same state-integrity
   // block; kept red alongside the startIndex assertion until the fix lands.
+  // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
   it.skip('appends the hardcoded deposit id "new" to divDeposits.indexes', async () => {
     seedCounter += 1;
     const accountId = `acc-div-integrity-${seedCounter}`;
@@ -194,6 +223,7 @@ describe('DividendDepositsComponentService divDeposits state integrity (Story 4.
 
   // RED PHASE (Story 4.1 AC#4): skipped per story — part of the same state-integrity
   // block; kept red alongside the startIndex assertion until the fix lands.
+  // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
   it.skip('increments divDeposits.length by exactly one', async () => {
     seedCounter += 1;
     const accountId = `acc-div-integrity-${seedCounter}`;
@@ -205,7 +235,7 @@ describe('DividendDepositsComponentService divDeposits state integrity (Story 4.
     await flushMicrotasks();
 
     const va = readDivDeposits(accountId);
-    expect(va.length).toBe(priorLength + 1);
+    expect(va).toHaveLength(priorLength + 1);
   });
 
   // RED PHASE (Story 4.1 AC#3): navigation-simulation / no-throw assertion for the
@@ -214,6 +244,7 @@ describe('DividendDepositsComponentService divDeposits state integrity (Story 4.
   // index — each access must return a row object or string placeholder id and never
   // throw on an undefined/missing startIndex. This is the navigation crash Dave
   // reports: adding a deposit then navigating away re-evaluates this computed signal.
+  // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
   it.skip('re-evaluating dividends() after addDivDeposit does not throw for any index', async () => {
     seedCounter += 1;
     const accountId = `acc-div-integrity-${seedCounter}`;
@@ -226,7 +257,7 @@ describe('DividendDepositsComponentService divDeposits state integrity (Story 4.
     // Re-evaluate the computed signal that reads the virtual array (navigation).
     let rows: unknown[] = [];
     expect(() => {
-      rows = service.dividends() as unknown[];
+      rows = service.dividends();
     }).not.toThrow();
 
     for (let i = 0; i < rows.length; i++) {

@@ -2,20 +2,18 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { EnvironmentInjector, signal, Signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { castTo, FacadeBase, facadeRegistry, rootInjector } from '@smarttools/smart-core';
-import { provideSmartFeatureSignalEntities, provideSmartNgRX } from '@smarttools/smart-signals';
+import {
+  castTo,
+  FacadeBase,
+  facadeRegistry,
+  rootInjector,
+} from '@smarttools/smart-core';
+import {
+  provideSmartFeatureSignalEntities,
+  provideSmartNgRX,
+} from '@smarttools/smart-signals';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
-
-// NOTE: This is a UNIT test. It mocks the SmartNgRX trades proxy (see
-// createMockTradesSignal below) and does NOT bootstrap the real store. The
-// end-to-end "real SmartNgRX store" coverage lives in add-position.integration.spec.ts,
-// which bootstraps provideSmartFeatureSignalEntities('app', [...]) once per file.
-
-import { Account } from '../../store/accounts/account.interface';
-import { CurrentAccount } from '../../store/current-account/current-account.interface';
-import { Trade } from '../../store/trades/trade.interface';
-import { AddPositionDialogResult } from './add-position-dialog-result.interface';
-import { AddPositionService } from './add-position.service';
+import { accountEffectsServiceToken } from '../../store/accounts/account-effect-service-token';
 // NOTE: OpenPositionsComponentService is NOT imported here (statically or as a type).
 // Its module reaches createSmartSignal('app','top') at load, which runs before
 // bootstrap registers the facade and crashes collection. The AC#3 test dynamic-imports
@@ -24,32 +22,40 @@ import { AddPositionService } from './add-position.service';
 // Effect service modules are safe to import statically: they extend EffectService
 // and inject HttpClient, but do NOT call createSmartSignal (only selectors do).
 import { AccountEffectsService } from '../../store/accounts/account-effect.service';
-import { accountEffectsServiceToken } from '../../store/accounts/account-effect-service-token';
-import { TradeEffectsService } from '../../store/trades/trade-effect.service';
-import { tradeEffectsServiceToken } from '../../store/trades/trade-effect-service-token';
-import { TopEffectsService } from '../../store/top/top-effect.service';
-import { topEffectsServiceToken } from '../../store/top/top-effect-service-token';
-import { UniverseEffectsService } from '../../store/universe/universe-effect.service';
-import { universeEffectsServiceToken } from '../../store/universe/universe-effect-service-token';
-import { ScreenEffectsService } from '../../store/screen/screen-effect.service';
-import { screenEffectsServiceToken } from '../../store/screen/screen-effect-service-token';
-import { DivDepositsEffectsService } from '../../store/div-deposits/div-deposits-effect.service';
-import { divDepositsEffectsServiceToken } from '../../store/div-deposits/div-deposits-effect-service-token';
-import { DivDepositTypesEffectsService } from '../../store/div-deposit-types/div-deposit-types-effect.service';
-import { divDepositTypesEffectsServiceToken } from '../../store/div-deposit-types/div-deposit-types-effect-service-token';
-import { RiskGroupEffectsService } from '../../store/risk-group/risk-group-effect.service';
-import { riskGroupEffectsServiceToken } from '../../store/risk-group/risk-group-effect-service-token';
+// NOTE: This is a UNIT test. It mocks the SmartNgRX trades proxy (see
+// createMockTradesSignal below) and does NOT bootstrap the real store. The
+// end-to-end "real SmartNgRX store" coverage lives in add-position.integration.spec.ts,
+// which bootstraps provideSmartFeatureSignalEntities('app', [...]) once per file.
 
+import { Account } from '../../store/accounts/account.interface';
 // Entity definitions (safe to import statically: only interfaces + tokens).
 import { accountsDefinition } from '../../store/accounts/accounts-definition.const';
+import { CurrentAccount } from '../../store/current-account/current-account.interface';
+import { divDepositTypesDefinition } from '../../store/div-deposit-types/div-deposit-types-definition.const';
+import { divDepositTypesEffectsServiceToken } from '../../store/div-deposit-types/div-deposit-types-effect-service-token';
+import { DivDepositTypesEffectsService } from '../../store/div-deposit-types/div-deposit-types-effect.service';
+import { divDepositDefinition } from '../../store/div-deposits/div-deposit-definition.const';
+import { divDepositsEffectsServiceToken } from '../../store/div-deposits/div-deposits-effect-service-token';
+import { DivDepositsEffectsService } from '../../store/div-deposits/div-deposits-effect.service';
+import { riskGroupDefinition } from '../../store/risk-group/risk-group-definition.const';
+import { riskGroupEffectsServiceToken } from '../../store/risk-group/risk-group-effect-service-token';
+import { RiskGroupEffectsService } from '../../store/risk-group/risk-group-effect.service';
+import { screenDefinition } from '../../store/screen/screen-definition.const';
+import { screenEffectsServiceToken } from '../../store/screen/screen-effect-service-token';
+import { ScreenEffectsService } from '../../store/screen/screen-effect.service';
+import { topDefinition } from '../../store/top/top-definition.const';
+import { topEffectsServiceToken } from '../../store/top/top-effect-service-token';
+import { TopEffectsService } from '../../store/top/top-effect.service';
 import { openTradesDefinition } from '../../store/trades/open-trades-definition.const';
 import { soldTradesDefinition } from '../../store/trades/sold-trades-definition.const';
-import { divDepositDefinition } from '../../store/div-deposits/div-deposit-definition.const';
-import { divDepositTypesDefinition } from '../../store/div-deposit-types/div-deposit-types-definition.const';
-import { riskGroupDefinition } from '../../store/risk-group/risk-group-definition.const';
-import { screenDefinition } from '../../store/screen/screen-definition.const';
-import { topDefinition } from '../../store/top/top-definition.const';
+import { tradeEffectsServiceToken } from '../../store/trades/trade-effect-service-token';
+import { TradeEffectsService } from '../../store/trades/trade-effect.service';
+import { Trade } from '../../store/trades/trade.interface';
 import { universeDefinition } from '../../store/universe/universe-definition.const';
+import { universeEffectsServiceToken } from '../../store/universe/universe-effect-service-token';
+import { UniverseEffectsService } from '../../store/universe/universe-effect.service';
+import { AddPositionDialogResult } from './add-position-dialog-result.interface';
+import { AddPositionService } from './add-position.service';
 
 interface AccountsFacade extends FacadeBase<Account> {
   entityState: {
@@ -338,14 +344,29 @@ describe('AddPositionService openTrades state integrity (Story 4.1 AC#1)', () =>
         provideHttpClient(),
         provideHttpClientTesting(),
         // Effect services resolved from root injector by provideSmartFeatureSignalEntities.
-        { provide: accountEffectsServiceToken, useClass: AccountEffectsService },
+        {
+          provide: accountEffectsServiceToken,
+          useClass: AccountEffectsService,
+        },
         { provide: tradeEffectsServiceToken, useClass: TradeEffectsService },
         { provide: topEffectsServiceToken, useClass: TopEffectsService },
-        { provide: universeEffectsServiceToken, useClass: UniverseEffectsService },
+        {
+          provide: universeEffectsServiceToken,
+          useClass: UniverseEffectsService,
+        },
         { provide: screenEffectsServiceToken, useClass: ScreenEffectsService },
-        { provide: divDepositsEffectsServiceToken, useClass: DivDepositsEffectsService },
-        { provide: divDepositTypesEffectsServiceToken, useClass: DivDepositTypesEffectsService },
-        { provide: riskGroupEffectsServiceToken, useClass: RiskGroupEffectsService },
+        {
+          provide: divDepositsEffectsServiceToken,
+          useClass: DivDepositsEffectsService,
+        },
+        {
+          provide: divDepositTypesEffectsServiceToken,
+          useClass: DivDepositTypesEffectsService,
+        },
+        {
+          provide: riskGroupEffectsServiceToken,
+          useClass: RiskGroupEffectsService,
+        },
         // Register the entity definitions (mirrors app.routes.ts). This schedules
         // the facade-registration microtask for each entity at bootstrap.
         provideSmartFeatureSignalEntities('app', [
@@ -372,7 +393,9 @@ describe('AddPositionService openTrades state integrity (Story 4.1 AC#1)', () =>
     await flushMicrotasks();
 
     service = TestBed.inject(AddPositionService);
-    accountsFacade = castTo<AccountsFacade>(facadeRegistry.register('app', 'accounts'));
+    accountsFacade = castTo<AccountsFacade>(
+      facadeRegistry.register('app', 'accounts'),
+    );
   });
 
   beforeEach(() => {
@@ -395,9 +418,17 @@ describe('AddPositionService openTrades state integrity (Story 4.1 AC#1)', () =>
   }
 
   /** Read the stored openTrades virtual array for an account back from the facade. */
-  function readOpenTrades(id: string): { startIndex?: number; indexes: string[]; length: number } {
+  function readOpenTrades(id: string): {
+    startIndex?: number;
+    indexes: string[];
+    length: number;
+  } {
     const after = accountsFacade.entityState.entityMap()[id];
-    return after.openTrades as unknown as { startIndex?: number; indexes: string[]; length: number };
+    return after.openTrades as unknown as {
+      startIndex?: number;
+      indexes: string[];
+      length: number;
+    };
   }
 
   /**
@@ -408,20 +439,26 @@ describe('AddPositionService openTrades state integrity (Story 4.1 AC#1)', () =>
   async function wireHandler(id: string): Promise<{
     handler(result: AddPositionDialogResult | null): void;
   }> {
-    const { selectAccountChildren } = await import(
-      '../../store/trades/selectors/select-account-children.function'
-    );
+    const { selectAccountChildren } =
+      await import('../../store/trades/selectors/select-account-children.function');
     const accountsState = selectAccountChildren();
     const acc = accountsState.entities[id] as unknown as Account;
     // The service calls trades() — it expects a Signal, not the raw proxy.
     const tradesSignal = signal(acc.openTrades as Trade[]);
     const currentAccountSignal = signal<CurrentAccount>({ id });
-    return { handler: service.createDialogCloseHandler(tradesSignal, currentAccountSignal, id) };
+    return {
+      handler: service.createDialogCloseHandler(
+        tradesSignal,
+        currentAccountSignal,
+        id,
+      ),
+    };
   }
 
   // RED PHASE (Story 4.1 AC#4): skipped until the service preserves startIndex
   // through SmartArray.add()/addToStore. Unskipped, this fails with:
   //   AssertionError: expected 'undefined' to be 'number'
+  // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
   it.skip('keeps startIndex a number after SmartArray.add() persists the new trade', async () => {
     seedCounter += 1;
     const accountId = `acc-integrity-${seedCounter}`;
@@ -443,6 +480,7 @@ describe('AddPositionService openTrades state integrity (Story 4.1 AC#1)', () =>
 
   // RED PHASE (Story 4.1 AC#4): skipped per story — part of the same state-integrity
   // block; kept red alongside the startIndex assertion until the fix lands.
+  // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
   it.skip('appends the hardcoded trade id "new" to openTrades.indexes', async () => {
     seedCounter += 1;
     const accountId = `acc-integrity-${seedCounter}`;
@@ -465,6 +503,7 @@ describe('AddPositionService openTrades state integrity (Story 4.1 AC#1)', () =>
 
   // RED PHASE (Story 4.1 AC#4): skipped per story — part of the same state-integrity
   // block; kept red alongside the startIndex assertion until the fix lands.
+  // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
   it.skip('increments openTrades.length by exactly one', async () => {
     seedCounter += 1;
     const accountId = `acc-integrity-${seedCounter}`;
@@ -482,7 +521,7 @@ describe('AddPositionService openTrades state integrity (Story 4.1 AC#1)', () =>
     await flushMicrotasks();
 
     const va = readOpenTrades(accountId);
-    expect(va.length).toBe(priorLength + 1);
+    expect(va).toHaveLength(priorLength + 1);
   });
 
   // RED PHASE (Story 4.1 AC#3): navigation-simulation / no-throw assertion for the
@@ -491,6 +530,7 @@ describe('AddPositionService openTrades state integrity (Story 4.1 AC#1)', () =>
   // every index — each access must return a row object or string placeholder id and
   // never throw on an undefined/missing startIndex. This is the navigation crash Dave
   // reports: adding a position then navigating away re-evaluates this computed signal.
+  // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
   it.skip('re-evaluating selectOpenPositions() after add does not throw for any index', async () => {
     seedCounter += 1;
     const accountId = `acc-integrity-${seedCounter}`;
@@ -499,12 +539,10 @@ describe('AddPositionService openTrades state integrity (Story 4.1 AC#1)', () =>
     // Point the component service's currentAccount at the seeded account. Both
     // modules reach createSmartSignal('app','top') and must be imported AFTER
     // bootstrap registered the facade — a static import would crash collection.
-    const { currentAccountSignalStore } = await import(
-      '../../store/current-account/current-account.signal-store'
-    );
-    const { OpenPositionsComponentService } = await import(
-      './open-positions-component.service'
-    );
+    const { currentAccountSignalStore } =
+      await import('../../store/current-account/current-account.signal-store');
+    const { OpenPositionsComponentService } =
+      await import('./open-positions-component.service');
     TestBed.inject(currentAccountSignalStore).setCurrentAccountId(accountId);
     const openPositionsService = TestBed.inject(OpenPositionsComponentService);
 
@@ -521,7 +559,7 @@ describe('AddPositionService openTrades state integrity (Story 4.1 AC#1)', () =>
     // Re-evaluate the computed signal that reads the virtual array (navigation).
     let rows: unknown[] = [];
     expect(() => {
-      rows = openPositionsService.selectOpenPositions() as unknown[];
+      rows = openPositionsService.selectOpenPositions();
     }).not.toThrow();
 
     for (let i = 0; i < rows.length; i++) {
