@@ -265,8 +265,8 @@ importers:
         specifier: 10.5.3
         version: 10.5.3(a18be41c31128a91c4174643e4aabdbc)
       '@storybook/angular-vite':
-        specifier: ^10.5.10
-        version: 10.5.10(00521bddee791077ee077d5f0285ed96)
+        specifier: ^10.6.0
+        version: 10.6.0(e594cf2207a48b4e452f3fd524d35804)
       '@storybook/builder-vite':
         specifier: ^10.5.4
         version: 10.5.10(esbuild@0.28.2)(storybook@10.6.0(@types/react@19.2.18)(prettier@3.9.6)(react@19.2.8))(vite@8.1.3(@types/node@20.19.9)(esbuild@0.28.2)(jiti@2.6.1)(less@4.9.0(supports-color@7.2.0))(sass@1.101.0)(terser@5.51.2)(yaml@2.9.0))(webpack@5.109.2(@swc/core@1.16.2(@swc/helpers@0.5.23))(clean-css@5.3.3)(esbuild@0.28.2)(html-minifier-terser@6.1.0)(lightningcss@1.33.0)(postcss@8.5.25)(uglify-js@3.19.3))
@@ -4735,8 +4735,8 @@ packages:
     peerDependencies:
       storybook: ^10.5.3
 
-  '@storybook/angular-vite@10.5.10':
-    resolution: {integrity: sha512-lQXOOTViIpJhDGkg0f/x5B+RzgIUm2G3xfUef9e6dstV1FS9QQUXVKqaBp8C/i0thKS34f+z+9hBwelvk8vP8A==}
+  '@storybook/angular-vite@10.6.0':
+    resolution: {integrity: sha512-2u7jXdUWTPPgGhaS2R0fZC/1WA66a2QeFuX8fXs+gl1iU3+jZkotIZX1FMiN5cXrCwYEqkdpuAJSVVjVbAxTuA==}
     peerDependencies:
       '@analogjs/vite-plugin-angular': '>=2.0.0'
       '@angular-devkit/architect': '>=0.2100.0 < 0.2300.0'
@@ -4749,13 +4749,22 @@ packages:
       '@angular/compiler-cli': '>=21.0.0 < 23.0.0'
       '@angular/core': '>=21.0.0 < 23.0.0'
       '@angular/platform-browser': '>=21.0.0 < 23.0.0'
+      less: ^4.0.0
       rxjs: ^7.4.0
-      storybook: ^10.5.10
+      sass: ^1.0.0
+      sass-embedded: ^1.0.0
+      storybook: ^10.6.0
       typescript: '>= 5.9.x'
       vite: '>=8.0.0'
-      zone.js: '>=0.16.0'
+      zone.js: '>=0.14.0'
     peerDependenciesMeta:
       '@angular/cli':
+        optional: true
+      less:
+        optional: true
+      sass:
+        optional: true
+      sass-embedded:
         optional: true
       zone.js:
         optional: true
@@ -4790,6 +4799,12 @@ packages:
     resolution: {integrity: sha512-O4GgIP0tKLRueom3EmU3OaBUHKjNYj+jkOvmTIkn3PYTiWVkCuHqSKEs4ADvRyaQuLH+peHhFe4JtkNC9KbtrQ==}
     peerDependencies:
       storybook: ^10.5.10
+      vite: ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0
+
+  '@storybook/builder-vite@10.6.0':
+    resolution: {integrity: sha512-7zt8tYB6dnSO8fbjUz91MHexGDpf9HrLlA3FAmlVb+2ZL3eWUs499L3I6BDUymcWu7oW5WCBJlB8ERj8ZLLzig==}
+    peerDependencies:
+      storybook: ^10.6.0
       vite: ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0
 
   '@storybook/builder-webpack5@10.5.3':
@@ -16486,7 +16501,7 @@ snapshots:
       storybook: 10.6.0(@types/react@19.2.18)(prettier@3.9.6)(react@19.2.8)
       ts-dedent: 2.3.0
 
-  '@storybook/angular-vite@10.5.10(00521bddee791077ee077d5f0285ed96)':
+  '@storybook/angular-vite@10.6.0(e594cf2207a48b4e452f3fd524d35804)':
     dependencies:
       '@analogjs/vite-plugin-angular': 2.7.2(@angular-devkit/build-angular@22.1.8(1f14fdc73ccfea8b52a267a2148ae0c8))(@angular/build@22.1.8(11a86f6a492970507b45fd7647d50dae))(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(vite@8.1.3(@types/node@20.19.9)(esbuild@0.28.2)(jiti@2.6.1)(less@4.9.0(supports-color@7.2.0))(sass@1.101.0)(terser@5.51.2)(yaml@2.9.0))
       '@angular-devkit/architect': 0.2201.8(chokidar@5.0.0)
@@ -16498,7 +16513,7 @@ snapshots:
       '@angular/compiler-cli': 22.1.7(@angular/compiler@22.1.7)(typescript@6.0.3)
       '@angular/core': 22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2)(zone.js@0.16.2)
       '@angular/platform-browser': 22.1.7(@angular/animations@22.1.7(@angular/core@22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2)(zone.js@0.16.2)))(@angular/common@22.1.7(@angular/core@22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2)(zone.js@0.16.2))
-      '@storybook/builder-vite': 10.5.10(esbuild@0.28.2)(storybook@10.6.0(@types/react@19.2.18)(prettier@3.9.6)(react@19.2.8))(vite@8.1.3(@types/node@20.19.9)(esbuild@0.28.2)(jiti@2.6.1)(less@4.9.0(supports-color@7.2.0))(sass@1.101.0)(terser@5.51.2)(yaml@2.9.0))(webpack@5.109.2(@swc/core@1.16.2(@swc/helpers@0.5.23))(clean-css@5.3.3)(esbuild@0.28.2)(html-minifier-terser@6.1.0)(lightningcss@1.33.0)(postcss@8.5.25)(uglify-js@3.19.3))
+      '@storybook/builder-vite': 10.6.0(storybook@10.6.0(@types/react@19.2.18)(prettier@3.9.6)(react@19.2.8))(vite@8.1.3(@types/node@20.19.9)(esbuild@0.28.2)(jiti@2.6.1)(less@4.9.0(supports-color@7.2.0))(sass@1.101.0)(terser@5.51.2)(yaml@2.9.0))
       '@storybook/global': 5.0.0
       rxjs: 7.8.2
       storybook: 10.6.0(@types/react@19.2.18)(prettier@3.9.6)(react@19.2.8)
@@ -16508,11 +16523,9 @@ snapshots:
       vite: 8.1.3(@types/node@20.19.9)(esbuild@0.28.2)(jiti@2.6.1)(less@4.9.0(supports-color@7.2.0))(sass@1.101.0)(terser@5.51.2)(yaml@2.9.0)
     optionalDependencies:
       '@angular/cli': 22.1.8(@types/node@20.19.9)(chokidar@5.0.0)(supports-color@7.2.0)
+      less: 4.9.0(supports-color@7.2.0)
+      sass: 1.101.0
       zone.js: 0.16.2
-    transitivePeerDependencies:
-      - esbuild
-      - rollup
-      - webpack
 
   '@storybook/angular@10.5.3(a18be41c31128a91c4174643e4aabdbc)':
     dependencies:
@@ -16564,6 +16577,12 @@ snapshots:
       - esbuild
       - rollup
       - webpack
+
+  '@storybook/builder-vite@10.6.0(storybook@10.6.0(@types/react@19.2.18)(prettier@3.9.6)(react@19.2.8))(vite@8.1.3(@types/node@20.19.9)(esbuild@0.28.2)(jiti@2.6.1)(less@4.9.0(supports-color@7.2.0))(sass@1.101.0)(terser@5.51.2)(yaml@2.9.0))':
+    dependencies:
+      storybook: 10.6.0(@types/react@19.2.18)(prettier@3.9.6)(react@19.2.8)
+      ts-dedent: 2.3.0
+      vite: 8.1.3(@types/node@20.19.9)(esbuild@0.28.2)(jiti@2.6.1)(less@4.9.0(supports-color@7.2.0))(sass@1.101.0)(terser@5.51.2)(yaml@2.9.0)
 
   '@storybook/builder-webpack5@10.5.3(@swc/core@1.16.2(@swc/helpers@0.5.23))(clean-css@5.3.3)(esbuild@0.28.2)(html-minifier-terser@6.1.0)(lightningcss@1.33.0)(postcss@8.5.28)(storybook@10.6.0(@types/react@19.2.18)(prettier@3.9.6)(react@19.2.8))(typescript@6.0.3)(uglify-js@3.19.3)':
     dependencies:
