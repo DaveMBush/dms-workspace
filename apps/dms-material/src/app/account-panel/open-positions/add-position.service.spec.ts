@@ -16,6 +16,10 @@ import { CurrentAccount } from '../../store/current-account/current-account.inte
 import { Trade } from '../../store/trades/trade.interface';
 import { AddPositionDialogResult } from './add-position-dialog-result.interface';
 import { AddPositionService } from './add-position.service';
+// NOTE: OpenPositionsComponentService is NOT imported here (statically or as a type).
+// Its module reaches createSmartSignal('app','top') at load, which runs before
+// bootstrap registers the facade and crashes collection. The AC#3 test dynamic-imports
+// it after bootstrap instead.
 
 // Effect service modules are safe to import statically: they extend EffectService
 // and inject HttpClient, but do NOT call createSmartSignal (only selectors do).
@@ -479,5 +483,51 @@ describe('AddPositionService openTrades state integrity (Story 4.1 AC#1)', () =>
 
     const va = readOpenTrades(accountId);
     expect(va.length).toBe(priorLength + 1);
+  });
+
+  // RED PHASE (Story 4.1 AC#3): navigation-simulation / no-throw assertion for the
+  // add-position path. After the add, re-evaluate the computed signal that reads the
+  // virtual array (OpenPositionsComponentService.selectOpenPositions()) and iterate
+  // every index — each access must return a row object or string placeholder id and
+  // never throw on an undefined/missing startIndex. This is the navigation crash Dave
+  // reports: adding a position then navigating away re-evaluates this computed signal.
+  it.skip('re-evaluating selectOpenPositions() after add does not throw for any index', async () => {
+    seedCounter += 1;
+    const accountId = `acc-integrity-${seedCounter}`;
+    seedAccount(accountId);
+
+    // Point the component service's currentAccount at the seeded account. Both
+    // modules reach createSmartSignal('app','top') and must be imported AFTER
+    // bootstrap registered the facade — a static import would crash collection.
+    const { currentAccountSignalStore } = await import(
+      '../../store/current-account/current-account.signal-store'
+    );
+    const { OpenPositionsComponentService } = await import(
+      './open-positions-component.service'
+    );
+    TestBed.inject(currentAccountSignalStore).setCurrentAccountId(accountId);
+    const openPositionsService = TestBed.inject(OpenPositionsComponentService);
+
+    const { handler } = await wireHandler(accountId);
+    handler({
+      symbol: 'PDI',
+      universeId: 'universe-1',
+      quantity: 10,
+      price: 55.5,
+      purchase_date: '2024-01-15',
+    });
+    await flushMicrotasks();
+
+    // Re-evaluate the computed signal that reads the virtual array (navigation).
+    let rows: unknown[] = [];
+    expect(() => {
+      rows = openPositionsService.selectOpenPositions() as unknown[];
+    }).not.toThrow();
+
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i];
+      // Each access returns a row object or a string placeholder id — never throws.
+      expect(row !== undefined && typeof row === 'object').toBe(true);
+    }
   });
 });
