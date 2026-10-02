@@ -149,7 +149,9 @@ describe('DividendDepositsComponentService divDeposits state integrity (Story 4.
       await import('../../store/current-account/current-account.signal-store');
 
     service = TestBed.inject(DividendDepositsComponentService);
-    currentAccountStore = currentAccountSignalStore;
+    // Inject the INSTANCE (root-provided signal store), not the class — calling a
+    // method on the class itself throws "is not a function".
+    currentAccountStore = TestBed.inject(currentAccountSignalStore);
     accountsFacade = castTo<AccountsFacade>(
       facadeRegistry.register('app', 'accounts'),
     );
@@ -191,7 +193,7 @@ describe('DividendDepositsComponentService divDeposits state integrity (Story 4.
   // startIndex on the parent virtual array. Unskipped, this fails with:
   //   AssertionError: expected 'undefined' to be 'number'
   // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
-  it.skip('keeps divDeposits.startIndex a number after SmartArray.add() persists the new deposit', async () => {
+  it('keeps divDeposits.startIndex a number after SmartArray.add() persists the new deposit', async () => {
     seedCounter += 1;
     const accountId = `acc-div-integrity-${seedCounter}`;
     seedAccount(accountId);
@@ -207,7 +209,7 @@ describe('DividendDepositsComponentService divDeposits state integrity (Story 4.
   // RED PHASE (Story 4.1 AC#4): skipped per story — part of the same state-integrity
   // block; kept red alongside the startIndex assertion until the fix lands.
   // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
-  it.skip('appends the hardcoded deposit id "new" to divDeposits.indexes', async () => {
+  it('appends the hardcoded deposit id "new" to divDeposits.indexes', async () => {
     seedCounter += 1;
     const accountId = `acc-div-integrity-${seedCounter}`;
     seedAccount(accountId);
@@ -224,7 +226,7 @@ describe('DividendDepositsComponentService divDeposits state integrity (Story 4.
   // RED PHASE (Story 4.1 AC#4): skipped per story — part of the same state-integrity
   // block; kept red alongside the startIndex assertion until the fix lands.
   // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
-  it.skip('increments divDeposits.length by exactly one', async () => {
+  it('increments divDeposits.length by exactly one', async () => {
     seedCounter += 1;
     const accountId = `acc-div-integrity-${seedCounter}`;
     seedAccount(accountId);
@@ -245,7 +247,7 @@ describe('DividendDepositsComponentService divDeposits state integrity (Story 4.
   // throw on an undefined/missing startIndex. This is the navigation crash Dave
   // reports: adding a deposit then navigating away re-evaluates this computed signal.
   // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
-  it.skip('re-evaluating dividends() after addDivDeposit does not throw for any index', async () => {
+  it('re-evaluating dividends() after addDivDeposit does not throw for any index', async () => {
     seedCounter += 1;
     const accountId = `acc-div-integrity-${seedCounter}`;
     seedAccount(accountId);

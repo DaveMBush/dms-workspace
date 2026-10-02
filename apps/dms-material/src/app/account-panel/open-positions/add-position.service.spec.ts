@@ -459,7 +459,7 @@ describe('AddPositionService openTrades state integrity (Story 4.1 AC#1)', () =>
   // through SmartArray.add()/addToStore. Unskipped, this fails with:
   //   AssertionError: expected 'undefined' to be 'number'
   // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
-  it.skip('keeps startIndex a number after SmartArray.add() persists the new trade', async () => {
+  it('keeps startIndex a number after SmartArray.add() persists the new trade', async () => {
     seedCounter += 1;
     const accountId = `acc-integrity-${seedCounter}`;
     seedAccount(accountId);
@@ -481,7 +481,7 @@ describe('AddPositionService openTrades state integrity (Story 4.1 AC#1)', () =>
   // RED PHASE (Story 4.1 AC#4): skipped per story — part of the same state-integrity
   // block; kept red alongside the startIndex assertion until the fix lands.
   // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
-  it.skip('appends the hardcoded trade id "new" to openTrades.indexes', async () => {
+  it('appends the hardcoded trade id "new" to openTrades.indexes', async () => {
     seedCounter += 1;
     const accountId = `acc-integrity-${seedCounter}`;
     seedAccount(accountId);
@@ -504,7 +504,7 @@ describe('AddPositionService openTrades state integrity (Story 4.1 AC#1)', () =>
   // RED PHASE (Story 4.1 AC#4): skipped per story — part of the same state-integrity
   // block; kept red alongside the startIndex assertion until the fix lands.
   // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
-  it.skip('increments openTrades.length by exactly one', async () => {
+  it('increments openTrades.length by exactly one', async () => {
     seedCounter += 1;
     const accountId = `acc-integrity-${seedCounter}`;
     seedAccount(accountId);
@@ -531,7 +531,7 @@ describe('AddPositionService openTrades state integrity (Story 4.1 AC#1)', () =>
   // never throw on an undefined/missing startIndex. This is the navigation crash Dave
   // reports: adding a position then navigating away re-evaluates this computed signal.
   // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
-  it.skip('re-evaluating selectOpenPositions() after add does not throw for any index', async () => {
+  it('re-evaluating selectOpenPositions() after add does not throw for any index', async () => {
     seedCounter += 1;
     const accountId = `acc-integrity-${seedCounter}`;
     seedAccount(accountId);
