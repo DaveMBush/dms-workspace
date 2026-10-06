@@ -84,11 +84,11 @@ importers:
         specifier: ^7.9.1
         version: 7.10.0(prisma@7.10.0(@types/react@19.2.18)(better-sqlite3@12.11.1)(magicast@0.5.4)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(typescript@6.0.3)
       '@smarttools/smart-core':
-        specifier: 4.0.0
-        version: 4.0.0(@ngrx/entity@21.0.1(@angular/core@22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2)(zone.js@0.16.2))(@ngrx/store@21.0.1(@angular/core@22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(rxjs@7.8.2))(@ngrx/store@21.0.1(@angular/core@22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))
+        specifier: 4.0.1
+        version: 4.0.1(@ngrx/entity@21.0.1(@angular/core@22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2)(zone.js@0.16.2))(@ngrx/store@21.0.1(@angular/core@22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(rxjs@7.8.2))(@ngrx/store@21.0.1(@angular/core@22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))
       '@smarttools/smart-signals':
-        specifier: 4.0.0
-        version: 4.0.0(@ngrx/entity@21.0.1(@angular/core@22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2)(zone.js@0.16.2))(@ngrx/store@21.0.1(@angular/core@22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(rxjs@7.8.2))(@ngrx/signals@21.0.1(@angular/core@22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@ngrx/store@21.0.1(@angular/core@22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))
+        specifier: 4.0.1
+        version: 4.0.1(@ngrx/entity@21.0.1(@angular/core@22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2)(zone.js@0.16.2))(@ngrx/store@21.0.1(@angular/core@22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(rxjs@7.8.2))(@ngrx/signals@21.0.1(@angular/core@22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@ngrx/store@21.0.1(@angular/core@22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))
       axios:
         specifier: ^1.19.0
         version: 1.20.0(debug@4.4.3(supports-color@7.2.0))(supports-color@7.2.0)
@@ -4667,14 +4667,14 @@ packages:
   '@smarttools/eslint-plugin@1.0.5':
     resolution: {integrity: sha512-h2SRTbej6VPydqcqH9h9jOgrb6xi+oOdopSbYRPIKkfw4pYyDJut+r3vhsNdX+6RJobbLyxnTob7OD8Acvp1/w==}
 
-  '@smarttools/smart-core@4.0.0':
-    resolution: {integrity: sha512-wyhFuoGgupMmKFapiKQagPY8enDFC6o5FgpghmYmcJOufUtZ//AbqKGxrrW6QEqzF5+qUD9bKwPSQnf3tuWGrQ==}
+  '@smarttools/smart-core@4.0.1':
+    resolution: {integrity: sha512-NTwAq9VkFFyixGZ+7i5c7TxbFc5hKOU/CjvDfoYNlXWoWHNdk71pXXGC85vlQ5GlAV2jYp4GQ5UPhBxIv1RnEg==}
     peerDependencies:
       '@ngrx/entity': ^21.0.0
       '@ngrx/store': ^21.0.0
 
-  '@smarttools/smart-signals@4.0.0':
-    resolution: {integrity: sha512-001kP9TWWwzQsEp76B0r+nIEo2P/fOVyvI3p2gbcoBsi0ttccBdIOrpOXK0hpm0qExYNHD2k7OXA9pAOYQeO6A==}
+  '@smarttools/smart-signals@4.0.1':
+    resolution: {integrity: sha512-gCwS+X2JoD4BoujthAz+bkL+SAg6RopkEUmVFHFHXUzaFC5Kec0t0d00QhNcKMjH+dA33AEs6IgvKEllY7m9vQ==}
     peerDependencies:
       '@ngrx/entity': ^21.0.0
       '@ngrx/signals': ^21.0.0
@@ -16405,17 +16405,17 @@ snapshots:
 
   '@smarttools/eslint-plugin@1.0.5': {}
 
-  '@smarttools/smart-core@4.0.0(@ngrx/entity@21.0.1(@angular/core@22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2)(zone.js@0.16.2))(@ngrx/store@21.0.1(@angular/core@22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(rxjs@7.8.2))(@ngrx/store@21.0.1(@angular/core@22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))':
+  '@smarttools/smart-core@4.0.1(@ngrx/entity@21.0.1(@angular/core@22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2)(zone.js@0.16.2))(@ngrx/store@21.0.1(@angular/core@22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(rxjs@7.8.2))(@ngrx/store@21.0.1(@angular/core@22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))':
     dependencies:
       '@ngrx/entity': 21.0.1(@angular/core@22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2)(zone.js@0.16.2))(@ngrx/store@21.0.1(@angular/core@22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(rxjs@7.8.2)
       '@ngrx/store': 21.0.1(@angular/core@22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2)
       tslib: 2.8.1
 
-  '@smarttools/smart-signals@4.0.0(@ngrx/entity@21.0.1(@angular/core@22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2)(zone.js@0.16.2))(@ngrx/store@21.0.1(@angular/core@22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(rxjs@7.8.2))(@ngrx/signals@21.0.1(@angular/core@22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@ngrx/store@21.0.1(@angular/core@22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))':
+  '@smarttools/smart-signals@4.0.1(@ngrx/entity@21.0.1(@angular/core@22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2)(zone.js@0.16.2))(@ngrx/store@21.0.1(@angular/core@22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(rxjs@7.8.2))(@ngrx/signals@21.0.1(@angular/core@22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@ngrx/store@21.0.1(@angular/core@22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))':
     dependencies:
       '@ngrx/entity': 21.0.1(@angular/core@22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2)(zone.js@0.16.2))(@ngrx/store@21.0.1(@angular/core@22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(rxjs@7.8.2)
       '@ngrx/signals': 21.0.1(@angular/core@22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2)
-      '@smarttools/smart-core': 4.0.0(@ngrx/entity@21.0.1(@angular/core@22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2)(zone.js@0.16.2))(@ngrx/store@21.0.1(@angular/core@22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(rxjs@7.8.2))(@ngrx/store@21.0.1(@angular/core@22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))
+      '@smarttools/smart-core': 4.0.1(@ngrx/entity@21.0.1(@angular/core@22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2)(zone.js@0.16.2))(@ngrx/store@21.0.1(@angular/core@22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(rxjs@7.8.2))(@ngrx/store@21.0.1(@angular/core@22.1.7(@angular/compiler@22.1.7)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))
       tslib: 2.8.1
     transitivePeerDependencies:
       - '@ngrx/store'

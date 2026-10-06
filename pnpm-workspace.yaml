@@ -12,6 +12,9 @@ allowBuilds:
   nx: true
   prisma: true
   unrs-resolver: true
+minimumReleaseAgeExclude:
+  - '@smarttools/smart-core@4.0.1'
+  - '@smarttools/smart-signals@4.0.1'
 onlyBuiltDependencies:
   - '@parcel/watcher'
   - '@prisma/client'
