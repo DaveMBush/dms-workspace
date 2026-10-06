@@ -22,9 +22,9 @@
  *      (node_modules/.pnpm and dist/apps/server/node_modules/.pnpm) + the dist top-level.
  *   4. Verify: if a packaged Electron binary is present, load-test the binding under it
  *      (authoritative). Otherwise report the target ABI for a post-build runtime check.
- *
- * NOTE: this leaves the workspace-root binding at the packaged Electron ABI, so plain-Node
- * dev mode (server under Node 24) needs a `pnpm rebuild better-sqlite3` afterwards.
+ *   5. Rebuild the WORKSPACE-ROOT binding back to system Node ABI so plain-Node dev mode
+ *      (`pnpm start`) works immediately — no manual `pnpm rebuild better-sqlite3` needed.
+ *      The packaged app already has its own copy under dist/apps/server, so this is safe.
  *
  * Compiler note: on Linux, very new GCC (>= 15) can fail to parse Electron's V8 headers.
  * We try the system default first, then fall back to g++-13 / g++-12.
@@ -184,4 +184,19 @@ if (packagedBin) {
 }
 
 fs.rmSync(checkFile, { force: true });
+
+// --- Restore the workspace-root binding to system Node ABI (dev mode) ---
+// The Electron rebuild above left the workspace store at Electron's ABI. Rebuild it for
+// plain Node so `pnpm start` / vitest work immediately without a manual pnpm rebuild.
+// This is safe: the packaged app ships its own copy under dist/apps/server, which was
+// already fanned out with the Electron-ABI binding above. A plain node-gyp rebuild (no
+// --runtime/--target) targets the running Node's ABI.
+console.log('[build-electron-binding] Restoring workspace-root better-sqlite3 to system Node ABI for dev mode...');
+try {
+  execSync('npx --no-install node-gyp rebuild', { cwd: sqlitePkgDir, stdio: 'inherit' });
+} catch (err) {
+  console.error('[build-electron-binding] WARNING: failed to restore the workspace-root binding to Node ABI. Plain-Node dev mode may fail until you run `pnpm rebuild better-sqlite3`.');
+  process.exitCode = 1;
+}
+
 console.log('[build-electron-binding] Done.');
