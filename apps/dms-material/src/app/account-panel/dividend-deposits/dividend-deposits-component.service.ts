@@ -44,7 +44,7 @@ function buildPlaceholderDividendRow(id: string): DividendRow {
 
 function buildLoadedDividendRow(
   d: DivDeposit,
-  typeNamesMap: Map<string, string>
+  typeNamesMap: Map<string, string>,
 ): DividendRow {
   return {
     id: d.id,
@@ -108,12 +108,13 @@ export class DividendDepositsComponentService {
       this.errorMessage.set('divDepositTypeId is required');
       return;
     }
-    const account = this.currentAccount();
-    const divDepositsArray = account.divDeposits as SmartArray<
-      Account,
-      DivDeposit
-    >;
     try {
+      const account = this.currentAccount();
+      const divDepositsArray = account.divDeposits as SmartArray<
+        Account,
+        DivDeposit
+      >;
+
       divDepositsArray.add!(
         {
           id: 'new',
@@ -124,7 +125,7 @@ export class DividendDepositsComponentService {
           universeId: dividend.universeId ?? null,
           symbol: null,
         },
-        account
+        account,
       );
     } catch (error: unknown) {
       const err = error as Error;
@@ -146,7 +147,7 @@ export class DividendDepositsComponentService {
       } catch (error: unknown) {
         const err = error as Error;
         this.errorMessage.set(
-          `Failed to delete dividend deposit: ${err.message}`
+          `Failed to delete dividend deposit: ${err.message}`,
         );
       }
       break;

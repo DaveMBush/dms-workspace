@@ -1,6 +1,5 @@
 import { FastifyInstance } from 'fastify';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-
 import { prisma } from '../../prisma/prisma-client';
 import registerDivDepositRoutes from './index';
 
@@ -25,7 +24,7 @@ describe('Div Deposits Routes', () => {
       async (instance) => {
         registerDivDepositRoutes(instance);
       },
-      { prefix: '/div-deposits' }
+      { prefix: '/div-deposits' },
     );
     await fastify.ready();
     vi.clearAllMocks();
@@ -46,7 +45,7 @@ describe('Div Deposits Routes', () => {
       ];
 
       vi.mocked(prisma.divDeposits.findMany).mockResolvedValue(
-        mockDivDeposits as never
+        mockDivDeposits as never,
       );
 
       const response = await fastify.inject({
@@ -81,7 +80,7 @@ describe('Div Deposits Routes', () => {
       ];
 
       vi.mocked(prisma.divDeposits.findMany).mockResolvedValue(
-        mockDivDeposits as never
+        mockDivDeposits as never,
       );
 
       const response = await fastify.inject({
@@ -116,7 +115,7 @@ describe('Div Deposits Routes', () => {
       };
 
       vi.mocked(prisma.divDeposits.create).mockResolvedValue(
-        mockCreatedDivDeposit as never
+        mockCreatedDivDeposit as never,
       );
 
       const response = await fastify.inject({
@@ -157,7 +156,7 @@ describe('Div Deposits Routes', () => {
 
       vi.mocked(prisma.divDeposits.update).mockResolvedValue({} as never);
       vi.mocked(prisma.divDeposits.findMany).mockResolvedValue(
-        mockUpdatedDivDeposits as never
+        mockUpdatedDivDeposits as never,
       );
 
       const response = await fastify.inject({
@@ -184,8 +183,8 @@ describe('Div Deposits Routes', () => {
   });
 
   describe('DELETE /:id', () => {
-    it('should soft-delete div deposit by setting deletedAt', async () => {
-      vi.mocked(prisma.divDeposits.update).mockResolvedValue({} as never);
+    it('should hard-delete div deposit from the database', async () => {
+      vi.mocked(prisma.divDeposits.delete).mockResolvedValue({} as never);
 
       const response = await fastify.inject({
         method: 'DELETE',
@@ -195,9 +194,8 @@ describe('Div Deposits Routes', () => {
       expect(response.statusCode).toBe(200);
       const result = JSON.parse(response.payload);
       expect(result).toMatchObject({ success: true });
-      expect(prisma.divDeposits.update).toHaveBeenCalledWith({
+      expect(prisma.divDeposits.delete).toHaveBeenCalledWith({
         where: { id: '5' },
-        data: expect.objectContaining({ deletedAt: expect.any(Date) }),
       });
     });
   });

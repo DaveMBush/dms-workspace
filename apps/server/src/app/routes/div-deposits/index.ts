@@ -1,5 +1,4 @@
 import { FastifyInstance } from 'fastify';
-
 import { prisma } from '../../prisma/prisma-client';
 import { DivDeposit } from './div-deposits.interface';
 
@@ -41,7 +40,7 @@ function handleGetDivDepositsRoute(fastify: FastifyInstance): void {
     },
     async function handleGetDivDepositsRequest(
       request,
-      _
+      _,
     ): Promise<DivDeposit[]> {
       const ids = request.body;
       /* v8 ignore start -- empty-ids early return covered by e2e tests */
@@ -57,7 +56,7 @@ function handleGetDivDepositsRoute(fastify: FastifyInstance): void {
       return divDeposits.map(function mapDivDeposit(u) {
         return mapDivDepositToResponse(u);
       });
-    }
+    },
   );
 }
 
@@ -78,7 +77,7 @@ function handleAddDivDepositRoute(fastify: FastifyInstance): void {
         include: { universe: { select: { symbol: true } } },
       });
       reply.status(200).send([mapDivDepositToResponse(result)]);
-    }
+    },
   );
 }
 
@@ -87,15 +86,12 @@ function handleDeleteDivDepositRoute(fastify: FastifyInstance): void {
     '/:id',
     async function handleDeleteDivDepositRequest(
       request,
-      reply
+      reply,
     ): Promise<void> {
       const { id } = request.params;
-      await prisma.divDeposits.update({
-        where: { id },
-        data: { deletedAt: new Date() },
-      });
+      await prisma.divDeposits.delete({ where: { id } });
       reply.status(200).send({ success: true });
-    }
+    },
   );
 }
 
@@ -104,7 +100,7 @@ function handleUpdateDivDepositRoute(fastify: FastifyInstance): void {
     '/',
     async function handleUpdateDivDepositRequest(
       request,
-      reply
+      reply,
     ): Promise<void> {
       const { id, date, amount, accountId, divDepositTypeId, universeId } =
         request.body;
@@ -126,12 +122,12 @@ function handleUpdateDivDepositRoute(fastify: FastifyInstance): void {
         return mapDivDepositToResponse(u);
       });
       reply.status(200).send(result);
-    }
+    },
   );
 }
 
 export default function registerDivDepositRoutes(
-  fastify: FastifyInstance
+  fastify: FastifyInstance,
 ): void {
   handleGetDivDepositsRoute(fastify);
   handleAddDivDepositRoute(fastify);

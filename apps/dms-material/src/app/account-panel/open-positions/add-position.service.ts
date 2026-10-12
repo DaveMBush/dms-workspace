@@ -31,12 +31,12 @@ export class AddPositionService {
   createDialogCloseHandler(
     trades: Signal<Trade[]>,
     currentAccount: Signal<CurrentAccount>,
-    accountId: string | null
+    accountId: string | null,
   ): (result: AddPositionDialogResult | null) => void {
     const service = this;
 
     return function handleDialogClose(
-      result: AddPositionDialogResult | null
+      result: AddPositionDialogResult | null,
     ): void {
       if (!result) {
         return;
@@ -57,7 +57,7 @@ export class AddPositionService {
 
   private validateDialogResult(
     result: AddPositionDialogResult,
-    accountId: string | null
+    accountId: string | null,
   ): boolean {
     const hasUniverseId = this.isNonEmptyString(result.universeId);
     const hasPurchaseDate = this.isNonEmptyString(result.purchase_date);
@@ -82,7 +82,7 @@ export class AddPositionService {
 
   private transformToTradeData(
     result: AddPositionDialogResult,
-    accountId: string
+    accountId: string,
   ): Omit<Trade, 'id'> & { id: string } {
     // Note: validateDialogResult ensures these fields are defined
     return {
@@ -106,11 +106,11 @@ export class AddPositionService {
   private addPositionToTrades(
     tradeData: Omit<Trade, 'id'> & { id: string },
     trades: Signal<Trade[]>,
-    currentAccount: Signal<CurrentAccount>
+    currentAccount: Signal<CurrentAccount>,
   ): void {
-    const tradesArray = trades() as SmartArray;
-
     try {
+      const tradesArray = trades() as SmartArray;
+
       tradesArray.add!(tradeData, currentAccount());
       this.successMessage.set('Position added successfully');
       const service = this;

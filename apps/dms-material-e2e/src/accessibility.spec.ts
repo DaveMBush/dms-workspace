@@ -1,6 +1,7 @@
 import { AxeBuilder } from '@axe-core/playwright';
 import { expect, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
+import { settle } from './helpers/settle.helper';
 
 // ─── Accessibility Tests (GREEN Phase - TDD) ────────────────────────────────
 //
@@ -41,6 +42,11 @@ test.describe('Accessibility - axe-core audits', () => {
         state: 'visible',
         timeout: 10000,
       });
+
+      // mat-error fades in over ~180ms; `state: 'visible'` resolves at layout
+      // time (opacity does not gate visibility), so axe can sample the text mid-fade
+      // and report a false color-contrast violation. Settle past the transition first.
+      await settle(page, 300);
 
       let axeRunner = new AxeBuilder({ page }).withTags([
         'wcag2a',
