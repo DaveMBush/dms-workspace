@@ -394,8 +394,8 @@ importers:
         specifier: 23.2.1
         version: 23.2.1(@swc-node/register@1.12.1(@swc/core@1.16.2(@swc/helpers@0.5.23))(@swc/types@0.1.28)(supports-color@7.2.0)(typescript@6.0.3))(@swc/core@1.16.2(@swc/helpers@0.5.23))
       playwright:
-        specifier: 1.55.1
-        version: 1.55.1
+        specifier: 1.64.0
+        version: 1.64.0
       postcss:
         specifier: ^8.5.28
         version: 8.5.28
@@ -9701,9 +9701,19 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
+  playwright-core@1.64.0:
+    resolution: {integrity: sha512-T9r+MZkTECl2+oUcZ26YgZzTrYidTsIhYYkJix+6iDOymOb1FB2RLLSOxRGnZGv5DStt+aduIVbt+E8WygXYpg==}
+    engines: {node: '>=20'}
+    hasBin: true
+
   playwright@1.55.1:
     resolution: {integrity: sha512-cJW4Xd/G3v5ovXtJJ52MAOclqeac9S/aGGgRzLabuF8TnIb6xHvMzKIa6JmrRzUkeXJgfL1MhukP0NK6l39h3A==}
     engines: {node: '>=18'}
+    hasBin: true
+
+  playwright@1.64.0:
+    resolution: {integrity: sha512-kVzTnYFYEyQ9RGzBjNCd2+yEqWmVbxl3AHPynv3qQ6JTjv4a+kwRcnqQwIpuP3NnrnIrE/Q6wWAIAvMfIE2/Yg==}
+    engines: {node: '>=20'}
     hasBin: true
 
   plist@3.1.0:
@@ -22441,11 +22451,17 @@ snapshots:
 
   playwright-core@1.55.1: {}
 
+  playwright-core@1.64.0: {}
+
   playwright@1.55.1:
     dependencies:
       playwright-core: 1.55.1
     optionalDependencies:
       fsevents: 2.3.2
+
+  playwright@1.64.0:
+    dependencies:
+      playwright-core: 1.64.0
 
   plist@3.1.0:
     dependencies:
