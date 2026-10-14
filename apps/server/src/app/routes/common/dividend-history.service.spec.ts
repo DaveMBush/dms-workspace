@@ -237,6 +237,47 @@ describe('dividend-history.service', () => {
       );
     });
 
+    test('strips nested HTML tags from cell values', async () => {
+      const html =
+        '<html><body><table class="table table-bordered"><tbody>' +
+        '<tr><td>03/12/2026</td><td></td><td></td><td>04/01/2026</td><td></td><td><b>$0.22050</b></td></tr>' +
+        '</tbody></table></body></html>';
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        text: vi.fn().mockResolvedValueOnce(html),
+      });
+
+      const result = await fetchDividendHistory('PDI');
+
+      expect(result).toHaveLength(1);
+      expect(result[0]).toEqual({
+        amount: 0.2205,
+        date: new Date(2026, 2, 12),
+      });
+    });
+
+    test('skips malformed rows missing closing td tags', async () => {
+      const html =
+        '<html><body><table class="table table-bordered"><tbody>' +
+        '<tr><td 03/12/2026</tr>' +
+        '<tr><td>04/01/2026<td></tr>' +
+        '</tbody></table></body></html>';
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        text: vi.fn().mockResolvedValueOnce(html),
+      });
+
+      const result = await fetchDividendHistory('BAD');
+
+      expect(result).toEqual([]);
+      expect(mockLogger.warn).toHaveBeenCalledWith(
+        'No dividend data found on dividendhistory.net for ticker BAD',
+        { ticker: 'BAD' },
+      );
+    });
+
     test('returns empty array when table has no data rows', async () => {
       const htmlWithOnlyHeader =
         '<html><body><table class="table table-bordered"><thead><tr><th>Ex-Div</th></tr></thead><tbody></tbody></table></body></html>';
