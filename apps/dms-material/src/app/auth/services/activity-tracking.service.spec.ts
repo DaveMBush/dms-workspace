@@ -60,6 +60,7 @@ describe('ActivityTrackingService', () => {
     if (service) {
       service.stopActivityTracking();
     }
+    vi.useRealTimers();
     consoleSpy.log.mockClear();
     consoleSpy.warn.mockClear();
   });
@@ -171,11 +172,12 @@ describe('ActivityTrackingService', () => {
       );
     });
 
-    it('should calculate time since last activity', async () => {
+    it('should calculate time since last activity', () => {
+      vi.useFakeTimers();
       service.recordActivity();
 
-      // Wait a bit
-      await new Promise((resolve) => setTimeout(resolve, 50));
+      // Advance the clock deterministically instead of waiting on wall-clock time
+      vi.advanceTimersByTime(50);
 
       const timeSinceActivity = service.getTimeSinceLastActivity();
       expect(timeSinceActivity).toBeGreaterThan(0);
