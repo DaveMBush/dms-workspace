@@ -109,7 +109,6 @@ describe('AuthService', () => {
   describe('Sign In', () => {
     const validCredentials: SignInRequest = {
       username: 'testuser@example.com',
-      // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- test credential
       password: 'ValidPassword123!',
     };
 

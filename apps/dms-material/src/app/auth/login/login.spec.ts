@@ -92,7 +92,6 @@ describe('LoginComponent', () => {
       mockAuthService.signIn.mockResolvedValue({});
       component.loginForm.patchValue({
         email: 'test@test.com',
-        // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- not real
         password: 'password123',
       });
 
@@ -105,7 +104,6 @@ describe('LoginComponent', () => {
       mockAuthService.signIn.mockResolvedValue({});
       component.loginForm.patchValue({
         email: 'test@test.com',
-        // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- not real
         password: 'password123',
       });
       await component.onSubmit();
@@ -118,7 +116,6 @@ describe('LoginComponent', () => {
       );
       component.loginForm.patchValue({
         email: 'test@test.com',
-        // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- not real
         password: 'password123',
       });
       await component.onSubmit();

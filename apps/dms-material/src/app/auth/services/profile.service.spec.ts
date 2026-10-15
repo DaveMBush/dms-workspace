@@ -213,7 +213,6 @@ describe('ProfileService', () => {
       expect(confirmResetPassword).toHaveBeenCalledWith({
         username: 'test@example.com',
         confirmationCode: '123456',
-        // eslint-disable-next-line sonarjs/no-hardcoded-passwords -- not a real password
         newPassword: 'newpassword',
       });
     });

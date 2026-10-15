@@ -37,71 +37,46 @@ describe('validateAddSymbolRequest', function () {
     );
   });
 
-  test('should return invalid for invalid symbol format', function () {
-    const request = {
-      symbol: 'spy',
-      risk_group_id: 'test-risk-group-id',
-    };
+  test.each([
+    [
+      'invalid symbol format',
+      'spy',
+      'test-risk-group-id',
+      'Symbol must be 1-5 uppercase letters only',
+    ],
+    [
+      'symbol too long',
+      'TOOLONG',
+      'test-risk-group-id',
+      'Symbol must be 1-5 uppercase letters only',
+    ],
+    [
+      'symbol with numbers',
+      'SPY1',
+      'test-risk-group-id',
+      'Symbol must be 1-5 uppercase letters only',
+    ],
+    ['empty risk_group_id', 'SPY', '', 'Risk group ID cannot be empty'],
+    [
+      'whitespace-only risk_group_id',
+      'SPY',
+      '   ',
+      'Risk group ID cannot be empty',
+    ],
+  ])(
+    'should return invalid for %s',
+    (label, symbol, riskGroupId, expectedMessage) => {
+      const request = {
+        symbol,
+        risk_group_id: riskGroupId,
+      };
 
-    const result = validateAddSymbolRequest(request);
+      const result = validateAddSymbolRequest(request);
 
-    expect(result.isValid).toBe(false);
-    expect(result.errors).toContain(
-      'Symbol must be 1-5 uppercase letters only'
-    );
-  });
-
-  test('should return invalid for symbol too long', function () {
-    const request = {
-      symbol: 'TOOLONG',
-      risk_group_id: 'test-risk-group-id',
-    };
-
-    const result = validateAddSymbolRequest(request);
-
-    expect(result.isValid).toBe(false);
-    expect(result.errors).toContain(
-      'Symbol must be 1-5 uppercase letters only'
-    );
-  });
-
-  test('should return invalid for symbol with numbers', function () {
-    const request = {
-      symbol: 'SPY1',
-      risk_group_id: 'test-risk-group-id',
-    };
-
-    const result = validateAddSymbolRequest(request);
-
-    expect(result.isValid).toBe(false);
-    expect(result.errors).toContain(
-      'Symbol must be 1-5 uppercase letters only'
-    );
-  });
-
-  test('should return invalid for empty risk_group_id', function () {
-    const request = {
-      symbol: 'SPY',
-      risk_group_id: '',
-    };
-
-    const result = validateAddSymbolRequest(request);
-
-    expect(result.isValid).toBe(false);
-    expect(result.errors).toContain('Risk group ID cannot be empty');
-  });
-
-  test('should return invalid for whitespace-only risk_group_id', function () {
-    const request = {
-      symbol: 'SPY',
-      risk_group_id: '   ',
-    };
-
-    const result = validateAddSymbolRequest(request);
-
-    expect(result.isValid).toBe(false);
-    expect(result.errors).toContain('Risk group ID cannot be empty');
-  });
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContain(expectedMessage);
+    }
+  );
 
   test('should return invalid for null request', function () {
     const result = validateAddSymbolRequest(null);

@@ -3,7 +3,7 @@ import {
   HttpTestingController,
   provideHttpClientTesting,
 } from '@angular/common/http/testing';
-import { provideHttpClient } from '@angular/common/http';
+import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 
 import { UpdateUniverseFieldsService } from './update-universe-fields.service';
 
@@ -103,8 +103,9 @@ describe('UpdateUniverseFieldsService', () => {
     it('should handle HTTP errors gracefully', async () => {
       const errorPromise = new Promise<void>((resolve) => {
         service.updateFields().subscribe({
-          error: () => {
-            expect(true).toBeDefined();
+          error: (error: unknown) => {
+            expect(error).toBeInstanceOf(HttpErrorResponse);
+            expect((error as HttpErrorResponse).status).toBe(500);
             resolve();
           },
         });

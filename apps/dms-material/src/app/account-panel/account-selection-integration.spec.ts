@@ -277,7 +277,7 @@ describe('Account Selection Integration', () => {
       store.setCurrentAccountId('account-2');
 
       const trades = currentAccount().openTrades as Trade[];
-      expect(trades.length).toBe(1);
+      expect(trades).toHaveLength(1);
       expect(trades[0].buy).toBe(200);
     });
 
@@ -289,7 +289,7 @@ describe('Account Selection Integration', () => {
 
       const divDeposits = currentAccount()
         .divDeposits as unknown as DivDeposit[];
-      expect(divDeposits.length).toBe(1);
+      expect(divDeposits).toHaveLength(1);
       expect(divDeposits[0].amount).toBe(75);
     });
 
@@ -362,10 +362,10 @@ describe('Account Selection Integration', () => {
       const currentAccount = selectCurrentAccountSignal(store);
 
       store.setCurrentAccountId('account-1');
-      expect(currentAccount().months.length).toBe(1);
+      expect(currentAccount().months).toHaveLength(1);
 
       store.setCurrentAccountId('account-2');
-      expect(currentAccount().months.length).toBe(2);
+      expect(currentAccount().months).toHaveLength(2);
     });
 
     it('should reflect all fields consistently for a given account', () => {
@@ -376,8 +376,8 @@ describe('Account Selection Integration', () => {
 
       expect(account.id).toBe('account-1');
       expect(account.name).toBe('Brokerage');
-      expect((account.openTrades as Trade[]).length).toBe(1);
-      expect((account.divDeposits as unknown as DivDeposit[]).length).toBe(1);
+      expect((account.openTrades as Trade[])).toHaveLength(1);
+      expect((account.divDeposits as unknown as DivDeposit[])).toHaveLength(1);
     });
   });
 
@@ -394,7 +394,7 @@ describe('Account Selection Integration', () => {
       const account = currentAccount();
       expect(account.id).toBe('');
       expect(account.name).toBe('');
-      expect((account.openTrades as Trade[]).length).toBe(0);
+      expect((account.openTrades as Trade[])).toHaveLength(0);
     });
 
     it('should return empty account when entities store is completely empty', () => {
@@ -443,7 +443,7 @@ describe('Account Selection Integration', () => {
 
       const account = currentAccount();
       expect(account.id).toBe('account-empty');
-      expect((account.openTrades as Trade[]).length).toBe(0);
+      expect((account.openTrades as Trade[])).toHaveLength(0);
     });
   });
 
@@ -531,7 +531,7 @@ describe('Account Selection Integration', () => {
       const account = currentAccount();
       expect(account.id).toBe('');
       expect(account.name).toBe('');
-      expect((account.openTrades as Trade[]).length).toBe(0);
+      expect((account.openTrades as Trade[])).toHaveLength(0);
     });
 
     it('should load the correct account once setCurrentAccountId is called from a route', () => {
@@ -551,7 +551,7 @@ describe('Account Selection Integration', () => {
       store.setCurrentAccountId('account-1');
 
       const trades = currentAccount().openTrades as Trade[];
-      expect(trades.length).toBe(1);
+      expect(trades).toHaveLength(1);
       expect(trades[0].id).toBe('t-1');
     });
 
@@ -562,7 +562,7 @@ describe('Account Selection Integration', () => {
 
       const divDeposits = currentAccount()
         .divDeposits as unknown as DivDeposit[];
-      expect(divDeposits.length).toBe(1);
+      expect(divDeposits).toHaveLength(1);
       expect(divDeposits[0].id).toBe('d-1');
     });
 
@@ -577,7 +577,7 @@ describe('Account Selection Integration', () => {
       const currentAccount = selectCurrentAccountSignal(store);
       store.setCurrentAccountId('account-1');
 
-      expect(currentAccount().months.length).toBe(1);
+      expect(currentAccount().months).toHaveLength(1);
       expect(currentAccount().months[0].month).toBe(3);
     });
   });
@@ -648,7 +648,7 @@ describe('Account Selection Integration', () => {
 
       const account = currentAccount();
       expect(account.id).toBe('account-new');
-      expect((account.openTrades as Trade[]).length).toBe(0);
+      expect((account.openTrades as Trade[])).toHaveLength(0);
     });
 
     it('should handle account ID with special characters', () => {

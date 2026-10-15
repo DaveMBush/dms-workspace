@@ -188,26 +188,14 @@ describe('GlobalUniverseComponent', () => {
       expect(mockSyncService.syncFromScreener).toHaveBeenCalled();
     });
 
-    it('should show success notification on successful sync', () => {
+    it.each([
+      ['inserted count', '5 inserted'],
+      ['update count', '10 updated'],
+      ['expired count', '2 expired'],
+    ])('should include %s in success message', (label, fragment) => {
       component.syncUniverse();
       expect(mockNotification.showPersistent).toHaveBeenCalledWith(
-        expect.stringContaining('5 inserted'),
-        'success',
-      );
-    });
-
-    it('should include update count in success message', () => {
-      component.syncUniverse();
-      expect(mockNotification.showPersistent).toHaveBeenCalledWith(
-        expect.stringContaining('10 updated'),
-        'success',
-      );
-    });
-
-    it('should include expired count in success message', () => {
-      component.syncUniverse();
-      expect(mockNotification.showPersistent).toHaveBeenCalledWith(
-        expect.stringContaining('2 expired'),
+        expect.stringContaining(fragment),
         'success',
       );
     });
@@ -347,7 +335,7 @@ describe('GlobalUniverseComponent', () => {
     });
 
     it('should have expiredOptions defined', () => {
-      expect(component.expiredOptions.length).toBe(2);
+      expect(component.expiredOptions).toHaveLength(2);
     });
 
     it('should update symbolFilter signal', () => {
@@ -734,7 +722,7 @@ describe('GlobalUniverseComponent - Loading and Error Handling', () => {
     );
     component.onRefresh();
 
-    expect(screenerService.error()).toBe(null);
+    expect(screenerService.error()).toBeNull();
   });
 });
 
@@ -1234,7 +1222,7 @@ describe('GlobalUniverseComponent - SmartNgRX Integration', () => {
 
       // filteredData$ should contain entries from store
       const filteredData = component.filteredData$();
-      expect(filteredData.length).toBe(1);
+      expect(filteredData).toHaveLength(1);
       expect(filteredData[0].symbol).toBe('MSFT');
     });
 
@@ -1286,7 +1274,7 @@ describe('GlobalUniverseComponent - SmartNgRX Integration', () => {
 
       // Data should be returned in the order from the selector
       const filteredData = component.filteredData$();
-      expect(filteredData.length).toBe(2);
+      expect(filteredData).toHaveLength(2);
       // The selector returns data in whatever order SmartNgRX provides
       expect(filteredData[0].symbol).toBe('MSFT');
       expect(filteredData[1].symbol).toBe('AAPL');
@@ -1321,7 +1309,7 @@ describe('GlobalUniverseComponent - SmartNgRX Integration', () => {
       fixture.detectChanges();
 
       // Data should be available
-      expect(component.filteredData$().length).toBe(1);
+      expect(component.filteredData$()).toHaveLength(1);
     });
   });
 
@@ -1333,7 +1321,7 @@ describe('GlobalUniverseComponent - SmartNgRX Integration', () => {
       fixture.detectChanges();
 
       // filteredData$ should return empty array
-      expect(component.filteredData$().length).toBe(0);
+      expect(component.filteredData$()).toHaveLength(0);
     });
 
     it('should filter entries client-side when filter is applied', () => {
@@ -1365,7 +1353,7 @@ describe('GlobalUniverseComponent - SmartNgRX Integration', () => {
       fixture.detectChanges();
 
       // Client-side filtering removes non-matching entries
-      expect(component.filteredData$().length).toBe(0);
+      expect(component.filteredData$()).toHaveLength(0);
       // Filter UI state is maintained for the interceptor
       expect(component.symbolFilter$()).toBe('ZZZZ');
     });
@@ -1489,7 +1477,7 @@ describe('Universe Selectors', () => {
 
       // Selector should return all entries
       const data = component.filteredData$();
-      expect(data.length).toBe(2);
+      expect(data).toHaveLength(2);
     });
 
     it('should return entries sorted by symbol', () => {
@@ -1551,7 +1539,7 @@ describe('Universe Selectors', () => {
       // Selector should handle empty state gracefully
       const data = component.filteredData$();
       expect(data).toEqual([]);
-      expect(data.length).toBe(0);
+      expect(data).toHaveLength(0);
     });
   });
 });
@@ -1673,53 +1661,34 @@ describe('GlobalUniverseComponent - Distribution Field Editing Validation (TDD -
   });
 
   describe('distributions_per_year field validation', () => {
-    it('should reject negative distributions_per_year and show error', () => {
-      const row = {
-        id: '1',
-        symbol: 'AAPL',
-        distributions_per_year: 4,
-      } as Universe;
-
-      const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
-      component.onCellEdit(row, 'distributions_per_year', -1);
-
-      expect(cellEditSpy).not.toHaveBeenCalled();
-      expect(mockNotification.error).toHaveBeenCalledWith(
+    it.each([
+      [
+        'negative distributions_per_year',
+        -1,
         'Distributions per year cannot be negative',
-      );
-    });
-
-    it('should reject non-integer distributions_per_year and show error', () => {
-      const row = {
-        id: '1',
-        symbol: 'AAPL',
-        distributions_per_year: 4,
-      } as Universe;
-
-      const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
-      component.onCellEdit(row, 'distributions_per_year', 4.5);
-
-      expect(cellEditSpy).not.toHaveBeenCalled();
-      expect(mockNotification.error).toHaveBeenCalledWith(
+      ],
+      [
+        'non-integer distributions_per_year',
+        4.5,
         'Distributions per year must be a whole number',
-      );
-    });
+      ],
+      ['decimal values like 1.5', 1.5, 'Distributions per year must be a whole number'],
+    ])(
+      'should reject %s and show error',
+      (label, value, expectedMessage) => {
+        const row = {
+          id: '1',
+          symbol: 'AAPL',
+          distributions_per_year: 4,
+        } as Universe;
 
-    it('should reject decimal values like 1.5', () => {
-      const row = {
-        id: '1',
-        symbol: 'AAPL',
-        distributions_per_year: 4,
-      } as Universe;
+        const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
+        component.onCellEdit(row, 'distributions_per_year', value);
 
-      const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
-      component.onCellEdit(row, 'distributions_per_year', 1.5);
-
-      expect(cellEditSpy).not.toHaveBeenCalled();
-      expect(mockNotification.error).toHaveBeenCalledWith(
-        'Distributions per year must be a whole number',
-      );
-    });
+        expect(cellEditSpy).not.toHaveBeenCalled();
+        expect(mockNotification.error).toHaveBeenCalledWith(expectedMessage);
+      },
+    );
 
     it('should accept zero as distributions per year', () => {
       const row = {
@@ -1779,7 +1748,12 @@ describe('GlobalUniverseComponent - Distribution Field Editing Validation (TDD -
   });
 
   describe('ex_date field validation', () => {
-    it('should reject invalid ISO date format and show error', () => {
+    it.each([
+      ['2024-13-01'], // Invalid month
+      ['2024-02-30'], // Feb 30 doesn't exist
+      ['01/15/2024'], // Non-ISO format MM/DD/YYYY
+      ['not-a-date'], // Completely invalid date string
+    ])('should reject invalid ex_date value %s', (invalidDate) => {
       const row = {
         id: '1',
         symbol: 'AAPL',
@@ -1787,7 +1761,7 @@ describe('GlobalUniverseComponent - Distribution Field Editing Validation (TDD -
       } as Universe;
 
       const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
-      component.onCellEdit(row, 'ex_date', '2024-13-01'); // Invalid month
+      component.onCellEdit(row, 'ex_date', invalidDate);
 
       expect(cellEditSpy).not.toHaveBeenCalled();
       expect(mockNotification.error).toHaveBeenCalledWith(
@@ -1795,7 +1769,11 @@ describe('GlobalUniverseComponent - Distribution Field Editing Validation (TDD -
       );
     });
 
-    it('should reject dates with invalid day values', () => {
+    it.each([
+      ['valid ISO date string', '2024-12-31'],
+      ['past dates', '2020-06-15'],
+      ['future dates', '2026-03-20'],
+    ])('should accept %s', (label, validDate) => {
       const row = {
         id: '1',
         symbol: 'AAPL',
@@ -1803,96 +1781,12 @@ describe('GlobalUniverseComponent - Distribution Field Editing Validation (TDD -
       } as Universe;
 
       const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
-      component.onCellEdit(row, 'ex_date', '2024-02-30'); // Feb 30 doesn't exist
-
-      expect(cellEditSpy).not.toHaveBeenCalled();
-      expect(mockNotification.error).toHaveBeenCalledWith(
-        'Invalid date format',
-      );
-    });
-
-    it('should reject non-ISO date formats like MM/DD/YYYY', () => {
-      const row = {
-        id: '1',
-        symbol: 'AAPL',
-        ex_date: '2024-01-15',
-      } as Universe;
-
-      const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
-      component.onCellEdit(row, 'ex_date', '01/15/2024');
-
-      expect(cellEditSpy).not.toHaveBeenCalled();
-      expect(mockNotification.error).toHaveBeenCalledWith(
-        'Invalid date format',
-      );
-    });
-
-    it('should reject completely invalid date strings', () => {
-      const row = {
-        id: '1',
-        symbol: 'AAPL',
-        ex_date: '2024-01-15',
-      } as Universe;
-
-      const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
-      component.onCellEdit(row, 'ex_date', 'not-a-date');
-
-      expect(cellEditSpy).not.toHaveBeenCalled();
-      expect(mockNotification.error).toHaveBeenCalledWith(
-        'Invalid date format',
-      );
-    });
-
-    it('should accept valid ISO date strings', () => {
-      const row = {
-        id: '1',
-        symbol: 'AAPL',
-        ex_date: '2024-01-15',
-      } as Universe;
-
-      const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
-      component.onCellEdit(row, 'ex_date', '2024-12-31');
+      component.onCellEdit(row, 'ex_date', validDate);
 
       expect(cellEditSpy).toHaveBeenCalledWith({
         row,
         field: 'ex_date',
-        value: '2024-12-31',
-      });
-      expect(mockNotification.error).not.toHaveBeenCalled();
-    });
-
-    it('should accept past dates', () => {
-      const row = {
-        id: '1',
-        symbol: 'AAPL',
-        ex_date: '2024-01-15',
-      } as Universe;
-
-      const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
-      component.onCellEdit(row, 'ex_date', '2020-06-15');
-
-      expect(cellEditSpy).toHaveBeenCalledWith({
-        row,
-        field: 'ex_date',
-        value: '2020-06-15',
-      });
-      expect(mockNotification.error).not.toHaveBeenCalled();
-    });
-
-    it('should accept future dates', () => {
-      const row = {
-        id: '1',
-        symbol: 'AAPL',
-        ex_date: '2024-01-15',
-      } as Universe;
-
-      const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
-      component.onCellEdit(row, 'ex_date', '2026-03-20');
-
-      expect(cellEditSpy).toHaveBeenCalledWith({
-        row,
-        field: 'ex_date',
-        value: '2026-03-20',
+        value: validDate,
       });
       expect(mockNotification.error).not.toHaveBeenCalled();
     });
@@ -2244,7 +2138,14 @@ describe('GlobalUniverseComponent - Ex-Date Editing Enhancements (TDD - Story AN
   });
 
   describe('date format variations', () => {
-    it('should reject dates with extra whitespace', () => {
+    it.each([
+      ['dates with extra whitespace', ' 2024-06-15 '],
+      ['dates with time components in string', '2024-06-15T10:30:00'],
+      [
+        'dates with single-digit month/day without zero padding',
+        '2024-6-5',
+      ],
+    ])('should reject %s', (label, invalidDate) => {
       const row = {
         id: '1',
         symbol: 'AAPL',
@@ -2253,41 +2154,7 @@ describe('GlobalUniverseComponent - Ex-Date Editing Enhancements (TDD - Story AN
 
       const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
 
-      component.onCellEdit(row, 'ex_date', ' 2024-06-15 ');
-
-      expect(cellEditSpy).not.toHaveBeenCalled();
-      expect(mockNotification.error).toHaveBeenCalledWith(
-        'Invalid date format',
-      );
-    });
-
-    it('should reject dates with time components in string', () => {
-      const row = {
-        id: '1',
-        symbol: 'AAPL',
-        ex_date: '2024-01-15',
-      } as Universe;
-
-      const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
-
-      component.onCellEdit(row, 'ex_date', '2024-06-15T10:30:00');
-
-      expect(cellEditSpy).not.toHaveBeenCalled();
-      expect(mockNotification.error).toHaveBeenCalledWith(
-        'Invalid date format',
-      );
-    });
-
-    it('should reject dates with single-digit month/day without zero padding', () => {
-      const row = {
-        id: '1',
-        symbol: 'AAPL',
-        ex_date: '2024-01-15',
-      } as Universe;
-
-      const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
-
-      component.onCellEdit(row, 'ex_date', '2024-6-5');
+      component.onCellEdit(row, 'ex_date', invalidDate);
 
       expect(cellEditSpy).not.toHaveBeenCalled();
       expect(mockNotification.error).toHaveBeenCalledWith(
@@ -2566,7 +2433,7 @@ describe('GlobalUniverseComponent - Client-Side Sorting Removal', () => {
           return call.length > 0;
         },
       );
-      expect(dataSortCalls.length).toBe(0);
+      expect(dataSortCalls).toHaveLength(0);
 
       sortSpy.mockRestore();
     });

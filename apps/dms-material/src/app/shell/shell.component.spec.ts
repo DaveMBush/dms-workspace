@@ -52,28 +52,14 @@ describe('ShellComponent', () => {
     router = TestBed.inject(Router);
   });
 
-  it('should render toolbar', () => {
+  it.each([
+    ['toolbar', 'mat-toolbar'],
+    ['theme toggle button', '[aria-label="Toggle theme"]'],
+    ['user menu button', '[aria-label="User menu"]'],
+    ['splitter with two panels', 'dms-splitter'],
+  ])('should render %s', (label, selector) => {
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('mat-toolbar')).toBeTruthy();
-  });
-
-  it('should render theme toggle button', () => {
-    fixture.detectChanges();
-    expect(
-      fixture.nativeElement.querySelector('[aria-label="Toggle theme"]')
-    ).toBeTruthy();
-  });
-
-  it('should render user menu button', () => {
-    fixture.detectChanges();
-    expect(
-      fixture.nativeElement.querySelector('[aria-label="User menu"]')
-    ).toBeTruthy();
-  });
-
-  it('should render splitter with two panels', () => {
-    fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('dms-splitter')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector(selector)).toBeTruthy();
   });
 
   describe('onLogout', () => {

@@ -71,7 +71,7 @@ describe('ConfirmDialogComponent', () => {
     it('should display two buttons', () => {
       const compiled = fixture.nativeElement;
       const buttons = compiled.querySelectorAll('button');
-      expect(buttons.length).toBe(2);
+      expect(buttons).toHaveLength(2);
     });
 
     it('should use default text for Cancel button if not provided', () => {

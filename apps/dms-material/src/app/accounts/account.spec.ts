@@ -150,7 +150,7 @@ describe('AccountComponent', () => {
       const accountLinks = fixture.nativeElement.querySelectorAll(
         'a[routerlink*="/account/1"]',
       );
-      expect(accountLinks.length).toBe(0);
+      expect(accountLinks).toHaveLength(0);
     });
   });
 
@@ -225,7 +225,7 @@ describe('AccountComponent', () => {
       const accountLinks = fixture.nativeElement.querySelectorAll(
         'a[routerlink*="/account/1"]',
       );
-      expect(accountLinks.length).toBe(0);
+      expect(accountLinks).toHaveLength(0);
     });
 
     it('should not allow editing while adding account', () => {

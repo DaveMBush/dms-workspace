@@ -49,24 +49,14 @@ describe('SessionInfoCardComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display login time', () => {
+  it.each([
+    ['login time', 'Jan 20, 2024'],
+    ['session duration formatted', '2h 0m'],
+    ['token expiration', 'Jan 20, 2024'],
+    ['active session status', 'Active'],
+  ])('should display %s', (label, expected) => {
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.textContent).toContain('Jan 20, 2024');
-  });
-
-  it('should display session duration formatted', () => {
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.textContent).toContain('2h 0m');
-  });
-
-  it('should display token expiration', () => {
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.textContent).toContain('Jan 20, 2024');
-  });
-
-  it('should display active session status', () => {
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.textContent).toContain('Active');
+    expect(compiled.textContent).toContain(expected);
   });
 
   it('should format session duration correctly for hours and minutes', () => {

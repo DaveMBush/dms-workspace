@@ -92,7 +92,7 @@ describe('SummaryViewComponent', () => {
     const charts = fixture.nativeElement.querySelectorAll(
       'dms-summary-display',
     );
-    expect(charts.length).toBe(2); // pie and line
+    expect(charts).toHaveLength(2); // pie and line
   });
 
   it('should render year picker inside mat-form-field to constrain its width (regression: AS.9 Bug #3)', () => {
@@ -124,7 +124,7 @@ describe('SummaryViewComponent', () => {
     const charts = fixture.nativeElement.querySelectorAll(
       'dms-summary-display',
     );
-    expect(charts.length).toBe(2);
+    expect(charts).toHaveLength(2);
     // Verify the component property returns performance data (chart is configured)
     const perfData = component.performanceData;
     expect(perfData).toBeDefined();
@@ -367,7 +367,7 @@ describe('SummaryViewComponent - Graph Integration', () => {
 
     const chartData = component.performanceChartData();
     expect(chartData.labels).toEqual(['01-2025', '02-2025', '03-2025']);
-    expect(chartData.datasets.length).toBe(3); // Base, Capital Gains, Dividends
+    expect(chartData.datasets).toHaveLength(3); // Base, Capital Gains, Dividends
   });
 
   it('should map graph deposits to Base dataset', () => {
@@ -495,7 +495,7 @@ describe('SummaryViewComponent - Available Months', () => {
     fixture.detectChanges();
 
     const options = component.monthOptions$();
-    expect(options.length).toBe(3);
+    expect(options).toHaveLength(3);
     expect(options[0]).toEqual({ label: '01/2025', value: '2025-01' });
   });
 
@@ -658,7 +658,7 @@ describe('Pie Chart Display', () => {
     const pieCharts = fixture.nativeElement.querySelectorAll(
       'dms-summary-display',
     );
-    expect(pieCharts.length).toBe(2);
+    expect(pieCharts).toHaveLength(2);
   });
 
   it('should pass correct labels to pie chart', () => {
@@ -716,7 +716,7 @@ describe('Pie Chart Display', () => {
 
     const chartData = component.allocationData;
     expect(chartData.datasets[0].backgroundColor).toBeDefined();
-    expect((chartData.datasets[0].backgroundColor as string[]).length).toBe(3);
+    expect((chartData.datasets[0].backgroundColor as string[])).toHaveLength(3);
   });
 
   it('should handle empty/zero allocation data gracefully', () => {
@@ -904,7 +904,7 @@ describe('Month/Year Selector', () => {
       { month: '2025-03', label: '03/2025' },
     ]);
 
-    expect(component.monthOptions$().length).toBe(3);
+    expect(component.monthOptions$()).toHaveLength(3);
   });
 
   it('should display month options in selector', () => {
@@ -1081,7 +1081,7 @@ describe('Month/Year Selector', () => {
     fixture.detectChanges();
 
     expect(component.error$()).toBeTruthy();
-    expect(component.monthOptions$().length).toBe(0);
+    expect(component.monthOptions$()).toHaveLength(0);
   });
 
   it('should default to first available month when API returns multiple months', () => {
@@ -1235,7 +1235,7 @@ describe('Month/Year Selector', () => {
     fixture.detectChanges();
 
     // With no options, yearOptions is empty — effect does NOT change selectedYear
-    expect(component.yearOptions$().length).toBe(0);
+    expect(component.yearOptions$()).toHaveLength(0);
     // selectedYear stays at initial default (current year)
     expect(component.selectedYear.value).toBe(new Date().getFullYear());
   });

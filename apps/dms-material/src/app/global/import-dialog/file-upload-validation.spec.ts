@@ -76,32 +76,27 @@ describe('ImportDialogComponent - File Upload Validation (TDD RED)', () => {
   // Placeholder test to keep vitest from failing on empty suite.
   // All real tests below are disabled (TDD RED phase).
   it('should have TDD RED phase tests defined', () => {
-    expect(true).toBe(true);
+    expect(component).toBeTruthy();
   });
 
   // TODO(E82): blocked — file upload features not implemented (Story AR.4)
   // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
   describe.skip('file size validation', () => {
-    it('should reject files larger than 10MB', () => {
-      const oversizedContent = 'a'.repeat(11 * 1024 * 1024);
-      const file = new File([oversizedContent], 'oversized.csv', {
-        type: 'text/csv',
-      });
+    it.each([
+      ['reject files larger than 10MB', 11 * 1024 * 1024, 'oversized.csv', false],
+      [
+        'accept files exactly at 10MB limit',
+        10 * 1024 * 1024,
+        'max-size.csv',
+        true,
+      ],
+    ])('should %s', (label, size, fileName, accepted) => {
+      const content = 'a'.repeat(size);
+      const file = new File([content], fileName, { type: 'text/csv' });
       selectFile(fixture, file);
 
       const componentRecord = component as unknown as Record<string, unknown>;
-      expect(componentRecord['selectedFile']).toBeNull();
-    });
-
-    it('should accept files exactly at 10MB limit', () => {
-      const maxContent = 'a'.repeat(10 * 1024 * 1024);
-      const file = new File([maxContent], 'max-size.csv', {
-        type: 'text/csv',
-      });
-      selectFile(fixture, file);
-
-      const componentRecord = component as unknown as Record<string, unknown>;
-      expect(componentRecord['selectedFile']).toBe(file);
+      expect(componentRecord['selectedFile']).toBe(accepted ? file : null);
     });
 
     it('should display file size error message for oversized files', () => {
@@ -399,30 +394,15 @@ describe('ImportDialogComponent - File Upload Validation (TDD RED)', () => {
       expect(componentRecord['selectedFile']).toBe(file);
     });
 
-    it('should reject .xlsx files', () => {
-      const file = new File(['binary content'], 'data.xlsx', {
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      });
-      selectFile(fixture, file);
-
-      const componentRecord = component as unknown as Record<string, unknown>;
-      expect(componentRecord['selectedFile']).toBeNull();
-    });
-
-    it('should reject files with no extension', () => {
-      const file = new File(['some content'], 'datafile', {
-        type: 'application/octet-stream',
-      });
-      selectFile(fixture, file);
-
-      const componentRecord = component as unknown as Record<string, unknown>;
-      expect(componentRecord['selectedFile']).toBeNull();
-    });
-
-    it('should reject .csv.bak files', () => {
-      const file = new File(['csv content'], 'data.csv.bak', {
-        type: 'application/octet-stream',
-      });
+    it.each([
+      [
+        'data.xlsx',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      ],
+      ['datafile', 'application/octet-stream'],
+      ['data.csv.bak', 'application/octet-stream'],
+    ])('should reject %s files', (fileName, fileType) => {
+      const file = new File(['content'], fileName, { type: fileType });
       selectFile(fixture, file);
 
       const componentRecord = component as unknown as Record<string, unknown>;

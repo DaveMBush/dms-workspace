@@ -500,10 +500,11 @@ test.describe('Universe Update Flow', () => {
       await expect(button).toBeDisabled();
 
       // Try clicking while disabled (these should be ignored)
-      // Intentional: forced clicks on a disabled button must be ignored by the guard.
+      // eslint-disable-next-line sonarjs/no-forced-browser-interaction -- see above
       await button.click({ force: true }); // Force click to test guard logic
       await settle(page, 100);
       // Intentional: second forced click on the disabled button must also be ignored.
+      // eslint-disable-next-line sonarjs/no-forced-browser-interaction -- see above
       await button.click({ force: true }); // Force click to test guard logic
 
       // Wait for operation to complete
