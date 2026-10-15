@@ -108,7 +108,7 @@ test.describe.skip('Session Warning Dialog', () => {
     const dialog = page.locator('dms-session-warning');
 
     // Try clicking backdrop (outside dialog)
-    // Intentional: force the click onto the backdrop to verify disableClose keeps the dialog open.
+    // eslint-disable-next-line sonarjs/no-forced-browser-interaction -- see above
     await page.locator('.cdk-overlay-backdrop').click({ force: true });
 
     // Dialog should still be visible (disableClose: true)

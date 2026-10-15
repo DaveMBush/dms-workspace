@@ -209,8 +209,10 @@ test.describe('Update Fields Flow', () => {
       await button.click();
       await expect(button).toBeDisabled();
       // Intentional: forced click on the disabled button must be ignored by the guard.
+      // eslint-disable-next-line sonarjs/no-forced-browser-interaction -- see above
       await button.click({ force: true });
       // Intentional: second forced click on the disabled button must also be ignored.
+      // eslint-disable-next-line sonarjs/no-forced-browser-interaction -- see above
       await button.click({ force: true });
 
       await settle(page, 2000);

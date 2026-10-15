@@ -370,7 +370,7 @@ describe('AddSymbolDialogComponent', () => {
 
       const results = await promise;
       expect(results).toEqual([]);
-      expect(results.length).toBe(0);
+      expect(results).toHaveLength(0);
     });
 
     it('should clear autocomplete when form is reset', () => {
@@ -402,7 +402,7 @@ describe('AddSymbolDialogComponent', () => {
       await Promise.all([p1, p2, p3]);
 
       // Each searchSymbols call triggers an HTTP request
-      expect(requests.length).toBe(3);
+      expect(requests).toHaveLength(3);
     });
 
     it('should enable submit when form is valid without autocomplete selection (free-text entry)', () => {
@@ -430,16 +430,8 @@ describe('AddSymbolDialogComponent', () => {
       const req = httpMock.expectOne(`/api/symbol/search?query=${query}`);
       req.flush('API Error', { status: 500, statusText: 'Server Error' });
 
-      try {
-        await promise;
-        // Should throw error
-        throw new Error('Should have thrown');
-      } catch {
-        // Error is caught and returns empty array
-        // This is expected behavior
-      }
-      // If searchSymbols returns empty on error, that's correct
-      expect(true).toBe(true);
+      // searchSymbols catches the error and resolves with an empty array
+      await expect(promise).resolves.toEqual([]);
     });
 
     it('should filter autocomplete results by query', async () => {
@@ -574,43 +566,15 @@ describe('AddSymbolDialogComponent', () => {
     });
 
     describe('invalid symbol format validation', () => {
-      it('should show error for lowercase symbol', () => {
-        // Given: Symbol in lowercase
-        component.form.patchValue({ symbol: 'aapl', riskGroupId: 'rg1' });
+      it.each([
+        ['lowercase symbol', 'aapl'],
+        ['mixed case symbol', 'AaPl'],
+        ['symbol with special characters', 'AAPL@#'],
+        ['symbol with spaces', 'AA PL'],
+        ['symbol with numbers only', '12345'],
+      ])('should show error for %s', (label, symbol) => {
+        component.form.patchValue({ symbol, riskGroupId: 'rg1' });
 
-        // Then: Should show pattern validation error
-        expect(component.form.get('symbol')?.hasError('pattern')).toBe(true);
-      });
-
-      it('should show error for mixed case symbol', () => {
-        // Given: Symbol in mixed case
-        component.form.patchValue({ symbol: 'AaPl', riskGroupId: 'rg1' });
-
-        // Then: Should show uppercase validation error
-        expect(component.form.get('symbol')?.hasError('pattern')).toBe(true);
-      });
-
-      it('should show error for symbol with special characters', () => {
-        // Given: Symbol with special characters
-        component.form.patchValue({ symbol: 'AAPL@#', riskGroupId: 'rg1' });
-
-        // Then: Should show format validation error
-        expect(component.form.get('symbol')?.hasError('pattern')).toBe(true);
-      });
-
-      it('should show error for symbol with spaces', () => {
-        // Given: Symbol with spaces
-        component.form.patchValue({ symbol: 'AA PL', riskGroupId: 'rg1' });
-
-        // Then: Should show format validation error
-        expect(component.form.get('symbol')?.hasError('pattern')).toBe(true);
-      });
-
-      it('should show error for symbol with numbers only', () => {
-        // Given: Symbol with only numbers
-        component.form.patchValue({ symbol: '12345', riskGroupId: 'rg1' });
-
-        // Then: Should show format validation error
         expect(component.form.get('symbol')?.hasError('pattern')).toBe(true);
       });
     });

@@ -1,9 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Sort } from '@angular/material/sort';
 import { of } from 'rxjs';
-
-import { NotificationService } from '../../shared/services/notification.service';
 import { GlobalLoadingService } from '../../shared/services/global-loading.service';
+import { NotificationService } from '../../shared/services/notification.service';
 import { SortFilterStateService } from '../../shared/services/sort-filter-state.service';
 import { Screen } from '../../store/screen/screen.interface';
 import { GlobalScreenerComponent } from './global-screener.component';
@@ -135,7 +134,7 @@ describe('GlobalScreenerComponent', () => {
     it('should show notification on successful refresh', () => {
       component.onRefresh();
       expect(mockNotification.show).toHaveBeenCalledWith(
-        'Screener data refreshed successfully'
+        'Screener data refreshed successfully',
       );
     });
   });
@@ -211,7 +210,7 @@ describe('GlobalScreenerComponent', () => {
       component.riskGroupFilter$.set('Equities');
       const filtered = component.filteredData$();
 
-      expect(filtered.length).toBe(1);
+      expect(filtered).toHaveLength(1);
       expect(filtered[0].symbol).toBe('A');
       expect(filtered[0].risk_group).toBe('Equities');
     });
@@ -235,7 +234,7 @@ describe('GlobalScreenerComponent', () => {
       component.riskGroupFilter$.set('Income');
       const filtered = component.filteredData$();
 
-      expect(filtered.length).toBe(1);
+      expect(filtered).toHaveLength(1);
       expect(filtered[0].symbol).toBe('B');
       expect(filtered[0].risk_group).toBe('Income');
     });
@@ -259,7 +258,7 @@ describe('GlobalScreenerComponent', () => {
       component.riskGroupFilter$.set('Tax Free Income');
       const filtered = component.filteredData$();
 
-      expect(filtered.length).toBe(1);
+      expect(filtered).toHaveLength(1);
       expect(filtered[0].symbol).toBe('B');
       expect(filtered[0].risk_group).toBe('Tax Free Income');
     });
@@ -283,7 +282,7 @@ describe('GlobalScreenerComponent', () => {
       component.riskGroupFilter$.set(null);
       const filtered = component.filteredData$();
 
-      expect(filtered.length).toBe(2);
+      expect(filtered).toHaveLength(2);
     });
 
     it('should return empty array when no screens match filter', () => {
@@ -300,7 +299,7 @@ describe('GlobalScreenerComponent', () => {
       component.riskGroupFilter$.set('Income');
       const filtered = component.filteredData$();
 
-      expect(filtered.length).toBe(0);
+      expect(filtered).toHaveLength(0);
     });
 
     it('should filter data reactively when risk group changes', () => {
@@ -321,24 +320,24 @@ describe('GlobalScreenerComponent', () => {
 
       // Initially no filter
       let filtered = component.filteredData$();
-      expect(filtered.length).toBe(2);
+      expect(filtered).toHaveLength(2);
 
       // Apply filter
       component.riskGroupFilter$.set('Equities');
       filtered = component.filteredData$();
-      expect(filtered.length).toBe(1);
+      expect(filtered).toHaveLength(1);
       expect(filtered[0].risk_group).toBe('Equities');
 
       // Change filter
       component.riskGroupFilter$.set('Income');
       filtered = component.filteredData$();
-      expect(filtered.length).toBe(1);
+      expect(filtered).toHaveLength(1);
       expect(filtered[0].risk_group).toBe('Income');
 
       // Clear filter
       component.riskGroupFilter$.set(null);
       filtered = component.filteredData$();
-      expect(filtered.length).toBe(2);
+      expect(filtered).toHaveLength(2);
     });
   });
 });

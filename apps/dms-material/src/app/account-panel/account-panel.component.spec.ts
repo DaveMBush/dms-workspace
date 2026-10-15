@@ -91,28 +91,16 @@ describe('AccountPanelComponent', () => {
   it('should render four tab links', () => {
     fixture.detectChanges();
     const links = fixture.nativeElement.querySelectorAll('[mat-tab-link]');
-    expect(links.length).toBe(4);
+    expect(links).toHaveLength(4);
   });
 
-  it('should have Summary tab', () => {
-    fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toContain('Summary');
-  });
-
-  it('should have Open Positions tab', () => {
-    fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toContain('Open Positions');
-  });
-
-  it('should have Sold Positions tab', () => {
-    fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toContain('Sold Positions');
-  });
-
-  it('should have Dividend Deposits tab', () => {
-    fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toContain('Dividend Deposits');
-  });
+  it.each(['Summary', 'Open Positions', 'Sold Positions', 'Dividend Deposits'])(
+    'should have %s tab',
+    (tabLabel) => {
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toContain(tabLabel);
+    },
+  );
 
   it('should render router outlet', () => {
     fixture.detectChanges();

@@ -1,8 +1,7 @@
+import { NO_ERRORS_SCHEMA, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Router, provideRouter } from '@angular/router';
-import { signal, NO_ERRORS_SCHEMA } from '@angular/core';
+import { provideRouter, Router } from '@angular/router';
 import { of } from 'rxjs';
-
 import { AuthService } from '../auth/auth.service';
 import { ConfirmDialogService } from '../shared/services/confirm-dialog.service';
 import { ThemeService } from '../shared/services/theme.service';
@@ -52,28 +51,14 @@ describe('ShellComponent', () => {
     router = TestBed.inject(Router);
   });
 
-  it('should render toolbar', () => {
+  it.each([
+    ['toolbar', 'mat-toolbar'],
+    ['theme toggle button', '[aria-label="Toggle theme"]'],
+    ['user menu button', '[aria-label="User menu"]'],
+    ['splitter with two panels', 'dms-splitter'],
+  ])('should render %s', (label, selector) => {
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('mat-toolbar')).toBeTruthy();
-  });
-
-  it('should render theme toggle button', () => {
-    fixture.detectChanges();
-    expect(
-      fixture.nativeElement.querySelector('[aria-label="Toggle theme"]')
-    ).toBeTruthy();
-  });
-
-  it('should render user menu button', () => {
-    fixture.detectChanges();
-    expect(
-      fixture.nativeElement.querySelector('[aria-label="User menu"]')
-    ).toBeTruthy();
-  });
-
-  it('should render splitter with two panels', () => {
-    fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('dms-splitter')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector(selector)).toBeTruthy();
   });
 
   describe('onLogout', () => {
