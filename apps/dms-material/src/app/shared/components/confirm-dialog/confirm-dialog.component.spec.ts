@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-
 import { ConfirmDialogData } from '../../types/confirm-dialog-data.interface';
 import { ConfirmDialogComponent } from './confirm-dialog.component';
 
@@ -38,7 +37,7 @@ describe('ConfirmDialogComponent', () => {
     it('should display message', () => {
       const compiled = fixture.nativeElement;
       expect(
-        compiled.querySelector('mat-dialog-content').textContent
+        compiled.querySelector('mat-dialog-content').textContent,
       ).toContain('Test Message');
     });
 
@@ -235,7 +234,7 @@ describe('ConfirmDialogComponent', () => {
 
       const compiled = customFixture.nativeElement;
       expect(
-        compiled.querySelector('mat-dialog-content').textContent
+        compiled.querySelector('mat-dialog-content').textContent,
       ).toContain(longMessage);
     });
 
@@ -261,7 +260,7 @@ describe('ConfirmDialogComponent', () => {
       const compiled = customFixture.nativeElement;
       // Angular's {{ }} interpolation escapes HTML by default
       expect(compiled.querySelector('h2').textContent).toContain(
-        '<script>alert("xss")</script>'
+        '<script>alert("xss")</script>',
       );
       // Verify no actual script tag was created
       expect(compiled.querySelector('script')).toBeNull();
@@ -335,7 +334,7 @@ describe('ConfirmDialogComponent', () => {
 
       const compiled = customFixture.nativeElement;
       expect(
-        compiled.querySelector('mat-dialog-content').textContent
+        compiled.querySelector('mat-dialog-content').textContent,
       ).toContain('Line 1');
     });
   });

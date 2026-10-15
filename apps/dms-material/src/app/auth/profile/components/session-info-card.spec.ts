@@ -1,6 +1,5 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
-
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ProfileService } from '../../services/profile.service';
 import { UserProfile } from '../../types/profile.types';
 import { SessionInfoCardComponent } from './session-info-card';
@@ -104,7 +103,7 @@ describe('SessionInfoCardComponent', () => {
 
   it('should compute tokenExpiration from profile', () => {
     expect(component.tokenExpiration()).toEqual(
-      mockProfile.sessionInfo.tokenExpiration
+      mockProfile.sessionInfo.tokenExpiration,
     );
   });
 

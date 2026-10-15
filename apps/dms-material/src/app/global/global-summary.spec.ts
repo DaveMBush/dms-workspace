@@ -716,7 +716,7 @@ describe('Pie Chart Display', () => {
 
     const chartData = component.allocationData;
     expect(chartData.datasets[0].backgroundColor).toBeDefined();
-    expect((chartData.datasets[0].backgroundColor as string[])).toHaveLength(3);
+    expect(chartData.datasets[0].backgroundColor as string[]).toHaveLength(3);
   });
 
   it('should handle empty/zero allocation data gracefully', () => {

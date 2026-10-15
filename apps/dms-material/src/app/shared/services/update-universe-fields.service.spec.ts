@@ -1,10 +1,9 @@
-import { TestBed } from '@angular/core/testing';
+import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import {
   HttpTestingController,
   provideHttpClientTesting,
 } from '@angular/common/http/testing';
-import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
-
+import { TestBed } from '@angular/core/testing';
 import { UpdateUniverseFieldsService } from './update-universe-fields.service';
 
 describe('UpdateUniverseFieldsService', () => {

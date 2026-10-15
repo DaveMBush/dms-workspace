@@ -1,8 +1,7 @@
+import { NO_ERRORS_SCHEMA, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Router, provideRouter } from '@angular/router';
-import { signal, NO_ERRORS_SCHEMA } from '@angular/core';
+import { provideRouter, Router } from '@angular/router';
 import { of } from 'rxjs';
-
 import { AuthService } from '../auth/auth.service';
 import { ConfirmDialogService } from '../shared/services/confirm-dialog.service';
 import { ThemeService } from '../shared/services/theme.service';

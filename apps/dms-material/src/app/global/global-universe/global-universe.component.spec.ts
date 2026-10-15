@@ -1672,23 +1672,24 @@ describe('GlobalUniverseComponent - Distribution Field Editing Validation (TDD -
         4.5,
         'Distributions per year must be a whole number',
       ],
-      ['decimal values like 1.5', 1.5, 'Distributions per year must be a whole number'],
-    ])(
-      'should reject %s and show error',
-      (label, value, expectedMessage) => {
-        const row = {
-          id: '1',
-          symbol: 'AAPL',
-          distributions_per_year: 4,
-        } as Universe;
+      [
+        'decimal values like 1.5',
+        1.5,
+        'Distributions per year must be a whole number',
+      ],
+    ])('should reject %s and show error', (label, value, expectedMessage) => {
+      const row = {
+        id: '1',
+        symbol: 'AAPL',
+        distributions_per_year: 4,
+      } as Universe;
 
-        const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
-        component.onCellEdit(row, 'distributions_per_year', value);
+      const cellEditSpy = vi.spyOn(component.cellEdit, 'emit');
+      component.onCellEdit(row, 'distributions_per_year', value);
 
-        expect(cellEditSpy).not.toHaveBeenCalled();
-        expect(mockNotification.error).toHaveBeenCalledWith(expectedMessage);
-      },
-    );
+      expect(cellEditSpy).not.toHaveBeenCalled();
+      expect(mockNotification.error).toHaveBeenCalledWith(expectedMessage);
+    });
 
     it('should accept zero as distributions per year', () => {
       const row = {
@@ -2141,10 +2142,7 @@ describe('GlobalUniverseComponent - Ex-Date Editing Enhancements (TDD - Story AN
     it.each([
       ['dates with extra whitespace', ' 2024-06-15 '],
       ['dates with time components in string', '2024-06-15T10:30:00'],
-      [
-        'dates with single-digit month/day without zero padding',
-        '2024-6-5',
-      ],
+      ['dates with single-digit month/day without zero padding', '2024-6-5'],
     ])('should reject %s', (label, invalidDate) => {
       const row = {
         id: '1',

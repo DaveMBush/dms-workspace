@@ -376,8 +376,8 @@ describe('Account Selection Integration', () => {
 
       expect(account.id).toBe('account-1');
       expect(account.name).toBe('Brokerage');
-      expect((account.openTrades as Trade[])).toHaveLength(1);
-      expect((account.divDeposits as unknown as DivDeposit[])).toHaveLength(1);
+      expect(account.openTrades as Trade[]).toHaveLength(1);
+      expect(account.divDeposits as unknown as DivDeposit[]).toHaveLength(1);
     });
   });
 
@@ -394,7 +394,7 @@ describe('Account Selection Integration', () => {
       const account = currentAccount();
       expect(account.id).toBe('');
       expect(account.name).toBe('');
-      expect((account.openTrades as Trade[])).toHaveLength(0);
+      expect(account.openTrades as Trade[]).toHaveLength(0);
     });
 
     it('should return empty account when entities store is completely empty', () => {
@@ -443,7 +443,7 @@ describe('Account Selection Integration', () => {
 
       const account = currentAccount();
       expect(account.id).toBe('account-empty');
-      expect((account.openTrades as Trade[])).toHaveLength(0);
+      expect(account.openTrades as Trade[]).toHaveLength(0);
     });
   });
 
@@ -531,7 +531,7 @@ describe('Account Selection Integration', () => {
       const account = currentAccount();
       expect(account.id).toBe('');
       expect(account.name).toBe('');
-      expect((account.openTrades as Trade[])).toHaveLength(0);
+      expect(account.openTrades as Trade[]).toHaveLength(0);
     });
 
     it('should load the correct account once setCurrentAccountId is called from a route', () => {
@@ -648,7 +648,7 @@ describe('Account Selection Integration', () => {
 
       const account = currentAccount();
       expect(account.id).toBe('account-new');
-      expect((account.openTrades as Trade[])).toHaveLength(0);
+      expect(account.openTrades as Trade[]).toHaveLength(0);
     });
 
     it('should handle account ID with special characters', () => {

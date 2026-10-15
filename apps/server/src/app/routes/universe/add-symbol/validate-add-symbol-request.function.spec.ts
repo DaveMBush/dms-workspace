@@ -33,7 +33,7 @@ describe('validateAddSymbolRequest', function () {
 
     expect(result.isValid).toBe(false);
     expect(result.errors).toContain(
-      'Risk group ID is required and must be a string'
+      'Risk group ID is required and must be a string',
     );
   });
 
@@ -75,7 +75,7 @@ describe('validateAddSymbolRequest', function () {
 
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain(expectedMessage);
-    }
+    },
   );
 
   test('should return invalid for null request', function () {

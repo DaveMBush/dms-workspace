@@ -83,7 +83,12 @@ describe('ImportDialogComponent - File Upload Validation (TDD RED)', () => {
   // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
   describe.skip('file size validation', () => {
     it.each([
-      ['reject files larger than 10MB', 11 * 1024 * 1024, 'oversized.csv', false],
+      [
+        'reject files larger than 10MB',
+        11 * 1024 * 1024,
+        'oversized.csv',
+        false,
+      ],
       [
         'accept files exactly at 10MB limit',
         10 * 1024 * 1024,
