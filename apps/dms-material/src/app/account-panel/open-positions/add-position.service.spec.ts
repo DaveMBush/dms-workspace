@@ -278,6 +278,26 @@ describe('AddPositionService', () => {
         expect(tradeData.symbol).toBe('');
       });
 
+      it('normalizes a Date purchase_date to an ISO string in buy_date', () => {
+        // The datepicker control yields a Date at runtime (typed as string in the
+        // dialog result). Without normalization, the in-memory trade keeps the Date
+        // and downstream consumers that call .trim() on buy_date throw when
+        // navigating away after an add.
+        const { signal: trades, add } = createMockTradesSignal();
+        const handler = service.createDialogCloseHandler(
+          trades,
+          currentAccount,
+          validAccountId,
+        );
+
+        handler(createValidResult({ purchase_date: new Date('2024-01-15') }));
+
+        expect(add).toHaveBeenCalledTimes(1);
+        const tradeData = add.mock.calls[0][0] as Trade;
+        expect(typeof tradeData.buy_date).toBe('string');
+        expect(tradeData.buy_date).toBe(new Date('2024-01-15').toISOString());
+      });
+
       it('clears the success message after 3 seconds', () => {
         vi.useFakeTimers();
         try {
