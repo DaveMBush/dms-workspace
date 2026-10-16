@@ -1,4 +1,4 @@
-import { expect, Page, test } from 'playwright/test';
+import { expect, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 import { settle } from './helpers/settle.helper';
 
@@ -77,9 +77,9 @@ test.describe('Add then navigate (no console errors)', () => {
     await saveButton.click();
 
     // Dialog closes after successful submit
-    await expect(page.locator('[data-testid="dialog-title"]')).not.toBeVisible(
-      { timeout: 10000 },
-    );
+    await expect(page.locator('[data-testid="dialog-title"]')).not.toBeVisible({
+      timeout: 10000,
+    });
 
     // Added row is visible in the table before navigating away
     await settle(page, 1000); // Wait for table to update
