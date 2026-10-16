@@ -91,7 +91,7 @@ export class AddPositionService {
       symbol: result.symbol ?? '',
       quantity: result.quantity!,
       buy: result.price!,
-      buy_date: result.purchase_date!,
+      buy_date: this.toBuyDateString(result.purchase_date!),
       sell: 0,
       accountId,
       expected_dollars: 0,
@@ -101,6 +101,14 @@ export class AddPositionService {
       target_sell: 0,
       last_price: 0,
     };
+  }
+
+  // The datepicker control yields a Date at runtime (typed as string in the dialog
+  // result). Normalize to an ISO string so the in-memory trade matches what JSON
+  // serialization sends to the server — otherwise downstream consumers that call
+  // .trim() on buy_date throw when navigating away after an add.
+  private toBuyDateString(value: Date | string): string {
+    return value instanceof Date ? value.toISOString() : value;
   }
 
   private addPositionToTrades(
