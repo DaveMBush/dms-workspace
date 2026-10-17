@@ -29,11 +29,13 @@ module.exports = async function copyServerNodeModules(context) {
   );
 
   if (!fs.existsSync(sourceNodeModules)) {
-    console.warn(
-      `[after-pack] server node_modules not found at ${sourceNodeModules}; skipping copy. ` +
+    // Fail loudly instead of shipping an image with no server node_modules.
+    // A silent skip here produced AppImages that die at runtime with
+    // MODULE_NOT_FOUND (fastify) while the build still reported success.
+    throw new Error(
+      `[after-pack] server node_modules not found at ${sourceNodeModules}. ` +
         'Run the electron build:linux target (which stages it) before packaging.',
     );
-    return;
   }
 
   fs.rmSync(targetNodeModules, { recursive: true, force: true });
