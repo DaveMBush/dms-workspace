@@ -157,7 +157,7 @@ function configureContentSecurityPolicy(port: number): void {
           ...details.responseHeaders,
           'Content-Security-Policy': [
             `default-src 'self' http://localhost:${port}; ` +
-              `script-src 'self' 'unsafe-hashes' 'sha256-MhtPZXr7+LpJUY5qtMutB+qWfQtMaPccfe7QXtCcEYc='; ` +
+              `script-src 'self' 'unsafe-hashes' 'sha256-MhtPZXr7+LpJUY5qtMutB+qWfQtMaPccfe7QXtCcEYc=' 'sha256-LMY6wYoFV9I4wWzxaq1N/dTpl4iurQktw706UCHK3vM='; ` +
               `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; ` +
               `font-src 'self' https://fonts.gstatic.com; ` +
               `img-src 'self' data: https:; ` +
