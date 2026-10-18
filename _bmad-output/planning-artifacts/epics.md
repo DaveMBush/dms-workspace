@@ -223,3 +223,143 @@ So that I can trust both add flows in real use — including persistence of the 
 
 ---
 
+> Epics 5–7 are generated from `.github/epic-descriptions/epics-2026-10-17.md` (a later source file than the one cited in the header above).
+> No AD or FR in ARCHITECTURE-SPINE / PRD maps to these three epics, so no `**ADs covered:**` / `**FRs covered:**` lines are asserted for them.
+
+## Epic 5: Column Headers — wrap + top alignment (no clipping)
+
+Every table in the app renders through the single shared `dms-base-table` component, whose `.dms-header-cell` style currently clips header text with `overflow: hidden; text-overflow: ellipsis; white-space: nowrap`. After this Epic, column headers show their full text — wrapping onto multiple lines instead of being cut off — and start at the top of the header cell. Body cells are intentionally left unchanged (single-line, truncated) so the fixed 57px row height and CDK virtual-scroll itemSize stay stable.
+
+### Story 5.1: Unit tests for column header wrap + top alignment (red-phase)
+
+As a developer,
+I want a red-phase unit-test scaffold asserting that `dms-base-table` column headers wrap fully (no clipping) and align to the top of their cell,
+So that Story 5.2 has a defined, executable contract to make pass when it removes the header text-clipping styles.
+
+**Acceptance Criteria:**
+
+**Given** `dms-base-table` renders a column whose `header` is long enough to wrap at the configured column width
+**When** the rendered `.dms-header-cell` computed style is inspected
+**Then** it does NOT clip: `white-space` resolves to `normal`/unset (not `nowrap`) and `text-overflow` is not `ellipsis`
+**And** a wrapped header cell's text starts at the top of the cell (computed `vertical-align: top`, or an equivalent top-alignment assertion)
+
+**Given** a short single-line header
+**When** it renders with the same non-clipping, top-aligned style
+**Then** there is no regression to single-line headers
+
+### Story 5.2: Remove column header clipping; allow wrap + top alignment
+
+As a user (Dave),
+I want the column headers in every table to show their full text — wrapping onto multiple lines instead of being cut off — and to start at the top of the header cell,
+So that no header information is hidden by `white-space: nowrap` / `text-overflow: ellipsis` styling.
+
+**Acceptance Criteria:**
+
+**Given** the shared `.dms-header-cell` block in `apps/dms-material/src/app/shared/components/base-table/base-table.component.scss` (lines 49–67) currently sets `overflow: hidden; text-overflow: ellipsis; white-space: nowrap`
+**When** those three clipping declarations are removed and `vertical-align: top` is added to the same block
+**Then** a wrapped header cell shows its full text, aligned to the top of the cell
+
+**Given** the `.dms-body-cell` block (lines 112–117) sets `overflow: hidden; text-overflow: ellipsis; white-space: nowrap` and the fixed `--mat-table-row-item-container-height: 57px` row height (line 10)
+**When** Story 5.2's change is applied
+**Then** body cells are untouched — data rows keep their single-line, 57px behavior and virtual-scroll itemSize stays stable
+
+**Given** Story 5.1's red-phase unit assertions
+**When** they are unskipped and `nx test dms-material` runs
+**Then** all pass (green) with no pre-existing regression in `base-table.component.spec.ts`
+
+### Story 5.3: E2E test for column header wrap + top alignment
+
+As a user (Dave),
+I want an end-to-end proof that every table's column headers show their full text — wrapping onto multiple lines instead of being clipped — and start at the top of the header cell, across different screen sizes,
+So that I can trust no header information is hidden by styling in real use.
+
+**Acceptance Criteria:**
+
+**Given** a table view with long column headers (e.g., Open Positions or Universe) rendered through `dms-base-table`
+**When** each `.dms-header-cell` is inspected at two viewport sizes (desktop + tablet)
+**Then** the cell shows its full text (scroll height equals client height, no ellipsis, computed `white-space` not `nowrap`) and the first line of header text sits at the top edge of the cell bounding box
+
+**Given** the existing e2e specs `open-positions.spec.ts` and `dividend-deposits-modal.spec.ts`
+**When** they run alongside the new spec on chromium
+**Then** all pass unchanged — no pre-existing test regresses
+
+---
+
+## Epic 6: Remove PrimeNg
+
+The app's UI is built entirely on Angular Material; there are zero real PrimeNg references in dms-material source (no TS import, no SCSS `@import`/`@use`). The only traces are two stale package declarations (`@primeng/themes`, `primeng`) in the workspace-root `package.json` (dms-material has no per-app manifest — deps are root-hoisted) and a misleading comment at line 1 of `apps/dms-material/src/themes/_theme-variables.scss`. After this Epic, both packages are removed from the dependency set with no remaining references anywhere.
+
+### Story 6.1: Unit tests asserting no PrimeNg references remain (red-phase)
+
+As a developer,
+I want a red-phase test that fails while `@primeng/themes` and `primeng` are still declared in the dms-material dependency set or referenced in source,
+So that Story 6.2 has an executable contract proving PrimeNg is fully removed before the packages are deleted.
+
+**Acceptance Criteria:**
+
+**Given** the workspace-root `package.json` currently declares both `@primeng/themes` and `primeng` under `dependencies` (dms-material has no per-app manifest — deps are root-hoisted)
+**When** a new test reads that manifest
+**Then** it asserts neither key is present — failing (red) while the deps still exist
+
+**Given** the dms-material source tree (`apps/dms-material/src/**/*.{ts,scss}`)
+**When** a sibling test scans every file for an import of `primeng`, `@primeng/themes`, or any `@primeng/*` specifier
+**Then** it asserts zero references (this already holds — the only trace is a comment, not an import)
+
+### Story 6.2: Remove PrimeNg packages from dms-material
+
+As a user (Dave),
+I want the `@primeng/themes` and `primeng` packages removed from dms-material with no remaining references in source,
+So that the app depends only on Angular Material for its UI components.
+
+**Acceptance Criteria:**
+
+**Given** both PrimeNg keys are declared in the workspace-root `package.json` under `dependencies` (dms-material has no per-app manifest — deps are root-hoisted) and a stale comment sits at line 1 of `apps/dms-material/src/themes/_theme-variables.scss`
+**When** the two dependency entries are deleted, `pnpm install` runs, and the comment is removed
+**Then** neither package appears in the manifest or `node_modules`, no source file imports any `@primeng/*` specifier, and a case-insensitive grep of `apps/dms-material/src` for `primeng` returns zero hits
+
+**Given** Story 6.1's red-phase tests are unskipped
+**When** `nx test dms-material`, `nx run dms-material:lint`, and the build target run
+**Then** all pass (green) with no new errors — removal is safe because `styles.scss` uses only `@angular/material` + local theme files
+
+---
+
+## Epic 7: Yahoo-Finance2 → 4.0.4
+
+The server's single raw import of `yahoo-finance2` lives in `apps/server/src/app/routes/settings/yahoo-finance.instance.ts`, which re-exports a `yahooFinance` instance consumed by three call sites (`search()` ×2, `quote()` ×1). The package is declared on the v3 line (`^3.13.0`) in the root `package.json`. After this Epic it targets 4.0.4, any v3→v4 API breakage is fixed at that one import point (or the call sites), and consumer tests stay insulated from the package internals by mocking the instance module rather than importing the raw package.
+
+### Story 7.1: Unit tests for yahoo-finance2 v4 upgrade contract (red-phase)
+
+As a developer,
+I want a red-phase test that fails while `yahoo-finance2` is still on the v3 line and asserts the declared version targets 4.0.4 with consumer tests mocking the instance module rather than importing the raw package,
+So that Story 7.2 has an executable contract proving the upgrade landed without coupling any test to the package's internal implementation.
+
+**Acceptance Criteria:**
+
+**Given** `yahoo-finance2` is declared in the root `package.json` (line 69) as `"^3.13.0"`
+**When** a new test reads that manifest value
+**Then** it asserts the version satisfies `^4.0.4` — failing (red) while on v3
+
+**Given** the consumer specs (`resolve-cusip.function.spec.ts`, `get-last-price.function.spec.ts`) already mock the instance module `settings/yahoo-finance.instance.ts`
+**When** a sibling test inspects them
+**Then** it asserts they do NOT import the raw `yahoo-finance2` specifier — locking in the "mock the instance module" contract so tests survive future package swaps
+
+### Story 7.2: Upgrade yahoo-finance2 to v4
+
+As a user (Dave),
+I want the `yahoo-finance2` package upgraded from the v3 line to version 4.0.4, with any resulting API breakage fixed at the single import point and consumer tests insulated from the package internals,
+So that the server runs on the current major release of the library.
+
+**Acceptance Criteria:**
+
+**Given** `yahoo-finance2` is declared in the root `package.json` (line 69) as `"^3.13.0"` and only `settings/yahoo-finance.instance.ts` imports the raw package
+**When** the declaration is bumped to target 4.0.4, `pnpm install` runs, and any v3→v4 constructor/option or method-signature changes are fixed at that import point (or the three call sites)
+**Then** the exported `yahooFinance` instance still works — all three consumers (`search()` in `symbol/search/index.ts` + `import/resolve-cusip.function.ts`, `quote()` in `settings/common/get-last-price.function.ts`) compile and pass their existing unit tests
+
+**Given** Story 7.1's red-phase tests are unskipped
+**When** the server test runner, `nx run dms-server:lint`, and the build target run
+**Then** all pass (green) with no pre-existing regression — the version assertion is now green
+
+> Note: the epic prose says this "will need to be done in one story," but the validator forbids a single-story epic (count must satisfy both `% 2` and `% 3`). This is therefore the minimal valid pair: a red-phase contract + its implementation, with no e2e story.
+
+---
+
