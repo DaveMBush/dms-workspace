@@ -291,3 +291,69 @@ describe('BaseTableComponent - Rendered Range Tracking', () => {
     expect(emitted).toEqual([{ start: 0, end: 0 }]);
   });
 });
+
+// TDD RED Phase: Story 5.1 - column header wrap + top alignment.
+// These tests define the contract that Story 5.2 must satisfy when it removes
+// the clipping styles (overflow / text-overflow / white-space) from
+// .dms-header-cell and adds vertical-align: top. They are intentionally red
+// against the current component; Task 2 of this story marks them it.skip() so
+// CI stays green until Story 5.2 unskips, confirms red, then implements.
+describe('BaseTableComponent - column header wrapping', () => {
+  let fixture: ComponentFixture<BaseTableComponent<{ id: string; name: string }>>;
+
+  // Long enough to wrap at the configured 120px column width in a real browser.
+  const longHeader = 'Account Name / Counterparty Legal Entity Identifier (LEI)';
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [BaseTableComponent],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(BaseTableComponent);
+    fixture.componentRef.setInput('columns', [
+      { field: 'name', header: longHeader, width: 120 },
+    ]);
+    fixture.componentRef.setInput('data', [{ id: '1', name: 'Row One' }]);
+    fixture.detectChanges();
+  });
+
+  afterEach(() => {
+    // Destroy the fixture so its CDK virtual scroll viewport is torn down and
+    // does not leak async init state into later describes in this file.
+    fixture.destroy();
+  });
+
+  function headerCell(): HTMLElement {
+    const cell = fixture.nativeElement.querySelector(
+      '.dms-header-cell[data-column="name"]',
+    );
+    expect(cell).not.toBeNull();
+    return cell as HTMLElement;
+  }
+
+  it('should not clip a long column header (AC #1)', () => {
+    const style = getComputedStyle(headerCell());
+    // Header text must wrap: white-space resolves to normal/unset, never nowrap.
+    expect(['normal', 'unset', ''].includes(style.whiteSpace)).toBe(true);
+    // No ellipsis clipping of the header text.
+    expect(style.textOverflow).not.toBe('ellipsis');
+  });
+
+  it('should top-align wrapped header text (AC #2)', () => {
+    const style = getComputedStyle(headerCell());
+    expect(style.verticalAlign).toBe('top');
+  });
+
+  it('should keep single-line headers non-clipping and top-aligned (AC #3)', () => {
+    fixture.componentRef.setInput('columns', [
+      { field: 'name', header: 'Name', width: 120 },
+    ]);
+    fixture.detectChanges();
+    const cell = headerCell();
+    expect(cell.textContent?.trim()).toBe('Name');
+    const style = getComputedStyle(cell);
+    expect(['normal', 'unset', ''].includes(style.whiteSpace)).toBe(true);
+    expect(style.textOverflow).not.toBe('ellipsis');
+    expect(style.verticalAlign).toBe('top');
+  });
+});
