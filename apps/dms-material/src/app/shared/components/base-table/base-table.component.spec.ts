@@ -299,10 +299,13 @@ describe('BaseTableComponent - Rendered Range Tracking', () => {
 // against the current component; each test is marked it.skip so CI stays green
 // until Story 5.2 unskips, confirms red, then implements.
 describe('BaseTableComponent - column header wrapping', () => {
-  let fixture: ComponentFixture<BaseTableComponent<{ id: string; name: string }>>;
+  let fixture: ComponentFixture<
+    BaseTableComponent<{ id: string; name: string }>
+  >;
 
   // Long enough to wrap at the configured 120px column width in a real browser.
-  const longHeader = 'Account Name / Counterparty Legal Entity Identifier (LEI)';
+  const longHeader =
+    'Account Name / Counterparty Legal Entity Identifier (LEI)';
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
