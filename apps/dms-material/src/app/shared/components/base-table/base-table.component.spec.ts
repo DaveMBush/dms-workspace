@@ -296,8 +296,8 @@ describe('BaseTableComponent - Rendered Range Tracking', () => {
 // These tests define the contract that Story 5.2 must satisfy when it removes
 // the clipping styles (overflow / text-overflow / white-space) from
 // .dms-header-cell and adds vertical-align: top. They are intentionally red
-// against the current component; Task 2 of this story marks them it.skip() so
-// CI stays green until Story 5.2 unskips, confirms red, then implements.
+// against the current component; each test is marked it.skip so CI stays green
+// until Story 5.2 unskips, confirms red, then implements.
 describe('BaseTableComponent - column header wrapping', () => {
   let fixture: ComponentFixture<BaseTableComponent<{ id: string; name: string }>>;
 
@@ -331,7 +331,8 @@ describe('BaseTableComponent - column header wrapping', () => {
     return cell as HTMLElement;
   }
 
-  it('should not clip a long column header (AC #1)', () => {
+  // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test; Story 5.2 removes the skip, confirms red, then implements until green
+  it.skip('should not clip a long column header (AC #1)', () => {
     const style = getComputedStyle(headerCell());
     // Header text must wrap: white-space resolves to normal/unset, never nowrap.
     expect(['normal', 'unset', ''].includes(style.whiteSpace)).toBe(true);
@@ -339,12 +340,14 @@ describe('BaseTableComponent - column header wrapping', () => {
     expect(style.textOverflow).not.toBe('ellipsis');
   });
 
-  it('should top-align wrapped header text (AC #2)', () => {
+  // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test; Story 5.2 removes the skip, confirms red, then implements until green
+  it.skip('should top-align wrapped header text (AC #2)', () => {
     const style = getComputedStyle(headerCell());
     expect(style.verticalAlign).toBe('top');
   });
 
-  it('should keep single-line headers non-clipping and top-aligned (AC #3)', () => {
+  // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test; Story 5.2 removes the skip, confirms red, then implements until green
+  it.skip('should keep single-line headers non-clipping and top-aligned (AC #3)', () => {
     fixture.componentRef.setInput('columns', [
       { field: 'name', header: 'Name', width: 120 },
     ]);
