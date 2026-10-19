@@ -1,6 +1,8 @@
 import { ListRange } from '@angular/cdk/collections';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
 import { Subject } from 'rxjs';
 import { BaseTableComponent } from './base-table.component';
 import { ColumnDef } from './column-def.interface';
@@ -73,6 +75,78 @@ describe('BaseTableComponent', () => {
       '.dms-header-cell[role="columnheader"]',
     );
     expect(headerCells.length).toBeGreaterThan(0);
+  });
+});
+
+// Story 5.1 — RED scaffold for the column-header wrap / top-align fix (Story 5.2).
+//
+// The acceptance contract is a CSS change: .dms-header-cell must stop clipping
+// long headers (no `white-space: nowrap` / `text-overflow: ellipsis`) and align
+// its content to the top (`vertical-align: top`).
+//
+// Story 5.2 removed the it.skip markers below; these tests now run and are
+// expected to fail red until base-table.component.scss is fixed.
+//
+// The assertions read the component's declared SCSS rather than jsdom's
+// getComputedStyle: this test environment does not inject component styles into
+// the DOM (verified — computed white-space/vertical-align resolve empty on a
+// rendered .dms-header-cell), so a computed-style assertion would fail both
+// before and after the fix. Asserting the source is what makes this a genuine
+// red→green signal.
+describe('BaseTableComponent - column header wrapping (Story 5.1)', () => {
+  const scss = readFileSync(
+    path.join(__dirname, 'base-table.component.scss'),
+    'utf-8',
+  );
+
+  // Extract the top-level `.dms-header-cell` rule body. The selector recurs
+  // nested/indented elsewhere in this file (e.g. inside .dark-theme), so match
+  // only the column-0 line to target the shared block that Story 5.2 edits.
+  function headerCellRuleBody(): string {
+    const lines = scss.split('\n');
+    let start = -1;
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i] === '.dms-header-cell {') {
+        start = i;
+        break;
+      }
+    }
+    expect(start).toBeGreaterThan(-1);
+    let depth = 1;
+    for (let i = start + 1; i < lines.length; i++) {
+      if (lines[i].includes('{')) {
+        depth++;
+      }
+      if (lines[i].includes('}')) {
+        depth--;
+      }
+      if (depth === 0) {
+        return lines.slice(start + 1, i).join('\n');
+      }
+    }
+    throw new Error('.dms-header-cell block not closed in SCSS');
+  }
+
+  // Task 1.1 — long headers must wrap fully, never clip.
+  it('should not clip long headers: no white-space nowrap or text-overflow ellipsis on .dms-header-cell', () => {
+    const body = headerCellRuleBody();
+    expect(body).not.toMatch(/white-space\s*:\s*nowrap/);
+    expect(body).not.toMatch(/text-overflow\s*:\s*ellipsis/);
+  });
+
+  // Task 1.2 — wrapped (multi-line) headers must align to the top of the cell.
+  it('should align header content to the top: vertical-align top on .dms-header-cell', () => {
+    const body = headerCellRuleBody();
+    expect(body).toMatch(/vertical-align\s*:\s*top/);
+  });
+
+  // Task 1.3 — single-line headers must keep the same non-clipping, top-aligned
+  // style (no regression for short headers that already fit on one line).
+  it('should apply the same non-clipping, top-aligned style to single-line headers', () => {
+    const body = headerCellRuleBody();
+    expect(body).not.toMatch(/white-space\s*:\s*nowrap/);
+    expect(body).not.toMatch(/text-overflow\s*:\s*ellipsis/);
+    expect(body).toMatch(/vertical-align\s*:\s*top/);
   });
 });
 

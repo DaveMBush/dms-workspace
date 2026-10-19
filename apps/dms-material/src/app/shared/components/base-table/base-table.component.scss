@@ -50,9 +50,7 @@ mat-progress-bar {
   padding: 8px 16px;
   font-weight: 600;
   background-color: var(--dms-surface);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  vertical-align: top;
 
   .sort-rank-indicator {
     font-size: 0.75em;
