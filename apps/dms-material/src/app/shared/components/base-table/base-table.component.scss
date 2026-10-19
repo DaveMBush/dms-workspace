@@ -52,6 +52,14 @@ mat-progress-bar {
   background-color: var(--dms-surface);
   vertical-align: top;
 
+  // Story 5.2/5.3 — Material MDC's built-in `.mat-mdc-header-cell` re-applies
+  // single-line clipping (ellipsis + hidden overflow). Removing the app-level
+  // declarations was not enough to stop it, so override explicitly at higher
+  // specificity: long column headers must wrap to fit, never truncate.
+  white-space: normal;
+  text-overflow: clip;
+  overflow: visible;
+
   .sort-rank-indicator {
     font-size: 0.75em;
     margin-left: 2px;
