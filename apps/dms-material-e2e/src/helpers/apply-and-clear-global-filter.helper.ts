@@ -85,6 +85,17 @@ export async function applyAndClearGlobalFilter(
     .click();
   // Wait for the mat-select to reflect the chosen value before re-opening
   await expect(select).toContainText(applyOptionText, { timeout: 5000 });
+
+  // Wait for the overlay panel to fully close before reopening. MatSelect keeps
+  // the panel in the DOM during its ~400ms close animation; a click landing
+  // mid-animation is swallowed as a toggle-close of the still-open overlay, so
+  // the reopen below never happens and pollClearOption times out (flake seen in
+  // scrolling-regression-105 step d).
+  await page.waitForSelector('.mat-mdc-select-panel', {
+    state: 'hidden',
+    timeout: 10_000,
+  });
+
   // Clear the filter (restore full dataset)
   await select.click();
   // Wait for at least one mat-option to appear before polling — Firefox renders the

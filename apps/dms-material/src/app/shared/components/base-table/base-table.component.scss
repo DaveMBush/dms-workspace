@@ -60,6 +60,22 @@ mat-progress-bar {
   text-overflow: clip;
   overflow: visible;
 
+  // Top-align wrapped header content. `mat-header-cell` is a flex item with
+  // `display:flex; align-items:center`, so `vertical-align` (declared above for
+  // intent / non-flex fallbacks) is inert here — the load-bearing property is
+  // `align-items: flex-start`, which moves the inner text + sort-rank span to the
+  // top of the cell without changing the cell's own stretched box.
+  align-items: flex-start;
+
+  // The `overflow: visible` above re-introduces a content-based flex min-size on
+  // header cells (body cells keep the default `overflow: hidden`, so their
+  // automatic min-size is 0). A single unbreakable word like "Distribution" then
+  // floors its column wider than the body's equal share, breaking header/body
+  // width parity. Zeroing min-width lets headers shrink to match; Material's
+  // `word-wrap: break-word` on mat-header-cell keeps long words from overflowing
+  // horizontally (Epic 5 no-overflow assertion).
+  min-width: 0;
+
   .sort-rank-indicator {
     font-size: 0.75em;
     margin-left: 2px;

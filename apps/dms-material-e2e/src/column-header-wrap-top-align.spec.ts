@@ -8,7 +8,8 @@
  * full `column.header`:
  *   - computed `white-space` resolves to normal/unset (NOT `nowrap`)
  *   - computed `text-overflow` is NOT `ellipsis`
- *   - computed `vertical-align` is `top` (wrapped text sits at the top edge)
+ *   - first rendered line sits at the cell's content-box top (geometric top-align;
+ *     `vertical-align` is inert on these flex cells, so it is not asserted)
  *   - scrollHeight === clientHeight  (no vertical clipping)
  *   - scrollWidth  <= clientWidth     (full text fits, no horizontal clip)
  *
@@ -42,40 +43,59 @@ interface HeaderCellProbe {
   clientHeight: number;
   scrollWidth: number;
   clientWidth: number;
+  /** Top of the first rendered line, measured from the cell's content-box top. */
+  firstLineTop: number;
 }
 
 /** Read the computed style + box metrics of every column-label header cell. */
 async function probeHeaderCells(page: Page): Promise<HeaderCellProbe[]> {
-  return page.evaluate(
-    (sel) => {
-      const cells = Array.from(
-        document.querySelectorAll<HTMLElement>(sel),
-      );
-      return cells.map(function toProbe(cell) {
-        const style = window.getComputedStyle(cell);
-        return {
-          field: cell.getAttribute('data-column') ?? '',
-          text: (cell.textContent ?? '').trim(),
-          whiteSpace: style.whiteSpace,
-          textOverflow: style.textOverflow,
-          overflow: style.overflow,
-          verticalAlign: style.verticalAlign,
-          scrollHeight: cell.scrollHeight,
-          clientHeight: cell.clientHeight,
-          scrollWidth: cell.scrollWidth,
-          clientWidth: cell.clientWidth,
-        };
-      });
-    },
-    HEADER_CELL_SEL,
-  );
+  return page.evaluate((sel) => {
+    const cells = Array.from(document.querySelectorAll<HTMLElement>(sel));
+    return cells.map(function toProbe(cell) {
+      const style = window.getComputedStyle(cell);
+
+      // Geometric top-align signal: distance from the cell's content-box top to
+      // the first rendered line. `mat-header-cell` is a flex item, so computed
+      // `vertical-align` is inert — only this measurement proves the text sits at
+      // the top (≈0) rather than vertically centered (a multi-line gap).
+      let firstLineTop = 0;
+      const cellRect = cell.getBoundingClientRect();
+      const node = cell.firstChild;
+      if (node && node.nodeType === Node.TEXT_NODE) {
+        const ch = (node.textContent ?? '').search(/\S/);
+        if (ch >= 0) {
+          const range = document.createRange();
+          range.setStart(node, ch);
+          range.setEnd(node, Math.min(ch + 1, node.textContent?.length ?? ch));
+          firstLineTop =
+            range.getBoundingClientRect().top -
+            cellRect.top -
+            parseFloat(style.paddingTop);
+        }
+      }
+
+      return {
+        field: cell.getAttribute('data-column') ?? '',
+        text: (cell.textContent ?? '').trim(),
+        whiteSpace: style.whiteSpace,
+        textOverflow: style.textOverflow,
+        overflow: style.overflow,
+        verticalAlign: style.verticalAlign,
+        scrollHeight: cell.scrollHeight,
+        clientHeight: cell.clientHeight,
+        scrollWidth: cell.scrollWidth,
+        clientWidth: cell.clientWidth,
+        firstLineTop,
+      };
+    });
+  }, HEADER_CELL_SEL);
 }
 
 /** Wait until at least one column-label header cell is present in the DOM. */
 async function waitForHeaderCells(page: Page): Promise<void> {
-  await expect(
-    page.locator('dms-base-table').first(),
-  ).toBeVisible({ timeout: 30000 });
+  await expect(page.locator('dms-base-table').first()).toBeVisible({
+    timeout: 30000,
+  });
   await page.waitForSelector(HEADER_CELL_SEL, { timeout: 30000 });
 }
 
@@ -117,15 +137,18 @@ test.describe('Open Positions — column header wrap + top-align (Story 5.3)', (
         `[${cell.field}] applies text-overflow: ellipsis`,
       ).not.toBe('ellipsis');
 
-      // (3) Wrapped header content must align to the top of the cell. Header
-      // cells render as real table cells (<th>/<td>), so computed vertical-align
-      // is honoured — it resolves to "middle" before the fix and "top" after, a
-      // genuine red→green signal.
+      // (3) Wrapped header content must align to the TOP of the cell. Header
+      // cells are flex items (`mat-header-cell` sets `display:flex;
+      // align-items:center`), so computed `vertical-align` is inert — asserting
+      // it would be a false green. Instead measure geometry: the first rendered
+      // line must sit at the content-box top (≈0). With Material's default
+      // centering, a multi-line header leaves a gap above its first line, which
+      // this catches; `align-items:flex-start` collapses it to ~0.
       expect(
-        cell.verticalAlign,
-        `[${cell.field}] vertical-align=${cell.verticalAlign}; wrapped header ` +
-          'text would not sit at the top of the cell',
-      ).toBe('top');
+        cell.firstLineTop,
+        `[${cell.field}] first line is ${cell.firstLineTop}px below the content-box top; ` +
+          'wrapped header text would not sit at the top of the cell',
+      ).toBeLessThanOrEqual(2);
 
       // (4) No vertical clipping: content height fits the box.
       expect(
