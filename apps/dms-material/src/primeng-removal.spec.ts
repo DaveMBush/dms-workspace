@@ -40,8 +40,7 @@ function collectSourceFiles(dir: string): string[] {
 }
 
 describe('PrimeNg removal (Story 6.1)', () => {
-  // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test; Story 6.2 removes the skip, confirms red, then deletes the packages until green
-  it.skip('should not declare @primeng/themes or primeng in workspace package.json', () => {
+  it('should not declare @primeng/themes or primeng in workspace package.json', () => {
     const pkg = JSON.parse(
       readFileSync(join(workspaceRoot, 'package.json'), 'utf-8'),
     ) as PackageJsonLike;
@@ -52,8 +51,7 @@ describe('PrimeNg removal (Story 6.1)', () => {
     }
   });
 
-  // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test; Story 6.2 removes the skip, confirms red, then deletes the packages until green
-  it.skip('should have no primeng imports in apps/dms-material/src source files', () => {
+  it('should have no primeng imports in apps/dms-material/src source files', () => {
     const offenders: string[] = [];
 
     for (const file of collectSourceFiles(srcDir)) {
