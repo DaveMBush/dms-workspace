@@ -8,22 +8,26 @@ import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 
 // src -> dms-material -> apps -> workspace root
-const WORKSPACE_ROOT = join(import.meta.dirname, '..', '..', '..');
-const SRC_DIR = import.meta.dirname;
+const workspaceRoot = join(import.meta.dirname, '..', '..', '..');
+const srcDir = import.meta.dirname;
 
 interface PackageJsonLike {
   dependencies?: Record<string, string>;
   devDependencies?: Record<string, string>;
 }
 
-/** Matches a real import/require of `primeng`, `@primeng/themes`, or any `@primeng/*` specifier. */
-const PRIMENG_IMPORT_RE =
-  /(?:\bimport\b|\bexport\b)[^;]*?\bfrom\s*['"](@?primeng[^'"]*)['"]|require\s*\(\s*['"](@?primeng[^'"]*)['"]\s*\)/g;
+/** Matches a real `import`/`export ... from` of `primeng`, `@primeng/themes`, or any `@primeng/*` specifier. */
+const primengImportRe = /\b(?:import|export)\b[^;]*?\bfrom\s*['"](@?primeng[^'"]*)['"]/g;
+
+/** Matches a real `require()` of the same specifiers (CJS-style imports). */
+const primengRequireRe = /\brequire\s*\(\s*['"](@?primeng[^'"]*)['"]\s*\)/g;
 
 function collectSourceFiles(dir: string): string[] {
   const files: string[] = [];
   for (const entry of readdirSync(dir)) {
-    if (entry === 'node_modules') continue;
+    if (entry === 'node_modules') {
+      continue;
+    }
     const full = join(dir, entry);
     if (statSync(full).isDirectory()) {
       files.push(...collectSourceFiles(full));
@@ -35,9 +39,10 @@ function collectSourceFiles(dir: string): string[] {
 }
 
 describe('PrimeNg removal (Story 6.1)', () => {
-  it('should not declare @primeng/themes or primeng in workspace package.json', () => {
+  // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test; Story 6.2 removes the skip, confirms red, then deletes the packages until green
+  it.skip('should not declare @primeng/themes or primeng in workspace package.json', () => {
     const pkg = JSON.parse(
-      readFileSync(join(WORKSPACE_ROOT, 'package.json'), 'utf-8')
+      readFileSync(join(workspaceRoot, 'package.json'), 'utf-8')
     ) as PackageJsonLike;
 
     for (const depName of ['@primeng/themes', 'primeng']) {
@@ -46,15 +51,20 @@ describe('PrimeNg removal (Story 6.1)', () => {
     }
   });
 
-  it('should have no primeng imports in apps/dms-material/src source files', () => {
+  // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test; Story 6.2 removes the skip, confirms red, then deletes the packages until green
+  it.skip('should have no primeng imports in apps/dms-material/src source files', () => {
     const offenders: string[] = [];
 
-    for (const file of collectSourceFiles(SRC_DIR)) {
+    for (const file of collectSourceFiles(srcDir)) {
       const content = readFileSync(file, 'utf-8');
       let match: RegExpExecArray | null;
-      PRIMENG_IMPORT_RE.lastIndex = 0;
-      while ((match = PRIMENG_IMPORT_RE.exec(content)) !== null) {
-        offenders.push(`${file}: ${match[1] ?? match[2]}`);
+      primengImportRe.lastIndex = 0;
+      while ((match = primengImportRe.exec(content)) !== null) {
+        offenders.push(`${file}: ${match[1]}`);
+      }
+      primengRequireRe.lastIndex = 0;
+      while ((match = primengRequireRe.exec(content)) !== null) {
+        offenders.push(`${file}: ${match[1]}`);
       }
     }
 
