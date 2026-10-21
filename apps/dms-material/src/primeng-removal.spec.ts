@@ -4,7 +4,7 @@
 // because no real imports exist yet. Story 6.2 removes the `.skip()` markers,
 // confirms red, then deletes the packages until green.
 
-import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 
 // src -> dms-material -> apps -> workspace root
@@ -17,7 +17,8 @@ interface PackageJsonLike {
 }
 
 /** Matches a real `import`/`export ... from` of `primeng`, `@primeng/themes`, or any `@primeng/*` specifier. */
-const primengImportRe = /\b(?:import|export)\b[^;]*?\bfrom\s*['"](@?primeng[^'"]*)['"]/g;
+const primengImportRe =
+  /\b(?:import|export)\b[^;]*?\bfrom\s*['"](@?primeng[^'"]*)['"]/g;
 
 /** Matches a real `require()` of the same specifiers (CJS-style imports). */
 const primengRequireRe = /\brequire\s*\(\s*['"](@?primeng[^'"]*)['"]\s*\)/g;
@@ -42,7 +43,7 @@ describe('PrimeNg removal (Story 6.1)', () => {
   // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test; Story 6.2 removes the skip, confirms red, then deletes the packages until green
   it.skip('should not declare @primeng/themes or primeng in workspace package.json', () => {
     const pkg = JSON.parse(
-      readFileSync(join(workspaceRoot, 'package.json'), 'utf-8')
+      readFileSync(join(workspaceRoot, 'package.json'), 'utf-8'),
     ) as PackageJsonLike;
 
     for (const depName of ['@primeng/themes', 'primeng']) {
