@@ -61,7 +61,7 @@ async function probeHeaderCells(page: Page): Promise<HeaderCellProbe[]> {
       let firstLineTop = 0;
       const cellRect = cell.getBoundingClientRect();
       const node = cell.firstChild;
-      if (node && node.nodeType === Node.TEXT_NODE) {
+      if (node?.nodeType === Node.TEXT_NODE) {
         const ch = (node.textContent ?? '').search(/\S/);
         if (ch >= 0) {
           const range = document.createRange();
