@@ -16,13 +16,15 @@ interface PackageJsonLike {
 }
 
 /** Matches a real `import`/`export ... from` of the raw `yahoo-finance2` package. */
-const yahooImportRe = /\b(?:import|export)\b[^;]*?\bfrom\s*['"]yahoo-finance2['"]/g;
+const yahooImportRe =
+  /\b(?:import|export)\b[^;]*?\bfrom\s*['"]yahoo-finance2['"]/g;
 
 /** Matches a real `require()` of the raw package (CJS-style imports). */
 const yahooRequireRe = /\brequire\s*\(\s*['"]yahoo-finance2['"]\s*\)/g;
 
 /** Matches a vi.mock() targeting the instance module re-export point. */
-const mockInstanceModuleRe = /vi\.mock\(\s*['"][^'"]*yahoo-finance\.instance['"]/;
+const mockInstanceModuleRe =
+  /vi\.mock\(\s*['"][^'"]*yahoo-finance\.instance['"]/;
 
 // Consumer specs that must mock `yahoo-finance.instance` rather than import the raw package
 const consumerSpecs: Array<{ name: string; path: string }> = [
