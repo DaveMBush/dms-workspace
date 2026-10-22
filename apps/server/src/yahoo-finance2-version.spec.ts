@@ -42,8 +42,7 @@ const consumerSpecs: Array<{ name: string; path: string }> = [
 ];
 
 describe('yahoo-finance2 v4 upgrade contract (Story 7.1)', () => {
-  // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test; Story 7.2 removes the skip, confirms red, then bumps the dependency to ^4.0.4 until green
-  it.skip('should declare yahoo-finance2 targeting ^4.0.4 in root package.json', () => {
+  it('should declare yahoo-finance2 targeting ^4.0.4 in root package.json', () => {
     const pkg = JSON.parse(
       readFileSync(join(workspaceRoot, 'package.json'), 'utf-8'),
     ) as PackageJsonLike;
@@ -51,8 +50,7 @@ describe('yahoo-finance2 v4 upgrade contract (Story 7.1)', () => {
     expect(pkg.dependencies?.['yahoo-finance2']).toBe('^4.0.4');
   });
 
-  // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test; Story 7.2 removes the skip, confirms red, then bumps the dependency to ^4.0.4 until green
-  it.skip('should have consumer specs mock the instance module, not import yahoo-finance2', () => {
+  it('should have consumer specs mock the instance module, not import yahoo-finance2', () => {
     for (const spec of consumerSpecs) {
       const content = readFileSync(spec.path, 'utf-8');
 
