@@ -7,8 +7,7 @@
   "minTokens": 100,
   "//": "ignore spec files for now",
   "ignore": [
-    "**/_bmad-output/**",
-    "**/_bmad/**",
+    "**/_workflow-output/**",
     "**/docs/**",
     "**/*.test.ts",
     "**/eslint.config.mjs",

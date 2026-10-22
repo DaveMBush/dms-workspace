@@ -16,7 +16,7 @@ user-invocable: false
    - If the metadata write fails, ask: `Failed to write story metadata for ${story}: <error>. Reply with stop, continue, or instructions.`
    - On `continue`: retry the metadata write once and proceed only if it succeeds.
    - On custom instructions: apply them to metadata handling and retry the write once.
-3. Resolve the story file via glob `_bmad-output/implementation-artifacts/${story}*.md`. If exactly one match is found, store it as `STORY_FILE_PATH` and use it in all subsequent steps.
+3. Resolve the story file via glob `.github/workflow-output/implementation-artifacts/${story}*.md`. If exactly one match is found, store it as `STORY_FILE_PATH` and use it in all subsequent steps.
    - If 0 or more than 1 matches are found, ask: `Story file resolution for ${story} did not produce exactly one match. Reply with stop, continue, or instructions.`
    - On `continue`: rerun story-file resolution once and proceed only if exactly one match is found.
    - On custom instructions: apply them to story-file resolution and rerun it once.

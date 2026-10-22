@@ -53,7 +53,7 @@ const stdout = useStdin
 const pathRegex = /\/[A-Za-z0-9_\-./]+\.(md|json)/g;
 const candidates = [...new Set(stdout.match(pathRegex) ?? [])];
 const storyFiles = candidates.filter((p) =>
-  /_bmad-output\/implementation-artifacts\/stories\/epic-\d+\/\d+\.\d+-.+\.md$/.test(
+  /.github/workflow-output\/implementation-artifacts\/stories\/epic-\d+\/\d+\.\d+-.+\.md$/.test(
     p,
   ),
 );

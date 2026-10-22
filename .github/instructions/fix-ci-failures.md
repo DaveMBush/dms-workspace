@@ -38,7 +38,7 @@ to files in this working tree.
 | Fixes for failing checks           | wherever each failure points          |
 | Local re-runs of the failed checks | matching `pnpm` commands (see step 4) |
 
-No story-file, planning-artifact, or git changes. Do not touch `_bmad-output/`.
+No story-file, planning-artifact, or git changes. Do not touch `.github/workflow-output/`.
 
 ## Workflow
 
@@ -49,11 +49,13 @@ No story-file, planning-artifact, or git changes. Do not touch `_bmad-output/`.
 2. **Get the failure details.** If failing step names were provided, use them.
    Otherwise discover them: find the Actions run for the PR head sha and list
    failed steps:
+
    ```bash
    gh api repos/<owner>/<name>/actions/runs?head_sha=$(git rev-parse HEAD)&per_page=5
    # then, for the completed run whose head_sha matches:
    gh api repos/<owner>/<name>/actions/runs/<runId>/jobs?per_page=100
    ```
+
    For each failed step you need to understand, fetch its log (or the relevant
    slice): `gh api repos/<owner>/<name>/actions/jobs/<jobId>/logs`. Read only as
    much of each log as needed to find the error — do not dump whole logs into

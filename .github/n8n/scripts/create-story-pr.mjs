@@ -128,7 +128,7 @@ let title = `Story ${storyId}`;
 try {
   const epicDir = resolve(
     projectRoot,
-    `_bmad-output/implementation-artifacts/stories/epic-${epicNum}`,
+    `.github/workflow-output/implementation-artifacts/stories/epic-${epicNum}`,
   );
   if (existsSync(epicDir)) {
     const storyFile = readdirSync(epicDir).find(

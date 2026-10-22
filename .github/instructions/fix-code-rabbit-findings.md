@@ -34,7 +34,7 @@ to files in this working tree.
 | Code fixes for valid findings | wherever each comment points                      |
 | Targeted test runs            | `pnpm exec nx test <project>` per touched project |
 
-No story-file, planning-artifact, or git changes. Do not touch `_bmad-output/`.
+No story-file, planning-artifact, or git changes. Do not touch `.github/workflow-output/`.
 
 ## Workflow
 

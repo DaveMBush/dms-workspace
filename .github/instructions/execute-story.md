@@ -34,9 +34,9 @@ Division of labor:
 
 | Input                                      | Location                                                                        |
 | ------------------------------------------ | ------------------------------------------------------------------------------- |
-| Story file path (provided at invocation)   | `_bmad-output/implementation-artifacts/stories/epic-{N}/{N}.{M}-kebab-title.md` |
+| Story file path (provided at invocation)   | `.github/workflow-output/implementation-artifacts/stories/epic-{N}/{N}.{M}-kebab-title.md` |
 | Paired unit-test story (if any, see below) | same epic directory, number `{N}.{M-1}`, status `skip`                          |
-| Architecture spine                         | `_bmad-output/planning-artifacts/architecture/**/ARCHITECTURE-SPINE.md`         |
+| Architecture spine                         | `.github/workflow-output/planning-artifacts/architecture/**/ARCHITECTURE-SPINE.md`         |
 | Coding standards                           | `docs/architecture/coding-standards.md`                                         |
 
 The story file is the authoritative spec. Its Dev Notes, References, and
@@ -83,7 +83,7 @@ ends at `review`).
    crashed run can be resumed — commit and push ONLY the story file:
 
    ```bash
-   git add _bmad-output/implementation-artifacts/stories/<story-file>
+   git add .github/workflow-output/implementation-artifacts/stories/<story-file>
    git commit -m "Story <id>: mark in-progress"
    git push origin HEAD
    ```
@@ -185,7 +185,7 @@ error output summary, what was tried) in Completion Notes List, save the story
 file, then persist it — commit and push ONLY the story file (same as step 3):
 
 ```bash
-git add _bmad-output/implementation-artifacts/stories/<story-file>
+git add .github/workflow-output/implementation-artifacts/stories/<story-file>
 git commit -m "Story <id>: mark blocked"
 git push origin HEAD
 ```

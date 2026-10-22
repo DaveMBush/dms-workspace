@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Reports the next epic that has at least one story not yet completed.
-// Scans _bmad-output/implementation-artifacts/stories/epic-*/ and reads each
+// Scans .github/workflow-output/implementation-artifacts/stories/epic-*/ and reads each
 // story file's "Status:" line (same convention as validate-epics-and-stories.mjs).
 //
 // Branch-aware: after `git fetch origin`, remote issue-* branches are also
@@ -38,7 +38,7 @@ for (let i = 0; i < args.length; i++) {
 
 const storiesDir = resolve(
   projectRoot,
-  '_bmad-output/implementation-artifacts/stories',
+  '.github/workflow-output/implementation-artifacts/stories',
 );
 if (!existsSync(storiesDir)) {
   console.log(
@@ -68,7 +68,7 @@ function git(args) {
   }
 }
 
-const storiesRel = '_bmad-output/implementation-artifacts/stories';
+const storiesRel = '.github/workflow-output/implementation-artifacts/stories';
 
 // Remote issue-* branches (DF2 worktree branches).
 let remoteBranches = [];

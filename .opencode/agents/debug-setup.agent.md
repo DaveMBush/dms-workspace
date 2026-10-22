@@ -17,9 +17,9 @@ This prompt exists to run epic validation, repository preflight checks, GitHub i
 
 Before doing anything else, read all of the following:
 
-1. `_bmad-output/project-context.md`
+1. `.github/workflow-output/project-context.md`
 2. `_bmad/bmm/config.yaml`
-3. `_bmad-output/planning-artifacts/${epic}.md`
+3. `.github/workflow-output/planning-artifacts/${epic}.md`
 
 If any required file is missing or unparseable, return `SETUP FAILED: missing context file <path>`.
 
@@ -31,7 +31,7 @@ If any required file is missing or unparseable, return `SETUP FAILED: missing co
 4. Only after rule 3 passes, verify the current branch is `main` and up to date with `origin/main`; if needed, switch, fetch, and fast-forward pull. If pull is non-fast-forward or produces conflicts, return `SETUP FAILED: main diverged from origin/main`.
 5. Use `mcp_github_search_issues` and `mcp_github_issue_write` for issue lookup and creation in the repo defined by `project-context.md`. Before creating, search open issues for exact title `[Debug] Epic ${epic} Story ${story}`. If found, reuse that issue number instead of creating a duplicate. If not found, create an issue with:
    - Title: `[Debug] Epic ${epic} Story ${story}`
-   - Body: reference `_bmad-output/planning-artifacts/${epic}.md`
+   - Body: reference `.github/workflow-output/planning-artifacts/${epic}.md`
    - Labels: `debug`, `epic-${epic}`
    - Assignees: none
      On GitHub auth or rate-limit error, return `SETUP FAILED: github <error>`. Retry this rule up to 2 times only for transient network or rate-limit failures.

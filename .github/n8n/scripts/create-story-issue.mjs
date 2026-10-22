@@ -14,7 +14,7 @@
 // The epic number is derived from the story id prefix (1.2 -> epic-1).
 //
 // Steps (all idempotent — re-running reuses existing issue/branch/worktree):
-//   1. Read story file _bmad-output/implementation-artifacts/stories/epic-<n>/<id>-*.md
+//   1. Read story file .github/workflow-output/implementation-artifacts/stories/epic-<n>/<id>-*.md
 //   2. Create GitHub issue "Story <id>: <title>" with the full story as body
 //      (searches for an existing open issue with the same title first)
 //   3. git fetch origin; branch "issue-<num>-<slug>" from origin/main, or re-attach
@@ -79,7 +79,7 @@ function run(cmd, cmdArgs) {
 // --- 1. Locate and read story file -----------------------------------------
 const epicDir = resolve(
   projectRoot,
-  `_bmad-output/implementation-artifacts/stories/epic-${epicNum}`,
+  `.github/workflow-output/implementation-artifacts/stories/epic-${epicNum}`,
 );
 if (!existsSync(epicDir)) fail('epic directory not found', { path: epicDir });
 

@@ -18,7 +18,7 @@ This prompt exists to run the full QA gate, remediation, and re-validation cycle
 
 Before doing anything else, read all of the following:
 
-1. `_bmad-output/project-context.md`
+1. `.github/workflow-output/project-context.md`
 2. `.opencode/agents//gate.agent.md`
 3. `.opencode/agents//quality-validation.agent.md`
 

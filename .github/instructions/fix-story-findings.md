@@ -22,7 +22,7 @@ for the files it touches.
 
 | Input                                    | Location                                                                                                                                                                                                                                                                                                 |
 | ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Story file path (provided at invocation) | `_bmad-output/implementation-artifacts/stories/epic-{N}/{N}.{M}-kebab-title.md`                                                                                                                                                                                                                          |
+| Story file path (provided at invocation) | `.github/workflow-output/implementation-artifacts/stories/epic-{N}/{N}.{M}-kebab-title.md`                                                                                                                                                                                                                          |
 | Review log                               | same epic directory: `{N}.{M}-review-findings.md` — append-only shared audit trail. Work items are the `F1..Fn` findings in the **latest** `## Review run ... — verdict: fail-rework` section only; earlier sections (older review runs, prior fix passes) are context for repeat/incomplete-fix history |
 
 ## Outputs
@@ -143,7 +143,7 @@ Example shape (values illustrative only):
 {
   "storyId": "1.2",
   "result": "fixed",
-  "reviewLog": "_bmad-output/implementation-artifacts/stories/epic-1/1.2-review-findings.md",
+  "reviewLog": ".github/workflow-output/implementation-artifacts/stories/epic-1/1.2-review-findings.md",
   "fixedFindings": ["F1"],
   "rejectedFindings": [{"id": "F2", "reason": "Guard already exists in base-table.component.ts:87"}],
   "blockedFindings": [],

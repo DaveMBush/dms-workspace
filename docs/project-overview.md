@@ -87,7 +87,7 @@ dms-workspace/
 │   ├── schema.postgresql.prisma # PostgreSQL schema
 │   └── migrations/              # Prisma migrations
 ├── docs/                        # Project documentation (this folder)
-├── _bmad-output/                # AI agent context files
+├── .github/workflow-output/                # AI agent context files
 ├── scripts/                     # Utility scripts
 ├── tools/                       # Nx custom tools
 ├── nx.json                      # Nx workspace config

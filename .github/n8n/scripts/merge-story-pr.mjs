@@ -204,7 +204,7 @@ if (!idMatch) fail('--story must look like "<epic>.<number>"', { storyId });
 const epicNum = Number(idMatch[1]);
 const epicDir = resolve(
   projectRoot,
-  `_bmad-output/implementation-artifacts/stories/epic-${epicNum}`,
+  `.github/workflow-output/implementation-artifacts/stories/epic-${epicNum}`,
 );
 let storyFileAbs = null;
 if (existsSync(epicDir)) {

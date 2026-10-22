@@ -1,6 +1,6 @@
 ---
 description: 'Format code with pnpm format, commit all staged changes, create a GitHub PR linked to the story issue, and write the story metadata file'
-tools: {execute: true, read: true, agent: true, edit: true, 'context7/*': true, 'playwright/*': true, 'github/*': true, todo: true}
+tools: { execute: true, read: true, agent: true, edit: true, 'context7/*': true, 'playwright/*': true, 'github/*': true, todo: true }
 user-invocable: false
 ---
 
@@ -24,7 +24,7 @@ mcp_bash_run({ command: "pnpm format", cwd: "${WORKTREE_PATH}", timeout: 600000 
 
 - If `pnpm format` exits non-zero, abort and report the error. If it modifies files, stage them with `git add -A` before committing. If no files change, proceed.
 
-- Resolve `STORY_FILE` under `${WORKTREE_PATH}` from `_bmad-output/implementation-artifacts/${STORY_ID}-*.md`. Resolve `STORY_TITLE` from the story heading and `ISSUE_NUMBER` from the story file's `GitHub Issue:` field. If the story file, story title, or issue number cannot be resolved, abort and report the error.
+- Resolve `STORY_FILE` under `${WORKTREE_PATH}` from `.github/workflow-output/implementation-artifacts/${STORY_ID}-*.md`. Resolve `STORY_TITLE` from the story heading and `ISSUE_NUMBER` from the story file's `GitHub Issue:` field. If the story file, story title, or issue number cannot be resolved, abort and report the error.
 - If `git status --porcelain` is empty, skip the commit step. Otherwise run `git add -A` and create a single commit with `git commit -m "story: ${STORY_TITLE} (#${ISSUE_NUMBER})"`. Do not sign, co-author, or split into multiple commits.
 - Do not include any AI tool attribution (Claude, Copilot, GPT) or `Co-Authored-By` trailers in commit messages or PR descriptions.
 - Create or update a pull request for the current branch. If a PR already exists for the branch, update it instead of creating a new one.

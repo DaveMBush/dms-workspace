@@ -22,7 +22,7 @@ This prompt exists to run commit/PR creation and the CodeRabbit review loop in a
 
 Before doing anything else, read all of the following:
 
-1. `_bmad-output/project-context.md`
+1. `.github/workflow-output/project-context.md`
 2. `_bmad/bmm/config.yaml`
 3. `.opencode/agents//commit-and-pr.agent.md`
 4. `.opencode/agents//code-rabbit.agent.md`

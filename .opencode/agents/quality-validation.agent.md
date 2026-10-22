@@ -19,7 +19,7 @@ This prompt exists to run the full quality validation loop in a **fresh subagent
 
 Before running the loop, read:
 
-1. `_bmad-output/project-context.md` — project conventions, patterns, and test rules
+1. `.github/workflow-output/project-context.md` — project conventions, patterns, and test rules
 2. `.github/instructions/code-review.md` — code review checklist
 
 If either startup file is missing or unreadable, return `VALIDATION FAILED: missing startup context <path>` immediately without running the loop.

@@ -26,7 +26,7 @@ is NOT run here — the pipeline runs its own verification step after fixes.
 
 | Input                                    | Location                                                                        |
 | ---------------------------------------- | ------------------------------------------------------------------------------- |
-| Story file path (provided at invocation) | `_bmad-output/implementation-artifacts/stories/epic-{N}/{N}.{M}-kebab-title.md` |
+| Story file path (provided at invocation) | `.github/workflow-output/implementation-artifacts/stories/epic-{N}/{N}.{M}-kebab-title.md` |
 | Paired unit-test story (if any)          | same epic directory, number `{N}.{M-1}`, status `review` or `done`              |
 | Story File List section                  | inside the story file — authoritative list of files this implementation touched |
 
@@ -226,7 +226,7 @@ Example shape (values illustrative only):
   "result": "fail-rework",
   "statusBefore": "review",
   "statusAfter": "review",
-  "findingsFile": "_bmad-output/implementation-artifacts/stories/epic-1/1.2-review-findings.md",
+  "findingsFile": ".github/workflow-output/implementation-artifacts/stories/epic-1/1.2-review-findings.md",
   "counts": {"patch": 2, "defer": 1, "spec": 0, "rejected": 5},
   "repeatFindings": 1,
   "pairedUnitTestStory": "1.1",

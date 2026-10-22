@@ -28,7 +28,7 @@
  * the mat-icon-button height inflation.  All rows now render at 52 px.
  * The `test.fail()` wrapper was removed; this test now passes green.
  *
- * References: _bmad-output/planning-artifacts/epics-2026-04-13.md — Epic 67
+ * References: .github/workflow-output/planning-artifacts/epics-2026-04-13.md — Epic 67
  */
 
 import { expect, Page, test } from 'playwright/test';

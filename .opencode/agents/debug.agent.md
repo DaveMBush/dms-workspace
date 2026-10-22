@@ -69,8 +69,8 @@ Call the `runSubagent` tool now with the following parameters:
 
 ```
 You are a developer agent implementing a bug fix. Before doing anything else, read ALL of these files:
-1. `_bmad-output/project-context.md`
-2. `_bmad-output/planning-artifacts/${epic}.md`
+1. `.github/workflow-output/project-context.md`
+2. `.github/workflow-output/planning-artifacts/${epic}.md`
 3. `_bmad/bmm/config.yaml`
 
 Current branch: ${DEBUG_BRANCH_FROM_SETUP}

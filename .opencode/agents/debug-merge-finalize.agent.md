@@ -22,7 +22,7 @@ This prompt exists to run merge verification, merge execution, post-merge valida
 
 Before doing anything else, read all of the following:
 
-1. `_bmad-output/project-context.md`
+1. `.github/workflow-output/project-context.md`
 2. `_bmad/bmm/config.yaml`
 3. `.opencode/agents//quality-validation.agent.md`
 4. `$(git rev-parse --git-common-dir)/tmp/story-${story}-meta.json`

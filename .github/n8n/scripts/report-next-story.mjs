@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Reports the next story (lowest-numbered, not yet completed) within a given epic.
-// Scans _bmad-output/implementation-artifacts/stories/epic-<N>/ and reads each
+// Scans .github/workflow-output/implementation-artifacts/stories/epic-<N>/ and reads each
 // story file's "Status:" line (same convention as validate-epics-and-stories.mjs).
 //
 // Branch-aware: after `git fetch origin`, every remote issue-* branch is also
@@ -50,7 +50,7 @@ if (epicNum === null || !Number.isInteger(epicNum) || epicNum < 1) {
 
 const epicDir = resolve(
   projectRoot,
-  `_bmad-output/implementation-artifacts/stories/epic-${epicNum}`,
+  `.github/workflow-output/implementation-artifacts/stories/epic-${epicNum}`,
 );
 if (!existsSync(epicDir)) {
   console.log(
@@ -90,7 +90,7 @@ function git(args) {
   }
 }
 
-const epicRel = `_bmad-output/implementation-artifacts/stories/epic-${epicNum}`;
+const epicRel = `.github/workflow-output/implementation-artifacts/stories/epic-${epicNum}`;
 
 // Most advanced status wins across main and branches. "blocked" is surfaced,
 // never ranked — it still counts as incomplete.

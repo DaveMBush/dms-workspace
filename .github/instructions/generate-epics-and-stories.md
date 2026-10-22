@@ -19,9 +19,9 @@ files separately.
 | Input                                          | Location                                                                      |
 | ---------------------------------------------- | ----------------------------------------------------------------------------- |
 | Prose Epic file (each `##` section = one Epic) | provided at invocation                                                        |
-| Architecture spine                             | `_bmad-output/planning-artifacts/architecture/**/ARCHITECTURE-SPINE.md`       |
-| PRD                                            | `_bmad-output/planning-artifacts/prds/**/prd.md`                              |
-| UX design                                      | `_bmad-output/planning-artifacts/ux-designs/**/DESIGN.md` and `EXPERIENCE.md` |
+| Architecture spine                             | `.github/workflow-output/planning-artifacts/architecture/**/ARCHITECTURE-SPINE.md`       |
+| PRD                                            | `.github/workflow-output/planning-artifacts/prds/**/prd.md`                              |
+| UX design                                      | `.github/workflow-output/planning-artifacts/ux-designs/**/DESIGN.md` and `EXPERIENCE.md` |
 
 All four context documents are FINAL. Cite ADs and FRs from them in the
 generated files. Do not modify them.
@@ -30,8 +30,8 @@ generated files. Do not modify them.
 
 | Output                  | Location                                                                                       |
 | ----------------------- | ---------------------------------------------------------------------------------------------- |
-| Epic breakdown document | `_bmad-output/planning-artifacts/epics.md` (append new epics; do not destroy existing content) |
-| Story files             | `_bmad-output/implementation-artifacts/stories/epic-{N}/{N}.{M}-kebab-title.md`                |
+| Epic breakdown document | `.github/workflow-output/planning-artifacts/epics.md` (append new epics; do not destroy existing content) |
+| Story files             | `.github/workflow-output/implementation-artifacts/stories/epic-{N}/{N}.{M}-kebab-title.md`                |
 
 ## Workflow
 
@@ -48,7 +48,7 @@ generated files. Do not modify them.
 
 ## Epic Breakdown Document Format
 
-Append to `_bmad-output/planning-artifacts/epics.md`. Follow this structure
+Append to `.github/workflow-output/planning-artifacts/epics.md`. Follow this structure
 exactly. One block per Epic (N), one subsection per story (M).
 
 ```markdown
@@ -90,7 +90,7 @@ Rules:
 ## Story File Format
 
 One file per implementation unit:
-`_bmad-output/implementation-artifacts/stories/epic-{N}/{N}.{M}-kebab-title.md`
+`.github/workflow-output/implementation-artifacts/stories/epic-{N}/{N}.{M}-kebab-title.md`
 
 Follow this structure exactly:
 

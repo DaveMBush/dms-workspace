@@ -16,8 +16,8 @@ commit/push that one file, and emit the report.
 ## Inputs
 
 | Input | Location |
-|---|---|
-| Story file | Path given in your prompt (`_bmad-output/implementation-artifacts/stories/<epic>/<file>.md`) |
+| --- | --- |
+| Story file | Path given in your prompt (`.github/workflow-output/implementation-artifacts/stories/<epic>/<file>.md`) |
 | Working tree | Current directory (the story's worktree) — work only here |
 
 Read the story file ONCE. Extract: `Status:` line, task/subtask checkboxes,
@@ -37,13 +37,16 @@ the blocked state).
 **C. Status is `in-progress` AND every task/subtask checkbox is checked.** The
 develop agent finished all tasks but died before flipping status (context
 exhaustion). Only the flip and report are missing:
+
 1. Set `Status:` to `review`. Save.
 2. Commit ONLY the story file:
+
    ```bash
-   git add _bmad-output/implementation-artifacts/stories/<epic>/<file>.md
+   git add .github/workflow-output/implementation-artifacts/stories/<epic>/<file>.md
    git commit -m "Story <id>: mark review"
    git push origin HEAD
    ```
+
    If the push fails (network/auth), note it in `notes` and continue.
 3. Emit a report with `result: "review"`, `statusAfter: "review"`. Set
    `qualityGate.passed` to `true` if the Dev Agent Record documents a completed
@@ -93,6 +96,7 @@ fences or prose before/after the block — the closing brace is the last content
 of run output (a single trailing newline is fine).
 
 Field rules:
+
 - `result`: `"review"` in branches C and E; `"blocked"` in B and D;
   `"skipped"` in A.
 - `qualityGate.passed`: per branch C step 3 — `true` when the record documents
