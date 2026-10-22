@@ -111,7 +111,7 @@
     "@storybook/angular": "10.5.3",
     "@storybook/angular-vite": "^10.5.10",
     "@storybook/builder-vite": "^10.5.4",
-    "@stylistic/eslint-plugin": "^2.6.4",
+    "@stylistic/eslint-plugin": "^5.10.0",
     "@swc-node/register": "1.12.1",
     "@swc/core": "1.16.2",
     "@swc/helpers": "0.5.23",
