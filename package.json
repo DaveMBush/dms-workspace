@@ -64,7 +64,7 @@
     "nyse-holidays": "^1.2.0",
     "primeicons": "^7.0.0",
     "rxjs": "~7.8.0",
-    "yahoo-finance2": "^3.13.0",
+    "yahoo-finance2": "^4.0.4",
     "zone.js": "^0.16.2"
   },
   "devDependencies": {
