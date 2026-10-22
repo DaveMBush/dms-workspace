@@ -60,7 +60,7 @@
     "fastify-plugin": "~6.0.0",
     "jsonwebtoken": "^9.0.3",
     "jwks-rsa": "^3.2.2",
-    "ng2-charts": "^10.0.0",
+    "ng2-charts": "^11.0.0",
     "nyse-holidays": "^1.2.0",
     "primeicons": "^7.0.0",
     "rxjs": "~7.8.0",
