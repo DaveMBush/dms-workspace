@@ -363,3 +363,216 @@ So that the server runs on the current major release of the library.
 
 ---
 
+> Epics 8–10 are generated from `.github/epic-descriptions/epics-2026-10-22.md` (a later source file than the one cited above).
+> No AD or FR in ARCHITECTURE-SPINE / PRD maps to these three epics, so no `**ADs covered:**` / `**FRs covered:**` lines are asserted for them.
+
+## Epic 8: Right Align Numbers
+
+Every table in the app renders through the single shared `dms-base-table` component, whose body cells currently inherit default left alignment — so numbers (quantities, prices, yields, gains) sit at the left edge of their column and do not line up for comparison. After this Epic, every numeric column (`type: 'number' | 'currency'`) is right-aligned in its cell across all table surfaces (global-universe, global-screener, open-positions, sold-positions, dividend-deposits), achieved centrally in `dms-base-table` so no per-table template changes are required.
+
+### Story 8.1: Unit tests for numeric column right-alignment in dms-base-table
+
+As a developer,
+I want a red-phase unit-test scaffold asserting that `dms-base-table` body cells for numeric columns (`type: 'number' | 'currency'`) are right-aligned while non-numeric columns stay left-aligned,
+So that Story 8.2 has a defined, executable contract to make pass when it adds the type-derived alignment class and CSS.
+
+**Acceptance Criteria:**
+
+**Given** `BaseTableComponent` is rendered with a column set containing at least one `type: 'number'` column (e.g. `{ field: 'qty', header: 'Qty', type: 'number' }`) and one `type: 'currency'` column, plus a `type: 'text'`/default column and a `type: 'date'` column
+**When** the rendered body cells are inspected
+**Then** each numeric-typed `<mat-cell>` carries the right-alignment class (`.dms-body-cell--numeric`) while text/date cells do not
+
+**Given** a numeric body cell and a non-numeric body cell from the same render
+**When** their computed styles are compared
+**Then** the numeric cell resolves to right alignment (`justify-content: flex-end`, or `text-align: right` if that mechanism is chosen) and the non-numeric cell does NOT
+
+**Given** the column-header row for any column type
+**When** its `<mat-header-cell>` elements are inspected
+**Then** none carries the numeric-alignment class — headers stay left-aligned per the existing convention
+
+**Given** the red-phase assertions above are written into the spec files
+**When** `nx test dms-material` runs immediately after this story
+**Then** all new assertions are marked `.skip()` (`it.skip`) so CI stays green while the alignment is not yet implemented, and every pre-existing base-table test remains unskipped and green
+
+### Story 8.2: Right-align numeric columns in dms-base-table
+
+As a user (Dave),
+I want the numbers in every table to be right-aligned,
+So that quantities, prices, yields, and gains line up at the right edge of their column and are easy to compare across rows.
+
+**Acceptance Criteria:**
+
+**Given** `apps/dms-material/src/app/shared/components/base-table/base-table.component.html` renders each body cell as `<mat-cell class="dms-body-cell">`
+**When** a type-derived class binding is added so that `column.type === 'number' || column.type === 'currency'` also applies `.dms-body-cell--numeric` to the cell
+**Then** numeric-typed columns carry the alignment class and text/date/default columns do not
+
+**Given** the shared component's SCSS (`base-table.component.scss`)
+**When** a new `.dms-body-cell--numeric { display: flex; justify-content: flex-end; align-items: center; }` rule is added (or an equivalent that right-aligns all content types)
+**Then** plain text, currency spans, and `<dms-editable-cell>` inputs in numeric cells all hug the right edge while staying vertically centered within the 57px row
+
+**Given** the change is centralized in `dms-base-table` with no per-table template edits
+**When** every consumer (global-universe, global-screener, open-positions, sold-positions, dividend-deposits) renders
+**Then** numeric columns are right-aligned and text/date columns plus the fixed 57px row height show no layout regression
+
+**Given** Story 8.1's red-phase unit assertions are unskipped
+**When** `nx test dms-material` runs after the change
+**Then** all pass (green) with no pre-existing regression in the base-table specs
+
+### Story 8.3: E2E test for numeric column right-alignment
+
+As a user (Dave),
+I want an end-to-end proof that numbers in every table are right-aligned,
+So that I can trust the alignment holds in real use across all table surfaces — not just in unit tests.
+
+**Acceptance Criteria:**
+
+**Given** a table surface with seeded numeric data (open-positions or global-universe) is loaded
+**When** a numeric column's body cell content bounding box is compared to its `<mat-cell>` content-box right edge for a sampled row
+**Then** the value element's right edge sits within a small tolerance of the cell's content-box right edge
+
+**Given** a non-numeric (text) column in that same table
+**When** its body cell content bounding box is inspected
+**Then** it starts at the left edge — proving the alignment is type-driven, not global
+
+**Given** the existing e2e specs `open-positions.spec.ts` and `dividend-deposits-modal.spec.ts`
+**When** they run alongside the new spec on chromium
+**Then** all pass unchanged — no pre-existing test regresses
+
+---
+
+## Epic 9: Consistent Date Format
+
+Table date columns are rendered by two different code paths that disagree on format. The shared `dms-base-table` default cell and the open-positions custom template both use the locale-dependent `'shortDate'` pipe (which under en-US renders `M/d/yy`, e.g. `7/14/26`), while dividend-deposits and global-universe already render an explicit `'MM/dd/yyyy'`. After this Epic, every table date column — Open Positions Ex-Date / Buy Date / Sell Date and Sold Positions Buy Date / Sell Date — renders as `MM/DD/YYYY`, independent of the active locale.
+
+### Story 9.1: Unit tests for consistent MM/DD/YYYY date format in tables
+
+As a developer,
+I want a red-phase unit-test scaffold asserting that every table date column renders as `MM/DD/YYYY`,
+So that Story 9.2 has a defined, executable contract to make pass when it replaces the remaining locale-dependent `shortDate` usages with an explicit `'MM/dd/yyyy'` format.
+
+**Acceptance Criteria:**
+
+**Given** `BaseTableComponent` is rendered with a `type: 'date'` column and a known date value
+**When** the rendered body cell text is inspected
+**Then** it matches the `MM/DD/YYYY` pattern (e.g. `07/14/2026`) — NOT the locale-dependent `shortDate` form (`M/d/yy`, e.g. `7/14/26`)
+
+**Given** `OpenPositionsComponent` is rendered with a row whose `exDate` is set
+**When** the Ex-Date cell text is inspected
+**Then** it matches `MM/DD/YYYY`
+
+**Given** the red-phase assertions above are written into the spec files
+**When** `nx test dms-material` runs immediately after this story
+**Then** all new assertions are marked `.skip()` (`it.skip`) so CI stays green while the format is not yet standardized, and every pre-existing test remains unskipped and green
+
+### Story 9.2: Standardize table date format to MM/DD/YYYY
+
+As a user (Dave),
+I want every date column in the tables to be formatted as `MM/DD/YYYY`,
+So that dates are consistent across all screens and not dependent on the browser/system locale.
+
+**Acceptance Criteria:**
+
+**Given** the shared default-cell date case at `apps/dms-material/src/app/shared/components/base-table/base-table.component.html:150` uses `date: 'shortDate'`
+**When** it is changed to `date: 'MM/dd/yyyy'`
+**Then** any table that uses the default cell renderer (Sold Positions Buy Date / Sell Date) renders `MM/DD/YYYY`
+
+**Given** the open-positions custom `#cellTemplate` date case in `apps/dms-material/src/app/account-panel/open-positions/open-positions.component.html` uses `date : 'shortDate'`
+**When** it is changed to `date: 'MM/dd/yyyy'`
+**Then** Open Positions Ex-Date / Buy Date / Sell Date render `MM/DD/YYYY`
+
+**Given** dividend-deposits and global-universe already use `'MM/dd/yyyy'`, and the auth profile cards use a non-table `date: 'medium'` surface
+**When** Story 9.2's two changes are applied
+**Then** those surfaces are untouched — only the two `shortDate` table sites change
+
+**Given** Story 9.1's red-phase unit assertions are unskipped
+**When** `nx test dms-material` runs after the change
+**Then** all pass (green) with no pre-existing regression
+
+### Story 9.3: E2E test for consistent MM/DD/YYYY date format
+
+As a user (Dave),
+I want an end-to-end proof that table dates render as `MM/DD/YYYY`,
+So that I can trust the format is consistent in real use on the screens where it was previously wrong.
+
+**Acceptance Criteria:**
+
+**Given** Sold Positions is loaded with seeded data
+**When** the Buy Date and Sell Date cell text for a sampled row is read
+**Then** both match the `MM/DD/YYYY` pattern (`/^\d{2}\/\d{2}\/\d{4}$/`) — not the short `M/d/yy` form
+
+**Given** Open Positions is loaded with seeded data
+**When** the Ex-Date cell text for a sampled row is read
+**Then** it matches the same `MM/DD/YYYY` pattern
+
+**Given** the existing e2e specs `open-positions.spec.ts` and `dividend-deposits-modal.spec.ts`
+**When** they run alongside the new spec on chromium
+**Then** all pass unchanged — no pre-existing test regresses
+
+---
+
+## Epic 10: Column Widths
+
+The Universe table's Ex-Date column is declared at a fixed width that truncates its editable date input, so the value is clipped and hard to read or edit. After this Epic, the Ex-Date column is wide enough to display its full content without truncation; because `dms-base-table` renders each cell at `[style.width.px]="column.width ?? DEFAULT_COLUMN_WIDTH"`, widening the column definition in `global-universe.columns.ts` is sufficient — no template or SCSS change is required.
+
+### Story 10.1: Unit tests for column widths fitting content (Universe Ex-Date)
+
+As a developer,
+I want a red-phase unit-test scaffold asserting that the Universe table's Ex-Date column is wide enough to display its editable date input without truncation,
+So that Story 10.2 has a defined, executable contract to make pass when it widens the column.
+
+**Acceptance Criteria:**
+
+**Given** the `ex_date` column definition in `apps/dms-material/src/app/global/global-universe/global-universe.columns.ts` currently declares `width: 175`
+**When** a unit test reads that definition
+**Then** it asserts the declared `width` is at least 200px — failing (red) while it is still 175
+
+**Given** the Universe table is rendered with its column definitions
+**When** the Ex-Date `<mat-header-cell>` / `<mat-cell>` computed width is inspected
+**Then** it equals the declared column width, proving the `[style.width.px]="column.width ?? DEFAULT_COLUMN_WIDTH"` binding is honored so a widened definition actually widens the rendered cell
+
+**Given** the red-phase assertions above are written into the spec files
+**When** `nx test dms-material` runs immediately after this story
+**Then** all new assertions are marked `.skip()` (`it.skip`) so CI stays green while the width is still 175, and every pre-existing global-universe test remains unskipped and green
+
+### Story 10.2: Widen the Universe Ex-Date column to fit its content
+
+As a user (Dave),
+I want the Universe table's Ex-Date column wide enough to show its full editable date input,
+So that the value is not truncated and I can read and edit it without guessing.
+
+**Acceptance Criteria:**
+
+**Given** the `ex_date` entry in `apps/dms-material/src/app/global/global-universe/global-universe.columns.ts` declares `width: 175`
+**When** its `width` is increased to 230px
+**Then** the Ex-Date column renders wide enough for the editable date input without truncation
+
+**Given** base-table renders each cell at `[style.width.px]="column.width ?? DEFAULT_COLUMN_WIDTH"`
+**When** the widened definition is applied
+**Then** both the Ex-Date header and body cells reflect the new width with no other change required, and row height (57px) / virtual-scroll itemSize are unaffected
+
+**Given** Story 10.1's red-phase unit assertions are unskipped
+**When** `nx test dms-material` runs after the change
+**Then** all pass (green) with no pre-existing regression in the global-universe specs
+
+### Story 10.3: E2E test for column widths fitting content
+
+As a user (Dave),
+I want an end-to-end proof that the Universe Ex-Date column is wide enough to show its full editable date input,
+So that I can trust the value is not truncated in real use.
+
+**Acceptance Criteria:**
+
+**Given** the Global Universe table is loaded with seeded data
+**When** the Ex-Date cell (`[data-column="ex_date"]`) bounding-box width is read
+**Then** it is at least 200px (the widened value)
+
+**Given** the Ex-Date cell's inner editable date input
+**When** its bounding box is compared to the cell content box
+**Then** the input's right edge does not exceed the cell content-box right edge — no clipping
+
+**Given** the existing universe e2e specs
+**When** they run alongside the new spec on chromium
+**Then** all pass unchanged — no pre-existing test regresses
+
+---
+
