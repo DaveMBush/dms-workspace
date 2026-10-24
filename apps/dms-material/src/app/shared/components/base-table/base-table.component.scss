@@ -138,6 +138,14 @@ mat-progress-bar {
   white-space: nowrap;
 }
 
+// Right-align numeric (number/currency) body cells. `mat-cell` is a flex item,
+// so `justify-content: flex-end` moves the inner value to the trailing edge;
+// `text-align: right` covers non-flex fallbacks and any inline content.
+.dms-body-cell--numeric {
+  justify-content: flex-end;
+  text-align: right;
+}
+
 .dms-select-cell {
   text-align: center;
 }
