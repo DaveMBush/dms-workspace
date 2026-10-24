@@ -98,7 +98,7 @@
     } @else { @switch (column.type) { @case ('currency') {
     {{ row[column.field] | currency }}
     } @case ('date') {
-    {{ row[column.field] | date : 'shortDate' }}
+    {{ row[column.field] | date: 'MM/dd/yyyy' }}
     } @case ('number') {
     {{ row[column.field] | number }}
     } @default { {{ row[column.field] }} } } }
