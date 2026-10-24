@@ -13,9 +13,8 @@ import type { ColumnDef } from './column-def.interface';
 // These tests define the contract that Story 9.2 must satisfy when it replaces
 // the locale-dependent 'shortDate' usages with an explicit 'MM/dd/yyyy' format.
 // They are intentionally red against the current component (which still renders
-// shortDate, e.g. "1/15/26"); each test is marked it.skip so CI stays green until
-// Story 9.2 unskips, confirms red, then implements. No production code changes in
-// this story.
+// shortDate, e.g. "1/15/26"); they now run unskipped so CI confirms red until
+// Story 9.2 implements the fix. No production code changes in this story.
 describe('BaseTableComponent - date column MM/DD/YYYY rendering', () => {
   let fixture: ComponentFixture<BaseTableComponent<Record<string, unknown>>>;
 
@@ -90,9 +89,9 @@ describe('BaseTableComponent - date column MM/DD/YYYY rendering', () => {
   // Task 1.1 (AC #1) - date-typed columns render through Angular's DatePipe with
   // an explicit 'MM/dd/yyyy' format, not the locale-dependent 'shortDate'. In en-US
   // shortDate is "M/d/yy", so Jan 15, 2026 currently renders as "1/15/26"; after
-  // Story 9.2 it must render zero-padded "01/15/2026". Skipped until then (AC #3).
-  // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test; Story 9.2 removes the skip, confirms red, then implements until green
-  it.skip('should render date-typed body cells with the MM/DD/YYYY format', () => {
+  // Story 9.2 it must render zero-padded "01/15/2026". Unskipped (AC #3): this is
+  // the red phase — expected to fail until Story 9.2 lands the format change.
+  it('should render date-typed body cells with the MM/DD/YYYY format', () => {
     expect(bodyCell('tradeDate').textContent?.trim()).toBe('01/15/2026');
   });
 });

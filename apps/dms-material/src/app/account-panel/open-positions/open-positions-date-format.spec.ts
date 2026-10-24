@@ -76,8 +76,9 @@ vi.mock('../../store/div-deposits/div-deposits.selectors', () => ({
 // #cellTemplate currently renders date columns through the locale-dependent 'shortDate'
 // format (open-positions.component.html:101), which under en-US yields M/d/yy (e.g.
 // "1/15/26") — NOT zero-padded MM/DD/YYYY. Story 9.2 replaces that with an explicit
-// 'MM/dd/yyyy' format; this test is the contract it must satisfy. It is marked it.skip so
-// CI stays green until then (AC #3). No production code changes in this story.
+// 'MM/dd/yyyy' format; this test is the contract it must satisfy. It now runs
+// unskipped so CI confirms red until Story 9.2 implements the fix (AC #3). No
+// production code changes in this story.
 describe('OpenPositionsComponent - Ex-Date MM/DD/YYYY rendering', () => {
   let fixture: ComponentFixture<OpenPositionsComponent>;
 
@@ -168,9 +169,9 @@ describe('OpenPositionsComponent - Ex-Date MM/DD/YYYY rendering', () => {
   // 'MM/dd/yyyy' format, not the locale-dependent 'shortDate'. In en-US shortDate is "M/d/yy"
   // (e.g. "1/15/26"), which does NOT match zero-padded MM/DD/YYYY; after Story 9.2 it must
   // render as e.g. "01/15/2026". We assert the format pattern (not a fixed day) so the
-  // contract holds regardless of the test environment's timezone. Skipped until then (AC #3).
-  // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test; Story 9.2 removes the skip, confirms red, then implements until green
-  it.skip('should render the Ex-Date cell with the MM/DD/YYYY format', () => {
+  // contract holds regardless of the test environment's timezone. Unskipped (AC #3):
+  // this is the red phase — expected to fail until Story 9.2 lands the format change.
+  it('should render the Ex-Date cell with the MM/DD/YYYY format', () => {
     const exDateCell = fixture.nativeElement.querySelector(
       '.dms-body-cell[data-column="exDate"]',
     );
