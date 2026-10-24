@@ -1,4 +1,4 @@
-import { signal, WritableSignal } from '@angular/core';
+import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
@@ -169,6 +169,7 @@ describe('OpenPositionsComponent - Ex-Date MM/DD/YYYY rendering', () => {
   // (e.g. "1/15/26"), which does NOT match zero-padded MM/DD/YYYY; after Story 9.2 it must
   // render as e.g. "01/15/2026". We assert the format pattern (not a fixed day) so the
   // contract holds regardless of the test environment's timezone. Skipped until then (AC #3).
+  // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test; Story 9.2 removes the skip, confirms red, then implements until green
   it.skip('should render the Ex-Date cell with the MM/DD/YYYY format', () => {
     const exDateCell = fixture.nativeElement.querySelector(
       '.dms-body-cell[data-column="exDate"]',
