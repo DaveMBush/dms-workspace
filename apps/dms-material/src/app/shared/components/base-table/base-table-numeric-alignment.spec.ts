@@ -131,8 +131,7 @@ describe('BaseTableComponent - numeric column right-alignment', () => {
 
   // Task 1.1 (AC #1) - numeric-typed body cells carry the alignment class;
   // text/date cells do not.
-  // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test; Story 8.2 removes the skip, confirms red, then implements until green
-  it.skip('should mark number and currency body cells with .dms-body-cell--numeric', () => {
+  it('should mark number and currency body cells with .dms-body-cell--numeric', () => {
     expect(bodyCell('qty').classList.contains('dms-body-cell--numeric')).toBe(
       true,
     );
@@ -151,8 +150,7 @@ describe('BaseTableComponent - numeric column right-alignment', () => {
   // environment does not inject component SCSS into the DOM, so assert the source
   // rule rather than getComputedStyle (Story 5.x convention). AC #2 accepts either
   // mechanism: flex-end or text-align: right.
-  // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test; Story 8.2 removes the skip, confirms red, then implements until green
-  it.skip('should right-align .dms-body-cell--numeric (flex-end or text-align)', () => {
+  it('should right-align .dms-body-cell--numeric (flex-end or text-align)', () => {
     const body = numericCellRuleBody();
     expect(
       /justify-content\s*:\s*flex-end/.test(body) ||
@@ -162,8 +160,7 @@ describe('BaseTableComponent - numeric column right-alignment', () => {
 
   // Task 2.1 (AC #3) - header cells are unaffected: no numeric-alignment class on
   // any <mat-header-cell>, preserving the existing left-aligned header convention.
-  // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test; Story 8.2 removes the skip, confirms red, then implements until green
-  it.skip('should not mark header cells with .dms-body-cell--numeric', () => {
+  it('should not mark header cells with .dms-body-cell--numeric', () => {
     const headers = fixture.nativeElement.querySelectorAll(
       '.dms-header-cell[data-column]',
     );

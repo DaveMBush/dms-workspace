@@ -78,6 +78,9 @@
           <mat-cell
             *matCellDef="let row; let i = index"
             class="dms-body-cell"
+            [class.dms-body-cell--numeric]="
+              column.type === 'number' || column.type === 'currency'
+            "
             [style.width.px]="column.width ?? DEFAULT_COLUMN_WIDTH"
             [attr.data-column]="column.field"
           >
