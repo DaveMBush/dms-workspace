@@ -55,7 +55,6 @@ async function measureCellAlignment(
         leftGap: valueRect.left - (cellRect.left + padLeft),
       };
     });
-
 }
 
 test.describe('Numeric column right-alignment', () => {
