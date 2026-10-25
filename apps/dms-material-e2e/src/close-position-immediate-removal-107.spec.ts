@@ -156,8 +156,8 @@ test.describe('Close Position — Immediate Removal (Epic 107)', () => {
       .locator('dms-base-table .dms-body-row[role="row"]')
       .filter({ hasText: symbols[0] });
     await expect(soldRow).toHaveCount(1, { timeout: 5000 });
-    // Sell date rendered as M/D/YY — 06/15/2026 → 6/15/26
-    await expect(soldRow).toContainText('6/15/26');
+    // Sell date rendered as MM/DD/YYYY (Story 9.2 standardized table dates)
+    await expect(soldRow).toContainText('06/15/2026');
     // Sell price entered as 150.00
     await expect(soldRow).toContainText('150');
   });
