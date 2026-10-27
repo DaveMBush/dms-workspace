@@ -71,9 +71,12 @@ test.describe('Table Date Format MM/DD/YYYY (Story 9.3)', () => {
       // Filter to a known seeded symbol so we only read our rows.
       const searchInput = page.getByPlaceholder('Search Symbol');
       await searchInput.fill(symbols[0]);
-      await expect(page.locator('.dms-body-row[role="row"]')).not.toHaveCount(0, {
-        timeout: 15000,
-      });
+      await expect(page.locator('.dms-body-row[role="row"]')).not.toHaveCount(
+        0,
+        {
+          timeout: 15000,
+        },
+      );
 
       const buyDateTexts = await getColumnCellTexts(page, 'buy_date');
       expect(buyDateTexts.length).toBeGreaterThan(0);
@@ -85,9 +88,12 @@ test.describe('Table Date Format MM/DD/YYYY (Story 9.3)', () => {
     test('Sell Date cells render as MM/DD/YYYY', async ({ page }) => {
       const searchInput = page.getByPlaceholder('Search Symbol');
       await searchInput.fill(symbols[0]);
-      await expect(page.locator('.dms-body-row[role="row"]')).not.toHaveCount(0, {
-        timeout: 15000,
-      });
+      await expect(page.locator('.dms-body-row[role="row"]')).not.toHaveCount(
+        0,
+        {
+          timeout: 15000,
+        },
+      );
 
       const sellDateTexts = await getColumnCellTexts(page, 'sell_date');
       expect(sellDateTexts.length).toBeGreaterThan(0);
@@ -126,9 +132,10 @@ test.describe('Table Date Format MM/DD/YYYY (Story 9.3)', () => {
     test('Buy Date cells render as MM/DD/YYYY', async ({ page }) => {
       const searchInput = page.locator('[data-testid="symbol-search-input"]');
       await searchInput.fill(symbols[0]);
-      await expect(
-        page.locator('.dms-body-row[role="row"]'),
-      ).not.toHaveCount(0, { timeout: 15000 });
+      await expect(page.locator('.dms-body-row[role="row"]')).not.toHaveCount(
+        0,
+        { timeout: 15000 },
+      );
 
       const buyDateTexts = await getColumnCellTexts(page, 'buyDate');
       expect(buyDateTexts.length).toBeGreaterThan(0);
@@ -137,16 +144,19 @@ test.describe('Table Date Format MM/DD/YYYY (Story 9.3)', () => {
       }
     });
 
-    test('Ex-Date cells are empty or render as MM/DD/YYYY', async ({ page }) => {
+    test('Ex-Date cells are empty or render as MM/DD/YYYY', async ({
+      page,
+    }) => {
       // Note: exDate is currently always null in the Trade API response
       // (Universe.ex_date not included), so cells render empty. This assertion
       // guards against a regression where a non-null value might be rendered
       // in an incorrect format. If/when exDate gets populated, it must match MM/DD/YYYY.
       const searchInput = page.locator('[data-testid="symbol-search-input"]');
       await searchInput.fill(symbols[0]);
-      await expect(
-        page.locator('.dms-body-row[role="row"]'),
-      ).not.toHaveCount(0, { timeout: 15000 });
+      await expect(page.locator('.dms-body-row[role="row"]')).not.toHaveCount(
+        0,
+        { timeout: 15000 },
+      );
 
       const exDateTexts = await getColumnCellTexts(page, 'exDate');
       expect(exDateTexts.length).toBeGreaterThan(0);
