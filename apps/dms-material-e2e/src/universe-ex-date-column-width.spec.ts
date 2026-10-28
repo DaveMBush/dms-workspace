@@ -24,9 +24,9 @@ test.describe('Universe Ex-Date column width', () => {
 
     const table = page.locator('dms-base-table');
     await expect(table).toBeVisible({ timeout: 10000 });
-    await expect(
-      page.locator('.dms-body-row[role="row"]').first(),
-    ).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('.dms-body-row[role="row"]').first()).toBeVisible(
+      { timeout: 10000 },
+    );
 
     // The shared e2e SQLite DB accumulates rows across runs — filter to a
     // known seeded row instead of assuming which rows are present.
