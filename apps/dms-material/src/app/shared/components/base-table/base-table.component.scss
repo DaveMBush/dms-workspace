@@ -76,6 +76,12 @@ mat-progress-bar {
   // horizontally (Epic 5 no-overflow assertion).
   min-width: 0;
 
+  // Story 10.3 — Material MDC sets `flex: 1` on mat-header-cell, which makes the
+  // inline [style.width.px] binding inert (every column gets an equal share of
+  // the row). Use the bound width as flex-basis so configured widths render;
+  // shrink stays enabled for narrow viewports.
+  flex: 0 1 auto;
+
   .sort-rank-indicator {
     font-size: 0.75em;
     margin-left: 2px;
@@ -136,6 +142,10 @@ mat-progress-bar {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+
+  // Story 10.3 — same MDC `flex: 1` override as .dms-header-cell so the inline
+  // [style.width.px] binding is honored on body cells too (header/body parity).
+  flex: 0 1 auto;
 }
 
 // Right-align numeric (number/currency) body cells. `mat-cell` is a flex item,
