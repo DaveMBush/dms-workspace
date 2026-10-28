@@ -60,7 +60,7 @@ export const universeColumns: ColumnDef[] = [
     type: 'date',
     editable: true,
     sortable: true,
-    width: 175,
+    width: 230,
   },
   {
     field: 'most_recent_sell_date',
