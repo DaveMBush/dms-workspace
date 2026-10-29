@@ -11,7 +11,7 @@ import { findAvailablePort } from './port';
  * (3000, 4200, 4566, 8080). Task 3 wires this into resolveAppPort's
  * no-override branch; until then findAvailablePort() remains the default.
  */
-export const DEFAULT_APP_PORT = 7420;
+const defaultAppPort = 7420;
 
 /**
  * Parse and validate the DMS_SMOKE_PORT override value.
@@ -55,7 +55,7 @@ function canBindPort(port: number): Promise<boolean> {
  * Precedence (highest first):
  *   1. `DMS_SMOKE_PORT` override, when set and non-empty — wins over everything
  *      so smoke-test behavior is unchanged (Story 11.2 must not break this).
- *   2. The fixed default port `DEFAULT_APP_PORT`, probed for availability first
+ *   2. The fixed default port `defaultAppPort`, probed for availability first
  *      so every launch loads the same origin http://localhost:7420 and cookies /
  *      localStorage (AD-5 auth cookie, sort/filter/theme/remember-me) persist.
  *   3. A free port via `findAvailablePort()` — fallback for that launch only if
@@ -71,8 +71,8 @@ export async function resolveAppPort(
   if (smokePortEnv !== undefined && smokePortEnv.length > 0) {
     return parseSmokePort(smokePortEnv);
   }
-  if (await canBindPort(DEFAULT_APP_PORT)) {
-    return DEFAULT_APP_PORT;
+  if (await canBindPort(defaultAppPort)) {
+    return defaultAppPort;
   }
   // Fixed default is in use — fall back to a free port for this launch only.
   return findAvailablePort();
