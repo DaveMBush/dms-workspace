@@ -1,5 +1,4 @@
-import { describe, it, expect } from 'vitest';
-
+import { describe, expect, it } from 'vitest';
 import { resolveAppPort } from './resolve-app-port';
 
 // TDD RED Phase: Story 11.1 - stable Electron origin across launches.
