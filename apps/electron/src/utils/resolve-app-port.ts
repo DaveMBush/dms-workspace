@@ -1,6 +1,17 @@
 import { findAvailablePort } from './port';
 
 /**
+ * Fixed default port the Electron app binds to when no `DMS_SMOKE_PORT`
+ * override is set. Pinned to a single constant so every launch loads the same
+ * origin http://localhost:7420 and cookies / localStorage (AD-5 auth cookie,
+ * sort/filter/theme/remember-me) persist across launches. Chosen because it
+ * collides with none of the ports already referenced in the codebase
+ * (3000, 4200, 4566, 8080). Task 3 wires this into resolveAppPort's
+ * no-override branch; until then findAvailablePort() remains the default.
+ */
+export const DEFAULT_APP_PORT = 7420;
+
+/**
  * Parse and validate the DMS_SMOKE_PORT override value.
  * Throws on an empty/invalid/out-of-range value so a misconfigured smoke run
  * fails loudly rather than silently binding an unexpected port.
