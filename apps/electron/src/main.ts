@@ -5,7 +5,7 @@ import { app, BrowserWindow, dialog, ipcMain, session, shell } from 'electron';
 import { resolveDbPath } from './utils/db-path';
 import { ensureDbFile } from './utils/ensure-db-file';
 import { waitForServerHealth } from './utils/health-check';
-import { findAvailablePort } from './utils/port';
+import { resolveAppPort } from './utils/resolve-app-port';
 import { runMigrations } from './utils/run-migrations';
 
 let serverProcess: ChildProcess | null = null;
@@ -229,14 +229,6 @@ function onWindowAllClosed(): void {
   }
 }
 
-function parseSmokePort(smokePortEnv: string): number {
-  const parsed = parseInt(smokePortEnv, 10);
-  if (Number.isNaN(parsed) || parsed < 1 || parsed > 65535) {
-    throw new Error(`Invalid DMS_SMOKE_PORT value: "${smokePortEnv}"`);
-  }
-  return parsed;
-}
-
 function registerTestGlobals(): void {
   (
     global as typeof globalThis & { electronTestExternalLog?: string[] }
@@ -282,11 +274,9 @@ async function init(): Promise<void> {
   }
 
   try {
-    const smokePortEnv = process.env['DMS_SMOKE_PORT'];
-    const port =
-      smokePortEnv !== undefined && smokePortEnv.length > 0
-        ? parseSmokePort(smokePortEnv)
-        : await findAvailablePort();
+    // Port resolution (DMS_SMOKE_PORT override wins, else default) is extracted
+    // into resolveAppPort() so it can be unit-tested without launching Electron.
+    const port = await resolveAppPort();
     resolvedPort = port;
 
     ipcMain.handle('get-api-port', function getApiPort(): number | null {
