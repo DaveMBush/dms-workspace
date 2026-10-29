@@ -576,3 +576,206 @@ So that I can trust the value is not truncated in real use.
 
 ---
 
+## Epic 11: Electron Session Persistence (Cookies + LocalStorage)
+
+In the web app, I'm currently saving/storing cookies for things like sorting, filtering, and login, that aren't persisting once I've exited the electron application. Some don't seem to be saving at all. We need to find some way to ensure cookies are properly saved and retrieved within the electron environment.
+
+After this Epic, state the user sets in the Electron app — sort/filter preferences (localStorage), theme, remember-me, and the Cognito auth cookie — survives an application exit and re-launch. The root cause is that `apps/electron/src/main.ts` resolves a **random** port on every launch via `findAvailablePort()` (`main.ts:289`) and then loads `http://localhost:${port}` (`main.ts:207`); because cookies and localStorage are scoped to the origin, a new port each launch is a new origin, so all previously-saved state is discarded. Pinning the app to a **stable default origin** (a fixed default port) makes the origin constant across launches so saved cookies and localStorage persist; the existing `DMS_SMOKE_PORT` override for smoke tests is preserved unchanged.
+
+**ADs covered:** AD-5, AD-10
+**FRs covered:** FR-19
+
+### Story 11.1: Unit tests for a stable Electron origin across launches (red-phase)
+
+As a developer,
+I want a red-phase unit-test scaffold asserting that the Electron main process resolves to a fixed default port (and therefore a stable `http://localhost:<port>` origin) on every launch when no override is set,
+So that Story 11.2 has a defined, executable contract to make pass when it replaces the random-port resolution with a stable one.
+
+**Acceptance Criteria:**
+
+**Given** `apps/electron/src/main.ts` currently resolves its port via `findAvailablePort()` (`main.ts:289`)
+**When** a unit test exercises the port-resolution logic with no `DMS_SMOKE_PORT` set
+**Then** it asserts the resolved port equals a single fixed default constant (not a random value) — failing (red) while `findAvailablePort()` is still used
+
+**Given** the port-resolution logic is invoked twice in succession with no override
+**When** both resolutions are compared
+**Then** they return the identical port, proving the origin `http://localhost:<port>` is stable across launches so cookies and localStorage persist — failing (red) while a random port is chosen each time
+
+**Given** `DMS_SMOKE_PORT` is set to a valid value in the environment
+**When** the port-resolution logic runs
+**Then** it returns that override value, preserving existing smoke-test behavior (`parseSmokePort`, `main.ts:232`) — this assertion passes today and must remain green
+
+**Given** the red-phase assertions above are written into the spec files
+**When** `nx test electron` runs immediately after this story
+**Then** all new assertions are marked `.skip()` (`it.skip`) so CI stays green while a random port is still chosen, and every pre-existing Electron spec remains unskipped and green
+
+### Story 11.2: Pin the Electron app to a stable default origin (fixed port)
+
+As a user (Dave),
+I want my sort/filter preferences, theme, remember-me choice, and login session to still be there when I reopen the desktop app,
+So that I don't have to re-authenticate and re-configure every time I relaunch.
+
+**Acceptance Criteria:**
+
+**Given** `apps/electron/src/main.ts` resolves its port at startup (`main.ts:285-290`) by calling `findAvailablePort()` when no override is set
+**When** that resolution is changed to use a fixed default port constant (e.g. `7420`, which collides with none of the ports already in use — 3000, 4200, 4566, 8080) instead of a random one
+**Then** every launch loads the same origin `http://localhost:<fixed-port>`, so cookies (AD-5 auth cookie) and localStorage (sort/filter/theme/remember-me) are saved to and retrieved from the same origin across launches
+
+**Given** the fixed default port is already in use by another process at startup
+**When** the app attempts to bind it
+**Then** it falls back to `findAvailablePort()` for that launch only, so the app still starts (a degraded but non-crashing path) rather than failing to launch
+
+**Given** `DMS_SMOKE_PORT` is set in the environment
+**When** the app resolves its port
+**Then** it uses that override exactly as before (`parseSmokePort`, `main.ts:232`) — smoke-test behavior is unchanged
+
+**Given** Story 11.1's red-phase unit assertions are unskipped
+**When** `nx test electron` runs after the change
+**Then** all pass (green) with no pre-existing regression in the Electron specs, and the CSP (`configureContentSecurityPolicy`) and navigation guards that read `port` continue to work against the fixed origin
+
+### Story 11.3: E2E test for cookie + localStorage persistence across an app relaunch
+
+As a user (Dave),
+I want end-to-end proof that my saved state survives quitting and reopening the desktop app,
+So that I can trust login and preferences persist in real use, not just in unit tests.
+
+**Acceptance Criteria:**
+
+**Given** the Electron app is launched via Playwright's `_electron` harness (the pattern already used by `apps/electron/src/electron-package-launch.smoke.spec.ts`) with no `DMS_SMOKE_PORT` set
+**When** a known value is written to `localStorage` in the first window and the app is then quit and relaunched
+**Then** on relaunch the same origin is loaded and the previously-written `localStorage` value is still present — proving the origin (and therefore the storage partition) is stable across launches
+
+**Given** an auth/session cookie has been set for the app origin in the first launch
+**When** the app is quit and relaunched
+**Then** the cookie is still present on the same origin after relaunch, so a logged-in session persists rather than being wiped by a new random port
+
+**Given** the existing Electron smoke spec (`electron-package-launch.smoke.spec.ts`)
+**When** it runs alongside the new persistence spec
+**Then** all pass unchanged — no pre-existing test regresses (the `DMS_SMOKE_PORT`-driven smoke path is unaffected by the fixed default)
+
+---
+
+## Epic 12: Review Unit Tests
+
+We need to review the existing unit tests to ensure they are comprehensive and cover all critical functionality. This includes verifying that:
+
+- All important code paths are tested
+- Edge cases and error conditions are handled
+- Tests are readable and maintainable
+- Test setup and teardown are properly managed
+- Mocking and stubbing are used appropriately
+- Test coverage is sufficient and meaningful
+- Skipped Tests are either removed or enabled.
+- Make sure you evaluate both unit tests and e2e/integration tests.
+
+After this Epic, the test suites across all four projects (`server`, `dms-material`, `dms-material-e2e`, `electron`) contain no skipped tests — every skip is either re-enabled (made to pass) or removed with a recorded reason — and the critical code paths, edge cases, and error conditions that were previously untested are covered. The concrete, verifiable change this Epic makes is: zero `.skip`/`xit`/`xdescribe` markers remain in any spec file, the full unit + e2e suites run green, and `scripts/check-no-skipped-tests.sh` passes.
+
+**ADs covered:** — (cross-cutting test-quality epic; no single AD governs it)
+**FRs covered:** — (spans all FRs' test coverage)
+
+### Story 12.1: Unit tests asserting zero skipped tests across the suite (red-phase)
+
+As a developer,
+I want a red-phase test that scans every spec file in all four projects and fails if any skipped test (`.skip`, `xit`, `xdescribe`) is present,
+So that Story 12.2 has a defined, executable contract to make pass when it enables or removes each skip.
+
+**Acceptance Criteria:**
+
+**Given** the current baseline of skipped tests across the projects — server: `yahoo-finance2-version.spec.ts`, `database-performance-integration.spec.ts` (4 skips), `indexes-sold-trades.spec.ts`, `indexes-open-trades.spec.ts`; dms-material: `primeng-removal.spec.ts`, `symbol-search.service.spec.ts` (2), `base-table.component.spec.ts` (3), `file-upload-validation.spec.ts` (8), `open-positions.component.spec.ts`; e2e: `volatility-visibility.spec.ts`, `universe-table-workflows.spec.ts` (~14), `symbol-filter-header.spec.ts` (4)
+**When** a new spec scans all `*.spec.ts` files under `apps/{server,dms-material,dms-material-e2e,electron}` for `.skip(`, `xit(`, and `xdescribe(` markers
+**Then** it fails (red), reporting each file:line that still contains a skip — failing today because the baseline above is non-empty
+
+**Given** the scan logic itself
+**When** it is pointed at a directory tree containing no skipped tests
+**Then** it passes, so the same assertion can be re-run after Story 12.2 to confirm zero skips remain (green)
+
+**Given** the red-phase assertions above are written into the spec files
+**When** `nx test` runs immediately after this story
+**Then** the new "no skipped tests" assertion is marked `.skip()` (`it.skip`) so CI stays green while skips still exist, and every pre-existing test remains unskipped and green
+
+### Story 12.2: Enable or remove every skipped test; add missing critical-path coverage
+
+As a user (Dave),
+I want the unit and e2e suites to have no silently-skipped tests and to actually cover the important paths, edge cases, and error conditions,
+So that a green suite is meaningful — nothing is being quietly ignored, and regressions in critical functionality are caught.
+
+**Acceptance Criteria:**
+
+**Given** each skipped test identified by Story 12.1's scan (the baseline listed there)
+**When** it is reviewed one at a time
+**Then** it is either re-enabled (its `.skip`/`xit`/`xdescribe` removed and the test made to pass) or deleted, with the decision and reason recorded in this story's Dev Agent Record — no skip is left in place
+
+**Given** the review checklist from the Epic prose (all important code paths tested; edge cases and error conditions handled; tests readable and maintainable; setup/teardown properly managed; mocking/stubbing appropriate; coverage sufficient and meaningful)
+**When** the suites are audited against it for both unit and e2e/integration tests
+**Then** critical code paths, edge cases, and error conditions that were previously untested gain new tests, and any test with broken setup/teardown or inappropriate mocking is corrected
+
+**Given** every skip has been enabled or removed and the missing coverage added
+**When** `nx test` runs for all four projects (`server`, `dms-material`, `electron`) and the e2e suite runs for `dms-material-e2e`
+**Then** all suites pass green with zero skipped tests, and Story 12.1's "no skipped tests" assertion (unskipped) passes
+
+**Given** the repository guard `scripts/check-no-skipped-tests.sh`
+**When** it is run after the change
+**Then** it exits successfully, independently confirming no `.skip`/`xit`/`xdescribe` markers remain in any spec file
+
+---
+
+## Epic 13: Critical Review
+
+We have reviewed the code as we've created it but now that we are basically done I would like to do a critical review of what we've ended up with.
+
+As a start, come up with a plan of what we need to review, including code structure, design patterns, performance, and potential areas for improvement.
+Additionally, consider reviewing the following aspects:
+
+- Tailwind usage. Ensure that Tailwind classes are used consistently and effectively, and that custom styles are minimized where possible.
+- Code readability and maintainability including naming conventions, code organization, code clarity and terseness (avoiding overly complex or verbose code), and adherence to best practices
+- Consistency in coding style and conventions
+- Error handling and logging
+- Security implications and vulnerabilities
+- Test coverage and quality of tests
+- Dependencies and third-party libraries usage
+- Documentation and comments
+- Opportunities for refactoring and optimization
+
+Your recommendations should be written into /.github/epic-descriptions/epics-9999-99-99.md
+
+This epic does not require the standard set of RED/GREEN Unit tests nor the e2e tests.
+
+After this Epic, a critical-review document exists at `/.github/epic-descriptions/epics-9999-99-99.md` containing a review plan and concrete recommendations across code structure, design patterns, performance, Tailwind usage, readability/maintainability, style consistency, error handling & logging, security, test coverage & quality, dependencies, documentation/comments, and refactoring/optimization opportunities. This Epic produces only that document — no source changes, no RED/GREEN unit tests, and no e2e tests (per the prose).
+
+**ADs covered:** — (whole-codebase review; consults all ADs as reference)
+**FRs covered:** — (spans all FRs)
+
+### Story 13.1: Draft the critical-review plan and document skeleton
+
+As a user (Dave),
+I want a review plan for the finished codebase written into the recommendations document,
+So that the per-aspect reviews in Story 13.2 have an agreed scope and order to execute against.
+
+**Acceptance Criteria:**
+
+**Given** the full codebase across `apps/server`, `apps/dms-material`, `apps/e2e` (`dms-material-e2e`), and `apps/electron`
+**When** a review plan is produced covering code structure, design patterns, performance, and potential areas for improvement
+**Then** the plan enumerates what to review and in what order — including all nine aspects named in the Epic prose (Tailwind usage; readability/maintainability incl. naming, organization, clarity/terseness, best practices; style consistency; error handling & logging; security implications & vulnerabilities; test coverage & quality; dependencies & third-party libraries; documentation & comments; refactoring & optimization opportunities) — and is written into the recommendations document
+
+**Given** the review plan
+**When** the document skeleton `/.github/epic-descriptions/epics-9999-99-99.md` is created
+**Then** it contains the plan at the top followed by one clearly-marked section per aspect, each ready to be filled in by Story 13.2
+
+### Story 13.2: Execute the critical review and record file-referenced recommendations
+
+As a user (Dave),
+I want the finished codebase reviewed against the plan from Story 13.1 with actionable recommendations written up,
+So that I have a prioritized list of what to improve now that feature work is essentially complete.
+
+**Acceptance Criteria:**
+
+**Given** each aspect named in the Epic prose (Tailwind usage; readability/maintainability incl. naming, organization, clarity/terseness, best practices; style consistency; error handling & logging; security implications & vulnerabilities; test coverage & quality; dependencies & third-party libraries; documentation & comments; refactoring & optimization opportunities)
+**When** the codebase is reviewed against Story 13.1's plan
+**Then** concrete, file-referenced recommendations are recorded in that aspect's section of `/.github/epic-descriptions/epics-9999-99-99.md` — not generic advice
+
+**Given** the completed review
+**When** the document is finalized at `/.github/epic-descriptions/epics-9999-99-99.md`
+**Then** it contains the review plan plus per-aspect recommendations, and no source file, RED/GREEN unit test, or e2e test is created or modified by this Epic
+
+---
+
