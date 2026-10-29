@@ -1,3 +1,5 @@
+import * as net from 'net';
+
 import { findAvailablePort } from './port';
 
 /**
@@ -25,15 +27,40 @@ function parseSmokePort(smokePortEnv: string): number {
 }
 
 /**
+ * Probe whether `port` can be bound on 127.0.0.1 by actually listening on it,
+ * then closing the socket. The real HTTP bind happens later in the forked
+ * Fastify child (startServer sets PORT), so this probe is the only place at
+ * resolution time where "port already in use" can be detected.
+ */
+function canBindPort(port: number): Promise<boolean> {
+  return new Promise(function probe(
+    resolve: (ok: boolean) => void,
+  ): void {
+    const server = net.createServer();
+    server.once('error', function onError(): void {
+      // EADDRINUSE or any other bind failure — port is not usable.
+      resolve(false);
+    });
+    server.listen(port, '127.0.0.1', function onListening(): void {
+      server.close(function onClosed(): void {
+        resolve(true);
+      });
+    });
+  });
+}
+
+/**
  * Resolve the port the Electron main process binds to on startup.
  *
  * Precedence (highest first):
  *   1. `DMS_SMOKE_PORT` override, when set and non-empty — wins over everything
  *      so smoke-test behavior is unchanged (Story 11.2 must not break this).
- *   2. A free port via `findAvailablePort()` — the current no-override default.
- *      Story 11.2 switches this to a single fixed default port so the app's
- *      origin http://localhost:<port> is stable across launches and cookies /
+ *   2. The fixed default port `DEFAULT_APP_PORT`, probed for availability first
+ *      so every launch loads the same origin http://localhost:7420 and cookies /
  *      localStorage (AD-5 auth cookie, sort/filter/theme/remember-me) persist.
+ *   3. A free port via `findAvailablePort()` — fallback for that launch only if
+ *      the fixed default is already in use by another process, so the app still
+ *      starts rather than failing to bind (degraded but non-crashing).
  *
  * Extracted from main.ts so it can be unit-tested without launching Electron.
  */
@@ -44,6 +71,9 @@ export async function resolveAppPort(
   if (smokePortEnv !== undefined && smokePortEnv.length > 0) {
     return parseSmokePort(smokePortEnv);
   }
-  // Story 11.2 replaces this with a fixed default port for a stable origin.
+  if (await canBindPort(DEFAULT_APP_PORT)) {
+    return DEFAULT_APP_PORT;
+  }
+  // Fixed default is in use — fall back to a free port for this launch only.
   return findAvailablePort();
 }
