@@ -18,8 +18,7 @@ describe('resolveAppPort', () => {
   // (not a random value). Red today: findAvailablePort() returns a random free port
   // that does not equal expectedDefaultPort. Story 11.2 makes the no-override branch
   // return this fixed default so this passes.
-  // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test; Story 11.2 removes the skip, confirms red, then implements until green
-  it.skip('resolves to the fixed default port when no override is set (AC #1)', async () => {
+  it('resolves to the fixed default port when no override is set (AC #1)', async () => {
     const port = await resolveAppPort({});
     expect(port).toBe(expectedDefaultPort);
   });
@@ -28,8 +27,7 @@ describe('resolveAppPort', () => {
   // proving the origin http://localhost:<port> is stable across launches so cookies
   // and localStorage persist. Red today: each call picks a different random free port.
   // Story 11.2 makes both calls return the fixed default so this passes.
-  // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test; Story 11.2 removes the skip, confirms red, then implements until green
-  it.skip('returns an identical port across consecutive resolutions (stable origin) (AC #2)', async () => {
+  it('returns an identical port across consecutive resolutions (stable origin) (AC #2)', async () => {
     const first = await resolveAppPort({});
     const second = await resolveAppPort({});
     expect(second).toBe(first);
