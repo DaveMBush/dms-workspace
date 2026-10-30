@@ -1,5 +1,4 @@
 import * as net from 'net';
-
 import { findAvailablePort } from './port';
 
 /**
@@ -33,9 +32,7 @@ function parseSmokePort(smokePortEnv: string): number {
  * resolution time where "port already in use" can be detected.
  */
 function canBindPort(port: number): Promise<boolean> {
-  return new Promise(function probe(
-    resolve: (ok: boolean) => void,
-  ): void {
+  return new Promise(function probe(resolve: (ok: boolean) => void): void {
     const server = net.createServer();
     server.once('error', function onError(): void {
       // EADDRINUSE or any other bind failure — port is not usable.
