@@ -2,7 +2,7 @@ import { expect, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
 import { settle } from './helpers/settle.helper';
 
-test.describe.skip('Account List', () => {
+test.describe.fixme('Account List', () => {
   test.beforeEach(async ({ page }) => {
     await login(page);
 

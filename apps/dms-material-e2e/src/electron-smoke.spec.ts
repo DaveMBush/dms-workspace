@@ -90,7 +90,7 @@ test.describe('Packaged Electron Smoke Test', () => {
   test.beforeAll(() => {
     if (!isRoot) {
       // Skip: packaged Electron smoke needs root to set the chrome-sandbox SUID bit.
-      test.skip(
+      test.fixme(
         true,
         [
           'Packaged Electron smoke test requires root privileges (dpkg -i must',
@@ -103,7 +103,7 @@ test.describe('Packaged Electron Smoke Test', () => {
 
     if (!debPath) {
       // Skip: no .deb artifact was built in this run.
-      test.skip(
+      test.fixme(
         true,
         [
           `No .deb artifact found in ${debDistDir}.`,

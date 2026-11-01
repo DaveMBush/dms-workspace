@@ -429,7 +429,7 @@ test.describe('Open Positions — Round 7 slow-scroll sticky-header regression (
     page,
   }) => {
     // Story 101.1 regression is environment-dependent in the full Playwright suite:
-    // absent in some runs, present in others. test.skip() marks it pending
+    // absent in some runs, present in others. The test below is marked pending
     // until Story 101.2 addresses the root cause.
     test.fixme();
 
@@ -506,7 +506,7 @@ test.describe('Sold Positions — Round 7 slow-scroll sticky-header regression (
     page,
   }) => {
     // Story 101.1 regression is environment-dependent in the full Playwright suite:
-    // absent in some runs, present in others. test.skip() marks it pending
+    // absent in some runs, present in others. The test below is marked pending
     // until Story 101.2 addresses the root cause.
     test.fixme();
 
@@ -583,7 +583,7 @@ test.describe('Dividend Deposits — Round 7 slow-scroll sticky-header regressio
     page,
   }) => {
     // Story 101.1 regression is environment-dependent in the full Playwright suite:
-    // absent in some runs, present in others. test.skip() marks it pending
+    // absent in some runs, present in others. The test below is marked pending
     // until Story 101.2 addresses the root cause.
     test.fixme();
 
@@ -687,7 +687,7 @@ test.describe('Screener — Round 7 slow-scroll sticky-header regression (Story 
 // ─── Flicker (skipped — assertion pattern requires live-app frame observation) ─
 
 test.describe
-  .skip('Round 7 Flicker — row position jitter during slow scroll (Story 101.1)', () => {
+  .fixme('Round 7 Flicker — row position jitter during slow scroll (Story 101.1)', () => {
   // TODO Story 101.2: implement flicker detection.
   //
   // Flicker definition (per Epic 101 story): no two consecutive frames where

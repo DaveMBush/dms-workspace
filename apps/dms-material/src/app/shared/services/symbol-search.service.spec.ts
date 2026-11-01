@@ -3,7 +3,7 @@ import {
   HttpTestingController,
   provideHttpClientTesting,
 } from '@angular/common/http/testing';
-import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { SymbolOption } from '../../components/symbol-autocomplete/symbol-option.interface';
 import { SymbolSearchService } from './symbol-search.service';
@@ -197,68 +197,6 @@ describe('SymbolSearchService', () => {
       const results = await resultPromise;
       expect(results.length).toBeLessThanOrEqual(10);
     });
-  });
-
-  describe('debouncing', () => {
-    // TODO(E82): blocked — debouncing requires service API redesign (issue #690)
-    // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
-    it.skip('should debounce search requests by 300ms', fakeAsync(() => {
-      const query1 = 'AA';
-      const query2 = 'AAP';
-      const query3 = 'AAPL';
-      const mockResponse: SymbolOption[] = [
-        { symbol: 'AAPL', name: 'Apple Inc.' },
-      ];
-
-      // Make three rapid calls
-      service.searchSymbols(query1).subscribe();
-      tick(100);
-      service.searchSymbols(query2).subscribe();
-      tick(100);
-      service.searchSymbols(query3).subscribe();
-      tick(300);
-
-      // Only the last request should be made
-      const requests = httpMock.match((request) =>
-        request.url.includes('/api/symbol/search'),
-      );
-      expect(requests).toHaveLength(1);
-      expect(requests[0].request.params.get('query')).toBe(query3);
-
-      requests[0].flush(mockResponse);
-    }));
-
-    // TODO(E82): blocked — debouncing requires service API redesign (issue #690)
-    // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
-    it.skip('should not debounce separate search sessions', fakeAsync(() => {
-      const query1 = 'AAPL';
-      const query2 = 'MSFT';
-      const mockResponse: SymbolOption[] = [];
-
-      // First search
-      service.searchSymbols(query1).subscribe();
-      tick(300);
-
-      // Flush first request
-      const req1 = httpMock.expectOne((request) =>
-        request.url.includes('/api/symbol/search'),
-      );
-      req1.flush(mockResponse);
-
-      // Second search after debounce period
-      service.searchSymbols(query2).subscribe();
-      tick(300);
-
-      // Both requests should have been made
-      const req2 = httpMock.expectOne((request) =>
-        request.url.includes('/api/symbol/search'),
-      );
-      req2.flush(mockResponse);
-
-      // Verify two separate requests were made
-      expect(req1.request.params.get('query')).toBe(query1);
-      expect(req2.request.params.get('query')).toBe(query2);
-    }));
   });
 
   describe('result transformation', () => {

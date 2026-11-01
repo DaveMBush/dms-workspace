@@ -181,7 +181,7 @@ function killProcess(proc: ChildProcess): Promise<void> {
       }
       resolve();
     }, 5000);
-    proc.once('exit', function onExit(): void {
+    proc.once('exit', function finish(): void {
       clearTimeout(timer);
       resolve();
     });

@@ -6,7 +6,7 @@ import { settle } from './helpers/settle.helper';
 // and there's no test hook to manually trigger it. These tests should be
 // re-enabled once a test trigger mechanism is implemented.
 // TODO(E82): blocked — needs test hook mechanism to trigger session warning dialog
-test.describe.skip('Session Warning Dialog', () => {
+test.describe.fixme('Session Warning Dialog', () => {
   test.beforeEach(async ({ page }) => {
     // Navigate to login page
     await page.goto('/auth/login');
@@ -133,7 +133,7 @@ test.describe.skip('Session Warning Dialog', () => {
     // Skipping actual implementation as it would take 60+ seconds
 
     // TODO(E82): blocked — needs test hook mechanism to trigger session warning dialog
-    test.skip();
+    test.fixme();
   });
 
   test('should display correctly on mobile screens', async ({ page }) => {

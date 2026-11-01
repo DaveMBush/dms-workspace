@@ -13,6 +13,7 @@ export default [
       'no-restricted-syntax': 'off',
       // Electron callbacks wrap Node.js APIs that don't support async natively
       '@typescript-eslint/promise-function-async': 'off',
+      'sonarjs/todo-tag': 'off', // Allow TODO(E82) deferred-test annotations
     },
   },
   {

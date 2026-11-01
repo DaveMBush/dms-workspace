@@ -28,6 +28,8 @@ describe('ensureDbFile', () => {
     expect(fs.existsSync(dbPath)).toBe(true);
   });
 
+  // TODO(E82): platform-conditional skip — POSIX-only permission check (mode
+  // 0o700) is meaningless on Windows, so this test runs everywhere except win32.
   it.skipIf(process.platform === 'win32')(
     'creates the directory with mode 0o700 on POSIX',
     () => {

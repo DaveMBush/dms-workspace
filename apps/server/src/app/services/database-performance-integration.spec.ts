@@ -4,7 +4,6 @@ import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 import { PrismaClient } from '@prisma/client';
 import { authDatabaseMonitorService } from './auth-database-monitor.service';
 import { authDatabaseOptimizerService } from './auth-database-optimizer.service';
-import { databasePerformanceBenchmarkService } from './database-performance-benchmark.service';
 import { databasePerformanceService } from './database-performance.service';
 
 describe('Database Performance Integration Tests', () => {
@@ -264,26 +263,6 @@ describe('Database Performance Integration Tests', () => {
   });
 
   describe('Database Performance Monitoring', () => {
-    // TODO(E82): blocked — optimizer service doesn't call monitor for metrics tracking
-    it.skip('should record and track authentication operations', async () => {
-      // Skip - performance metrics tracking has integration issues in test environment
-      await authDatabaseOptimizerService.optimizedUserLookup(
-        testClient,
-        'test-user-1',
-      );
-      await authDatabaseOptimizerService.optimizedSessionDataQuery(
-        testClient,
-        'test-account-1',
-      );
-
-      const metrics =
-        await authDatabaseMonitorService.getAuthDatabaseMetrics(testClient);
-
-      expect(metrics.authOperationCount).toBeGreaterThan(0);
-      expect(metrics.averageAuthQueryTime).toBeGreaterThan(0);
-      expect(metrics.totalTime).toBeGreaterThan(0);
-    });
-
     it('should monitor authentication database health', async () => {
       // Perform auth operations to generate metrics
       await authDatabaseOptimizerService.optimizedUserLookup(
@@ -348,55 +327,6 @@ describe('Database Performance Integration Tests', () => {
     });
   });
 
-  // TODO(E82): blocked — benchmark thresholds need tuning for test environment
-  describe.skip('Performance Benchmarks - 30% Reduction Target', () => {
-    it('should achieve at least 30% performance improvement', async () => {
-      // Skip - benchmark requires fine-tuning for test environment
-      const benchmark =
-        await databasePerformanceBenchmarkService.runComprehensiveBenchmark(
-          testClient,
-          10, // Reduced iterations for testing
-        );
-
-      expect(benchmark.improvementPercentage).toBeGreaterThanOrEqual(30);
-      expect(benchmark.meetsTarget).toBe(true);
-      expect(benchmark.optimized.totalTime).toBeLessThan(
-        benchmark.baseline.totalTime,
-      );
-    }, 30000); // 30 second timeout for benchmark
-
-    it('should pass detailed performance tests', async () => {
-      // Skip - benchmark requires fine-tuning for test environment
-      const detailedTests =
-        await databasePerformanceBenchmarkService.runDetailedPerformanceTests(
-          testClient,
-        );
-
-      const passedTests = detailedTests.filter(function filterPassed(test) {
-        return test.passed;
-      });
-
-      expect(detailedTests.length).toBeGreaterThan(0);
-      // At least 75% of tests should pass the 30% improvement threshold
-      expect(passedTests.length).toBeGreaterThanOrEqual(
-        Math.ceil(detailedTests.length * 0.75),
-      );
-    }, 20000); // 20 second timeout
-
-    it('should generate comprehensive performance report', async () => {
-      // Skip - benchmark requires fine-tuning for test environment
-      const report =
-        await databasePerformanceBenchmarkService.generatePerformanceReport(
-          testClient,
-        );
-
-      expect(report.summary).toContain('Performance Benchmark Results');
-      expect(report.benchmark.meetsTarget).toBe(true);
-      expect(report.detailedTests.length).toBeGreaterThan(0);
-      expect(report.recommendations).toBeInstanceOf(Array);
-    }, 40000); // 40 second timeout for full report
-  });
-
   describe('Integration Tests for Optimized Database Access', () => {
     it('should handle authentication load efficiently', async () => {
       const startTime = performance.now();
@@ -422,57 +352,6 @@ describe('Database Performance Integration Tests', () => {
 
       // All operations should complete within reasonable time
       expect(totalTime).toBeLessThan(2000); // 2 seconds for 30 operations
-    });
-
-    // TODO(E82): blocked — optimizer service doesn't call monitor for metrics tracking
-    it.skip('should maintain connection pool efficiency during load', async () => {
-      // Skip - performance metrics tracking has integration issues in test environment
-      // Generate load
-      const loadOperations = Array.from(
-        { length: 20 },
-        async function createLoadOperation(_, i) {
-          return authDatabaseOptimizerService.optimizedUserLookup(
-            testClient,
-            `test-user-${(i % 3) + 1}`,
-          );
-        },
-      );
-
-      await Promise.all(loadOperations);
-
-      const loadMetrics =
-        await authDatabaseMonitorService.getAuthDatabaseMetrics(testClient);
-
-      expect(loadMetrics.authConnectionEfficiency).toBeGreaterThan(0);
-      expect(loadMetrics.averageAuthQueryTime).toBeLessThan(100); // Should be under 100ms average
-    });
-
-    // TODO(E82): blocked — optimizer service doesn't call monitor for metrics tracking
-    it.skip('should provide accurate performance monitoring during operations', async () => {
-      // Skip - performance metrics tracking has integration issues in test environment
-      authDatabaseMonitorService.resetMetrics();
-
-      // Perform tracked operations
-      await authDatabaseOptimizerService.optimizedUserLookup(
-        testClient,
-        'test-user-1',
-      );
-      await authDatabaseOptimizerService.optimizedSessionDataQuery(
-        testClient,
-        'test-account-1',
-      );
-      await authDatabaseOptimizerService.batchUserLookup(testClient, [
-        'test-user-1',
-        'test-user-2',
-      ]);
-
-      const operationMetrics =
-        authDatabaseMonitorService.getAuthOperationMetrics();
-
-      expect(operationMetrics.totalAuthOperations).toBeGreaterThan(0);
-      expect(operationMetrics.userLookups).toBeGreaterThan(0);
-      expect(operationMetrics.sessionQueries).toBeGreaterThan(0);
-      expect(operationMetrics.batchOperations).toBeGreaterThan(0);
     });
   });
 

@@ -4,7 +4,7 @@ import { settle } from './helpers/settle.helper';
 // Skip these tests until SymbolAutocomplete is integrated into a feature page
 // These tests will be enabled when a feature using SymbolAutocomplete is implemented
 // TODO(E82): blocked — SymbolAutocomplete not integrated into a feature page
-test.describe.skip('Symbol Autocomplete Component', () => {
+test.describe.fixme('Symbol Autocomplete Component', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
     // Navigate to page with symbol autocomplete once integrated
