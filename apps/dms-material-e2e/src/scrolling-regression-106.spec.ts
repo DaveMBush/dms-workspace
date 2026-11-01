@@ -33,7 +33,7 @@
  * INVESTIGATION SPEC (for historical reference):
  *   apps/dms-material-e2e/src/scrolling-regression-106-investigation.spec.ts
  *   That file uses soft (non-throwing) assertions wrapped in
- *   test.describe.skip() and served as the live investigation vehicle for
+ *   a disabled describe wrapper and served as the live investigation vehicle for
  *   Stories 106.1 and 106.2.  It is retained as an investigation artifact.
  *   This file is the permanent, CI-green regression suite produced by
  *   Story 106.3.

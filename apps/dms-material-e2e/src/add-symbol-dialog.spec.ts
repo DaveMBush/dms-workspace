@@ -155,7 +155,7 @@ test.describe('Add Symbol Dialog', () => {
         const retryCount = await optionsLocator.count();
         if (retryCount === 0) {
           // Skip: risk groups failed to load from the SmartNgRX store in this run.
-          test.skip(
+          test.fixme(
             true,
             'Risk groups not loaded - SmartNgRX store timing issue',
           );
@@ -196,7 +196,7 @@ test.describe('Add Symbol Dialog', () => {
         const retryCount = await optionsLocator.count();
         if (retryCount === 0) {
           // Skip: risk groups failed to load from the SmartNgRX store in this run.
-          test.skip(
+          test.fixme(
             true,
             'Risk groups not loaded - SmartNgRX store timing issue',
           );

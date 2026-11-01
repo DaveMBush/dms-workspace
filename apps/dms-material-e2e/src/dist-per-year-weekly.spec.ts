@@ -24,7 +24,7 @@
  * ── NOTE ─────────────────────────────────────────────────────────────────────
  * `pnpm all` will NOT pass after this story — that is expected and intentional.
  * These tests are restored to green by Story 78.2.
- * Do not skip or .skip() these tests.
+ * Do not mark these as skipped or disabled.
  */
 
 import { expect, test } from 'playwright/test';

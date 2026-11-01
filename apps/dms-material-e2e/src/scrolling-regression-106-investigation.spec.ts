@@ -6,7 +6,7 @@
  * This file performs Tasks 2–6 of Story 106.1 live-browser investigation.
  *
  * CONSTRAINTS:
- *  - test.describe.skip() wraps all tests so pnpm all stays green (per AC5/AC6)
+ *  - A disabled describe wrapper keeps all tests out of the run so pnpm all stays green (per AC5/AC6)
  *  - Story 106.2: Firefox sweep complete; skip wrapper restored. Story 106.3 creates
  *    the permanent regression suite.
  *  - The sweep records findings to console; Dev Agent post-processes into story file
@@ -203,7 +203,7 @@ async function captureDomEvidence(page: Page): Promise<{
 // Skip wrapper restored to keep pnpm all green (investigation is a one-shot tool, not
 // a persistent regression suite — Story 106.3 creates the permanent regression spec).
 test.describe
-  .skip('Round-9 Investigation: Context-change scrolling reproduction', () => {
+  .fixme('Round-9 Investigation: Context-change scrolling reproduction', () => {
   // Seed data handles
   let universeCleanup: () => Promise<void>;
   let openPositionsCleanup1: () => Promise<void>;

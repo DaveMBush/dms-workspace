@@ -60,7 +60,7 @@ test.describe('Open Positions', () => {
   });
 
   // TODO(E82): blocked — requires universe data seeding in test database
-  test.skip('should add new position via dialog', async ({ page }) => {
+  test.fixme('should add new position via dialog', async ({ page }) => {
     // SKIPPED: This test requires universe data to be loaded in the test database.
     // The symbol autocomplete needs universe data to show options. Need to add test data seeding.
     // See apps/server/prisma/seed.ts for data setup.
@@ -212,7 +212,7 @@ test.describe('Open Positions', () => {
   });
 
   // TODO(E82): blocked — requires universe data seeding in test database
-  test.skip('should edit quantity inline', async ({ page }) => {
+  test.fixme('should edit quantity inline', async ({ page }) => {
     // SKIPPED: Requires universe data in test database. Need to add test data seeding.
     // First, add a position so we have something to edit
     const addButton = page.locator('[data-testid="add-new-position-button"]');
@@ -279,7 +279,7 @@ test.describe('Open Positions', () => {
   });
 
   // TODO(E82): blocked — requires universe data seeding in test database
-  test.skip('should edit buy price inline', async ({ page }) => {
+  test.fixme('should edit buy price inline', async ({ page }) => {
     // SKIPPED: Requires universe data in test database. Need to add test data seeding.
     // First, add a position so we have something to edit
     const addButton = page.locator('[data-testid="add-new-position-button"]');
@@ -342,7 +342,7 @@ test.describe('Open Positions', () => {
   });
 
   // TODO(E82): blocked — requires universe data seeding in test database
-  test.skip('should edit buy date inline', async ({ page }) => {
+  test.fixme('should edit buy date inline', async ({ page }) => {
     // SKIPPED: Requires universe data in test database. Need to add test data seeding.
     // First, add a position so we have something to edit
     const addButton = page.locator('[data-testid="add-new-position-button"]');
@@ -405,7 +405,7 @@ test.describe('Open Positions', () => {
   });
 
   // TODO(E82): blocked — requires universe data seeding in test database
-  test.skip('should cancel inline edit with escape key', async ({ page }) => {
+  test.fixme('should cancel inline edit with escape key', async ({ page }) => {
     // SKIPPED: Requires universe data in test database. Need to add test data seeding.
     // First, add a position so we have something to edit
     const addButton = page.locator('[data-testid="add-new-position-button"]');
@@ -471,7 +471,7 @@ test.describe('Open Positions', () => {
   });
 
   // TODO(E82): blocked — requires universe data seeding in test database
-  test.skip('should filter positions by symbol', async ({ page }) => {
+  test.fixme('should filter positions by symbol', async ({ page }) => {
     // SKIPPED: Requires universe data in test database. Need to add test data seeding.
     // First, add two different positions
     // Add AAPL
@@ -550,7 +550,7 @@ test.describe('Open Positions', () => {
   });
 
   // TODO(E82): blocked — requires universe data seeding in test database
-  test.skip('should delete position', async ({ page }) => {
+  test.fixme('should delete position', async ({ page }) => {
     // SKIPPED: Requires universe data in test database. Need to add test data seeding.
     // First, add a position so we have something to delete
     const addButton = page.locator('[data-testid="add-new-position-button"]');

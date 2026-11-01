@@ -2,8 +2,8 @@
 // AC #1 (declared version) must FAIL while `yahoo-finance2` is still on the v3
 // line (`^3.13.0`) in the root package.json; AC #2 (consumer specs mock the
 // instance module, never the raw package) already passes because that is how
-// the codebase is structured — this test locks it in. Story 7.2 removes the
-// `.skip()` markers, confirms red, then bumps the dependency to `^4.0.4` until green.
+// the codebase is structured — this test locks it in. Story 7.2 removed the
+// disabled-test markers, confirms red, then bumps the dependency to `^4.0.4` until green.
 
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';

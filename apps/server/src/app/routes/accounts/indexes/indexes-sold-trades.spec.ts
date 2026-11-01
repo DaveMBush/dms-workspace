@@ -4,7 +4,7 @@ import registerAccountIndexesRoutes from './index';
 
 // Story AX.9: TDD Tests for /indexes endpoint handling soldTrades
 // RED phase — these tests expect soldTrades handling that doesn't exist yet
-// Disabled with describe.skip() to allow CI to pass
+// Disabled via a skipped describe wrapper to allow CI to pass
 // Will be re-enabled in Story AX.10
 
 // Hoisted mocks

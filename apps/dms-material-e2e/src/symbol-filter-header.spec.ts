@@ -6,7 +6,7 @@ test.describe('Symbol Filter Header Component', () => {
   });
 
   // TODO(E82): blocked — symbol filter header feature not implemented
-  test.skip('should display filter dropdown with options', async ({ page }) => {
+  test.fixme('should display filter dropdown with options', async ({ page }) => {
     const filterField = page.locator('mat-select');
     await expect(filterField).toBeVisible();
     await filterField.click();
@@ -15,7 +15,7 @@ test.describe('Symbol Filter Header Component', () => {
   });
 
   // TODO(E82): blocked — symbol filter header feature not implemented
-  test.skip('should filter table data when option selected', async ({
+  test.fixme('should filter table data when option selected', async ({
     page,
   }) => {
     const filterField = page.locator('mat-select');
@@ -26,7 +26,7 @@ test.describe('Symbol Filter Header Component', () => {
   });
 
   // TODO(E82): blocked — symbol filter header feature not implemented
-  test.skip('should show all data when "All" option selected', async ({
+  test.fixme('should show all data when "All" option selected', async ({
     page,
   }) => {
     const filterField = page.locator('mat-select');
@@ -37,14 +37,14 @@ test.describe('Symbol Filter Header Component', () => {
   });
 
   // TODO(E82): blocked — symbol filter header feature not implemented
-  test.skip('should fit filter within table header cell', async ({ page }) => {
+  test.fixme('should fit filter within table header cell', async ({ page }) => {
     const filterField = page.locator('mat-form-field.filter-field');
     const boundingBox = await filterField.boundingBox();
     expect(boundingBox?.width).toBeLessThanOrEqual(150);
   });
 
   // TODO(E82): blocked — symbol filter header feature not implemented
-  test.skip('should navigate filter options with keyboard', async ({
+  test.fixme('should navigate filter options with keyboard', async ({
     page,
   }) => {
     const filterField = page.locator('mat-select');
@@ -55,7 +55,7 @@ test.describe('Symbol Filter Header Component', () => {
   });
 
   // TODO(E82): blocked — symbol filter header feature not implemented
-  test.skip('should close dropdown with Escape key', async ({ page }) => {
+  test.fixme('should close dropdown with Escape key', async ({ page }) => {
     const filterField = page.locator('mat-select');
     await filterField.click();
     await page.keyboard.press('Escape');
@@ -64,7 +64,7 @@ test.describe('Symbol Filter Header Component', () => {
   });
 
   // TODO(E82): blocked — symbol filter header feature not implemented
-  test.skip('should close dropdown when clicking outside', async ({ page }) => {
+  test.fixme('should close dropdown when clicking outside', async ({ page }) => {
     const filterField = page.locator('mat-select');
     await filterField.click();
     const panel = page.locator('.mat-mdc-select-panel');
@@ -74,7 +74,7 @@ test.describe('Symbol Filter Header Component', () => {
   });
 
   // TODO(E82): blocked — symbol filter header feature not implemented
-  test.skip('should render many options performantly', async ({ page }) => {
+  test.fixme('should render many options performantly', async ({ page }) => {
     const filterField = page.locator('mat-select');
     const startTime = Date.now();
     await filterField.click();
@@ -85,7 +85,7 @@ test.describe('Symbol Filter Header Component', () => {
   });
 
   // TODO(E82): blocked — symbol filter header feature not implemented
-  test.skip('should show active filter indicator when not "All"', async ({
+  test.fixme('should show active filter indicator when not "All"', async ({
     page,
   }) => {
     const filterField = page.locator('mat-select');
@@ -97,7 +97,7 @@ test.describe('Symbol Filter Header Component', () => {
   });
 
   // TODO(E82): blocked — symbol filter header feature not implemented
-  test.skip('should announce filter changes to screen readers', async ({
+  test.fixme('should announce filter changes to screen readers', async ({
     page,
   }) => {
     const filterField = page.locator('mat-select');

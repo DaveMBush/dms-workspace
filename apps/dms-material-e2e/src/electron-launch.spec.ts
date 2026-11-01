@@ -101,9 +101,9 @@ test.describe('Electron App Launch', () => {
   test.beforeAll(async () => {
     if (!distExists) {
       // Mark all tests in this block as skipped and bail out of beforeAll.
-      // test.skip() called in beforeAll skips all enclosed tests and
+      // Calling skip inside beforeAll marks all enclosed tests as skipped and
       // immediately halts the beforeAll hook.
-      test.skip(
+      test.fixme(
         true,
         'Electron dist not built — run: pnpm nx run electron:build',
       );

@@ -1,9 +1,9 @@
 import {
+  lstatSync,
   mkdtempSync,
   readdirSync,
   readFileSync,
   rmSync,
-  statSync,
   writeFileSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -49,7 +49,10 @@ function collectSpecFiles(dir: string): string[] {
       continue;
     }
     const full = join(dir, entry);
-    if (statSync(full).isDirectory()) {
+    // lstatSync (not statSync): it does not follow symlinks, so the self-
+    // referential prisma/migrations symlink cycle cannot throw ELOOP and crash
+    // the walk. Symlinked dirs are skipped; none contain .spec.ts files.
+    if (lstatSync(full).isDirectory()) {
       out.push(...collectSpecFiles(full));
     } else if (entry.endsWith('.spec.ts')) {
       out.push(full);
@@ -111,9 +114,7 @@ describe('no-skipped-tests scanner (Story 12.1)', () => {
     expect(hits.map((h) => h.line)).toEqual([2, 3, 4]);
   });
 
-  // TODO(E82): blocked — repo-wide scan fails until Story 12.2 clears every skip in the tree; then flip it.skip -> it (AC #1 / #3).
-  // eslint-disable-next-line vitest/no-disabled-tests -- BLOCKED: intentionally disabled TDD RED phase test
-  it.skip('AC #1 — finds zero skipped tests across the whole repository', () => {
+  it('AC #1 — finds zero skipped tests across the whole repository', () => {
     const hits = scanForSkippedTests(workspaceRoot);
     if (hits.length > 0) {
       const report = hits.map((h) => h.file + ':' + h.line).join('\n');

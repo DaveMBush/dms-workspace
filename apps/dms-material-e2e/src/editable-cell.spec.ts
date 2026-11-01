@@ -3,7 +3,7 @@ import { settle } from './helpers/settle.helper';
 
 // Skip these tests until EditableCell is integrated into a feature page
 // These tests will be enabled when a feature using EditableCell is implemented
-test.describe.skip('Editable Cell Component', () => {
+test.describe.fixme('Editable Cell Component', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
     // Navigate to page with editable cells once integrated

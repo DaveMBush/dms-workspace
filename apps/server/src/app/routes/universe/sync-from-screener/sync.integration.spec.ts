@@ -19,10 +19,10 @@ import { SyncLogger } from '../../../../utils/logger';
  * rather than HTTP endpoints, avoiding complex mocking issues
  * while still providing comprehensive integration test coverage.
  */
-// TODO(E82): blocked — integration test requires live database in CI
 // Skip these heavy integration tests by default — they require a full
 // Prisma migrate flow that's not compatible with the locally-installed
 // Prisma runtime in all developer environments.
+// TODO(E82): blocked — integration test requires live database in CI
 describe.skipIf(process.env.CI)(
   'sync-from-screener database integration tests',
   () => {

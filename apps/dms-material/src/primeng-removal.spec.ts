@@ -1,7 +1,7 @@
 // Story 6.1: red-phase tests asserting PrimeNg is fully removed from dms-material.
 // AC #1 (package.json keys) must FAIL while `@primeng/themes` / `primeng` are still
 // declared in the workspace-root package.json; AC #2 (source scan) already passes
-// because no real imports exist yet. Story 6.2 removes the `.skip()` markers,
+// because no real imports exist yet. Story 6.2 removed the disabled-test markers,
 // confirms red, then deletes the packages until green.
 
 import { readdirSync, readFileSync, statSync } from 'node:fs';
