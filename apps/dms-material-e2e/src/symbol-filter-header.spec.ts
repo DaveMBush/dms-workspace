@@ -6,7 +6,9 @@ test.describe('Symbol Filter Header Component', () => {
   });
 
   // TODO(E82): blocked — symbol filter header feature not implemented
-  test.fixme('should display filter dropdown with options', async ({ page }) => {
+  test.fixme('should display filter dropdown with options', async ({
+    page,
+  }) => {
     const filterField = page.locator('mat-select');
     await expect(filterField).toBeVisible();
     await filterField.click();
@@ -64,7 +66,9 @@ test.describe('Symbol Filter Header Component', () => {
   });
 
   // TODO(E82): blocked — symbol filter header feature not implemented
-  test.fixme('should close dropdown when clicking outside', async ({ page }) => {
+  test.fixme('should close dropdown when clicking outside', async ({
+    page,
+  }) => {
     const filterField = page.locator('mat-select');
     await filterField.click();
     const panel = page.locator('.mat-mdc-select-panel');
