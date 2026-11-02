@@ -113,7 +113,7 @@
     "@storybook/builder-vite": "^10.5.4",
     "@stylistic/eslint-plugin": "^5.10.0",
     "@swc-node/register": "1.12.1",
-    "@swc/core": "1.16.2",
+    "@swc/core": "1.16.20",
     "@swc/helpers": "0.5.23",
     "@tailwindcss/postcss": "^4.3.0",
     "@tailwindcss/vite": "4.3.3",
