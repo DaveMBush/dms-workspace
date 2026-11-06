@@ -26,17 +26,6 @@
       "dependsOn": ["^build"],
       "inputs": ["production", "^production"]
     },
-    "@nx/eslint:lint": {
-      "cache": true,
-      "inputs": [
-        "default",
-        "^default",
-        "{workspaceRoot}/.eslintrc.json",
-        "{workspaceRoot}/.eslintignore",
-        "{workspaceRoot}/eslint.config.mjs",
-        "{workspaceRoot}/tools/eslint-rules/**/*"
-      ]
-    },
     "@nx/esbuild:esbuild": {
       "cache": true,
       "dependsOn": ["^build"],
@@ -60,10 +49,6 @@
         }
       ]
     },
-    "@nx/vitest:test": {
-      "cache": true,
-      "inputs": ["default", "^production"]
-    },
     "build-storybook": {
       "cache": true,
       "inputs": [
@@ -72,7 +57,17 @@
         "{projectRoot}/.storybook/**/*",
         "{projectRoot}/.storybook/tsconfig.json"
       ]
-    }
+    },
+    "test": [
+      {
+        "filter": {
+          "plugin": "@nx/vitest"
+        },
+        "options": {
+          "passWithNoTests": true
+        }
+      }
+    ]
   },
   "plugins": [
     {
@@ -87,6 +82,13 @@
       "options": {
         "targetName": "lint"
       }
+    },
+    {
+      "plugin": "@nx/vitest",
+      "options": {
+        "testMode": "run",
+        "testTargetName": "test"
+      }
     }
   ],
   "generators": {
@@ -100,5 +102,8 @@
       "style": "scss"
     }
   },
-  "analytics": true
+  "analytics": true,
+  "affected": {
+    "legacy": true
+  }
 }

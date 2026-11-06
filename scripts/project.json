@@ -6,9 +6,7 @@
   "tags": [],
   "targets": {
     "test": {
-      "executor": "@nx/vitest:test",
       "options": {
-        "passWithNoTests": true,
         "cwd": "scripts"
       }
     },

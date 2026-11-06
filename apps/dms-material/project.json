@@ -89,6 +89,9 @@
       "continuous": true,
       "executor": "@angular/build:dev-server",
       "defaultConfiguration": "development",
+      "readyWhen": {
+        "signal": true
+      },
       "options": {
         "port": 4201,
         "proxyConfig": "apps/dms-material/proxy.conf.json",
@@ -129,11 +132,12 @@
       ]
     },
     "test": {
-      "executor": "@nx/vitest:test",
-      "outputs": ["{options.reportsDirectory}"],
+      "outputs": [
+        "{projectRoot}/{options.coverage.reportsDirectory}",
+        "{workspaceRoot}/coverage/apps/dms-material"
+      ],
       "options": {
-        "reportsDirectory": "{projectRoot}/../../coverage/apps/dms-material",
-        "passWithNoTests": true
+        "coverage.reportsDirectory": "../../../coverage/apps/dms-material"
       }
     },
     "serve-static": {
@@ -144,11 +148,18 @@
         "port": 4201,
         "staticFilePath": "dist/apps/dms-material/browser",
         "spa": true
-      }
+      },
+      "readyWhen": {
+        "signal": true
+      },
+      "dependsOn": ["build"]
     },
     "serve-e2e": {
       "continuous": true,
       "executor": "@angular/build:dev-server",
+      "readyWhen": {
+        "signal": true
+      },
       "options": {
         "buildTarget": "dms-material:build:development",
         "port": 4301,
@@ -158,6 +169,11 @@
     },
     "storybook": {
       "executor": "@storybook/angular:start-storybook",
+      "continuous": true,
+      "readyWhen": {
+        "port": "{env.SBCONFIG_PORT ?? options.port ?? 9009}",
+        "host": "{env.SBCONFIG_HOSTNAME ?? options.host ?? localhost}"
+      },
       "options": {
         "port": 4400,
         "compodoc": false,
@@ -210,6 +226,9 @@
         "staticFilePath": "dist/storybook/dms-material",
         "watch": true,
         "quiet": true
+      },
+      "readyWhen": {
+        "signal": true
       }
     }
   }

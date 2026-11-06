@@ -18,8 +18,7 @@ import { getRiskGroupData } from './get-risk-group-data.function';
  * Tests account-specific risk group calculations to ensure
  * proper filtering and aggregation across different scenarios.
  */
-// TODO(E82): blocked — integration test requires live database in CI
-describe.skipIf(process.env.CI)('getRiskGroupData', () => {
+describe('getRiskGroupData', () => {
   let prisma: PrismaClient;
   let testDbPath: string;
   let equitiesRiskGroupId: string;
@@ -42,18 +41,21 @@ describe.skipIf(process.env.CI)('getRiskGroupData', () => {
       unlinkSync(testDbPath);
     }
 
-    // Apply migrations to test database
+    // Apply migrations to test database with isolated DATABASE_URL.
+    // Prisma v7 reads datasource.url from prisma.config.ts and discovers it by CWD;
+    // vitest runs with cwd=apps/server, so point --config at the workspace-root config
+    // (its internal schema/migrations paths resolve relative to that file).
     const { execSync } = await import('child_process');
     const { fileURLToPath } = await import('url');
     const { dirname } = await import('path');
     const fileName = fileURLToPath(import.meta.url);
     const directoryName = dirname(fileName);
-    // apps/server/src/app/routes/summary -> ../../../../prisma/schema.prisma
-    const schemaPath = join(
+    // apps/server/src/app/routes/summary -> ../../../../../prisma.config.ts (workspace root)
+    const configPath = join(
       directoryName,
-      '../../../../../../prisma/schema.prisma',
+      '../../../../../../prisma.config.ts',
     );
-    execSync(`npx prisma migrate deploy --schema=${schemaPath}`, {
+    execSync(`npx prisma migrate deploy --config=${configPath}`, {
       env: { ...process.env, DATABASE_URL: testDbUrl },
     });
 

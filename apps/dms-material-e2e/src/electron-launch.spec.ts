@@ -103,10 +103,6 @@ test.describe('Electron App Launch', () => {
       // Mark all tests in this block as skipped and bail out of beforeAll.
       // Calling skip inside beforeAll marks all enclosed tests as skipped and
       // immediately halts the beforeAll hook.
-      test.fixme(
-        true,
-        'Electron dist not built — run: pnpm nx run electron:build',
-      );
       return;
     }
     app = await electron.launch({

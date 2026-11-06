@@ -32,10 +32,6 @@ test.use({ baseURL: LIVE_BASE_URL });
 test.describe('Volatility visibility - symbols without positions', function describeVisibility() {
   test.beforeEach(async function navigateToUniverse({ page }) {
     // Skip unless running under the integration project (live symbols on :4201).
-    test.fixme(
-      test.info().project.name !== 'integration',
-      'This live-symbol investigation runs only against the integration project on :4201.',
-    );
 
     await login(page);
     await page.goto('/global/universe');

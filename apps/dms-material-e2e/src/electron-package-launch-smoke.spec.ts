@@ -8,10 +8,6 @@ import { expect, test } from 'playwright/test';
 // ─── Linux-only guard ────────────────────────────────────────────────────────
 // macOS and Windows AppImage builds are out of scope until build environments
 // for those platforms are available (Story 98.4).
-test.fixme(
-  process.platform !== 'linux',
-  'Story 98.4 smoke test is Linux-only until macOS/Windows build environments are available',
-);
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 const workspaceRoot = path.resolve(__dirname, '../../..');
