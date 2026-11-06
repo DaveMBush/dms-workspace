@@ -431,7 +431,6 @@ test.describe('Open Positions — Round 7 slow-scroll sticky-header regression (
     // Story 101.1 regression is environment-dependent in the full Playwright suite:
     // absent in some runs, present in others. The test below is marked pending
     // until Story 101.2 addresses the root cause.
-    test.fixme();
 
     const viewport = page.locator(VIEWPORT_SELECTOR);
     const header = page.locator(HEADER_ROW_SELECTOR).first();
@@ -508,7 +507,6 @@ test.describe('Sold Positions — Round 7 slow-scroll sticky-header regression (
     // Story 101.1 regression is environment-dependent in the full Playwright suite:
     // absent in some runs, present in others. The test below is marked pending
     // until Story 101.2 addresses the root cause.
-    test.fixme();
 
     const viewport = page.locator(VIEWPORT_SELECTOR);
     const header = page.locator(HEADER_ROW_SELECTOR).first();
@@ -585,7 +583,6 @@ test.describe('Dividend Deposits — Round 7 slow-scroll sticky-header regressio
     // Story 101.1 regression is environment-dependent in the full Playwright suite:
     // absent in some runs, present in others. The test below is marked pending
     // until Story 101.2 addresses the root cause.
-    test.fixme();
 
     const viewport = page.locator(VIEWPORT_SELECTOR);
     const header = page.locator(HEADER_ROW_SELECTOR).first();
@@ -686,54 +683,3 @@ test.describe('Screener — Round 7 slow-scroll sticky-header regression (Story 
 
 // ─── Flicker (skipped — assertion pattern requires live-app frame observation) ─
 
-test.describe
-  .fixme('Round 7 Flicker — row position jitter during slow scroll (Story 101.1)', () => {
-  // TODO Story 101.2: implement flicker detection.
-  //
-  // Flicker definition (per Epic 101 story): no two consecutive frames where
-  // the SAME row's getBoundingClientRect().top changes by more than one scroll
-  // step (SLOW_SCROLL_STEP_PX) AND then reverts in the next frame.
-  //
-  // The assertion requires capturing per-row Y positions on each frame and
-  // comparing consecutive deltas. This pattern needs live-app observation to
-  // calibrate: is the jitter 1 frame (16ms) or multiple? Does it always revert
-  // or sometimes leave the row displaced? Until confirmed, the assertion risks
-  // false-negatives (misses flicker) or false-positives (noise from sub-pixel
-  // rounding) if written without observational data.
-  //
-  // Placeholder tests are SKIPPED (test.describe.skip) until Story 101.2
-  // runs the live-app sequence and measures actual frame deltas.
-  //
-  // Provisional assertion structure (for Story 101.2 to refine):
-  //
-  //   interface RowFrameSnapshot { rowIndex: number; top: number; }
-  //   const rowSnapshots: RowFrameSnapshot[][] = [];
-  //   // capture rowSnapshots[frame][rowIndex].top for each frame
-  //   // then:
-  //   for (let f = 1; f < rowSnapshots.length - 1; f++) {
-  //     for (const row of rowSnapshots[f]) {
-  //       const prev = rowSnapshots[f - 1].find(r => r.rowIndex === row.rowIndex);
-  //       const next = rowSnapshots[f + 1].find(r => r.rowIndex === row.rowIndex);
-  //       if (!prev || !next) continue;
-  //       const jumpThisFrame = Math.abs(row.top - prev.top);
-  //       const revertNextFrame = Math.abs(next.top - row.top);
-  //       // Flicker: large jump then revert
-  //       if (jumpThisFrame > ROW_HEIGHT_PX / 2 && revertNextFrame > ROW_HEIGHT_PX / 2) {
-  //         flickerEvents.push({ frame: f, rowIndex: row.rowIndex, jump: jumpThisFrame });
-  //       }
-  //     }
-  //   }
-  //   expect(flickerEvents).toHaveLength(0);
-
-  test('Universe: no row flicker during slow scroll', async ({ page }) => {
-    // Placeholder — skipped. See describe block comment.
-    await page.goto('/global/universe');
-  });
-
-  test('Open Positions: no row flicker during slow scroll', async ({
-    page,
-  }) => {
-    // Placeholder — skipped. See describe block comment.
-    await page.goto('/global/universe');
-  });
-});

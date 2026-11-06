@@ -17,65 +17,40 @@
       }
     },
     "e2e-chromium": {
-      "executor": "@nx/playwright:playwright",
-      "options": {
-        "config": "apps/dms-material-e2e/playwright.config.ts",
-        "project": ["chromium"]
-      }
+      "command": "playwright test --project=chromium --config=apps/dms-material-e2e/playwright.config.ts"
     },
     "e2e-firefox": {
-      "executor": "@nx/playwright:playwright",
-      "options": {
-        "config": "apps/dms-material-e2e/playwright.config.ts",
-        "project": ["firefox"]
-      }
+      "command": "playwright test --project=firefox --config=apps/dms-material-e2e/playwright.config.ts"
     },
     "e2e-electron": {
-      "executor": "@nx/playwright:playwright",
+      "command": "playwright test --project=electron --config=apps/dms-material-e2e/playwright.config.ts",
       "dependsOn": [
         {
           "projects": ["electron"],
           "target": "build:linux"
         }
-      ],
-      "options": {
-        "config": "apps/dms-material-e2e/playwright.config.ts",
-        "project": ["electron"]
-      }
+      ]
     },
     "e2e-electron-smoke": {
-      "executor": "@nx/playwright:playwright",
+      "command": "playwright test --project=electron-smoke --config=apps/dms-material-e2e/playwright.config.ts",
       "dependsOn": [
         {
           "projects": ["electron"],
           "target": "build:linux"
         }
-      ],
-      "options": {
-        "config": "apps/dms-material-e2e/playwright.config.ts",
-        "project": ["electron-smoke"]
-      }
+      ]
     },
     "e2e-electron-env-guard": {
-      "executor": "@nx/playwright:playwright",
+      "command": "playwright test --project=electron-env-guard --config=apps/dms-material-e2e/playwright.config.ts",
       "dependsOn": [
         {
           "projects": ["electron"],
           "target": "build:linux"
         }
-      ],
-      "options": {
-        "config": "apps/dms-material-e2e/playwright.config.ts",
-        "project": ["electron-env-guard"]
-      }
+      ]
     },
     "e2e-ui": {
-      "executor": "@nx/playwright:playwright",
-      "options": {
-        "config": "apps/dms-material-e2e/playwright.config.ts",
-        "project": ["chromium"],
-        "ui": true
-      }
+      "command": "playwright test --project=chromium --ui --config=apps/dms-material-e2e/playwright.config.ts"
     }
   }
 }

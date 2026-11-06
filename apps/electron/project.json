@@ -13,9 +13,7 @@
       }
     },
     "test": {
-      "executor": "@nx/vitest:test",
       "options": {
-        "passWithNoTests": true,
         "cwd": "apps/electron"
       }
     },
@@ -40,10 +38,6 @@
     "build:linux": {
       "executor": "nx:run-commands",
       "outputs": ["{workspaceRoot}/dist/electron-dist"],
-      "options": {
-        "command": "pnpm --dir ../../dist/apps/server install --prod --offline --ignore-workspace; node scripts/prepare-server-runtime.js && node scripts/build-electron-binding.js && ../../node_modules/.bin/electron-builder --config electron-builder.yml --linux",
-        "cwd": "apps/electron"
-      },
       "dependsOn": [
         "build",
         {
@@ -54,15 +48,15 @@
           "projects": ["dms-material"],
           "target": "build"
         }
-      ]
+      ],
+      "options": {
+        "command": "pnpm --dir ../../dist/apps/server install --prod --offline --ignore-workspace; node scripts/prepare-server-runtime.js && node scripts/build-electron-binding.js && ../../node_modules/.bin/electron-builder --config electron-builder.yml --linux",
+        "cwd": "apps/electron"
+      }
     },
     "build:mac": {
       "executor": "nx:run-commands",
       "outputs": ["{workspaceRoot}/dist/electron-dist"],
-      "options": {
-        "command": "../../node_modules/.bin/electron-builder --config electron-builder.yml --mac",
-        "cwd": "apps/electron"
-      },
       "dependsOn": [
         "build",
         {
@@ -73,15 +67,15 @@
           "projects": ["dms-material"],
           "target": "build"
         }
-      ]
+      ],
+      "options": {
+        "command": "../../node_modules/.bin/electron-builder --config electron-builder.yml --mac",
+        "cwd": "apps/electron"
+      }
     },
     "build:win": {
       "executor": "nx:run-commands",
       "outputs": ["{workspaceRoot}/dist/electron-dist"],
-      "options": {
-        "command": "../../node_modules/.bin/electron-builder --config electron-builder.yml --win",
-        "cwd": "apps/electron"
-      },
       "dependsOn": [
         "build",
         {
@@ -92,7 +86,11 @@
           "projects": ["dms-material"],
           "target": "build"
         }
-      ]
+      ],
+      "options": {
+        "command": "../../node_modules/.bin/electron-builder --config electron-builder.yml --win",
+        "cwd": "apps/electron"
+      }
     },
     "package": {
       "executor": "nx:run-commands",
@@ -109,10 +107,10 @@
     },
     "smoke-test": {
       "executor": "nx:run-commands",
+      "dependsOn": ["build:linux"],
       "options": {
         "command": "bash apps/electron/scripts/smoke-test.sh"
-      },
-      "dependsOn": ["build:linux"]
+      }
     }
   }
 }
