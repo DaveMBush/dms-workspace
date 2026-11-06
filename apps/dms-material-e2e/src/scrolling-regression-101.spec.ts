@@ -682,4 +682,3 @@ test.describe('Screener — Round 7 slow-scroll sticky-header regression (Story 
 });
 
 // ─── Flicker (skipped — assertion pattern requires live-app frame observation) ─
-
