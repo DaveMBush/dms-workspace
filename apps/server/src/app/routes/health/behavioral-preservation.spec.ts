@@ -3,10 +3,11 @@
 //
 // These assertions invoke the real health plugin with a mocked failing database
 // dependency and pin the EXACT pre-unification failure response: status code +
-// body produced by the inline hand-built 503 objects. Story 14.2 removed the
-// `it.skip` markers and unified error handling onto one shared per-domain mapper;
-// these tests still pass — same codes and bodies. No production code is touched
-// in this story (14.1).
+// body produced by the inline hand-built 503 objects. After Story 14.2 unifies
+// error handling onto one shared per-domain mapper, removing `it.skip` from
+// these tests must still pass — same codes and bodies. They are marked
+// `it.skip` per AC #4 so the suite stays green until then. No production code
+// is touched in this story.
 
 import { FastifyInstance } from 'fastify';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
