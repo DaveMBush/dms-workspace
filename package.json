@@ -37,7 +37,7 @@
     "@angular/platform-server": "22.2.3",
     "@angular/router": "22.2.3",
     "@angular/ssr": "22.2.4",
-    "@aws-amplify/auth": "^6.19.1",
+    "@aws-amplify/auth": "^6.21.2",
     "@aws-amplify/core": "^6.19.3",
     "@aws-sdk/client-ssm": "^3.1152.0",
     "@fastify/autoload": "~6.5.0",
