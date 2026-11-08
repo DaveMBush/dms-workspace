@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-skipped-tests, vitest/no-disabled-tests, sonarjs/super-linear-regex -- Red-phase contract tests (Story 14.1): skips are intentional until 14.2 unifies the mapper; regexes parse bounded route source files */
 // Story 14.1, Task 2 (AC #2): red-phase contract for the unified per-domain
 // error mapper covering `health/index.ts`.
 //
@@ -34,26 +35,43 @@ function readSource(path: string): string {
   return readFileSync(path, 'utf-8');
 }
 
+/** Extracts local identifiers from a single import clause. */
+function parseImportClause(clause: string): Set<string> {
+  const names = new Set<string>();
+  const named = /\{([^}]*)\}/.exec(clause);
+  if (named) {
+    const parts = named[1]
+      .split(',')
+      .map((p) => p.trim().replace(/^type\s+/, ''))
+      .filter(Boolean);
+    for (const name of parts) {
+      names.add(
+        name
+          .split(/\s+as\s+/)
+          .pop()!
+          .trim(),
+      );
+    }
+  } else {
+    const def = /default\s+([A-Za-z_$][\w$]*)/.exec(clause);
+    if (def) {
+      names.add(def[1]);
+    }
+  }
+  return names;
+}
+
 /** Returns the set of local identifiers imported from each module path. */
 function importMap(source: string): Map<string, Set<string>> {
   const map = new Map<string, Set<string>>();
   for (const match of source.matchAll(IMPORT_FROM_RE)) {
     const spec = match[1];
     const clause = match[0].slice(6, match[0].indexOf('from'));
-    const names = new Set<string>();
-    const named = clause.match(/\{([^}]*)\}/);
-    if (named) {
-      for (const part of named[1].split(',')) {
-        const name = part.trim().replace(/^type\s+/, '');
-        if (!name) continue;
-        names.add(name.split(/\s+as\s+/).pop()!.trim());
-      }
-    } else {
-      const def = clause.match(/default\s+([A-Za-z_$][\w$]*)/);
-      if (def) names.add(def[1]);
-    }
+    const names = parseImportClause(clause);
     const existing = map.get(spec) ?? new Set<string>();
-    for (const n of names) existing.add(n);
+    for (const n of names) {
+      existing.add(n);
+    }
     map.set(spec, existing);
   }
   return map;
@@ -97,8 +115,10 @@ describe('health shared per-domain error mapper contract (Story 14.1)', () => {
     // The health route must import from a relative spec that the universe route
     // also imports — i.e. one shared per-domain mapper module across domains.
     const commonSpecs = [...healthMap.keys()].filter((spec) => {
-      if (!universeMap.has(spec)) return false;
-      return !spec.startsWith('.') === false && spec.includes('mapper');
+      if (!universeMap.has(spec)) {
+        return false;
+      }
+      return spec.startsWith('.') && spec.includes('mapper');
     });
     expect(commonSpecs.length).toBeGreaterThan(0);
 

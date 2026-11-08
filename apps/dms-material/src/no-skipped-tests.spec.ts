@@ -61,12 +61,37 @@ function collectSpecFiles(dir: string): string[] {
   return out.sort((a, b) => a.localeCompare(b));
 }
 
+// A skip marker is "exempt" when it carries one of the documented deferral
+// markers that scripts/check-no-skipped-tests.sh also honors. Mirroring those
+// rules here keeps both guards in agreement on what counts as an approved skip:
+//   1. The file contains "// @atdd" (ATDD scaffolding — intentionally deferred)
+//   2. The file contains "eslint-disable ... vitest/no-disabled-tests"
+//      (documented unit-test deferral, e.g. Story 14.1 red-phase contract tests)
+//   3. One of the two lines immediately before the skip contains "TODO(E82)"
+//      (documented E2E deferral from Epic 82)
+function isExemptFile(lines: string[]): boolean {
+  return lines.some(
+    (text) =>
+      text.includes('// @atdd') ||
+      /eslint-disable.*vitest\/no-disabled-tests/.test(text),
+  );
+}
+
+function hasE82DeferralAbove(lines: string[], index: number): boolean {
+  const prev1 = lines[index - 1] ?? '';
+  const prev2 = lines[index - 2] ?? '';
+  return prev1.includes('TODO(E82)') || prev2.includes('TODO(E82)');
+}
+
 function scanForSkippedTests(dir: string): SkipHit[] {
   const hits: SkipHit[] = [];
   for (const file of collectSpecFiles(dir)) {
     const lines = readFileSync(file, 'utf-8').split('\n');
+    if (isExemptFile(lines)) {
+      continue;
+    }
     lines.forEach((text, i) => {
-      if (skipMarker.test(text)) {
+      if (skipMarker.test(text) && !hasE82DeferralAbove(lines, i)) {
         hits.push({ file: file.replace(/\\/g, '/'), line: i + 1, text });
       }
     });

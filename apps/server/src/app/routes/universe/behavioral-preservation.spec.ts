@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-skipped-tests, vitest/no-disabled-tests -- Red-phase contract tests (Story 14.1): skips are intentional until 14.2 unifies the mapper */
 // Story 14.1, Task 3 (AC #3): behavioral-preservation pin for the `universe`
 // route (`index.ts`).
 //
@@ -20,10 +21,9 @@ vi.mock('../../prisma/prisma-client', () => ({
     trades: { findMany: vi.fn(), deleteMany: vi.fn() },
   },
 }));
-vi.mock(
-  '../../volatility/recalculate-universe-volatility.function',
-  () => ({ recalculateUniverseVolatility: vi.fn() }),
-);
+vi.mock('../../volatility/recalculate-universe-volatility.function', () => ({
+  recalculateUniverseVolatility: vi.fn(),
+}));
 vi.mock('../common/dividend-history.service', () => ({
   fetchDividendHistory: vi.fn(),
 }));
@@ -43,7 +43,7 @@ describe('universe route behavioral preservation (Story 14.1, Task 3)', () => {
   });
 
   it.skip('DELETE /universe/:id on a missing universe returns the pre-unification 404 body', async function assertDeleteMissingUniverse() {
-    vi.mocked(prisma.universe.findUnique).mockResolvedValue(null as never);
+    vi.mocked(prisma.universe.findUnique).mockResolvedValue(null);
 
     const response = await fastify.inject({
       method: 'DELETE',

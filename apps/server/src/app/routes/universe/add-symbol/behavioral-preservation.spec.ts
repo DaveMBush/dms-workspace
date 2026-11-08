@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-skipped-tests, vitest/no-disabled-tests -- Red-phase contract tests (Story 14.1): skips are intentional until 14.2 unifies the mapper */
 // Story 14.1, Task 3 (AC #3): behavioral-preservation pin for the `add-symbol`
 // route (`index.ts`).
 //
@@ -11,8 +12,8 @@
 
 import { FastifyInstance } from 'fastify';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import registerAddSymbol from './index';
 import { addSymbol } from './add-symbol.function';
+import registerAddSymbol from './index';
 
 vi.mock('./add-symbol.function', () => ({ addSymbol: vi.fn() }));
 

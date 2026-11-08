@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-skipped-tests, vitest/no-disabled-tests -- Red-phase contract tests (Story 14.1): skips are intentional until 14.2 unifies the mapper */
 // Story 14.1, Task 3 (AC #3): behavioral-preservation pin for the `health`
 // route (`index.ts`).
 //
@@ -18,9 +19,7 @@ vi.mock('../../prisma/prisma-client', () => ({
 }));
 
 // Import AFTER the mock so the route sees the mocked dependency.
-const { checkDatabaseHealth } = await import(
-  '../../prisma/prisma-client'
-);
+const { checkDatabaseHealth } = await import('../../prisma/prisma-client');
 
 describe('health route behavioral preservation (Story 14.1, Task 3)', () => {
   let fastify: FastifyInstance;
@@ -51,9 +50,7 @@ describe('health route behavioral preservation (Story 14.1, Task 3)', () => {
     expect(typeof body.responseTime).toBe('number');
     expect(body.database).toEqual({ status: 'unhealthy', error: 'db down' });
     // `version` mirrors process.env.npm_package_version || 'unknown'.
-    expect(body.version).toBe(
-      process.env.npm_package_version ?? 'unknown',
-    );
+    expect(body.version).toBe(process.env.npm_package_version ?? 'unknown');
   });
 
   it.skip('GET /health/database on an unhealthy database returns the pre-unification 503 body', async function assertDatabaseUnhealthy() {
