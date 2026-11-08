@@ -128,7 +128,7 @@
     "@vitest/eslint-plugin": "^1.6.28",
     "@vitest/ui": "5.0.5",
     "angular-eslint": "22.6.0",
-    "autoprefixer": "^10.6.1",
+    "autoprefixer": "^10.6.2",
     "electron": "^44.9.1",
     "electron-builder": "^26.0.0",
     "esbuild": "^0.28.1",
