@@ -779,3 +779,365 @@ So that I have a prioritized list of what to improve now that feature work is es
 
 ---
 
+## Epic 14: Unify server error handling on one shared helper
+
+After this Epic, every Fastify route in `apps/server` produces failure responses through a single per-domain error mapper, so inconsistent 503/500 shapes and hand-rolled local handlers no longer exist — a whole class of inconsistent failure responses is removed. This is P0 item #1 from Aspect 9: three styles currently coexist — `apps/server/src/app/middleware/create-error-response.function.ts` (middleware only), hand-rolled local handlers in `universe/index.ts` and `universe/add-symbol/index.ts`, and inline 503 shapes in `health/index.ts`.
+
+**ADs covered:** AD-11 (per-route validation and error handling)
+**FRs covered:** — (review-driven; no new FR)
+
+### Story 14.1: Red-phase unit tests for the unified server error mapper
+
+As a developer,
+I want red-phase unit tests asserting that all server routes route their failure responses through one shared per-domain error mapper with the local duplicates gone,
+So that Story 14.2 has a defined, executable contract to make pass.
+
+**Acceptance Criteria:**
+
+**Given** the three coexisting styles — `apps/server/src/app/middleware/create-error-response.function.ts` (middleware only), hand-rolled handlers in `universe/index.ts` and `universe/add-symbol/index.ts`, inline 503 shapes in `health/index.ts`
+**When** new unit tests are written asserting a single per-domain error mapper is used by all routes and the local duplicates are gone
+**Then** every newly written test is marked `.skip()` in code (`it.skip`) so the server Vitest suite runs green BEFORE Story 14.2 exists — red-phase by skip, not by failure
+
+### Story 14.2: Implement the unified per-domain error mapper and delete local duplicates
+
+As a developer,
+I want one shared per-domain error mapper used by all Fastify routes with the hand-rolled local handlers deleted,
+So that failure responses are consistent across every route and a whole class of inconsistent failure shapes is removed.
+
+**Acceptance Criteria:**
+
+**Given** Story 14.1's red-phase tests (skipped)
+**When** the skip markers are removed and confirmed red, then one per-domain error mapper is extracted and wired into `universe/index.ts`, `universe/add-symbol/index.ts`, and `health/index.ts`
+**Then** all routes produce failure responses through that single mapper, the local duplicate handlers are deleted, behavior is preserved (same status codes / bodies as before), and the previously-skipped tests pass
+
+---
+
+## Epic 15: Fix packaged-Electron NODE_ENV defaulting so auth/CSRF are enforced in shipped builds
+
+After this Epic, the packaged desktop app launches its server child with an explicit non-dev mode, so JWT auth and CSRF enforcement match AD-5 in shipped builds instead of being silently disabled by a `NODE_ENV=development` default. This is P0 item #2 from Aspect 9: `apps/electron/src/main.ts:107-108` defaults the forked server child's `NODE_ENV` to `'development'`, and `auth.ts`'s `isDevEnvironment()` (dev/test/local) makes `shouldSkipAuth` skip JWT validation for ALL routes in that mode — so the shipped desktop app runs with zero API authentication.
+
+**ADs covered:** AD-5 (auth / CSRF / rate-limit correctness)
+**FRs covered:** — (review-driven; no new FR)
+
+### Story 15.1: Red-phase tests for packaged-Electron non-dev NODE_ENV launch
+
+As a developer,
+I want red-phase tests asserting the packaged Electron app launches its server child with an explicit non-dev `NODE_ENV` so auth/CSRF are enforced in shipped builds,
+So that Story 15.2 has a defined, executable contract to make pass.
+
+**Acceptance Criteria:**
+
+**Given** `apps/electron/src/main.ts:107-108` defaults the forked server child's `NODE_ENV` to `'development'`, and `auth.ts`'s `isDevEnvironment()` (dev/test/local) makes `shouldSkipAuth` skip JWT validation for ALL routes in that mode
+**When** new tests are written asserting the packaged launch path sets an explicit non-dev `NODE_ENV` (e.g. `production` or a dedicated `'desktop'`) and that auth/CSRF enforcement is active under it
+**Then** every newly written test is marked `.skip()` in code (`it.skip`) so the suite runs green BEFORE Story 15.2 exists — red-phase by skip, not by failure
+
+### Story 15.2: Launch the packaged server with an explicit non-dev NODE_ENV and verify dev-only features don't break
+
+As a developer,
+I want `apps/electron/src/main.ts` to launch the packaged server child with an explicit non-dev `NODE_ENV`,
+So that auth/CSRF are enforced in shipped builds while dev-only features keep working under genuine development.
+
+**Acceptance Criteria:**
+
+**Given** Story 15.1's red-phase tests (skipped) and the current `development` default at `main.ts:107-108`
+**When** the skip markers are removed and confirmed red, then the packaged launch path sets an explicit non-dev `NODE_ENV` (`production` or a dedicated `'desktop'`) while genuine development/test runs keep their dev behavior
+**Then** auth/CSRF enforcement is active in the shipped build (JWT validation no longer skipped for all routes), dev-only features do not break under real development, and the previously-skipped tests pass
+
+---
+
+## Epic 16: Align settings schema/handler field names so tax_free_income is no longer dropped
+
+After this Epic, the `tax_free_income` field round-trips through the settings route instead of being silently dropped on every POST — a data-loss bug is closed. This is P0 item #3 from Aspect 9: at `apps/server/src/app/routes/settings/index.ts:168,192` the body schema declares `tax_free_income` but the handler destructures `taxFreeIncome`, so the tax-free income group is always silently dropped (undefined) on every POST.
+
+**ADs covered:** AD-11 (per-route validation and error handling)
+**FRs covered:** — (review-driven; no new FR)
+
+### Story 16.1: Red-phase unit tests for tax_free_income settings round-trip
+
+As a developer,
+I want red-phase unit tests asserting `tax_free_income` is persisted and returned by the settings route,
+So that Story 16.2 has a defined, executable contract to make pass.
+
+**Acceptance Criteria:**
+
+**Given** the schema/handler field-name mismatch at `apps/server/src/app/routes/settings/index.ts:168,192` (body schema declares `tax_free_income`, handler destructures `taxFreeIncome`) that silently drops the value on every POST
+**When** new unit tests are written asserting a settings write including `tax_free_income` persists it and a subsequent read returns the same value
+**Then** every newly written test is marked `.skip()` in code (`it.skip`) so the server Vitest suite runs green BEFORE Story 16.2 exists — red-phase by skip, not by failure
+
+### Story 16.2: Align the settings schema and handler field names for tax_free_income
+
+As a developer,
+I want the settings body schema and handler to agree on the `tax_free_income` field name (with required validation per AD-11),
+So that the value is no longer silently dropped on write and round-trips correctly.
+
+**Acceptance Criteria:**
+
+**Given** Story 16.1's red-phase tests (skipped)
+**When** the skip markers are removed and confirmed red, then the schema/handler field names at `settings/index.ts:168,192` are aligned so `tax_free_income` is accepted on write and returned on read
+**Then** a settings write including `tax_free_income` persists it, a subsequent read returns the same value, no other settings field behavior changes, and the previously-skipped tests pass
+
+---
+
+## Epic 17: Close the CSRF token-comparison gap and harden session-id derivation
+
+After this Epic, a request with only a live (unexpired) stored entry but a wrong or absent presented CSRF token is rejected — constant-time comparison against `storedData.token` — and `sessionId` derives from an unguessable server-issued value instead of `sha256(ip+userAgent+minute)`. This is P0 item #4 from Aspect 9: `validateStoredToken` in `apps/server/src/app/middleware/validate-csrf-token.function.ts` (lines ~119-142) never compares the presented token to the stored one — it only checks an entry exists and is unexpired, so any request with a live entry passes.
+
+**ADs covered:** AD-5 (auth / CSRF / rate-limit correctness)
+**FRs covered:** — (review-driven; no new FR)
+
+### Story 17.1: Red-phase unit tests for CSRF token comparison and session-id derivation
+
+As a developer,
+I want red-phase unit tests asserting the presented CSRF token is compared to the stored token in constant time and that `sessionId` derives from an unguessable server-issued value,
+So that Story 17.2 has a defined, executable contract to make pass.
+
+**Acceptance Criteria:**
+
+**Given** `validateStoredToken` (`apps/server/src/app/middleware/validate-csrf-token.function.ts`, lines ~119-142) never compares the presented token to `storedData.token` — it only checks an entry exists and is unexpired, so any request with a live entry passes — and `generate-session-id.function.ts:4-13` derives `sessionId` from `sha256(ip-userAgent-minute)`
+**When** new unit tests are written asserting a mismatched/absent presented token is rejected (constant-time compare against `storedData.token`) and that `sessionId` no longer depends on client-supplied ip/userAgent/minute
+**Then** every newly written test is marked `.skip()` in code (`it.skip`) so the server Vitest suite runs green BEFORE Story 17.2 exists — red-phase by skip, not by failure
+
+### Story 17.2: Implement constant-time CSRF token comparison and unguessable session-id derivation
+
+As a developer,
+I want `validateStoredToken` to compare the presented token against `storedData.token` in constant time and `sessionId` derived from an unguessable server-issued value,
+So that any request with only a live entry but a wrong or absent presented token is rejected.
+
+**Acceptance Criteria:**
+
+**Given** Story 17.1's red-phase tests (skipped) and existing flows that currently pass CSRF validation
+**When** the skip markers are removed and confirmed red, then `validateStoredToken` compares the presented token to `storedData.token` using a constant-time comparison and `generate-session-id.function.ts` derives `sessionId` from an unguessable server-issued value instead of `sha256(ip+userAgent+minute)`
+**Then** mismatched/absent presented tokens are rejected, existing legitimate flows still pass validation, and the previously-skipped tests pass
+
+---
+
+## Epic 18: Extract universe route business logic into services with one shared response mapper
+
+After this Epic, the largest server route file (`universe/index.ts`) is shrunk by moving its business logic into service functions and reusing a single response mapper for add/get — duplication removed, behavior preserved. This is P1 item #1 from Aspect 9: `deleteUniverseAndTrades`, `isUniverseDeletable`, and hand-built zero responses currently live inline in the route handler.
+
+**ADs covered:** AD-1 (route-domain organization), AD-3 (Prisma + SQLite data layer)
+**FRs covered:** — (review-driven; no new FR)
+
+### Story 18.1: Red-phase unit tests for extracted universe services and shared response mapper
+
+As a developer,
+I want red-phase unit tests asserting the universe business logic lives in service functions and add/get share one response mapper,
+So that Story 18.2 has a defined, executable contract to make pass.
+
+**Acceptance Criteria:**
+
+**Given** `universe/index.ts` currently contains inline `deleteUniverseAndTrades`, `isUniverseDeletable`, and hand-built zero responses for add/get
+**When** new unit tests are written asserting the business logic is callable from service functions and that add/get produce identical response shapes through one shared mapper
+**Then** every newly written test is marked `.skip()` in code (`it.skip`) so the server Vitest suite runs green BEFORE Story 18.2 exists — red-phase by skip, not by failure
+
+### Story 18.2: Extract universe business logic into services and reuse one response mapper
+
+As a developer,
+I want `deleteUniverseAndTrades`, `isUniverseDeletable`, and the add/get zero responses moved out of `universe/index.ts` into service functions with one shared response mapper,
+So that the largest route file is shrunk and duplication between add and get is removed.
+
+**Acceptance Criteria:**
+
+**Given** Story 18.1's red-phase tests (skipped)
+**When** the skip markers are removed and confirmed red, then the business logic is extracted into service functions and a single response mapper is reused for both add and get
+**Then** `universe/index.ts` no longer contains the inline business logic or hand-built zero responses, add/get produce identical shapes through the shared mapper, behavior is preserved, and the previously-skipped tests pass
+
+---
+
+## Epic 19: Consolidate the two environment classifiers in aws-config into one explicit classifier
+
+After this Epic, `apps/server/src/utils/aws-config.ts` has a single explicit environment classifier instead of two divergent ones (`isDevEnvironment` vs `isDevOrTest`), and the placeholder fallbacks that produce broken configs are removed — also reducing a security footgun. This is P1 item #2 from Aspect 9.
+
+**ADs covered:** AD-5 (auth / CSRF / rate-limit correctness)
+**FRs covered:** — (review-driven; no new FR)
+
+### Story 19.1: Red-phase unit tests for the single environment classifier
+
+As a developer,
+I want red-phase unit tests asserting one explicit environment classifier replaces `isDevEnvironment` and `isDevOrTest` with no broken-config placeholder fallbacks,
+So that Story 19.2 has a defined, executable contract to make pass.
+
+**Acceptance Criteria:**
+
+**Given** `aws-config.ts` currently exposes two classifiers — `isDevEnvironment()` (lines ~146-150) and `isDevOrTest()` (lines ~230-234) — plus a placeholder fallback (`process.env.DATABASE_URL`, lines ~216-219) that can produce broken configs
+**When** new unit tests are written asserting a single classifier returns the correct environment for each NODE_ENV combination and no placeholder fallback yields a broken config
+**Then** every newly written test is marked `.skip()` in code (`it.skip`) so the server Vitest suite runs green BEFORE Story 19.2 exists — red-phase by skip, not by failure
+
+### Story 19.2: Consolidate into one explicit environment classifier and remove placeholder fallbacks
+
+As a developer,
+I want `isDevEnvironment` and `isDevOrTest` merged into one explicit classifier with the broken-config placeholder fallbacks removed,
+So that there is a single source of truth for environment classification and no path produces a broken config.
+
+**Acceptance Criteria:**
+
+**Given** Story 19.1's red-phase tests (skipped)
+**When** the skip markers are removed and confirmed red, then the two classifiers are merged into one explicit classifier and the placeholder fallbacks that produce broken configs are removed
+**Then** all call sites use the single classifier, no broken-config path remains, behavior for valid environments is preserved, and the previously-skipped tests pass
+
+---
+
+## Epic 20: Wire the --dms-* token system into Tailwind theme.extend and delete dead utility classes
+
+After this Epic, Tailwind utilities and Material SCSS share one source of design tokens (the `--dms-*` custom properties wired into Tailwind's `theme.extend`), ending the two-parallel-theming-systems problem, and dead custom utility classes in `styles.scss` are deleted — no visual drift since values currently match. This is P1 item #3 from Aspect 9.
+
+**ADs covered:** AD-4 (Angular Material + Tailwind styling)
+**FRs covered:** — (review-driven; no new FR)
+
+### Story 20.1: Red-phase tests for shared --dms-* token source and dead-class removal
+
+As a developer,
+I want red-phase tests asserting Tailwind's `theme.extend` consumes the `--dms-*` tokens as its single source and that no dead custom utility classes remain in `styles.scss`,
+So that Story 20.2 has a defined, executable contract to make pass.
+
+**Acceptance Criteria:**
+
+**Given** the `--dms-*` tokens are currently defined in the theme SCSS but Tailwind's `theme.extend` does not consume them as its source, and `apps/dms-material/src/styles.scss` may carry dead custom utility classes
+**When** new tests are written asserting the Tailwind config maps its theme values to the `--dms-*` tokens (one shared source) and that no unused/dead custom utility class remains in `styles.scss`
+**Then** every newly written test is marked `.skip()` in code (`it.skip`) so the dms-material Vitest suite runs green BEFORE Story 20.2 exists — red-phase by skip, not by failure
+
+### Story 20.2: Wire --dms-* tokens into Tailwind theme.extend and delete dead utility classes
+
+As a developer,
+I want the `--dms-*` token system wired into Tailwind's `theme.extend` so utilities and Material SCSS share one source, with dead custom utility classes in `styles.scss` deleted,
+So that there is a single theming source of truth and no visual drift.
+
+**Acceptance Criteria:**
+
+**Given** Story 20.1's red-phase tests (skipped) and the current matching token values across SCSS and Tailwind
+**When** the skip markers are removed and confirmed red, then `tailwind.config.js` `theme.extend` is wired to consume the `--dms-*` tokens as its source and dead custom utility classes in `styles.scss` are deleted
+**Then** utilities and Material SCSS resolve from one shared token source, no visual drift occurs (values unchanged), dead classes are gone, and the previously-skipped tests pass
+
+---
+
+## Epic 21: Fix e2e shared-DB isolation with per-spec cleanup/unique accounts and explicit waits
+
+After this Epic, the Playwright suite no longer leaks state between specs through the shared SQLite test DB — each spec cleans up via Prisma or uses unique accounts — and fixed `settle()` sleeps are replaced with explicit waits, improving test reliability regardless of run order. This is P1 item #4 from Aspect 9; high value for test reliability (Aspect 6).
+
+**ADs covered:** — (test infrastructure; no specific AD)
+**FRs covered:** — (review-driven; no new FR)
+
+### Story 21.1: Red-phase tests asserting e2e per-spec DB isolation and explicit waits
+
+As a developer,
+I want red-phase tests asserting each e2e spec isolates its shared-DB state (per-spec Prisma cleanup or unique accounts) and uses explicit waits instead of fixed `settle()` sleeps,
+So that Story 21.2 has a defined, executable contract to make pass.
+
+**Acceptance Criteria:**
+
+**Given** the shared SQLite test DB (`apps/dms-material-e2e/playwright.config.ts` points at one DB, runs serially with `workers: 1`) accumulates rows across specs and `open-positions.spec.ts` / `add-then-navigate.spec.ts` rely on fixed `settle()` sleeps from `helpers/settle.helper.ts`
+**When** new tests are written asserting per-spec isolation (cleanup or unique accounts) leaves no cross-spec row leakage and that the targeted specs use explicit waits rather than fixed `settle(ms)` sleeps
+**Then** every newly written test is marked `.skip()` in code (`it.skip`) so the suite runs green BEFORE Story 21.2 exists — red-phase by skip, not by failure
+
+### Story 21.2: Implement per-spec Prisma cleanup/unique accounts and replace fixed settle() sleeps with explicit waits
+
+As a developer,
+I want `open-positions.spec.ts` and `add-then-navigate.spec.ts` to isolate their shared-DB state via per-spec Prisma cleanup or unique accounts, with fixed `settle()` sleeps replaced by explicit waits,
+So that the e2e suite is reliable regardless of run order or prior-run DB residue.
+
+**Acceptance Criteria:**
+
+**Given** Story 21.1's red-phase tests (skipped) and the current shared-DB reuse behavior
+**When** the skip markers are removed and confirmed red, then per-spec Prisma cleanup or unique accounts are added to the targeted specs and fixed `settle()` sleeps are replaced with explicit waits
+**Then** no cross-spec row leakage occurs, the targeted specs pass without depending on prior-run DB state, and the previously-skipped tests pass
+
+---
+
+## Epic 22: Prune unused direct dependencies from the root manifest and delete the stray electron lockfile
+
+After this Epic, ~8 unused direct dependencies are removed from the root `package.json` (`express`, `zone.js`, `primeicons`, `eslint-plugin-cypress`, `@angular/ssr`+`platform-server`, and verify-then-remove `@ngrx/entity`/`store`) and the stray `apps/electron/package-lock.json` is deleted — shrinking install surface and security exposure with no build/lint/test regression. This is P2 item #1 from Aspect 7; ngrx peer resolution must be verified before removal.
+
+**ADs covered:** — (dependency hygiene; no specific AD)
+**FRs covered:** — (review-driven; no new FR)
+
+### Story 22.1: Red-phase tests asserting pruned deps are unused and the stray lockfile is absent
+
+As a developer,
+I want red-phase tests/assertions confirming each targeted dependency (`express`, `zone.js`, `primeicons`, `eslint-plugin-cypress`, `@angular/ssr`/`platform-server`, `@ngrx/entity`/`store`) is genuinely unused (including ngrx peer resolution) and that no stray `apps/electron/package-lock.json` exists,
+So that Story 22.2 has a defined, executable contract to make pass.
+
+**Acceptance Criteria:**
+
+**Given** the root-hoisted dependency model (dms-material has no per-app `package.json`; all deps resolve from the repo root) and the stray `apps/electron/package-lock.json`
+**When** verification is performed that each targeted dep is unused across all apps/configs (with ngrx peer resolution checked first) and that the electron lockfile is not required by any build
+**Then** a recorded, executable assertion set (marked `.skip()` in code where it is a test) confirms removal is safe BEFORE Story 22.2 exists — red-phase by skip/verification, not by failure
+
+### Story 22.2: Remove the unused direct dependencies and delete the stray electron package-lock.json
+
+As a developer,
+I want the ~8 unused direct dependencies removed from the root `package.json` (after verifying ngrx peer resolution) and the stray `apps/electron/package-lock.json` deleted,
+So that install surface and security exposure shrink with no build/lint/test regression.
+
+**Acceptance Criteria:**
+
+**Given** Story 22.1's verified-unused confirmation (skipped/recorded)
+**When** the targeted dependencies are removed from the root `package.json` (ngrx only after peer resolution is confirmed safe) and `apps/electron/package-lock.json` is deleted, then install + lint + build + tests are re-run
+**Then** all apps still install, lint, build, and test green with the pruned manifest, no stray electron lockfile remains, and the previously-skipped/recorded assertions pass
+
+---
+
+## Epic 23: Unify Angular input sanitization in add-position-dialog and fix the valueChanges leak
+
+After this Epic, `onQuantityInput` and `onPriceInput` in the add-position dialog share one sanitizer, and the `valueChanges` subscription leak is fixed with `takeUntilDestroyed` — duplication removed and a real memory leak closed. This is P2 item #2 from Aspect 2.
+
+**ADs covered:** AD-4 (standalone/zoneless Angular components)
+**FRs covered:** — (review-driven; no new FR)
+
+### Story 23.1: Red-phase unit tests for the shared input sanitizer and takeUntilDestroyed subscription
+
+As a developer,
+I want red-phase unit tests asserting quantity and price inputs share one sanitizer and that the `valueChanges` subscription is torn down via `takeUntilDestroyed`,
+So that Story 23.2 has a defined, executable contract to make pass.
+
+**Acceptance Criteria:**
+
+**Given** `add-position-dialog.component.ts` currently sanitizes `onQuantityInput` (line ~191) and `onPriceInput` (line ~205) separately and holds a `valueChanges` subscription (line ~120) that is not torn down on destroy
+**When** new unit tests are written asserting both inputs route through one shared sanitizer (same accept/reject behavior) and that the `valueChanges` subscription completes when the component is destroyed (no lingering subscription)
+**Then** every newly written test is marked `.skip()` in code (`it.skip`) so the dms-material Vitest suite runs green BEFORE Story 23.2 exists — red-phase by skip, not by failure
+
+### Story 23.2: Extract one shared input sanitizer and fix the valueChanges subscription leak with takeUntilDestroyed
+
+As a developer,
+I want `onQuantityInput`/`onPriceInput` unified into one shared sanitizer and the `valueChanges` subscription fixed with `takeUntilDestroyed`,
+So that sanitization logic is deduplicated and the real subscription leak is closed.
+
+**Acceptance Criteria:**
+
+**Given** Story 23.1's red-phase tests (skipped)
+**When** the skip markers are removed and confirmed red, then a single shared sanitizer is extracted and used by both `onQuantityInput` and `onPriceInput`, and the `valueChanges` subscription is piped through `takeUntilDestroyed`
+**Then** both inputs share one sanitizer with unchanged accept/reject behavior, no `valueChanges` subscription survives component destroy, and the previously-skipped tests pass
+
+---
+
+## Epic 24: Standardize server file-naming suffixes to *.function.ts and add an import/order lint rule
+
+After this Epic, the remaining non-conforming server files (`account-page-size.const.ts`, `build-cef-classification.helper.ts`) follow the spine's `*.function.ts` convention (or a documented exception), and an `import/order` ESLint rule ends import-order drift — consistency with very low risk. This is P2 item #3 from Aspect 3.
+
+**ADs covered:** — (spine Consistency Conventions; no specific AD)
+**FRs covered:** — (review-driven; no new FR)
+
+### Story 24.1: Red-phase tests/lint assertions for standardized suffixes and import/order rule
+
+As a developer,
+I want red-phase lint/test assertions confirming the renamed files carry the `*.function.ts` suffix (or a documented exception) and that an `import/order` rule is active in `eslint.config.mjs`,
+So that Story 24.2 has a defined, executable contract to make pass.
+
+**Acceptance Criteria:**
+
+**Given** `account-page-size.const.ts` and `build-cef-classification.helper.ts` do not follow the spine's `*.function.ts` suffix convention and no `import/order` rule is currently enforced
+**When** lint/test assertions are written confirming the two files carry the conventional suffix (or a documented exception) and that an `import/order` rule exists in `eslint.config.mjs`
+**Then** every newly written assertion is marked `.skip()`/disabled in code so lint + tests run green BEFORE Story 24.2 exists — red-phase by skip, not by failure
+
+### Story 24.2: Rename the non-conforming server files to *.function.ts and add an import/order rule
+
+As a developer,
+I want `account-page-size.const.ts` and `build-cef-classification.helper.ts` renamed to the spine's `*.function.ts` convention (or documented as exceptions) with all imports updated, and an `import/order` rule added to `eslint.config.mjs`,
+So that server file naming is consistent and import-order drift is prevented by lint.
+
+**Acceptance Criteria:**
+
+**Given** Story 24.1's red-phase assertions (skipped/disabled)
+**When** the skip markers are removed and confirmed failing, then the two files are renamed to `*.function.ts` (or a documented exception is added) with all imports updated, and an `import/order` rule is added to `eslint.config.mjs`
+**Then** the server file naming matches the spine convention, lint enforces import order across the touched code, behavior is unchanged, and the previously-skipped assertions pass
+
+---
