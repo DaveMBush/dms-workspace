@@ -44,7 +44,7 @@
     "@fastify/cookie": "^11.1.2",
     "@fastify/cors": "^11.3.0",
     "@fastify/multipart": "^10.1.1",
-    "@fastify/sensible": "~6.0.4",
+    "@fastify/sensible": "~6.0.7",
     "@fastify/static": "^10.1.4",
     "@prisma/adapter-better-sqlite3": "^7.2.0",
     "@prisma/client": "^7.9.1",
