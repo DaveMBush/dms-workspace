@@ -2,6 +2,7 @@ import type { PrismaClient } from '@prisma/client';
 import { createTestDates } from './create-test-dates.helper';
 import { generateUniqueId } from './generate-unique-id.helper';
 import type { RiskGroups } from './risk-groups.types';
+import { cleanupUniverseBySymbols } from './shared-cleanup-universe-symbols.helper';
 import { initializePrismaClient } from './shared-prisma-client.helper';
 import { createRiskGroups } from './shared-risk-groups.helper';
 import type { UniverseRecord } from './universe-record.types';
@@ -152,26 +153,6 @@ async function insertUniverseData(
 }
 
 /**
- * Cleanup function for universe test data
- */
-async function cleanupUniverseData(
-  prisma: PrismaClient,
-  symbols: string[],
-): Promise<void> {
-  try {
-    await prisma.universe.deleteMany({
-      where: {
-        symbol: {
-          in: symbols,
-        },
-      },
-    });
-  } finally {
-    await prisma.$disconnect();
-  }
-}
-
-/**
  * Seeds test data for universe table tests
  * Creates risk groups and universe records
  */
@@ -189,7 +170,7 @@ export async function seedUniverseData(): Promise<SeederResult> {
 
   return {
     cleanup: async function cleanupFunction(): Promise<void> {
-      await cleanupUniverseData(prisma, symbols);
+      await cleanupUniverseBySymbols(prisma, symbols);
     },
     symbols,
   };
