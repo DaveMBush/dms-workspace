@@ -1,7 +1,6 @@
 import { FastifyPluginAsync } from 'fastify';
-
-import { sendUniverseFailure } from './error-mapper.function.ts';
 import { checkDatabaseHealth } from '../../prisma/prisma-client.js';
+import { sendUniverseFailure } from './error-mapper.function.ts';
 
 const health: FastifyPluginAsync = async (fastify) => {
   // Basic health check endpoint

@@ -1,5 +1,4 @@
 import { FastifyInstance, FastifyReply } from 'fastify';
-
 import { addSymbol } from './add-symbol.function';
 import { sendUniverseFailure } from './error-mapper.function.ts';
 import { validateAddSymbolRequest } from './validate-add-symbol-request.function';
@@ -91,6 +90,6 @@ export default function registerAddSymbol(fastify: FastifyInstance): void {
       } catch (error) {
         handleAddSymbolError(error, reply);
       }
-    }
+    },
   );
 }

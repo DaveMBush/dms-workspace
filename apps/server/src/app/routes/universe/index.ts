@@ -8,11 +8,11 @@ import { getTableState } from '../common/get-table-state.function';
 import { parseSortFilterHeader } from '../common/parse-sort-filter-header.function';
 import registerAddSymbol from './add-symbol';
 import { addSymbol } from './add-symbol/add-symbol.function';
+import { sendUniverseFailure } from './error-mapper.function.ts';
 import registerGetAllUniverses from './get-all-universes';
 import registerSyncFromScreener from './sync-from-screener';
 import universeHelpers from './universe-helpers';
 import { Universe } from './universe.interface';
-import { sendUniverseFailure } from './error-mapper.function.ts';
 
 interface UniverseWithTrades {
   id: string;
