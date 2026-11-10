@@ -8,6 +8,7 @@ import { getTableState } from '../common/get-table-state.function';
 import { parseSortFilterHeader } from '../common/parse-sort-filter-header.function';
 import registerAddSymbol from './add-symbol';
 import { addSymbol } from './add-symbol/add-symbol.function';
+import { sendUniverseFailure } from './error-mapper.function.ts';
 import registerGetAllUniverses from './get-all-universes';
 import registerSyncFromScreener from './sync-from-screener';
 import universeHelpers from './universe-helpers';
@@ -191,29 +192,32 @@ function handleDeleteUniverseRoute(fastify: FastifyInstance): void {
       try {
         const universe = await prisma.universe.findUnique({ where: { id } });
         if (!universe) {
-          reply
-            .status(404)
-            .send({ success: false, error: 'Universe entry not found' });
+          sendUniverseFailure(reply, 404, {
+            success: false,
+            error: 'Universe entry not found',
+          });
           return;
         }
         if (universe.is_closed_end_fund) {
-          reply
-            .status(400)
-            .send({ success: false, error: 'Cannot delete CEF symbols' });
+          sendUniverseFailure(reply, 400, {
+            success: false,
+            error: 'Cannot delete CEF symbols',
+          });
           return;
         }
         const errorMsg = await deleteUniverseAndTrades(id);
         if (errorMsg !== null) {
-          reply.status(400).send({ success: false, error: errorMsg });
+          sendUniverseFailure(reply, 400, { success: false, error: errorMsg });
           return;
         }
         reply
           .status(200)
           .send({ success: true, message: 'Symbol deleted successfully' });
       } catch {
-        reply
-          .status(500)
-          .send({ success: false, error: 'Internal server error' });
+        sendUniverseFailure(reply, 500, {
+          success: false,
+          error: 'Internal server error',
+        });
       }
     },
   );

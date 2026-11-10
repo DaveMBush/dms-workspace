@@ -1,6 +1,6 @@
 import { FastifyPluginAsync } from 'fastify';
-
 import { checkDatabaseHealth } from '../../prisma/prisma-client.js';
+import { sendUniverseFailure } from './error-mapper.function.ts';
 
 const health: FastifyPluginAsync = async (fastify) => {
   // Basic health check endpoint
@@ -18,8 +18,7 @@ const health: FastifyPluginAsync = async (fastify) => {
       const responseTime = Date.now() - startTime;
 
       if (!dbHealth.healthy) {
-        reply.status(503);
-        return {
+        sendUniverseFailure(reply, 503, {
           status: 'unhealthy',
           timestamp: new Date().toISOString(),
           responseTime,
@@ -28,7 +27,8 @@ const health: FastifyPluginAsync = async (fastify) => {
             error: dbHealth.error,
           },
           version: process.env.npm_package_version || 'unknown',
-        };
+        });
+        return;
       }
 
       return {
@@ -49,15 +49,14 @@ const health: FastifyPluginAsync = async (fastify) => {
     } catch (error) {
       const responseTime = Date.now() - startTime;
 
-      reply.status(503);
-      return {
+      sendUniverseFailure(reply, 503, {
         status: 'unhealthy',
         timestamp: new Date().toISOString(),
         responseTime,
         error:
           error instanceof Error ? error.message : 'Unknown health check error',
         version: process.env.npm_package_version || 'unknown',
-      };
+      });
     }
   });
 
@@ -67,12 +66,11 @@ const health: FastifyPluginAsync = async (fastify) => {
       const dbHealth = await checkDatabaseHealth();
 
       if (!dbHealth.healthy) {
-        reply.status(503);
-        return {
+        sendUniverseFailure(reply, 503, {
           status: 'unhealthy',
           error: dbHealth.error,
           timestamp: new Date().toISOString(),
-        };
+        });
       }
 
       return {
@@ -81,13 +79,12 @@ const health: FastifyPluginAsync = async (fastify) => {
         timestamp: new Date().toISOString(),
       };
     } catch (error) {
-      reply.status(503);
-      return {
+      sendUniverseFailure(reply, 503, {
         status: 'unhealthy',
         error:
           error instanceof Error ? error.message : 'Unknown database error',
         timestamp: new Date().toISOString(),
-      };
+      });
     }
   });
 
@@ -97,12 +94,11 @@ const health: FastifyPluginAsync = async (fastify) => {
       const dbHealth = await checkDatabaseHealth();
 
       if (!dbHealth.healthy) {
-        reply.status(503);
-        return {
+        sendUniverseFailure(reply, 503, {
           ready: false,
           reason: 'Database not available',
           timestamp: new Date().toISOString(),
-        };
+        });
       }
 
       return {
@@ -110,12 +106,11 @@ const health: FastifyPluginAsync = async (fastify) => {
         timestamp: new Date().toISOString(),
       };
     } catch (error) {
-      reply.status(503);
-      return {
+      sendUniverseFailure(reply, 503, {
         ready: false,
         reason: error instanceof Error ? error.message : 'Service not ready',
         timestamp: new Date().toISOString(),
-      };
+      });
     }
   });
 

@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyReply } from 'fastify';
-
 import { addSymbol } from './add-symbol.function';
+import { sendUniverseFailure } from './error-mapper.function.ts';
 import { validateAddSymbolRequest } from './validate-add-symbol-request.function';
 
 interface AddSymbolRequest {
@@ -34,7 +34,7 @@ function handleAddSymbolError(error: unknown, reply: FastifyReply): void {
   const errorMessage = error instanceof Error ? error.message : 'Unknown error';
 
   if (errorMessage.includes('already exists')) {
-    reply.status(409).send({
+    sendUniverseFailure(reply, 409, {
       error: 'Conflict',
       message: errorMessage,
     });
@@ -42,14 +42,14 @@ function handleAddSymbolError(error: unknown, reply: FastifyReply): void {
   }
 
   if (errorMessage.includes('not found')) {
-    reply.status(404).send({
+    sendUniverseFailure(reply, 404, {
       error: 'Not Found',
       message: errorMessage,
     });
     return;
   }
 
-  reply.status(500).send({
+  sendUniverseFailure(reply, 500, {
     error: 'Internal Server Error',
     message: 'Failed to add symbol to universe',
   });
@@ -78,7 +78,7 @@ export default function registerAddSymbol(fastify: FastifyInstance): void {
         const validation = validateAddSymbolRequest(request.body);
 
         if (!validation.isValid) {
-          reply.status(400).send({
+          sendUniverseFailure(reply, 400, {
             error: 'Validation failed',
             details: validation.errors,
           });
@@ -90,6 +90,6 @@ export default function registerAddSymbol(fastify: FastifyInstance): void {
       } catch (error) {
         handleAddSymbolError(error, reply);
       }
-    }
+    },
   );
 }
