@@ -176,7 +176,7 @@ async function main() {
     }
 
     const success =
-      job.conclusion === 'success' || job.conclusion === 'neutral';
+      job.conclusion === 'success' || job.conclusion === 'neutral' || job.conclusion === 'skipped';
     let failedSteps = [];
     if (!success) failedSteps = failedStepsForSha(trackedSha);
 
