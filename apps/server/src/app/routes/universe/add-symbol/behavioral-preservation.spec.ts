@@ -1,14 +1,12 @@
-/* eslint-disable sonarjs/no-skipped-tests, vitest/no-disabled-tests -- Red-phase contract tests (Story 14.1): skips are intentional until 14.2 unifies the mapper */
 // Story 14.1, Task 3 (AC #3): behavioral-preservation pin for the `add-symbol`
 // route (`index.ts`).
 //
 // These assertions invoke the real route handler with a mocked failing
 // dependency and pin the EXACT pre-unification failure response: status code +
-// body produced by the hand-rolled local handler `handleAddSymbolError`. After
-// Story 14.2 unifies error handling onto one shared per-domain mapper, removing
-// `it.skip` from these tests must still pass — same codes and bodies. They are
-// marked `it.skip` per AC #4 so the suite stays green until then. No production
-// code is touched in this story.
+// body produced by the hand-rolled local handler `handleAddSymbolError`. Story
+// 14.2 removed the `it.skip` markers and unified error handling onto one shared
+// per-domain mapper; these tests still pass — same codes and bodies. No production
+// code is touched in this story (14.1).
 
 import { FastifyInstance } from 'fastify';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -28,7 +26,7 @@ describe('add-symbol route behavioral preservation (Story 14.1, Task 3)', () => 
     await fastify.ready();
   });
 
-  it.skip('POST /universe/add-symbol on a duplicate symbol returns the pre-unification 409 body', async function assertDuplicateSymbol() {
+  it('POST /universe/add-symbol on a duplicate symbol returns the pre-unification 409 body', async function assertDuplicateSymbol() {
     vi.mocked(addSymbol).mockRejectedValue(
       new Error('Universe entry already exists'),
     );
@@ -46,7 +44,7 @@ describe('add-symbol route behavioral preservation (Story 14.1, Task 3)', () => 
     });
   });
 
-  it.skip('POST /universe/add-symbol on an unexpected failure returns the pre-unification 500 body', async function assertUnexpectedFailure() {
+  it('POST /universe/add-symbol on an unexpected failure returns the pre-unification 500 body', async function assertUnexpectedFailure() {
     vi.mocked(addSymbol).mockRejectedValue(new Error('boom'));
 
     const response = await fastify.inject({

@@ -1,14 +1,12 @@
-/* eslint-disable sonarjs/no-skipped-tests, vitest/no-disabled-tests -- Red-phase contract tests (Story 14.1): skips are intentional until 14.2 unifies the mapper */
 // Story 14.1, Task 3 (AC #3): behavioral-preservation pin for the `universe`
 // route (`index.ts`).
 //
 // These assertions invoke the real route handler with a mocked failing
 // dependency and pin the EXACT pre-unification failure response: status code
 // + body produced by the hand-rolled local handler in `handleDeleteUniverseRoute`.
-// After Story 14.2 unifies error handling onto one shared per-domain mapper,
-// removing `it.skip` from these tests must still pass — same codes and bodies.
-// They are marked `it.skip` per AC #4 so the suite stays green until then.
-// No production code is touched in this story.
+// Story 14.2 removed the `it.skip` markers and unified error handling onto one
+// shared per-domain mapper; these tests still pass — same codes and bodies.
+// No production code is touched in this story (14.1).
 
 import { FastifyInstance } from 'fastify';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -42,7 +40,7 @@ describe('universe route behavioral preservation (Story 14.1, Task 3)', () => {
     await fastify.ready();
   });
 
-  it.skip('DELETE /universe/:id on a missing universe returns the pre-unification 404 body', async function assertDeleteMissingUniverse() {
+  it('DELETE /universe/:id on a missing universe returns the pre-unification 404 body', async function assertDeleteMissingUniverse() {
     vi.mocked(prisma.universe.findUnique).mockResolvedValue(null);
 
     const response = await fastify.inject({

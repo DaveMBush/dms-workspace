@@ -1,3 +1,8 @@
+// Must be imported first so its require-resolution patch is active before any
+// route module (which imports the shared error mapper with a literal `.ts`
+// extension) is loaded. See utils/require-ts-extension-shim.ts for why.
+import './utils/require-ts-extension-shim';
+
 import fastifyStatic from '@fastify/static';
 import fastify from 'fastify';
 import path from 'path';

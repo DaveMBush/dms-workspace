@@ -1,14 +1,12 @@
-/* eslint-disable sonarjs/no-skipped-tests, vitest/no-disabled-tests -- Red-phase contract tests (Story 14.1): skips are intentional until 14.2 unifies the mapper */
 // Story 14.1, Task 3 (AC #3): behavioral-preservation pin for the `health`
 // route (`index.ts`).
 //
 // These assertions invoke the real health plugin with a mocked failing database
 // dependency and pin the EXACT pre-unification failure response: status code +
-// body produced by the inline hand-built 503 objects. After Story 14.2 unifies
-// error handling onto one shared per-domain mapper, removing `it.skip` from
-// these tests must still pass — same codes and bodies. They are marked
-// `it.skip` per AC #4 so the suite stays green until then. No production code
-// is touched in this story.
+// body produced by the inline hand-built 503 objects. Story 14.2 removed the
+// `it.skip` markers and unified error handling onto one shared per-domain mapper;
+// these tests still pass — same codes and bodies. No production code is touched
+// in this story (14.1).
 
 import { FastifyInstance } from 'fastify';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -32,7 +30,7 @@ describe('health route behavioral preservation (Story 14.1, Task 3)', () => {
     await fastify.ready();
   });
 
-  it.skip('GET /health/detailed on an unhealthy database returns the pre-unification 503 body', async function assertDetailedUnhealthy() {
+  it('GET /health/detailed on an unhealthy database returns the pre-unification 503 body', async function assertDetailedUnhealthy() {
     vi.mocked(checkDatabaseHealth).mockResolvedValue({
       healthy: false,
       error: 'db down',
@@ -53,7 +51,7 @@ describe('health route behavioral preservation (Story 14.1, Task 3)', () => {
     expect(body.version).toBe(process.env.npm_package_version ?? 'unknown');
   });
 
-  it.skip('GET /health/database on an unhealthy database returns the pre-unification 503 body', async function assertDatabaseUnhealthy() {
+  it('GET /health/database on an unhealthy database returns the pre-unification 503 body', async function assertDatabaseUnhealthy() {
     vi.mocked(checkDatabaseHealth).mockResolvedValue({
       healthy: false,
       error: 'db down',
@@ -71,7 +69,7 @@ describe('health route behavioral preservation (Story 14.1, Task 3)', () => {
     expect(typeof body.timestamp).toBe('string');
   });
 
-  it.skip('GET /health/ready on an unhealthy database returns the pre-unification 503 body', async function assertReadyUnhealthy() {
+  it('GET /health/ready on an unhealthy database returns the pre-unification 503 body', async function assertReadyUnhealthy() {
     vi.mocked(checkDatabaseHealth).mockResolvedValue({
       healthy: false,
       error: 'db down',

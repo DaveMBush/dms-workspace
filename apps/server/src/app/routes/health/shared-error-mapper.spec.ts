@@ -1,14 +1,13 @@
-/* eslint-disable sonarjs/no-skipped-tests, vitest/no-disabled-tests, sonarjs/super-linear-regex -- Red-phase contract tests (Story 14.1): skips are intentional until 14.2 unifies the mapper; regexes parse bounded route source files */
-// Story 14.1, Task 2 (AC #2): red-phase contract for the unified per-domain
-// error mapper covering `health/index.ts`.
+/* eslint-disable sonarjs/super-linear-regex -- regexes parse bounded route source files */
+// Story 14.1, Task 2 (AC #2): contract for the unified per-domain error mapper
+// covering `health/index.ts`.
 //
-// These assertions are intentionally RED against the current code: the health
-// route still builds its 503 failure responses inline (`reply.status(503)` +
-// hand-built response objects), and no shared per-domain mapper module exists
-// yet. They are marked `it.skip` so the server suite stays green until Story
-// 14.2 unifies the health route onto the same shared error mapper used by the
-// universe routes; 14.2's first task removes the skip markers, confirms red,
-// then implements until green. No production code is touched in this story.
+// These assertions were RED against the pre-unification code: the health routes
+// built their 503 failure responses inline (`reply.status(503)` + hand-built
+// response objects), and no shared per-domain mapper module existed. Story 14.2
+// removed the `it.skip` markers, created `error-mapper.function.ts`, and pointed
+// the health routes at it; these tests now pin that contract. No production code
+// is touched in this story (14.1).
 
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -78,14 +77,14 @@ function importMap(source: string): Map<string, Set<string>> {
 }
 
 describe('health shared per-domain error mapper contract (Story 14.1)', () => {
-  it.skip('a shared per-domain error mapper module exists in the health domain', function assertSharedMapperModuleExists() {
+  it('a shared per-domain error mapper module exists in the health domain', function assertSharedMapperModuleExists() {
     const found = SHARED_MAPPER_CANDIDATES.filter((name) =>
       existsSync(join(__dirname, name)),
     );
     expect(found.length).toBeGreaterThan(0);
   });
 
-  it.skip('health/index.ts produces its 5xx failure shapes through the shared mapper and has no inline hand-built failure responses', function assertHealthRouteDelegates() {
+  it('health/index.ts produces its 5xx failure shapes through the shared mapper and has no inline hand-built failure responses', function assertHealthRouteDelegates() {
     const source = readSource(healthRoutePath);
 
     // No inline `.status(5xx)` failure handlers remain.
@@ -106,7 +105,7 @@ describe('health shared per-domain error mapper contract (Story 14.1)', () => {
     expect(usedNames).toBe(true);
   });
 
-  it.skip('health/index.ts references the same shared error mapper module as the universe routes', function assertSameMapperReference() {
+  it('health/index.ts references the same shared error mapper module as the universe routes', function assertSameMapperReference() {
     const healthMap = importMap(readSource(healthRoutePath));
     const universeMap = importMap(
       readSource(join(__dirname, '..', 'universe', 'index.ts')),

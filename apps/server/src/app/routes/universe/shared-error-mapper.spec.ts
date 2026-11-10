@@ -1,13 +1,12 @@
-/* eslint-disable sonarjs/no-skipped-tests, vitest/no-disabled-tests, sonarjs/super-linear-regex -- Red-phase contract tests (Story 14.1): skips are intentional until 14.2 unifies the mapper; regexes parse bounded route source files */
-// Story 14.1, Task 1 (AC #1): red-phase contract for the unified per-domain
-// error mapper covering `universe/index.ts` and `universe/add-symbol/index.ts`.
+/* eslint-disable sonarjs/super-linear-regex -- regexes parse bounded route source files */
+// Story 14.1, Task 1 (AC #1): contract for the unified per-domain error mapper
+// covering `universe/index.ts` and `universe/add-symbol/index.ts`.
 //
-// These assertions are intentionally RED against the current code: both routes
-// still hand-roll their failure responses locally (`reply.status(4xx/5xx).send(...)`),
-// and no shared per-domain mapper module exists yet. They are marked `it.skip`
-// so the server suite stays green until Story 14.2 unifies both routes onto one
-// shared error mapper; 14.2's first task removes the skip markers, confirms red,
-// then implements until green. No production code is touched in this story.
+// These assertions were RED against the pre-unification code: both routes
+// hand-rolled their failure responses locally (`reply.status(4xx/5xx).send(...)`),
+// and no shared per-domain mapper module existed. Story 14.2 removed the `it.skip`
+// markers, created `error-mapper.function.ts`, and pointed both routes at it; these
+// tests now pin that contract. No production code is touched in this story (14.1).
 
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -78,14 +77,14 @@ function importMap(source: string): Map<string, Set<string>> {
 }
 
 describe('universe shared per-domain error mapper contract (Story 14.1)', () => {
-  it.skip('a shared per-domain error mapper module exists in the universe domain', function assertSharedMapperModuleExists() {
+  it('a shared per-domain error mapper module exists in the universe domain', function assertSharedMapperModuleExists() {
     const found = SHARED_MAPPER_CANDIDATES.filter((name) =>
       existsSync(join(__dirname, name)),
     );
     expect(found.length).toBeGreaterThan(0);
   });
 
-  it.skip('universe/index.ts delegates failure responses to the shared mapper and has no hand-rolled local handler', function assertUniverseRouteDelegates() {
+  it('universe/index.ts delegates failure responses to the shared mapper and has no hand-rolled local handler', function assertUniverseRouteDelegates() {
     const source = readSource(universeRoutePath);
 
     // No inline `.status(4xx/5xx).send(...)` failure handlers remain.
@@ -99,7 +98,7 @@ describe('universe shared per-domain error mapper contract (Story 14.1)', () => 
     expect(mapperImports.length).toBeGreaterThan(0);
   });
 
-  it.skip('universe/add-symbol/index.ts delegates failure responses to the shared mapper and has no hand-rolled local handler', function assertAddSymbolRouteDelegates() {
+  it('universe/add-symbol/index.ts delegates failure responses to the shared mapper and has no hand-rolled local handler', function assertAddSymbolRouteDelegates() {
     const source = readSource(addSymbolRoutePath);
 
     // No inline `.status(4xx/5xx).send(...)` failure handlers remain.
@@ -113,7 +112,7 @@ describe('universe shared per-domain error mapper contract (Story 14.1)', () => 
     expect(mapperImports.length).toBeGreaterThan(0);
   });
 
-  it.skip('both routes reference the same shared error mapper module', function assertSameMapperReference() {
+  it('both routes reference the same shared error mapper module', function assertSameMapperReference() {
     const universeMap = importMap(readSource(universeRoutePath));
     const addSymbolMap = importMap(readSource(addSymbolRoutePath));
 
