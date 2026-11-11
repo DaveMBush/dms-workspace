@@ -22,12 +22,14 @@
 
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-
-import fastify, { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
+import fastify, {
+  FastifyInstance,
+  FastifyReply,
+  FastifyRequest,
+} from 'fastify';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-
-import authPlugin from './auth';
 import { authenticateJWT } from '../middleware/authenticate-jwt.function';
+import authPlugin from './auth';
 
 vi.mock('../middleware/authenticate-jwt.function', () => ({
   authenticateJWT: vi.fn(
@@ -51,9 +53,10 @@ function readElectronMainSource(): string {
  * assignment avoids false positives from comments that mention development mode.
  */
 function extractLaunchDefaultNodeEnv(source: string): string | undefined {
-  const match = /childEnv\[\s*['"]NODE_ENV['"]\s*\]\s*=\s*(?:await\s+)?(['"])([^'"\n]+)\1/.exec(
-    source,
-  );
+  const match =
+    /childEnv\[\s*['"]NODE_ENV['"]\s*\]\s*=\s*(?:await\s+)?(['"])([^'"\n]+)\1/.exec(
+      source,
+    );
   return match ? match[2] : undefined;
 }
 
@@ -72,39 +75,33 @@ describe('Story 15.1 AC #2 — auth is enforced under the packaged launch-defaul
     process.env.NODE_ENV = originalNodeEnv;
   });
 
-  it(
-    'control — under an explicitly non-dev NODE_ENV, unauthenticated requests are rejected (harness sanity)',
-    async () => {
-      // Proves the harness detects enforcement when the env is genuinely non-dev:
-      // shouldSkipAuth is false, so authenticateJWT runs and rejects. This passes
-      // both before and after 15.2 — if it ever fails alongside AC #2 below, the
-      // problem is the test setup, not the launch default.
-      process.env.NODE_ENV = 'production';
+  it('control — under an explicitly non-dev NODE_ENV, unauthenticated requests are rejected (harness sanity)', async () => {
+    // Proves the harness detects enforcement when the env is genuinely non-dev:
+    // shouldSkipAuth is false, so authenticateJWT runs and rejects. This passes
+    // both before and after 15.2 — if it ever fails alongside AC #2 below, the
+    // problem is the test setup, not the launch default.
+    process.env.NODE_ENV = 'production';
 
-      const response = await app.inject({ method: 'GET', url: '/api/test' });
+    const response = await app.inject({ method: 'GET', url: '/api/test' });
 
-      expect(authenticateJWT).toHaveBeenCalledTimes(1);
-      expect(response.statusCode).toBe(401);
-    },
-  );
+    expect(authenticateJWT).toHaveBeenCalledTimes(1);
+    expect(response.statusCode).toBe(401);
+  });
 
-  it.skip(
-    'AC #2 — under the launch-defaulted NODE_ENV from main.ts, shouldSkipAuth does NOT skip JWT validation',
-    async () => {
-      const launchDefault = extractLaunchDefaultNodeEnv(readElectronMainSource());
-      expect(launchDefault).toBeDefined();
-      process.env.NODE_ENV = launchDefault;
+  it.skip('AC #2 — under the launch-defaulted NODE_ENV from main.ts, shouldSkipAuth does NOT skip JWT validation', async () => {
+    const launchDefault = extractLaunchDefaultNodeEnv(readElectronMainSource());
+    expect(launchDefault).toBeDefined();
+    process.env.NODE_ENV = launchDefault;
 
-      // Under a non-dev launch default, isDevEnvironment() is false so
-      // shouldSkipAuth must not short-circuit: authenticateJWT runs and rejects the
-      // unauthenticated request. Today main.ts defaults to 'development', which makes
-      // shouldSkipAuth true — auth is skipped, authenticateJWT is never called, and a
-      // bare 404 (no route) is returned instead of 401. That is the P0 gap this story
-      // targets; it turns green when 15.2 flips the default to a non-dev value.
-      const response = await app.inject({ method: 'GET', url: '/api/test' });
+    // Under a non-dev launch default, isDevEnvironment() is false so
+    // shouldSkipAuth must not short-circuit: authenticateJWT runs and rejects the
+    // unauthenticated request. Today main.ts defaults to 'development', which makes
+    // shouldSkipAuth true — auth is skipped, authenticateJWT is never called, and a
+    // bare 404 (no route) is returned instead of 401. That is the P0 gap this story
+    // targets; it turns green when 15.2 flips the default to a non-dev value.
+    const response = await app.inject({ method: 'GET', url: '/api/test' });
 
-      expect(authenticateJWT).toHaveBeenCalledTimes(1);
-      expect(response.statusCode).toBe(401);
-    },
-  );
+    expect(authenticateJWT).toHaveBeenCalledTimes(1);
+    expect(response.statusCode).toBe(401);
+  });
 });
