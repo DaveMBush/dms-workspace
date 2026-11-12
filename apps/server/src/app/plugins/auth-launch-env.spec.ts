@@ -1,15 +1,13 @@
-// Story 15.1: red-phase server-side test for the packaged Electron launch path.
-/* eslint-disable sonarjs/no-skipped-tests, vitest/no-disabled-tests -- Red-phase contract tests (Story 15.1): skips are intentional until Story 15.2 sets an explicit non-dev NODE_ENV on the packaged server launch */
+// Story 15.2: server-side test for the packaged Electron launch path.
 //
-// The AC #2 assertion is intentionally RED against the current code:
-// `apps/electron/src/main.ts` (startServer) defaults the forked server child's
-// NODE_ENV to 'development' when none is present, and auth.ts's
-// isDevEnvironment() then makes shouldSkipAuth skip JWT validation for ALL
-// routes — so the shipped desktop app runs with zero API authentication.
-// They are marked `it.skip` so the server suite stays green until Story 15.2
-// changes that default to an explicit non-dev value ('production' or a dedicated
-// 'desktop'); 15.2's first task removes the skip markers, confirms red, then
-// implements until green. No production code is touched in this story (15.1).
+// These assertions pin the fix from Story 15.2: `apps/electron/src/main.ts`
+// (startServer) defaults the forked server child's NODE_ENV to an explicit
+// non-dev value ('production') when none is present, so auth.ts's
+// isDevEnvironment() is false and shouldSkipAuth enforces JWT validation for
+// all routes in shipped builds. Before 15.2 the default was 'development',
+// which skipped JWT validation for every route — the P0 security gap this
+// story closes. The skip markers from the red-phase (Story 15.1) are removed;
+// these now run and pass against the production default.
 //
 // Unlike Story 14.1's pure source-reading contract tests, these drive the real
 // exported auth plugin through a fastify instance so they assert BEHAVIOR: under
@@ -88,7 +86,7 @@ describe('Story 15.1 AC #2 — auth is enforced under the packaged launch-defaul
     expect(response.statusCode).toBe(401);
   });
 
-  it.skip('AC #2 — under the launch-defaulted NODE_ENV from main.ts, shouldSkipAuth does NOT skip JWT validation', async () => {
+  it('AC #2 — under the launch-defaulted NODE_ENV from main.ts, shouldSkipAuth does NOT skip JWT validation', async () => {
     const launchDefault = extractLaunchDefaultNodeEnv(readElectronMainSource());
     expect(launchDefault).toBeDefined();
     process.env.NODE_ENV = launchDefault;

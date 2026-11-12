@@ -1,17 +1,15 @@
-/* eslint-disable sonarjs/no-skipped-tests, vitest/no-disabled-tests -- Red-phase contract tests (Story 15.1): skips are intentional until Story 15.2 sets an explicit non-dev NODE_ENV on the packaged server launch */
-// Story 15.1: red-phase unit test for the packaged Electron launch path.
+// Story 15.2: unit test for the packaged Electron launch path.
 //
-// These assertions are intentionally RED against the current code:
-// `apps/electron/src/main.ts` (startServer) defaults the forked server child's
-// NODE_ENV to 'development' when none is present, and auth.ts's
-// isDevEnvironment() then makes shouldSkipAuth skip JWT validation for ALL
-// routes — so the shipped desktop app runs with zero API authentication.
-// They are marked `it.skip` so the electron suite stays green until Story 15.2
-// changes that default to an explicit non-dev value ('production' or a dedicated
-// 'desktop'); 15.2's first task removes the skip markers, confirms red, then
-// implements until green. No production code is touched in this story (15.1).
+// These assertions pin the fix from Story 15.2: `apps/electron/src/main.ts`
+// (startServer) defaults the forked server child's NODE_ENV to an explicit
+// non-dev value ('production') when none is present, so auth.ts's
+// isDevEnvironment() is false and shouldSkipAuth enforces JWT validation for
+// all routes in shipped builds. Before 15.2 the default was 'development',
+// which skipped JWT validation for every route — the P0 security gap this
+// story closes. The skip markers from the red-phase (Story 15.1) are removed;
+// these now run and pass against the production default.
 //
-// Like Story 14.1's red-phase contract tests, these are source-reading
+// Like Story 14.1's contract tests, these are source-reading
 // assertions: they read `main.ts` and pin the NODE_ENV defaulting contract at
 // the text level. That keeps them deterministic (no electron/child_process
 // mocking or fork timing) while still going RED against today's 'development'
@@ -48,7 +46,7 @@ function isDefaultingConditional(source: string): boolean {
 }
 
 describe('Story 15.1 — packaged Electron launch sets an explicit non-dev NODE_ENV', () => {
-  it.skip('AC #1 — startServer defaults the forked server child to a NON-dev NODE_ENV (auth/CSRF enforced in shipped builds)', () => {
+  it('AC #1 — startServer defaults the forked server child to a NON-dev NODE_ENV (auth/CSRF enforced in shipped builds)', () => {
     const defaulted = extractDefaultedNodeEnv(readMainSource());
 
     // The packaged launch must default to an explicit non-dev value. Today it is
@@ -60,7 +58,7 @@ describe('Story 15.1 — packaged Electron launch sets an explicit non-dev NODE_
     expect(['development', 'test', 'local']).not.toContain(defaulted);
   });
 
-  it.skip('AC #2 — an explicitly set NODE_ENV is preserved (genuine development keeps dev behavior)', () => {
+  it('AC #2 — an explicitly set NODE_ENV is preserved (genuine development keeps dev behavior)', () => {
     // The defaulting must only apply when no value is present, so a real developer who
     // launches with NODE_ENV=development still gets dev-only features. This pins the
     // "explicit value wins" half of the contract and guards against 15.2 over-broadening
