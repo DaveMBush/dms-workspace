@@ -101,11 +101,12 @@ function startServer(port: number): Promise<void> {
     }
 
     // Packaged apps launch from a bare desktop shell with no NODE_ENV; the
-    // server refuses to start without one and would otherwise fall back to AWS
-    // Parameter Store for its DB config. Default to development so it uses the
-    // local SQLite DATABASE_URL set by initDatabase(). An explicit value wins.
+    // server refuses to start without one. Default to production so auth/CSRF are
+    // enforced in shipped builds (a dev default left them off). The local SQLite
+    // DATABASE_URL set by initDatabase() is inherited, so the Parameter-Store DB
+    // lookup fails fast and falls back to it. An explicit value wins.
     if (!childEnv['NODE_ENV']) {
-      childEnv['NODE_ENV'] = 'development';
+      childEnv['NODE_ENV'] = 'production';
     }
 
     const { serverPath, serverCwd, staticDir } = resolveServerPaths();
