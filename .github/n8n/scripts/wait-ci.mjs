@@ -13,6 +13,11 @@
 // conclusion decides success vs failure. If the head sha moves while waiting,
 // re-track it (a new push restarts CI).
 //
+// Stuck-run guard: if the Actions run for the tracked head sits in queued or
+// pending longer than --max-queued-ms (default 600000), re-run it once; if it
+// is still stuck after a second window, exit early with state=timeout plus
+// run diagnostics instead of polling to the full timeout.
+//
 // On failure, best-effort extraction of failing step names via the Actions runs
 // API is included so the fix node can target them without reading full logs.
 //
@@ -31,16 +36,18 @@ let jobName = 'main';
 let repoOverride = null;
 let timeoutMs = 1_800_000; // 30 min default (CI can be slow)
 let pollMs = 30_000;
+let maxQueuedMs = 600_000; // bail early if a run sits in queued/pending this long
 for (let i = 0; i < args.length; i++) {
   if (args[i] === '--pr') prNum = Number(args[++i]);
   else if (args[i] === '--job') jobName = args[++i];
   else if (args[i] === '--repo') repoOverride = args[++i];
   else if (args[i] === '--timeout-ms') timeoutMs = Number(args[++i]);
   else if (args[i] === '--poll-ms') pollMs = Number(args[++i]);
+  else if (args[i] === '--max-queued-ms') maxQueuedMs = Number(args[++i]);
   else {
     console.error(`Unknown argument: ${args[i]}`);
     console.error(
-      'Usage: wait-ci.mjs --pr <num> [--job main] [--repo owner/name] [--timeout-ms N] [--poll-ms N]',
+      'Usage: wait-ci.mjs --pr <num> [--job main] [--repo owner/name] [--timeout-ms N] [--poll-ms N] [--max-queued-ms N]',
     );
     process.exit(2);
   }
@@ -124,9 +131,39 @@ function failedStepsForSha(sha) {
   }
 }
 
+// Best-effort: most recent Actions run for this head sha, or null.
+function actionsRunForSha(sha) {
+  try {
+    const runs = ghApi(`actions/runs?head_sha=${sha}&per_page=5`);
+    const list = (runs.workflow_runs || []).filter((r) => r.head_sha === sha);
+    if (!list.length) return null;
+    list.sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)));
+    return list[0];
+  } catch {
+    return null; // non-fatal — the guard simply won't fire this poll
+  }
+}
+
+// Best-effort: re-run a stuck Actions run in place (same run id, same head sha).
+function rerunActionsRun(runId) {
+  try {
+    execFileSync(
+      'gh',
+      ['api', '-X POST', `repos/${REPO}/actions/runs/${runId}/rerun`],
+      { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] },
+    );
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 async function main() {
   let trackedSha = headSha();
   let lastChecks = []; // last-seen check-runs, carried into the timeout report for diagnosis
+  let lastRun = null; // last-seen Actions run, carried into the timeout report
+  let stuckSince = null; // when the current run first observed in queued/pending
+  const rerunTried = new Set(); // run ids already auto-rerun by this process
   const deadline = Date.now() + timeoutMs;
 
   while (true) {
@@ -140,7 +177,7 @@ async function main() {
             state: 'timeout',
             conclusion: null,
             failedSteps: [],
-            runId: null,
+            runId: lastRun ? lastRun.id : null,
             rawChecks: lastChecks,
           },
           null,
@@ -151,7 +188,10 @@ async function main() {
     }
 
     const curHead = headSha();
-    if (curHead !== trackedSha) trackedSha = curHead; // new push restarted CI
+    if (curHead !== trackedSha) {
+      trackedSha = curHead; // new push restarted CI
+      stuckSince = null; // fresh window for the new head's run
+    }
 
     let checks;
     try {
@@ -163,6 +203,54 @@ async function main() {
       });
     }
     lastChecks = checks;
+
+    // Stuck-run guard: bail early if the Actions run for this head sits in
+    // queued/pending past maxQueuedMs (auto-rerun once first).
+    const run = actionsRunForSha(trackedSha);
+    if (!run) {
+      stuckSince = null; // CI hasn't started a run for this head yet
+    } else {
+      lastRun = run;
+      const stuck = run.status === 'queued' || run.status === 'pending';
+      if (!stuck) {
+        stuckSince = null; // progressing or done — clear the timer
+      } else if (stuckSince === null) {
+        stuckSince = Date.now();
+      } else if (Date.now() - stuckSince >= maxQueuedMs) {
+        if (!rerunTried.has(run.id)) {
+          rerunTried.add(run.id);
+          const ok = rerunActionsRun(run.id);
+          console.error(
+            `run ${run.id} stuck in "${run.status}" for ${Math.round((Date.now() - stuckSince) / 1000)}s — re-run ${ok ? 'requested' : 'failed'}; bailing if still stuck after another window`,
+          );
+          stuckSince = Date.now(); // fresh window post-rerun
+        } else {
+          console.log(
+            JSON.stringify(
+              {
+                prNumber: prNum,
+                headSha: trackedSha,
+                jobName,
+                state: 'timeout',
+                conclusion: null,
+                failedSteps: [],
+                runId: run.id,
+                rawChecks: lastChecks,
+                stuckRun: {
+                  id: run.id,
+                  status: run.status,
+                  url: run.html_url,
+                  rerunTried: true,
+                },
+              },
+              null,
+              2,
+            ),
+          );
+          process.exit(0);
+        }
+      }
+    }
 
     const job = checks.find((c) => c.name === jobName);
     if (!job) {
@@ -189,7 +277,7 @@ async function main() {
           state: success ? 'success' : 'failure',
           conclusion: job.conclusion,
           failedSteps,
-          runId: null,
+          runId: lastRun ? lastRun.id : null,
           rawChecks: checks,
         },
         null,
