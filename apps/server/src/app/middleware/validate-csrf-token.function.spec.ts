@@ -149,7 +149,7 @@ describe('validateCSRFToken stored-token comparison', () => {
 
   // Red-phase (Story 17.2 removes the skip): validateStoredToken never compares
   // presented vs stored token, so this currently fails against production code.
-  it.skip('should reject request presenting a WRONG token when a live unexpired entry exists', async () => {
+  it('should reject request presenting a WRONG token when a live unexpired entry exists', async () => {
     seedLiveStoredEntry();
     const presentedToken = 'wrong-presented-token';
     mockRequest.headers = { 'x-csrf-token': presentedToken };
@@ -165,7 +165,7 @@ describe('validateCSRFToken stored-token comparison', () => {
   });
 
   // Red-phase (Story 17.2 removes the skip): part of AC #1's rejection contract.
-  it.skip('should reject request presenting NO token when a live unexpired entry exists', async () => {
+  it('should reject request presenting NO token when a live unexpired entry exists', async () => {
     seedLiveStoredEntry();
     mockRequest.headers = {};
     mockRequest.cookies = {};
@@ -188,7 +188,7 @@ describe('validateCSRFToken stored-token comparison', () => {
 
     // Red-phase (Story 17.2 removes the skip): validateStoredToken never
     // compares presented vs stored token, so timingSafeEqual is never called.
-    it.skip('should compare presented vs stored token with crypto.timingSafeEqual', async () => {
+    it('should compare presented vs stored token with crypto.timingSafeEqual', async () => {
       seedLiveStoredEntry();
       // Different length from the stored token: a naive `===` short-circuits
       // and an unguarded timingSafeEqual would throw on length mismatch.
@@ -210,7 +210,7 @@ describe('validateCSRFToken stored-token comparison', () => {
 
     // Red-phase (Story 17.2 removes the skip): production source currently has
     // no constant-time comparison primitive at all.
-    it.skip('should reference a constant-time comparison primitive in production source', () => {
+    it('should reference a constant-time comparison primitive in production source', () => {
       const source = readFileSync(
         join(__dirname, 'validate-csrf-token.function.ts'),
         'utf-8',

@@ -48,7 +48,7 @@ describe('generateSessionId', () => {
   // sha256(ip-userAgent-minute) derivation this holds only because the hash is
   // injective — the ids remain fully predictable and collidable by anyone who
   // knows the client inputs.
-  it.skip('should not derive sessionId from client-supplied ip or user-agent', () => {
+  it('should not derive sessionId from client-supplied ip or user-agent', () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-11-13T12:00:00.000Z'));
 
@@ -65,7 +65,7 @@ describe('generateSessionId', () => {
   // the same id for repeated calls within the same minute; an unguessable
   // server-issued value must not. Length stays loose so both randomUUID() and
   // hex(randomBytes) satisfy it.
-  it.skip('should return a different unguessable sessionId on each call', () => {
+  it('should return a different unguessable sessionId on each call', () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-11-13T12:00:00.000Z'));
 
@@ -81,7 +81,7 @@ describe('generateSessionId', () => {
 
   // Story 17.2 contract (AC #3): production source must derive sessionId from
   // an unguessable server-issued value instead of sha256(ip-userAgent-minute).
-  it.skip('should not derive sessionId via sha256 of client-supplied inputs', () => {
+  it('should not derive sessionId via sha256 of client-supplied inputs', () => {
     const source = readFileSync(
       join(__dirname, 'generate-session-id.function.ts'),
       'utf-8',
