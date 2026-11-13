@@ -117,7 +117,7 @@
     "@swc/helpers": "0.5.23",
     "@tailwindcss/postcss": "^4.3.0",
     "@tailwindcss/vite": "4.3.3",
-    "@types/better-sqlite3": "^7.6.11",
+    "@types/better-sqlite3": "^9.6.0",
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "20.19.9",
