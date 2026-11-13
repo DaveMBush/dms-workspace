@@ -16,6 +16,20 @@ import { csrfTokenStore } from './csrf-token-store.constant';
 import { TOKEN_EXPIRY } from './token-expiry.constant';
 import { validateCSRFToken } from './validate-csrf-token.function';
 
+// node builtins load as frozen ESM namespaces in vitest 5, so `vi.spyOn` on a
+// named export throws. Mock the module (repo pattern, see logger.spec.ts) and
+// wrap timingSafeEqual in a spy that delegates to the real implementation, so
+// comparisons stay genuine while call-count assertions work.
+vi.mock('node:crypto', async () => {
+  const actual = await vi.importActual<typeof crypto>('node:crypto');
+  return {
+    ...actual,
+    timingSafeEqual: vi.fn((a: Buffer, b: Buffer) =>
+      actual.timingSafeEqual(a, b),
+    ),
+  };
+});
+
 describe('validateCSRFToken stored-token comparison', () => {
   let mockRequest: Partial<FastifyRequest>;
   let mockReply: Partial<FastifyReply>;
@@ -196,7 +210,7 @@ describe('validateCSRFToken stored-token comparison', () => {
       mockRequest.headers = { 'x-csrf-token': presentedToken };
       mockRequest.cookies = { 'csrf-token': presentedToken };
 
-      const timingSafeEqualSpy = vi.spyOn(crypto, 'timingSafeEqual');
+      const timingSafeEqualSpy = vi.mocked(crypto.timingSafeEqual);
 
       const result = await validateCSRFToken(
         mockRequest as FastifyRequest,
