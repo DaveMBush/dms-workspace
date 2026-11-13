@@ -103,7 +103,7 @@
     "@nx/web": "24.0.3",
     "@nx/workspace": "24.0.3",
     "@oxc-project/runtime": "^0.85.0",
-    "@playwright/test": "1.64.1",
+    "@playwright/test": "1.65.0",
     "@schematics/angular": "22.0.8",
     "@smarttools/eslint-plugin": "1.0.5",
     "@smarttools/eslint-plugin-rxjs": "^1.0.22",
