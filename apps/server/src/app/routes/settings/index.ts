@@ -1,5 +1,4 @@
 import { FastifyInstance } from 'fastify';
-
 import { prisma } from '../../prisma/prisma-client';
 import { ensureRiskGroupsExist } from './common/ensure-risk-groups-exist.function';
 import { getDistributions } from './common/get-distributions.function';
@@ -39,7 +38,7 @@ function getAllSymbols(groupValues: string[]): string[] {
 
 async function processSymbolGroup(
   symbols: string[],
-  riskGroupId: string
+  riskGroupId: string,
 ): Promise<void> {
   for (const symbol of symbols) {
     await addOrUpdateSymbol(symbol, riskGroupId);
@@ -48,7 +47,7 @@ async function processSymbolGroup(
 
 async function processAllSymbolGroups(
   groupValues: string[],
-  riskGroups: PrismaRiskGroup[]
+  riskGroups: PrismaRiskGroup[],
 ): Promise<void> {
   for (let index = 0; index < groupValues.length; index++) {
     const groupValue = groupValues[index];
@@ -77,19 +76,19 @@ async function markExpiredSymbols(allSymbols: string[]): Promise<void> {
 
 function shouldSetExDate(
   distribution: Distribution | undefined,
-  today: Date
+  today: Date,
 ): boolean {
   return Boolean(
     distribution?.ex_date &&
-      distribution.ex_date instanceof Date &&
-      !isNaN(distribution.ex_date.valueOf()) &&
-      distribution.ex_date > today
+    distribution.ex_date instanceof Date &&
+    !isNaN(distribution.ex_date.valueOf()) &&
+    distribution.ex_date > today,
   );
 }
 
 function getExDateToSet(
   distribution: Distribution | undefined,
-  today: Date
+  today: Date,
 ): Date | undefined {
   if (shouldSetExDate(distribution, today)) {
     return distribution!.ex_date;
@@ -127,17 +126,16 @@ async function createNewUniverse(
   symbol: string,
   riskGroupId: string,
   lastPrice: number | null | undefined,
-  distribution: Distribution | undefined
+  distribution: Distribution | undefined,
 ): Promise<void> {
-  const { createUniverseRecord } = await import(
-    '../common/universe-operations.function'
-  );
+  const { createUniverseRecord } =
+    await import('../common/universe-operations.function');
   await createUniverseRecord({ symbol, riskGroupId, lastPrice, distribution });
 }
 
 async function addOrUpdateSymbol(
   symbol: string,
-  riskGroupId: string
+  riskGroupId: string,
 ): Promise<void> {
   const universe = await prisma.universe.findFirst({
     where: { symbol },
@@ -163,9 +161,9 @@ async function addOrUpdateSymbol(
 
 async function handleSettingsRequest(
   request: { body: Settings },
-  reply: { status(code: number): { send(data: { error: string }): void } }
+  reply: { status(code: number): { send(data: { error: string }): void } },
 ): Promise<void> {
-  const { equities, income, taxFreeIncome } = request.body;
+  const { equities, income, tax_free_income: taxFreeIncome } = request.body;
 
   const riskGroups = await ensureRiskGroupsExist();
   const groupValues = [equities, income, taxFreeIncome];
@@ -194,7 +192,7 @@ function handleSettingsRoute(fastify: FastifyInstance): void {
         },
       },
     },
-    handleSettingsRequest
+    handleSettingsRequest,
   );
 }
 

@@ -1,4 +1,3 @@
-/* eslint-disable vitest/no-disabled-tests -- Red-phase tests (Story 16.1): skips are intentional until Story 16.2 aligns the settings schema/handler field names */
 import fastify, { FastifyInstance } from 'fastify';
 import {
   afterAll,
@@ -10,11 +9,6 @@ import {
   vi,
 } from 'vitest';
 import registerSettingsRoutes from './index';
-
-// @atdd — ATDD red-phase scaffolding for Story 16.1 (tax_free_income). The two
-// acceptance-criteria tests below are intentionally skipped until Story 16.2
-// implements the handler fix and flips them on (it.skip -> it). This marker
-// exempts the file from scripts/check-no-skipped-tests.sh while deferred.
 
 // Hoisted mocks — created before module resolution.
 const h = vi.hoisted(() => ({
@@ -91,9 +85,8 @@ describe('Settings Route Handler — tax_free_income (Story 16.1, red phase)', (
   });
 
   // AC1 — POST /api/settings accepts the tax_free_income field and persists its
-  // symbols into the Tax Free Income risk group. Skipped in red phase; Story 16.2
-  // unskips this once the handler reads `tax_free_income` (not `taxFreeIncome`).
-  it.skip('persists tax_free_income symbols to the Tax Free Income risk group', async () => {
+  // symbols into the Tax Free Income risk group.
+  it('persists tax_free_income symbols to the Tax Free Income risk group', async () => {
     const response = await app.inject({
       method: 'POST',
       url: '/api/settings',
@@ -107,10 +100,69 @@ describe('Settings Route Handler — tax_free_income (Story 16.1, red phase)', (
     );
   });
 
+  // Coverage — an existing universe with no distribution data is left untouched:
+  // getExDateToSet returns undefined (no future ex_date) and updateExistingUniverse
+  // bails before calling prisma.universe.update.
+  it('leaves an existing universe untouched when no distribution is returned', async () => {
+    h.mockPrismaUniverseFindFirst.mockResolvedValueOnce({ id: 'uni-x' });
+    h.mockGetDistributions.mockResolvedValueOnce({ result: undefined });
+
+    const response = await app.inject({
+      method: 'POST',
+      url: '/api/settings',
+      payload: { equities: '', income: '', tax_free_income: 'VWRA' },
+    });
+
+    expect(response.statusCode).toBe(200);
+    // No distribution -> early return, so the universe row is not rewritten.
+    expect(h.mockPrismaUniverseUpdate).not.toHaveBeenCalled();
+  });
+
+  // Coverage — an existing universe whose only distribution has a past ex_date keeps
+  // its row updated but leaves ex_date unset (shouldSetExDate resolves to false). A
+  // null last price also exercises the `lastPrice ?? 0` fallback in the update.
+  it('updates an existing universe without setting ex_date when the ex date is in the past', async () => {
+    h.mockPrismaUniverseFindFirst.mockResolvedValueOnce({ id: 'uni-past' });
+    h.mockGetLastPrice.mockResolvedValueOnce(null);
+    h.mockGetDistributions.mockResolvedValueOnce({
+      result: {
+        distribution: 0.25,
+        distributions_per_year: 4,
+        ex_date: new Date('2000-01-01'),
+      },
+    });
+
+    const response = await app.inject({
+      method: 'POST',
+      url: '/api/settings',
+      payload: { equities: '', income: '', tax_free_income: 'VWRA' },
+    });
+
+    expect(response.statusCode).toBe(200);
+    // Distribution present -> the row is rewritten, re-pointed at rg-3.
+    expect(h.mockPrismaUniverseUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { id: 'uni-past' } }),
+    );
+  });
+
+  // Coverage — when the expiry sweep fails, the handler catches and returns a 500
+  // with the generic error body instead of propagating the rejection.
+  it('returns 500 when marking expired symbols fails', async () => {
+    h.mockPrismaUniverseUpdateMany.mockRejectedValueOnce(new Error('db down'));
+
+    const response = await app.inject({
+      method: 'POST',
+      url: '/api/settings',
+      payload: { equities: '', income: '', tax_free_income: '' },
+    });
+
+    expect(response.statusCode).toBe(500);
+    expect(response.json()).toEqual({ error: 'Internal server error' });
+  });
+
   // AC2 — an existing universe currently in the Income group moves to Tax Free
-  // Income when submitted via tax_free_income. Skipped in red phase; Story 16.2
-  // unskips this once the handler processes the tax_free_income group value.
-  it.skip('moves an existing Income-group universe into Tax Free Income', async () => {
+  // Income when submitted via tax_free_income.
+  it('moves an existing Income-group universe into Tax Free Income', async () => {
     h.mockPrismaUniverseFindFirst.mockResolvedValueOnce({ id: 'uni-vwra' });
 
     const response = await app.inject({
