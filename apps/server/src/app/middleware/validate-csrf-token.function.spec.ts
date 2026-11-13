@@ -1,3 +1,7 @@
+import * as crypto from 'node:crypto';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -79,5 +83,46 @@ describe('validateCSRFToken stored-token comparison', () => {
 
     expect(result).toBe(false);
     expect(mockReply.code).toHaveBeenCalledWith(403);
+  });
+
+  // Story 17.2 contract (AC #2): the presented-vs-stored comparison must be
+  // constant-time so timing does not leak whether a prefix matched.
+  describe('constant-time comparison', () => {
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    // Red-phase (Story 17.2 removes the skip): validateStoredToken never
+    // compares presented vs stored token, so timingSafeEqual is never called.
+    it.skip('should compare presented vs stored token with crypto.timingSafeEqual', async () => {
+      seedLiveStoredEntry();
+      // Different length from the stored token: a naive `===` short-circuits
+      // and an unguarded timingSafeEqual would throw on length mismatch.
+      const presentedToken = 'wrong-length-presented-token';
+      mockRequest.headers = { 'x-csrf-token': presentedToken };
+      mockRequest.cookies = { 'csrf-token': presentedToken };
+
+      const timingSafeEqualSpy = vi.spyOn(crypto, 'timingSafeEqual');
+
+      const result = await validateCSRFToken(
+        mockRequest as FastifyRequest,
+        mockReply as FastifyReply,
+      );
+
+      expect(result).toBe(false);
+      expect(mockReply.code).toHaveBeenCalledWith(403);
+      expect(timingSafeEqualSpy).toHaveBeenCalled();
+    });
+
+    // Red-phase (Story 17.2 removes the skip): production source currently has
+    // no constant-time comparison primitive at all.
+    it.skip('should reference a constant-time comparison primitive in production source', () => {
+      const source = readFileSync(
+        join(__dirname, 'validate-csrf-token.function.ts'),
+        'utf-8',
+      );
+
+      expect(source).toMatch(/timingSafeEqual/);
+    });
   });
 });
