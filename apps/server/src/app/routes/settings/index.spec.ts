@@ -93,7 +93,7 @@ describe('Settings Route Handler — tax_free_income (Story 16.1, red phase)', (
   // AC1 — POST /api/settings accepts the tax_free_income field and persists its
   // symbols into the Tax Free Income risk group. Skipped in red phase; Story 16.2
   // unskips this once the handler reads `tax_free_income` (not `taxFreeIncome`).
-  it.skip('persists tax_free_income symbols to the Tax Free Income risk group', async () => {
+  it('persists tax_free_income symbols to the Tax Free Income risk group', async () => {
     const response = await app.inject({
       method: 'POST',
       url: '/api/settings',
@@ -110,7 +110,7 @@ describe('Settings Route Handler — tax_free_income (Story 16.1, red phase)', (
   // AC2 — an existing universe currently in the Income group moves to Tax Free
   // Income when submitted via tax_free_income. Skipped in red phase; Story 16.2
   // unskips this once the handler processes the tax_free_income group value.
-  it.skip('moves an existing Income-group universe into Tax Free Income', async () => {
+  it('moves an existing Income-group universe into Tax Free Income', async () => {
     h.mockPrismaUniverseFindFirst.mockResolvedValueOnce({ id: 'uni-vwra' });
 
     const response = await app.inject({
