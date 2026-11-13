@@ -1,4 +1,3 @@
-/* eslint-disable vitest/no-disabled-tests -- Pre-existing: integration tests blocked on database setup */
 import { rmSync } from 'fs';
 import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 import { PrismaClient } from '@prisma/client';
