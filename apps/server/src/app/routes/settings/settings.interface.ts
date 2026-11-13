@@ -1,5 +1,5 @@
 export interface Settings {
   equities: string;
   income: string;
-  taxFreeIncome: string;
+  tax_free_income: string;
 }

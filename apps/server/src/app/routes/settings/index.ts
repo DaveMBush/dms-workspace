@@ -165,7 +165,7 @@ async function handleSettingsRequest(
   request: { body: Settings },
   reply: { status(code: number): { send(data: { error: string }): void } }
 ): Promise<void> {
-  const { equities, income, taxFreeIncome } = request.body;
+  const { equities, income, tax_free_income: taxFreeIncome } = request.body;
 
   const riskGroups = await ensureRiskGroupsExist();
   const groupValues = [equities, income, taxFreeIncome];
