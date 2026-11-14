@@ -1,5 +1,4 @@
 import { FastifyInstance } from 'fastify';
-import { prisma } from '../../prisma/prisma-client';
 import { recalculateUniverseVolatility } from '../../volatility/recalculate-universe-volatility.function';
 import { getTableState } from '../common/get-table-state.function';
 import { parseSortFilterHeader } from '../common/parse-sort-filter-header.function';
@@ -11,7 +10,9 @@ import registerSyncFromScreener from './sync-from-screener';
 import {
   deleteUniverseAndTrades,
   fetchHistoryForSymbol,
+  fetchUniverseById,
   fetchUpdatedUniverse,
+  fetchUniversesForIds,
   mapUniverseToResponse,
   updateUniverseData,
   universeFromAddResult,
@@ -43,19 +44,7 @@ function handleGetUniversesRoute(fastify: FastifyInstance): void {
           ? universeState.filters['account_id']
           : null;
 
-      const universes = await prisma.universe.findMany({
-        where: { id: { in: ids } },
-        include: {
-          risk_group: true,
-          trades: accountId !== null ? { where: { accountId } } : true,
-          _count: {
-            select: {
-              trades: { where: { deletedAt: null } },
-              divDeposits: { where: { deletedAt: null } },
-            },
-          },
-        },
-      });
+      const universes = await fetchUniversesForIds(ids, accountId);
       return universes.map(function mapUniverse(u) {
         return mapUniverseToResponse(u);
       });
@@ -96,7 +85,7 @@ function handleDeleteUniverseRoute(fastify: FastifyInstance): void {
     async function handleDeleteUniverse(request, reply): Promise<void> {
       const { id } = request.params;
       try {
-        const universe = await prisma.universe.findUnique({ where: { id } });
+        const universe = await fetchUniverseById(id);
         if (!universe) {
           sendUniverseFailure(reply, 404, {
             success: false,

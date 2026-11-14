@@ -158,6 +158,33 @@ export async function fetchUpdatedUniverse(
   });
 }
 
+// Structural subset of the Prisma `Universe` model — only the field the
+// DELETE route handler needs to decide between 404 and CEF-rejection.
+export async function fetchUniverseById(
+  id: string,
+): Promise<{ is_closed_end_fund: boolean } | null> {
+  return prisma.universe.findUnique({ where: { id } });
+}
+
+export async function fetchUniversesForIds(
+  ids: string[],
+  accountId: string | null,
+): Promise<UniverseWithTrades[]> {
+  return prisma.universe.findMany({
+    where: { id: { in: ids } },
+    include: {
+      risk_group: true,
+      trades: accountId !== null ? { where: { accountId } } : true,
+      _count: {
+        select: {
+          trades: { where: { deletedAt: null } },
+          divDeposits: { where: { deletedAt: null } },
+        },
+      },
+    },
+  });
+}
+
 export async function fetchHistoryForSymbol(
   symbol: string,
   universeId: string,
