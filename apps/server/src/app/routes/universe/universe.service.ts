@@ -1,4 +1,6 @@
 import { prisma } from '../../prisma/prisma-client';
+import universeHelpers from './universe-helpers';
+import type { Universe } from './universe.interface';
 
 /* eslint-disable @smarttools/one-exported-item-per-file -- Utility file with related universe service functions and their shared type */
 
@@ -54,4 +56,64 @@ export async function deleteUniverseAndTrades(
   }
   await prisma.universe.delete({ where: { id } });
   return null;
+}
+
+export function mapUniverseToResponse(u: UniverseWithTrades): Universe {
+  const openTrades = universeHelpers.getOpenTrades(u.trades);
+  const mostRecentSell = universeHelpers.getMostRecentSell(u.trades);
+  return {
+    id: u.id,
+    distribution: u.distribution,
+    distributions_per_year: u.distributions_per_year,
+    last_price: u.last_price,
+    volatilityLong: u.volatility_long ?? null,
+    volatilityShort: u.volatility_short ?? null,
+    most_recent_sell_date: mostRecentSell?.sell_date.toISOString() ?? null,
+    most_recent_sell_price: mostRecentSell?.sell ?? null,
+    symbol: u.symbol,
+    ex_date: u.ex_date?.toISOString() ?? '',
+    risk_group_id: u.risk_group_id,
+    position: universeHelpers.calculatePosition(openTrades),
+    expired: u.expired,
+    is_closed_end_fund: u.is_closed_end_fund,
+    deletable: isUniverseDeletable(u),
+    avg_purchase_yield_percent:
+      universeHelpers.calculateAvgPurchaseYieldPercent(
+        openTrades,
+        u.distribution,
+        u.distributions_per_year,
+      ),
+  };
+}
+
+interface AddSymbolResultLike {
+  id: string;
+  symbol: string;
+  risk_group_id: string;
+  distribution: number | null;
+  distributions_per_year: number | null;
+  ex_date: string | null;
+  last_price: number | null;
+  expired: boolean;
+  is_closed_end_fund: boolean;
+}
+
+export function universeFromAddResult(
+  result: AddSymbolResultLike,
+): UniverseWithTrades {
+  return {
+    id: result.id,
+    distribution: result.distribution ?? 0,
+    distributions_per_year: result.distributions_per_year ?? 0,
+    last_price: result.last_price ?? 0,
+    volatility_long: null,
+    volatility_short: null,
+    symbol: result.symbol,
+    ex_date: result.ex_date !== null ? new Date(result.ex_date) : null,
+    risk_group_id: result.risk_group_id,
+    trades: [],
+    expired: result.expired,
+    is_closed_end_fund: result.is_closed_end_fund,
+    _count: { trades: 0, divDeposits: 0 },
+  };
 }

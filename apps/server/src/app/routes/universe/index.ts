@@ -11,41 +11,13 @@ import { addSymbol } from './add-symbol/add-symbol.function';
 import { sendUniverseFailure } from './error-mapper.function.ts';
 import registerGetAllUniverses from './get-all-universes';
 import registerSyncFromScreener from './sync-from-screener';
-import universeHelpers from './universe-helpers';
 import {
   deleteUniverseAndTrades,
-  isUniverseDeletable,
+  mapUniverseToResponse,
+  universeFromAddResult,
 } from './universe.service';
 import type { UniverseWithTrades } from './universe.service';
 import { Universe } from './universe.interface';
-
-function mapUniverseToResponse(u: UniverseWithTrades): Universe {
-  const openTrades = universeHelpers.getOpenTrades(u.trades);
-  const mostRecentSell = universeHelpers.getMostRecentSell(u.trades);
-  return {
-    id: u.id,
-    distribution: u.distribution,
-    distributions_per_year: u.distributions_per_year,
-    last_price: u.last_price,
-    volatilityLong: u.volatility_long ?? null,
-    volatilityShort: u.volatility_short ?? null,
-    most_recent_sell_date: mostRecentSell?.sell_date.toISOString() ?? null,
-    most_recent_sell_price: mostRecentSell?.sell ?? null,
-    symbol: u.symbol,
-    ex_date: u.ex_date?.toISOString() ?? '',
-    risk_group_id: u.risk_group_id,
-    position: universeHelpers.calculatePosition(openTrades),
-    expired: u.expired,
-    is_closed_end_fund: u.is_closed_end_fund,
-    deletable: isUniverseDeletable(u),
-    avg_purchase_yield_percent:
-      universeHelpers.calculateAvgPurchaseYieldPercent(
-        openTrades,
-        u.distribution,
-        u.distributions_per_year,
-      ),
-  };
-}
 
 function handleGetUniversesRoute(fastify: FastifyInstance): void {
   fastify.post<{ Body: string[]; Reply: Universe[] }>(
@@ -113,26 +85,8 @@ function handleAddUniverseRoute(fastify: FastifyInstance): void {
     async function handleAddUniverse(request, reply): Promise<void> {
       const { symbol, risk_group_id } = request.body;
       const result = await addSymbol({ symbol, risk_group_id });
-      reply.status(200).send([
-        {
-          id: result.id,
-          distribution: result.distribution ?? 0,
-          distributions_per_year: result.distributions_per_year ?? 0,
-          last_price: result.last_price ?? 0,
-          most_recent_sell_date: result.most_recent_sell_date,
-          most_recent_sell_price: null,
-          symbol: result.symbol,
-          ex_date: result.ex_date ?? '',
-          risk_group_id: result.risk_group_id,
-          position: 0,
-          expired: result.expired,
-          is_closed_end_fund: result.is_closed_end_fund,
-          avg_purchase_yield_percent: 0, // new symbol has no purchase history yet
-          volatilityLong: null,
-          volatilityShort: null,
-          deletable: !result.is_closed_end_fund,
-        },
-      ]);
+      const universe = universeFromAddResult(result);
+      reply.status(200).send([mapUniverseToResponse(universe)]);
     },
   );
 }
