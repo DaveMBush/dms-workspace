@@ -7,17 +7,17 @@ import { addSymbol } from './add-symbol/add-symbol.function';
 import { sendUniverseFailure } from './error-mapper.function.ts';
 import registerGetAllUniverses from './get-all-universes';
 import registerSyncFromScreener from './sync-from-screener';
+import { Universe } from './universe.interface';
 import {
   deleteUniverseAndTrades,
   fetchHistoryForSymbol,
   fetchUniverseById,
-  fetchUpdatedUniverse,
   fetchUniversesForIds,
+  fetchUpdatedUniverse,
   mapUniverseToResponse,
-  updateUniverseData,
   universeFromAddResult,
+  updateUniverseData,
 } from './universe.service';
-import { Universe } from './universe.interface';
 
 function handleGetUniversesRoute(fastify: FastifyInstance): void {
   fastify.post<{ Body: string[]; Reply: Universe[] }>(
