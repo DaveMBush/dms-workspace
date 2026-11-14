@@ -1,9 +1,5 @@
 import { FastifyInstance } from 'fastify';
-import { logger } from '../../../utils/structured-logger';
-import { prisma } from '../../prisma/prisma-client';
 import { recalculateUniverseVolatility } from '../../volatility/recalculate-universe-volatility.function';
-import type { ProcessedRow } from '../common/distribution-api.function';
-import { fetchDividendHistory } from '../common/dividend-history.service';
 import { getTableState } from '../common/get-table-state.function';
 import { parseSortFilterHeader } from '../common/parse-sort-filter-header.function';
 import registerAddSymbol from './add-symbol';
@@ -11,66 +7,17 @@ import { addSymbol } from './add-symbol/add-symbol.function';
 import { sendUniverseFailure } from './error-mapper.function.ts';
 import registerGetAllUniverses from './get-all-universes';
 import registerSyncFromScreener from './sync-from-screener';
-import universeHelpers from './universe-helpers';
 import { Universe } from './universe.interface';
-
-interface UniverseWithTrades {
-  id: string;
-  distribution: number;
-  distributions_per_year: number;
-  last_price: number;
-  volatility_long: string | null;
-  volatility_short: string | null;
-  symbol: string;
-  ex_date: Date | null;
-  risk_group_id: string;
-  trades: Array<{
-    buy: number;
-    quantity: number;
-    sell: number;
-    sell_date: Date | null;
-  }>;
-  expired: boolean;
-  is_closed_end_fund: boolean;
-  // eslint-disable-next-line @typescript-eslint/naming-convention -- Prisma aggregate field
-  _count: { trades: number; divDeposits: number };
-}
-
-function isUniverseDeletable(u: UniverseWithTrades): boolean {
-  if (u.is_closed_end_fund) {
-    return false;
-  }
-  // eslint-disable-next-line no-underscore-dangle -- Prisma aggregate field
-  return u._count.trades === 0 && u._count.divDeposits === 0;
-}
-
-function mapUniverseToResponse(u: UniverseWithTrades): Universe {
-  const openTrades = universeHelpers.getOpenTrades(u.trades);
-  const mostRecentSell = universeHelpers.getMostRecentSell(u.trades);
-  return {
-    id: u.id,
-    distribution: u.distribution,
-    distributions_per_year: u.distributions_per_year,
-    last_price: u.last_price,
-    volatilityLong: u.volatility_long ?? null,
-    volatilityShort: u.volatility_short ?? null,
-    most_recent_sell_date: mostRecentSell?.sell_date.toISOString() ?? null,
-    most_recent_sell_price: mostRecentSell?.sell ?? null,
-    symbol: u.symbol,
-    ex_date: u.ex_date?.toISOString() ?? '',
-    risk_group_id: u.risk_group_id,
-    position: universeHelpers.calculatePosition(openTrades),
-    expired: u.expired,
-    is_closed_end_fund: u.is_closed_end_fund,
-    deletable: isUniverseDeletable(u),
-    avg_purchase_yield_percent:
-      universeHelpers.calculateAvgPurchaseYieldPercent(
-        openTrades,
-        u.distribution,
-        u.distributions_per_year,
-      ),
-  };
-}
+import {
+  deleteUniverseAndTrades,
+  fetchHistoryForSymbol,
+  fetchUniverseById,
+  fetchUniversesForIds,
+  fetchUpdatedUniverse,
+  mapUniverseToResponse,
+  universeFromAddResult,
+  updateUniverseData,
+} from './universe.service';
 
 function handleGetUniversesRoute(fastify: FastifyInstance): void {
   fastify.post<{ Body: string[]; Reply: Universe[] }>(
@@ -97,19 +44,7 @@ function handleGetUniversesRoute(fastify: FastifyInstance): void {
           ? universeState.filters['account_id']
           : null;
 
-      const universes = await prisma.universe.findMany({
-        where: { id: { in: ids } },
-        include: {
-          risk_group: true,
-          trades: accountId !== null ? { where: { accountId } } : true,
-          _count: {
-            select: {
-              trades: { where: { deletedAt: null } },
-              divDeposits: { where: { deletedAt: null } },
-            },
-          },
-        },
-      });
+      const universes = await fetchUniversesForIds(ids, accountId);
       return universes.map(function mapUniverse(u) {
         return mapUniverseToResponse(u);
       });
@@ -138,50 +73,10 @@ function handleAddUniverseRoute(fastify: FastifyInstance): void {
     async function handleAddUniverse(request, reply): Promise<void> {
       const { symbol, risk_group_id } = request.body;
       const result = await addSymbol({ symbol, risk_group_id });
-      reply.status(200).send([
-        {
-          id: result.id,
-          distribution: result.distribution ?? 0,
-          distributions_per_year: result.distributions_per_year ?? 0,
-          last_price: result.last_price ?? 0,
-          most_recent_sell_date: result.most_recent_sell_date,
-          most_recent_sell_price: null,
-          symbol: result.symbol,
-          ex_date: result.ex_date ?? '',
-          risk_group_id: result.risk_group_id,
-          position: 0,
-          expired: result.expired,
-          is_closed_end_fund: result.is_closed_end_fund,
-          avg_purchase_yield_percent: 0, // new symbol has no purchase history yet
-          volatilityLong: null,
-          volatilityShort: null,
-          deletable: !result.is_closed_end_fund,
-        },
-      ]);
+      const universe = universeFromAddResult(result);
+      reply.status(200).send([mapUniverseToResponse(universe)]);
     },
   );
-}
-
-function isActiveTrade(trade: { sell_date: Date | null }): boolean {
-  return trade.sell_date === null;
-}
-
-function isSoldTrade(trade: { sell_date: Date | null }): boolean {
-  return trade.sell_date !== null;
-}
-
-async function deleteUniverseAndTrades(id: string): Promise<string | null> {
-  const allTrades = await prisma.trades.findMany({ where: { universeId: id } });
-  const activeTrades = allTrades.filter(isActiveTrade);
-  if (activeTrades.length > 0) {
-    return 'Cannot delete symbols with active trades';
-  }
-  const soldTrades = allTrades.filter(isSoldTrade);
-  if (soldTrades.length > 0) {
-    await prisma.trades.deleteMany({ where: { universeId: id } });
-  }
-  await prisma.universe.delete({ where: { id } });
-  return null;
 }
 
 function handleDeleteUniverseRoute(fastify: FastifyInstance): void {
@@ -190,7 +85,7 @@ function handleDeleteUniverseRoute(fastify: FastifyInstance): void {
     async function handleDeleteUniverse(request, reply): Promise<void> {
       const { id } = request.params;
       try {
-        const universe = await prisma.universe.findUnique({ where: { id } });
+        const universe = await fetchUniverseById(id);
         if (!universe) {
           sendUniverseFailure(reply, 404, {
             success: false,
@@ -221,66 +116,6 @@ function handleDeleteUniverseRoute(fastify: FastifyInstance): void {
       }
     },
   );
-}
-
-async function updateUniverseData(
-  id: string,
-  data: Omit<Universe, 'id'>,
-): Promise<unknown> {
-  return prisma.universe.update({
-    where: { id },
-    data: {
-      distribution: data.distribution,
-      distributions_per_year: data.distributions_per_year,
-      last_price: data.last_price,
-      most_recent_sell_date: data.most_recent_sell_date,
-      most_recent_sell_price: data.most_recent_sell_price,
-      symbol: data.symbol,
-      ex_date: data.ex_date,
-      risk_group_id: data.risk_group_id,
-      expired: data.expired,
-    },
-  });
-}
-
-async function fetchUpdatedUniverse(id: string): Promise<UniverseWithTrades[]> {
-  return prisma.universe.findMany({
-    where: { id },
-    include: {
-      trades: true,
-      _count: {
-        select: {
-          trades: { where: { deletedAt: null } },
-          divDeposits: { where: { deletedAt: null } },
-        },
-      },
-    },
-  });
-}
-
-async function fetchHistoryForSymbol(
-  symbol: string,
-  universeId: string,
-): Promise<ProcessedRow[]> {
-  try {
-    const history = await fetchDividendHistory(symbol);
-    if (history.length > 0) {
-      return history;
-    }
-  } catch (err) {
-    logger.warn('fetchDividendHistory failed, falling back to divDeposits', {
-      symbol,
-      error: err instanceof Error ? err.message : String(err),
-    });
-  }
-  const deposits = await prisma.divDeposits.findMany({
-    where: { universeId },
-    orderBy: { date: 'asc' },
-    select: { date: true, amount: true },
-  });
-  return deposits.map(function toProcessedRow(dep) {
-    return { date: dep.date, amount: dep.amount };
-  });
 }
 
 function handleUpdateUniverseRoute(fastify: FastifyInstance): void {

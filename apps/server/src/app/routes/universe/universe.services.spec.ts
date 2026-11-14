@@ -1,4 +1,3 @@
-/* eslint-disable vitest/no-disabled-tests, sonarjs/no-skipped-tests -- red-phase (Story 18.2) contract tests; intentionally skipped until the universe services extraction lands */
 // Story 18.1, Task 1 (AC #1): contract that `deleteUniverseAndTrades` and
 // `isUniverseDeletable` live in service functions rather than inline in the
 // route handler (`universe/index.ts`).
@@ -48,19 +47,19 @@ function isExportedByLocalModule(name: string): boolean {
 }
 
 describe('universe service extraction contract (Story 18.1)', () => {
-  it.skip('deleteUniverseAndTrades is not defined inline in universe/index.ts', function assertDeleteNotInline() {
+  it('deleteUniverseAndTrades is not defined inline in universe/index.ts', function assertDeleteNotInline() {
     const source = readFileSync(universeRoutePath, 'utf-8');
     expect(
       localDefinitionRe('deleteUniverseAndTrades').exec(source),
     ).toBeNull();
   });
 
-  it.skip('isUniverseDeletable is not defined inline in universe/index.ts', function assertIsDeletableNotInline() {
+  it('isUniverseDeletable is not defined inline in universe/index.ts', function assertIsDeletableNotInline() {
     const source = readFileSync(universeRoutePath, 'utf-8');
     expect(localDefinitionRe('isUniverseDeletable').exec(source)).toBeNull();
   });
 
-  it.skip('deleteUniverseAndTrades and isUniverseDeletable are exported from a local services module', function assertExportedFromServices() {
+  it('deleteUniverseAndTrades and isUniverseDeletable are exported from a local services module', function assertExportedFromServices() {
     for (const name of ['deleteUniverseAndTrades', 'isUniverseDeletable']) {
       expect(
         isExportedByLocalModule(name),
@@ -94,14 +93,14 @@ function topLevelFunctionSource(name: string): string {
 }
 
 describe('universe shared response mapper contract (Story 18.1)', () => {
-  it.skip('mapUniverseToResponse is exported from a local module as the shared response mapper', function assertSharedMapperExported() {
+  it('mapUniverseToResponse is exported from a local module as the shared response mapper', function assertSharedMapperExported() {
     expect(
       isExportedByLocalModule('mapUniverseToResponse'),
       'a local services/mapper module must export mapUniverseToResponse',
     ).toBe(true);
   });
 
-  it.skip('the add and get routes both build responses through the shared mapper (no inline definition)', function assertBothRoutesUseSharedMapper() {
+  it('the add and get routes both build responses through the shared mapper (no inline definition)', function assertBothRoutesUseSharedMapper() {
     const source = readFileSync(universeRoutePath, 'utf-8');
     expect(
       localDefinitionRe('mapUniverseToResponse').exec(source),
@@ -117,7 +116,7 @@ describe('universe shared response mapper contract (Story 18.1)', () => {
     }
   });
 
-  it.skip('the add route does not hand-build zero responses', function assertNoHandBuiltZeroResponses() {
+  it('the add route does not hand-build zero responses', function assertNoHandBuiltZeroResponses() {
     const body = topLevelFunctionSource('handleAddUniverseRoute');
     expect(body, 'handleAddUniverseRoute source not found').not.toBe('');
     // Numeric response fields defaulted to 0 (e.g. `distribution: result.distribution ?? 0`,
