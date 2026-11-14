@@ -1,6 +1,6 @@
 import * as crypto from 'node:crypto';
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { generateSessionId } from '../utils/generate-session-id.function';
+import { extractSessionIdFromRequest } from '../../middleware/tracing-helpers';
 import { csrfTokenStore } from './csrf-token-store.constant';
 import { TOKEN_EXPIRY } from './token-expiry.constant';
 
@@ -121,7 +121,20 @@ async function validateStoredToken(
   reply: FastifyReply,
   presentedToken: string,
 ): Promise<boolean> {
-  const sessionId = generateSessionId(request);
+  // The session id is a server-issued unguessable value (see
+  // generate-session-id.function.ts), so it cannot be re-derived from the
+  // request. The client carries the issued id back via the `sessionId` cookie
+  // or `x-session-id` header; look up the stored entry under that presented id.
+  const sessionId = extractSessionIdFromRequest(request);
+
+  if (!sessionId) {
+    return sendTokenNotFoundError(
+      request,
+      reply,
+      '(no session id presented)',
+    );
+  }
+
   const storedData = csrfTokenStore.get(sessionId);
 
   if (!storedData) {

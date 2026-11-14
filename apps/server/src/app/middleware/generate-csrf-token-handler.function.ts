@@ -36,6 +36,19 @@ export async function generateCSRFTokenHandler(
     path: '/',
   });
 
+  // The session id is a server-issued unguessable value that cannot be
+  // re-derived from the request. Issue it in a NON-httpOnly cookie so the
+  // client can echo it back (cookie or x-session-id header) on subsequent
+  // requests; validate-csrf-token.function.ts reads it via
+  // extractSessionIdFromRequest to look up the stored entry.
+  reply.setCookie('sessionId', sessionId, {
+    httpOnly: false,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    maxAge: TOKEN_EXPIRY / 1000,
+    path: '/',
+  });
+
   // Also return in response body for client-side access
   await reply.send({
     csrfToken: token,
