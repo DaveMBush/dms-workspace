@@ -1,9 +1,6 @@
 import { FastifyInstance } from 'fastify';
-import { logger } from '../../../utils/structured-logger';
 import { prisma } from '../../prisma/prisma-client';
 import { recalculateUniverseVolatility } from '../../volatility/recalculate-universe-volatility.function';
-import type { ProcessedRow } from '../common/distribution-api.function';
-import { fetchDividendHistory } from '../common/dividend-history.service';
 import { getTableState } from '../common/get-table-state.function';
 import { parseSortFilterHeader } from '../common/parse-sort-filter-header.function';
 import registerAddSymbol from './add-symbol';
@@ -13,10 +10,12 @@ import registerGetAllUniverses from './get-all-universes';
 import registerSyncFromScreener from './sync-from-screener';
 import {
   deleteUniverseAndTrades,
+  fetchHistoryForSymbol,
+  fetchUpdatedUniverse,
   mapUniverseToResponse,
+  updateUniverseData,
   universeFromAddResult,
 } from './universe.service';
-import type { UniverseWithTrades } from './universe.service';
 import { Universe } from './universe.interface';
 
 function handleGetUniversesRoute(fastify: FastifyInstance): void {
@@ -128,66 +127,6 @@ function handleDeleteUniverseRoute(fastify: FastifyInstance): void {
       }
     },
   );
-}
-
-async function updateUniverseData(
-  id: string,
-  data: Omit<Universe, 'id'>,
-): Promise<unknown> {
-  return prisma.universe.update({
-    where: { id },
-    data: {
-      distribution: data.distribution,
-      distributions_per_year: data.distributions_per_year,
-      last_price: data.last_price,
-      most_recent_sell_date: data.most_recent_sell_date,
-      most_recent_sell_price: data.most_recent_sell_price,
-      symbol: data.symbol,
-      ex_date: data.ex_date,
-      risk_group_id: data.risk_group_id,
-      expired: data.expired,
-    },
-  });
-}
-
-async function fetchUpdatedUniverse(id: string): Promise<UniverseWithTrades[]> {
-  return prisma.universe.findMany({
-    where: { id },
-    include: {
-      trades: true,
-      _count: {
-        select: {
-          trades: { where: { deletedAt: null } },
-          divDeposits: { where: { deletedAt: null } },
-        },
-      },
-    },
-  });
-}
-
-async function fetchHistoryForSymbol(
-  symbol: string,
-  universeId: string,
-): Promise<ProcessedRow[]> {
-  try {
-    const history = await fetchDividendHistory(symbol);
-    if (history.length > 0) {
-      return history;
-    }
-  } catch (err) {
-    logger.warn('fetchDividendHistory failed, falling back to divDeposits', {
-      symbol,
-      error: err instanceof Error ? err.message : String(err),
-    });
-  }
-  const deposits = await prisma.divDeposits.findMany({
-    where: { universeId },
-    orderBy: { date: 'asc' },
-    select: { date: true, amount: true },
-  });
-  return deposits.map(function toProcessedRow(dep) {
-    return { date: dep.date, amount: dep.amount };
-  });
 }
 
 function handleUpdateUniverseRoute(fastify: FastifyInstance): void {

@@ -1,4 +1,7 @@
+import { logger } from '../../../utils/structured-logger';
 import { prisma } from '../../prisma/prisma-client';
+import type { ProcessedRow } from '../common/distribution-api.function';
+import { fetchDividendHistory } from '../common/dividend-history.service';
 import universeHelpers from './universe-helpers';
 import type { Universe } from './universe.interface';
 
@@ -116,4 +119,66 @@ export function universeFromAddResult(
     is_closed_end_fund: result.is_closed_end_fund,
     _count: { trades: 0, divDeposits: 0 },
   };
+}
+
+export async function updateUniverseData(
+  id: string,
+  data: Omit<Universe, 'id'>,
+): Promise<unknown> {
+  return prisma.universe.update({
+    where: { id },
+    data: {
+      distribution: data.distribution,
+      distributions_per_year: data.distributions_per_year,
+      last_price: data.last_price,
+      most_recent_sell_date: data.most_recent_sell_date,
+      most_recent_sell_price: data.most_recent_sell_price,
+      symbol: data.symbol,
+      ex_date: data.ex_date,
+      risk_group_id: data.risk_group_id,
+      expired: data.expired,
+    },
+  });
+}
+
+export async function fetchUpdatedUniverse(
+  id: string,
+): Promise<UniverseWithTrades[]> {
+  return prisma.universe.findMany({
+    where: { id },
+    include: {
+      trades: true,
+      _count: {
+        select: {
+          trades: { where: { deletedAt: null } },
+          divDeposits: { where: { deletedAt: null } },
+        },
+      },
+    },
+  });
+}
+
+export async function fetchHistoryForSymbol(
+  symbol: string,
+  universeId: string,
+): Promise<ProcessedRow[]> {
+  try {
+    const history = await fetchDividendHistory(symbol);
+    if (history.length > 0) {
+      return history;
+    }
+  } catch (err) {
+    logger.warn('fetchDividendHistory failed, falling back to divDeposits', {
+      symbol,
+      error: err instanceof Error ? err.message : String(err),
+    });
+  }
+  const deposits = await prisma.divDeposits.findMany({
+    where: { universeId },
+    orderBy: { date: 'asc' },
+    select: { date: true, amount: true },
+  });
+  return deposits.map(function toProcessedRow(dep) {
+    return { date: dep.date, amount: dep.amount };
+  });
 }
