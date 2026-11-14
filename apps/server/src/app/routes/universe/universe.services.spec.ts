@@ -31,7 +31,8 @@ function exportDeclarationRe(name: string): RegExp {
 function localModuleFiles(): string[] {
   const files = readdirSync(__dirname);
   return files.filter(
-    (file) => file.endsWith('.ts') && file !== 'index.ts' && !file.endsWith('.spec.ts'),
+    (file) =>
+      file.endsWith('.ts') && file !== 'index.ts' && !file.endsWith('.spec.ts'),
   );
 }
 
@@ -49,7 +50,9 @@ function isExportedByLocalModule(name: string): boolean {
 describe('universe service extraction contract (Story 18.1)', () => {
   it.skip('deleteUniverseAndTrades is not defined inline in universe/index.ts', function assertDeleteNotInline() {
     const source = readFileSync(universeRoutePath, 'utf-8');
-    expect(localDefinitionRe('deleteUniverseAndTrades').exec(source)).toBeNull();
+    expect(
+      localDefinitionRe('deleteUniverseAndTrades').exec(source),
+    ).toBeNull();
   });
 
   it.skip('isUniverseDeletable is not defined inline in universe/index.ts', function assertIsDeletableNotInline() {
@@ -59,7 +62,71 @@ describe('universe service extraction contract (Story 18.1)', () => {
 
   it.skip('deleteUniverseAndTrades and isUniverseDeletable are exported from a local services module', function assertExportedFromServices() {
     for (const name of ['deleteUniverseAndTrades', 'isUniverseDeletable']) {
-      expect(isExportedByLocalModule(name), `${name} must be exported by a local services module`).toBe(true);
+      expect(
+        isExportedByLocalModule(name),
+        `${name} must be exported by a local services module`,
+      ).toBe(true);
     }
+  });
+});
+
+// Story 18.1, Task 2 (AC #2): contract that the add and get endpoints produce
+// identical response shapes through ONE shared response mapper — no hand-built
+// zero responses duplicated between them.
+//
+// These assertions are RED against current production code: `mapUniverseToResponse`
+// is defined inline in `index.ts` (line 47), only the get/update routes call it,
+// and the add route (`handleAddUniverseRoute`) hand-builds a zero-filled response
+// literal. Story 18.2's first task removes the `it.skip` markers, confirms they
+// fail, then extracts until they pass. No production code is touched in this
+// story (18.1).
+
+/** Extracts the source text of a top-level (column-0) function declaration. */
+function topLevelFunctionSource(name: string): string {
+  const source = readFileSync(universeRoutePath, 'utf-8');
+  const start = source.indexOf(`function ${name}`);
+  if (start === -1) {
+    return '';
+  }
+  // Nested handlers are indented, so `\nfunction` only matches the next top-level declaration.
+  const nextDecl = /\nfunction\s+\w+/.exec(source.slice(start));
+  return source.slice(start, nextDecl ? start + nextDecl.index : source.length);
+}
+
+describe('universe shared response mapper contract (Story 18.1)', () => {
+  it.skip('mapUniverseToResponse is exported from a local module as the shared response mapper', function assertSharedMapperExported() {
+    expect(
+      isExportedByLocalModule('mapUniverseToResponse'),
+      'a local services/mapper module must export mapUniverseToResponse',
+    ).toBe(true);
+  });
+
+  it.skip('the add and get routes both build responses through the shared mapper (no inline definition)', function assertBothRoutesUseSharedMapper() {
+    const source = readFileSync(universeRoutePath, 'utf-8');
+    expect(
+      localDefinitionRe('mapUniverseToResponse').exec(source),
+      'mapUniverseToResponse must not be defined inline in universe/index.ts',
+    ).toBeNull();
+    for (const route of ['handleAddUniverseRoute', 'handleGetUniversesRoute']) {
+      const body = topLevelFunctionSource(route);
+      expect(body, `${route} source not found`).not.toBe('');
+      expect(
+        body,
+        `${route} must call the shared mapUniverseToResponse mapper`,
+      ).toContain('mapUniverseToResponse(');
+    }
+  });
+
+  it.skip('the add route does not hand-build zero responses', function assertNoHandBuiltZeroResponses() {
+    const body = topLevelFunctionSource('handleAddUniverseRoute');
+    expect(body, 'handleAddUniverseRoute source not found').not.toBe('');
+    // Numeric response fields defaulted to 0 (e.g. `distribution: result.distribution ?? 0`,
+    // `position: 0`) are the duplicated hand-built zero responses AC #2 forbids.
+    const zeroLiteralRe =
+      /\b(distribution|distributions_per_year|last_price|position|avg_purchase_yield_percent)\s*:\s*(?:result\.\w+\s*\?\?\s*)?0\b/;
+    expect(
+      zeroLiteralRe.test(body),
+      'add route must not hand-build zero response fields',
+    ).toBe(false);
   });
 });
