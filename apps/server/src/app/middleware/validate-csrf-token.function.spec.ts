@@ -137,7 +137,10 @@ describe('validateCSRFToken', () => {
   it('should reject request whose session id is not in the store', async () => {
     mockRequest = makeRequest({
       headers: { 'x-csrf-token': 'stored-token' },
-      cookies: { sessionId: 'unknown-session-id', 'csrf-token': 'stored-token' },
+      cookies: {
+        sessionId: 'unknown-session-id',
+        'csrf-token': 'stored-token',
+      },
     });
 
     const result = await validateCSRFToken(

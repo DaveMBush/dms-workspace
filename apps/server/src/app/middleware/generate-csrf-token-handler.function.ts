@@ -1,6 +1,5 @@
 import * as crypto from 'crypto';
 import { FastifyReply, FastifyRequest } from 'fastify';
-
 import { generateSessionId } from '../utils/generate-session-id.function';
 import { CSRFTokenData } from './csrf-token-data.interface';
 import { csrfTokenStore } from './csrf-token-store.constant';
@@ -12,7 +11,7 @@ function generateCSRFToken(): string {
 
 export async function generateCSRFTokenHandler(
   request: FastifyRequest,
-  reply: FastifyReply
+  reply: FastifyReply,
 ): Promise<void> {
   const token = generateCSRFToken();
   const sessionId = generateSessionId(request);

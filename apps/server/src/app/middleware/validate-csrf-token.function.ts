@@ -128,11 +128,7 @@ async function validateStoredToken(
   const sessionId = extractSessionIdFromRequest(request);
 
   if (!sessionId) {
-    return sendTokenNotFoundError(
-      request,
-      reply,
-      '(no session id presented)',
-    );
+    return sendTokenNotFoundError(request, reply, '(no session id presented)');
   }
 
   const storedData = csrfTokenStore.get(sessionId);
