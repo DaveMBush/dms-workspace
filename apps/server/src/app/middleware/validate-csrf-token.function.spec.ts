@@ -89,6 +89,21 @@ describe('validateCSRFToken', () => {
     expect(mockReply.code).not.toHaveBeenCalled();
   });
 
+  it('should skip CSRF validation for /ready health checks in development', async () => {
+    vi.stubEnv('NODE_ENV', 'development');
+    try {
+      const result = await validateCSRFToken(
+        makeRequest({ url: '/api/ready' }),
+        mockReply as FastifyReply,
+      );
+
+      expect(result).toBe(true);
+      expect(mockReply.code).not.toHaveBeenCalled();
+    } finally {
+      vi.unstubAllEnvs();
+    }
+  });
+
   it('should reject POST request without CSRF token', async () => {
     const result = await validateCSRFToken(
       mockRequest,
