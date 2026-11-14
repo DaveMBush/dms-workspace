@@ -1,6 +1,17 @@
 /* eslint-disable vitest/no-conditional-expect -- Pre-existing: catch-block assertions verify error properties */
+/* eslint-disable vitest/no-disabled-tests -- red-phase (Story 19.2) contract tests; intentionally skipped until the single-classifier consolidation lands */
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { AwsConfigManager, validateEnvironmentVariables } from './aws-config';
+
+// Story 19.1 (red phase): the assertions in the "Single Environment Classifier"
+// block below are RED against current production code — aws-config.ts exposes
+// two divergent NODE_ENV classifiers (`isDevEnvironment()` and `isDevOrTest()`)
+// instead of one. They stay `it.skip` per Story 19.1 AC #4/#5 so the suite is
+// green until then; Story 19.2's first task removes the skip markers, confirms
+// they fail, then consolidates until they pass. No production code changes in
+// this story (see scripts/check-no-skipped-tests.sh for the exemption rule).
 
 // Mock AWS SDK with factory functions to avoid hoisting issues
 const { mockSend, mockSSMClient, mockGetParametersCommand } = vi.hoisted(() => {
@@ -337,6 +348,45 @@ describe('AWS Configuration', () => {
       }
 
       consoleSpy.mockRestore();
+    });
+  });
+
+  // Story 19.1 Task 1 (AC #1): single-classifier contract. RED against current
+  // code — aws-config.ts defines two divergent NODE_ENV classifiers,
+  // `isDevEnvironment()` and `isDevOrTest()`, used by the two call sites in
+  // getDatabaseConfig() and getCognitoConfig(). Skipped per AC #4; Story 19.2
+  // removes the skip markers, confirms red, then consolidates to one classifier.
+  describe('Single Environment Classifier (Story 19.1 red phase)', () => {
+    const source = readFileSync(join(__dirname, 'aws-config.ts'), 'utf-8');
+
+    it.skip('should define exactly one NODE_ENV environment classifier', () => {
+      // A "classifier" is a method whose body branches on process.env.NODE_ENV.
+      // Today both `isDevEnvironment()` and `isDevOrTest()` match, so this fails.
+      const classifiers = source.match(
+        /private\s+\w+\s*\(\s*\)\s*:\s*boolean\s*\{[^}]*process\.env\.NODE_ENV[^}]*\}/gs,
+      ) ?? [];
+
+      expect(classifiers).toHaveLength(1);
+    });
+
+    it.skip('should route both former call sites through the single classifier', () => {
+      // getDatabaseConfig() calls isDevEnvironment(); getCognitoConfig() calls
+      // isDevOrTest(). After consolidation, neither name may remain and every
+      // NODE_ENV branch must go through the one surviving classifier.
+      expect(source).not.toMatch(/isDevEnvironment\s*\(\s*\)/);
+      expect(source).not.toMatch(/isDevOrTest\s*\(\s*\)/);
+
+      const classifiers = source.match(
+        /private\s+\w+\s*\(\s*\)\s*:\s*boolean\s*\{[^}]*process\.env\.NODE_ENV[^}]*\}/gs,
+      ) ?? [];
+      expect(classifiers).toHaveLength(1);
+
+      // Both call sites must reference the single classifier.
+      const [classifier] = classifiers;
+      const name = /private\s+(\w+)\s*\(\s*\)/.exec(classifier)?.[1];
+      expect(name).toBeDefined();
+      const callSiteCount = [...source.matchAll(new RegExp(`this\\.${name}\\(\\)`, 'g'))].length;
+      expect(callSiteCount).toBeGreaterThanOrEqual(2);
     });
   });
 });
