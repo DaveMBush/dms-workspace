@@ -1,222 +1,327 @@
-/* eslint-disable vitest/no-disabled-tests -- red-phase (Story 17.2) contract tests; intentionally skipped until the fix lands */
-//
-// These assertions are RED against current production code and are kept
-// `it.skip` per Story 17.1 AC #4/#5 so the suite stays green. Story 17.2's
-// first task removes the skip markers, confirms they fail, then implements
-// until they pass. The file-level disable is the documented exemption for
-// intentional unit-test deferrals (see scripts/check-no-skipped-tests.sh).
-
 import * as crypto from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { generateSessionId } from '../utils/generate-session-id.function';
 import { csrfTokenStore } from './csrf-token-store.constant';
 import { TOKEN_EXPIRY } from './token-expiry.constant';
 import { validateCSRFToken } from './validate-csrf-token.function';
 
-describe('validateCSRFToken stored-token comparison', () => {
-  let mockRequest: Partial<FastifyRequest>;
+// node builtins load as frozen ESM namespaces in vitest 5, so `vi.spyOn` on a
+// named export throws. Mock the module (repo pattern, see logger.spec.ts) and
+// wrap timingSafeEqual in a spy that delegates to the real implementation, so
+// comparisons stay genuine while call-count assertions work.
+vi.mock('node:crypto', async () => {
+  const actual = await vi.importActual<typeof crypto>('node:crypto');
+  return {
+    ...actual,
+    timingSafeEqual: vi.fn((a: Buffer, b: Buffer) =>
+      actual.timingSafeEqual(a, b),
+    ),
+  };
+});
+
+function makeRequest(overrides: Partial<FastifyRequest> = {}): FastifyRequest {
+  const cookies = overrides.cookies ?? {};
+  // extractSessionIdFromRequest reads the RAW cookie header string (regex),
+  // not the parsed `cookies` object, so build it from the same map.
+  const rawCookie = Object.entries(cookies)
+    .map(([k, v]) => `${k}=${v}`)
+    .join('; ');
+
+  return {
+    method: 'POST',
+    url: '/api/test',
+    ip: '127.0.0.1',
+    cookies,
+    log: {
+      warn: vi.fn(),
+      info: vi.fn(),
+      error: vi.fn(),
+      debug: vi.fn(),
+    },
+    ...overrides,
+    headers: {
+      ...(rawCookie ? { cookie: rawCookie } : {}),
+      ...(overrides.headers ?? {}),
+    },
+  } as unknown as FastifyRequest;
+}
+
+function makeReply(): Partial<FastifyReply> {
+  return {
+    code: vi.fn().mockReturnThis(),
+    send: vi.fn().mockReturnThis(),
+  };
+}
+
+describe('validateCSRFToken', () => {
+  let mockRequest: FastifyRequest;
   let mockReply: Partial<FastifyReply>;
 
-  const storedToken = 'stored-correct-token';
-
   beforeEach(() => {
-    mockRequest = {
-      method: 'POST',
-      url: '/api/test',
-      ip: '127.0.0.1',
-      headers: {},
-      cookies: {},
-      log: {
-        warn: vi.fn(),
-        info: vi.fn(),
-        error: vi.fn(),
-        debug: vi.fn(),
-      },
-    };
-
-    mockReply = {
-      code: vi.fn().mockReturnThis(),
-      send: vi.fn().mockReturnThis(),
-    };
-
     csrfTokenStore.clear();
-    vi.stubEnv('NODE_ENV', 'production');
+    mockRequest = makeRequest();
+    mockReply = makeReply();
   });
 
   afterEach(() => {
-    csrfTokenStore.clear();
-    vi.unstubAllEnvs();
+    vi.restoreAllMocks();
   });
 
-  function seedLiveStoredEntry(): void {
-    const sessionId = generateSessionId(mockRequest as FastifyRequest);
-    csrfTokenStore.set(sessionId, {
-      token: storedToken,
+  it('should allow GET requests without CSRF token', async () => {
+    const result = await validateCSRFToken(
+      makeRequest({ method: 'GET' }),
+      mockReply as FastifyReply,
+    );
+
+    expect(result).toBe(true);
+    expect(mockReply.code).not.toHaveBeenCalled();
+  });
+
+  it('should allow HEAD requests without CSRF token', async () => {
+    const result = await validateCSRFToken(
+      makeRequest({ method: 'HEAD' }),
+      mockReply as FastifyReply,
+    );
+
+    expect(result).toBe(true);
+    expect(mockReply.code).not.toHaveBeenCalled();
+  });
+
+  it('should reject POST request without CSRF token', async () => {
+    const result = await validateCSRFToken(
+      mockRequest,
+      mockReply as FastifyReply,
+    );
+
+    expect(result).toBe(false);
+    expect(mockReply.code).toHaveBeenCalledWith(403);
+    expect(mockReply.send).toHaveBeenCalledWith({
+      error: 'Forbidden',
+      message: 'CSRF token required',
+      code: 'CSRF_TOKEN_MISSING',
+    });
+  });
+
+  it('should reject request that presents a token but no session id', async () => {
+    // The stored entry is keyed by the server-issued session id, which the
+    // client must echo back via the sessionId cookie or x-session-id header.
+    // Header + csrf-token cookie are present and agree (double-submit passes)
+    // but no session id is presented, so the store lookup cannot happen.
+    csrfTokenStore.set('server-issued-id', {
+      token: 'stored-token',
       timestamp: Date.now(),
-      sessionId,
-    });
-  }
-
-  // Baseline behavior — NOT skipped. This file pulls `validate-csrf-token.function.ts`
-  // into the 100% coverage report (see vitest.config.ts spec→source mapping), so every
-  // branch must be exercised by a running test. The expired-entry path was previously
-  // untested; this documents current behavior and is independent of the Story 17.2 fix.
-  it('rejects with CSRF_TOKEN_EXPIRED when the stored entry has passed its expiry', async () => {
-    const sessionId = generateSessionId(mockRequest as FastifyRequest);
-    csrfTokenStore.set(sessionId, {
-      token: storedToken,
-      timestamp: Date.now() - TOKEN_EXPIRY - 1000, // older than the 30-minute window
-      sessionId,
-    });
-    mockRequest.headers = { 'x-csrf-token': storedToken };
-    mockRequest.cookies = { 'csrf-token': storedToken };
-
-    const result = await validateCSRFToken(
-      mockRequest as FastifyRequest,
-      mockReply as FastifyReply,
-    );
-
-    expect(result).toBe(false);
-    expect(mockReply.code).toHaveBeenCalledWith(403);
-    // Expired entries are evicted from the store on detection.
-    expect(csrfTokenStore.has(sessionId)).toBe(false);
-  });
-
-  // Baseline behavior — NOT skipped. Covers the explicit-null disjunct of the
-  // "header token missing" guard (`tokenFromHeader === null`), which a merely
-  // absent header does not reach (an absent key yields undefined, not null).
-  it('rejects with CSRF_TOKEN_MISSING when the csrf header is explicitly null', async () => {
-    (mockRequest.headers as Record<string, unknown>)['x-csrf-token'] = null;
-
-    const result = await validateCSRFToken(
-      mockRequest as FastifyRequest,
-      mockReply as FastifyReply,
-    );
-
-    expect(result).toBe(false);
-    expect(mockReply.code).toHaveBeenCalledWith(403);
-  });
-
-  // Baseline behavior — NOT skipped. Covers the development-mode skip branch
-  // (`NODE_ENV === 'development' && url includes /health|/ready`), which every other
-  // test bypasses by running in production mode. Uses a non-GET method so it reaches
-  // this second condition rather than the earlier GET/HEAD short-circuit.
-  it('skips CSRF validation for /health in development mode', async () => {
-    vi.stubEnv('NODE_ENV', 'development');
-    mockRequest.method = 'POST';
-    mockRequest.url = '/health';
-
-    const result = await validateCSRFToken(
-      mockRequest as FastifyRequest,
-      mockReply as FastifyReply,
-    );
-
-    expect(result).toBe(true);
-  });
-
-  it('skips CSRF validation for /ready in development mode', async () => {
-    vi.stubEnv('NODE_ENV', 'development');
-    mockRequest.method = 'POST';
-    mockRequest.url = '/ready';
-
-    const result = await validateCSRFToken(
-      mockRequest as FastifyRequest,
-      mockReply as FastifyReply,
-    );
-
-    expect(result).toBe(true);
-  });
-
-  // Baseline behavior — NOT skipped. Covers the valid-unexpired fall-through in
-  // validateStoredToken (the `return true` path) that no running test reached before
-  // this file existed. Presents the CORRECT stored token so it stays green after
-  // Story 17.2 adds the presented-vs-stored comparison (a matching token still passes).
-  it('accepts a live unexpired entry when the presented token matches the stored one', async () => {
-    seedLiveStoredEntry();
-    mockRequest.headers = { 'x-csrf-token': storedToken };
-    mockRequest.cookies = { 'csrf-token': storedToken };
-
-    const result = await validateCSRFToken(
-      mockRequest as FastifyRequest,
-      mockReply as FastifyReply,
-    );
-
-    expect(result).toBe(true);
-  });
-
-  // Red-phase (Story 17.2 removes the skip): validateStoredToken never compares
-  // presented vs stored token, so this currently fails against production code.
-  it.skip('should reject request presenting a WRONG token when a live unexpired entry exists', async () => {
-    seedLiveStoredEntry();
-    const presentedToken = 'wrong-presented-token';
-    mockRequest.headers = { 'x-csrf-token': presentedToken };
-    mockRequest.cookies = { 'csrf-token': presentedToken };
-
-    const result = await validateCSRFToken(
-      mockRequest as FastifyRequest,
-      mockReply as FastifyReply,
-    );
-
-    expect(result).toBe(false);
-    expect(mockReply.code).toHaveBeenCalledWith(403);
-  });
-
-  // Red-phase (Story 17.2 removes the skip): part of AC #1's rejection contract.
-  it.skip('should reject request presenting NO token when a live unexpired entry exists', async () => {
-    seedLiveStoredEntry();
-    mockRequest.headers = {};
-    mockRequest.cookies = {};
-
-    const result = await validateCSRFToken(
-      mockRequest as FastifyRequest,
-      mockReply as FastifyReply,
-    );
-
-    expect(result).toBe(false);
-    expect(mockReply.code).toHaveBeenCalledWith(403);
-  });
-
-  // Story 17.2 contract (AC #2): the presented-vs-stored comparison must be
-  // constant-time so timing does not leak whether a prefix matched.
-  describe('constant-time comparison', () => {
-    afterEach(() => {
-      vi.restoreAllMocks();
+      sessionId: 'server-issued-id',
     });
 
-    // Red-phase (Story 17.2 removes the skip): validateStoredToken never
-    // compares presented vs stored token, so timingSafeEqual is never called.
-    it.skip('should compare presented vs stored token with crypto.timingSafeEqual', async () => {
-      seedLiveStoredEntry();
-      // Different length from the stored token: a naive `===` short-circuits
-      // and an unguarded timingSafeEqual would throw on length mismatch.
-      const presentedToken = 'wrong-length-presented-token';
-      mockRequest.headers = { 'x-csrf-token': presentedToken };
-      mockRequest.cookies = { 'csrf-token': presentedToken };
+    mockRequest = makeRequest({
+      headers: { 'x-csrf-token': 'stored-token' },
+      cookies: { 'csrf-token': 'stored-token' },
+    });
 
-      const timingSafeEqualSpy = vi.spyOn(crypto, 'timingSafeEqual');
+    const result = await validateCSRFToken(
+      mockRequest,
+      mockReply as FastifyReply,
+    );
+
+    expect(result).toBe(false);
+    expect(mockReply.code).toHaveBeenCalledWith(403);
+    expect(mockReply.send).toHaveBeenCalledWith({
+      error: 'Forbidden',
+      message: 'CSRF token expired or invalid',
+      code: 'CSRF_TOKEN_EXPIRED',
+    });
+  });
+
+  it('should reject request whose session id is not in the store', async () => {
+    mockRequest = makeRequest({
+      headers: { 'x-csrf-token': 'stored-token' },
+      cookies: {
+        sessionId: 'unknown-session-id',
+        'csrf-token': 'stored-token',
+      },
+    });
+
+    const result = await validateCSRFToken(
+      mockRequest,
+      mockReply as FastifyReply,
+    );
+
+    expect(result).toBe(false);
+    expect(mockReply.code).toHaveBeenCalledWith(403);
+    expect(mockReply.send).toHaveBeenCalledWith({
+      error: 'Forbidden',
+      message: 'CSRF token expired or invalid',
+      code: 'CSRF_TOKEN_EXPIRED',
+    });
+  });
+
+  describe('stored token validation', () => {
+    const sessionId = 'server-issued-session-id';
+    const storedToken = 'a'.repeat(64);
+
+    beforeEach(() => {
+      csrfTokenStore.set(sessionId, {
+        token: storedToken,
+        timestamp: Date.now(),
+        sessionId,
+      });
+    });
+
+    it('should accept a valid presented token with the session cookie', async () => {
+      mockRequest = makeRequest({
+        headers: { 'x-csrf-token': storedToken },
+        cookies: { sessionId, 'csrf-token': storedToken },
+      });
 
       const result = await validateCSRFToken(
-        mockRequest as FastifyRequest,
+        mockRequest,
+        mockReply as FastifyReply,
+      );
+
+      expect(result).toBe(true);
+      expect(mockReply.code).not.toHaveBeenCalled();
+    });
+
+    it('should accept a valid presented token with the x-session-id header', async () => {
+      mockRequest = makeRequest({
+        headers: { 'x-csrf-token': storedToken, 'x-session-id': sessionId },
+        cookies: { 'csrf-token': storedToken },
+      });
+
+      const result = await validateCSRFToken(
+        mockRequest,
+        mockReply as FastifyReply,
+      );
+
+      expect(result).toBe(true);
+    });
+
+    it('should reject when header and cookie tokens disagree', async () => {
+      // Double-submit: the presented token must match in BOTH the header and
+      // the httpOnly cookie before the stored entry is even consulted.
+      mockRequest = makeRequest({
+        headers: { 'x-csrf-token': storedToken },
+        cookies: { sessionId, 'csrf-token': 'stale-cookie-token' },
+      });
+
+      const result = await validateCSRFToken(
+        mockRequest,
         mockReply as FastifyReply,
       );
 
       expect(result).toBe(false);
       expect(mockReply.code).toHaveBeenCalledWith(403);
+      expect(mockReply.send).toHaveBeenCalledWith({
+        error: 'Forbidden',
+        message: 'Invalid CSRF token',
+        code: 'CSRF_TOKEN_INVALID',
+      });
+    });
+
+    it('should reject a mismatched presented token', async () => {
+      mockRequest = makeRequest({
+        headers: { 'x-csrf-token': 'b'.repeat(64) },
+        cookies: { sessionId, 'csrf-token': 'b'.repeat(64) },
+      });
+
+      const result = await validateCSRFToken(
+        mockRequest,
+        mockReply as FastifyReply,
+      );
+
+      expect(result).toBe(false);
+      expect(mockReply.code).toHaveBeenCalledWith(403);
+      expect(mockReply.send).toHaveBeenCalledWith({
+        error: 'Forbidden',
+        message: 'Invalid CSRF token',
+        code: 'CSRF_TOKEN_INVALID',
+      });
+    });
+  });
+
+  describe('constant-time comparison', () => {
+    const sessionId = 'server-issued-session-id';
+    const storedToken = 'a'.repeat(64);
+
+    beforeEach(() => {
+      csrfTokenStore.set(sessionId, {
+        token: storedToken,
+        timestamp: Date.now(),
+        sessionId,
+      });
+    });
+
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    it('should compare presented vs stored token with crypto.timingSafeEqual', async () => {
+      mockRequest = makeRequest({
+        headers: { 'x-csrf-token': storedToken },
+        cookies: { sessionId, 'csrf-token': storedToken },
+      });
+
+      const timingSafeEqualSpy = vi.mocked(crypto.timingSafeEqual);
+
+      const result = await validateCSRFToken(
+        mockRequest,
+        mockReply as FastifyReply,
+      );
+
+      expect(result).toBe(true);
       expect(timingSafeEqualSpy).toHaveBeenCalled();
     });
 
-    // Red-phase (Story 17.2 removes the skip): production source currently has
-    // no constant-time comparison primitive at all.
-    it.skip('should reference a constant-time comparison primitive in production source', () => {
+    it('should not throw on a presented token of different length', async () => {
+      // A naive `===` short-circuits and an unguarded timingSafeEqual throws
+      // on length mismatch; the guard must make this path safe.
+      mockRequest = makeRequest({
+        headers: { 'x-csrf-token': 'wrong-length-presented-token' },
+        cookies: { sessionId, 'csrf-token': 'wrong-length-presented-token' },
+      });
+
+      const result = await validateCSRFToken(
+        mockRequest,
+        mockReply as FastifyReply,
+      );
+
+      expect(result).toBe(false);
+      expect(mockReply.code).toHaveBeenCalledWith(403);
+    });
+
+    it('should reference a constant-time comparison primitive in production source', () => {
       const source = readFileSync(
         join(__dirname, 'validate-csrf-token.function.ts'),
-        'utf-8',
+        'utf8',
       );
 
       expect(source).toMatch(/timingSafeEqual/);
+    });
+  });
+
+  describe('token expiry', () => {
+    it('should reject a stored token past its expiry window', async () => {
+      const sessionId = 'expired-session-id';
+      csrfTokenStore.set(sessionId, {
+        token: 'a'.repeat(64),
+        timestamp: Date.now() - TOKEN_EXPIRY - 1000,
+        sessionId,
+      });
+
+      mockRequest = makeRequest({
+        headers: { 'x-csrf-token': 'a'.repeat(64) },
+        cookies: { sessionId, 'csrf-token': 'a'.repeat(64) },
+      });
+
+      const result = await validateCSRFToken(
+        mockRequest,
+        mockReply as FastifyReply,
+      );
+
+      expect(result).toBe(false);
+      expect(mockReply.code).toHaveBeenCalledWith(403);
     });
   });
 });

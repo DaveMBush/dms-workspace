@@ -1,12 +1,12 @@
+import * as crypto from 'node:crypto';
 import { FastifyReply, FastifyRequest } from 'fastify';
-
-import { generateSessionId } from '../utils/generate-session-id.function';
+import { extractSessionIdFromRequest } from '../../middleware/tracing-helpers';
 import { csrfTokenStore } from './csrf-token-store.constant';
 import { TOKEN_EXPIRY } from './token-expiry.constant';
 
 export async function validateCSRFToken(
   request: FastifyRequest,
-  reply: FastifyReply
+  reply: FastifyReply,
 ): Promise<boolean> {
   if (shouldSkipCSRFValidation(request)) {
     return true;
@@ -23,7 +23,7 @@ export async function validateCSRFToken(
       request,
       reply,
       'CSRF_TOKEN_MISSING',
-      'CSRF token required'
+      'CSRF token required',
     );
   }
 
@@ -37,7 +37,7 @@ export async function validateCSRFToken(
       request,
       reply,
       tokenFromHeader,
-      tokenFromCookie
+      tokenFromCookie,
     );
   }
 
@@ -71,7 +71,7 @@ async function sendCSRFError(
   request: FastifyRequest,
   reply: FastifyReply,
   code: string,
-  message: string
+  message: string,
 ): Promise<boolean> {
   request.log.warn(
     {
@@ -79,7 +79,7 @@ async function sendCSRFError(
       method: request.method,
       ip: request.ip,
     },
-    'CSRF token missing from request header'
+    'CSRF token missing from request header',
   );
 
   await reply.code(403).send({
@@ -94,7 +94,7 @@ async function sendCSRFTokenMismatchError(
   request: FastifyRequest,
   reply: FastifyReply,
   tokenFromHeader: string | undefined,
-  tokenFromCookie: string | undefined
+  tokenFromCookie: string | undefined,
 ): Promise<boolean> {
   request.log.warn(
     {
@@ -105,7 +105,7 @@ async function sendCSRFTokenMismatchError(
       hasCookieToken: typeof tokenFromCookie === 'string',
       tokensMatch: tokenFromHeader === tokenFromCookie,
     },
-    'CSRF token validation failed'
+    'CSRF token validation failed',
   );
 
   await reply.code(403).send({
@@ -119,9 +119,18 @@ async function sendCSRFTokenMismatchError(
 async function validateStoredToken(
   request: FastifyRequest,
   reply: FastifyReply,
-  _: string
+  presentedToken: string,
 ): Promise<boolean> {
-  const sessionId = generateSessionId(request);
+  // The session id is a server-issued unguessable value (see
+  // generate-session-id.function.ts), so it cannot be re-derived from the
+  // request. The client carries the issued id back via the `sessionId` cookie
+  // or `x-session-id` header; look up the stored entry under that presented id.
+  const sessionId = extractSessionIdFromRequest(request);
+
+  if (!sessionId) {
+    return sendTokenNotFoundError(request, reply, '(no session id presented)');
+  }
+
   const storedData = csrfTokenStore.get(sessionId);
 
   if (!storedData) {
@@ -138,13 +147,34 @@ async function validateStoredToken(
     });
   }
 
+  // Constant-time comparison: hash both sides to a fixed length first so
+  // timingSafeEqual never throws on differing lengths and no prefix-match
+  // information leaks via early return.
+  const presentedDigest = crypto
+    .createHash('sha256')
+    .update(presentedToken)
+    .digest();
+  const storedDigest = crypto
+    .createHash('sha256')
+    .update(storedData.token)
+    .digest();
+
+  if (!crypto.timingSafeEqual(presentedDigest, storedDigest)) {
+    return sendCSRFTokenMismatchError(
+      request,
+      reply,
+      presentedToken,
+      undefined,
+    );
+  }
+
   return true;
 }
 
 async function sendTokenNotFoundError(
   request: FastifyRequest,
   reply: FastifyReply,
-  sessionId: string
+  sessionId: string,
 ): Promise<boolean> {
   request.log.warn(
     {
@@ -153,7 +183,7 @@ async function sendTokenNotFoundError(
       ip: request.ip,
       sessionId,
     },
-    'CSRF token not found in store'
+    'CSRF token not found in store',
   );
 
   await reply.code(403).send({
@@ -173,7 +203,7 @@ interface TokenExpiredParams {
 async function sendTokenExpiredError(
   request: FastifyRequest,
   reply: FastifyReply,
-  params: TokenExpiredParams
+  params: TokenExpiredParams,
 ): Promise<boolean> {
   request.log.warn(
     {
@@ -183,7 +213,7 @@ async function sendTokenExpiredError(
       sessionId: params.sessionId,
       tokenAge: params.now - params.tokenTimestamp,
     },
-    'CSRF token expired'
+    'CSRF token expired',
   );
 
   await reply.code(403).send({

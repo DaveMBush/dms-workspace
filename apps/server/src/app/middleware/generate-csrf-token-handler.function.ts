@@ -1,6 +1,5 @@
 import * as crypto from 'crypto';
 import { FastifyReply, FastifyRequest } from 'fastify';
-
 import { generateSessionId } from '../utils/generate-session-id.function';
 import { CSRFTokenData } from './csrf-token-data.interface';
 import { csrfTokenStore } from './csrf-token-store.constant';
@@ -12,7 +11,7 @@ function generateCSRFToken(): string {
 
 export async function generateCSRFTokenHandler(
   request: FastifyRequest,
-  reply: FastifyReply
+  reply: FastifyReply,
 ): Promise<void> {
   const token = generateCSRFToken();
   const sessionId = generateSessionId(request);
@@ -30,6 +29,19 @@ export async function generateCSRFTokenHandler(
   // Set CSRF token in HTTP-only cookie
   reply.setCookie('csrf-token', token, {
     httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    maxAge: TOKEN_EXPIRY / 1000,
+    path: '/',
+  });
+
+  // The session id is a server-issued unguessable value that cannot be
+  // re-derived from the request. Issue it in a NON-httpOnly cookie so the
+  // client can echo it back (cookie or x-session-id header) on subsequent
+  // requests; validate-csrf-token.function.ts reads it via
+  // extractSessionIdFromRequest to look up the stored entry.
+  reply.setCookie('sessionId', sessionId, {
+    httpOnly: false,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict',
     maxAge: TOKEN_EXPIRY / 1000,
