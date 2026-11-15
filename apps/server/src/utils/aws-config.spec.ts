@@ -364,7 +364,8 @@ describe('AWS Configuration', () => {
 
     it('should define exactly one NODE_ENV environment classifier', () => {
       // A "classifier" is a method whose body branches on process.env.NODE_ENV.
-      // Today both `isDevEnvironment()` and `isDevOrTest()` match, so this fails.
+      // In the red phase both `isDevEnvironment()` and `isDevOrTest()` matched;
+      // after consolidation exactly one does.
       const classifiers =
         source.match(
           /private\s+\w+\s*\(\s*\)\s*:\s*boolean\s*\{[^}]*process\.env\.NODE_ENV[^}]*\}/gs,
@@ -374,9 +375,10 @@ describe('AWS Configuration', () => {
     });
 
     it('should route both former call sites through the single classifier', () => {
-      // getDatabaseConfig() calls isDevEnvironment(); getCognitoConfig() calls
-      // isDevOrTest(). After consolidation, neither name may remain and every
-      // NODE_ENV branch must go through the one surviving classifier.
+      // In the red phase getDatabaseConfig() called isDevEnvironment() and
+      // getCognitoConfig() called isDevOrTest(). After consolidation, neither
+      // name may remain and every NODE_ENV branch must go through the one
+      // surviving classifier.
       expect(source).not.toMatch(/isDevEnvironment\s*\(\s*\)/);
       expect(source).not.toMatch(/isDevOrTest\s*\(\s*\)/);
 
@@ -422,13 +424,10 @@ describe('AWS Configuration', () => {
       ['test', true],
       ['local', true],
       ['production', false],
-    ])(
-      'should classify NODE_ENV=%s as %s',
-      (nodeEnv, expected) => {
-        process.env.NODE_ENV = nodeEnv;
-        expect(invokeClassifier()).toBe(expected);
-      },
-    );
+    ])('should classify NODE_ENV=%s as %s', (nodeEnv, expected) => {
+      process.env.NODE_ENV = nodeEnv;
+      expect(invokeClassifier()).toBe(expected);
+    });
 
     // Story 19.1 Task 3 (AC #3): no broken-config fallback from missing
     // DATABASE_URL. getLocalDatabaseConfig() must never resolve with an empty
