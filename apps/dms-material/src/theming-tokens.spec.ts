@@ -1,4 +1,4 @@
-/* eslint-disable vitest/no-disabled-tests -- red-phase (Story 20.1) contract tests; intentionally skipped until the token wiring lands */
+/* eslint-disable vitest/no-disabled-tests, sonarjs/no-skipped-tests -- red-phase (Story 20.1) contract tests; intentionally skipped until the token wiring lands */
 
 // Story 20.1: red-phase contract tests for a single shared `--dms-*` token source.
 // AC #1 — Tailwind's `theme.extend` must resolve from the same `--dms-*` custom
@@ -7,11 +7,13 @@
 // wires the tokens; Story 20.2's first task removes the skip markers, confirms
 // they FAIL against current code, then implements until green.
 
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 const appDir = join(import.meta.dirname, '..');
+const stylesScssPath = join(import.meta.dirname, 'styles.scss');
+const componentTreeRoot = join(import.meta.dirname, 'app');
 const tailwindConfigPath = join(appDir, 'tailwind.config.js');
 const themeVariablesScssPath = join(
   import.meta.dirname,
@@ -19,38 +21,41 @@ const themeVariablesScssPath = join(
   '_theme-variables.scss',
 );
 
+function isQuoteChar(ch: string): boolean {
+  return ch === "'" || ch === '"' || ch === '`';
+}
+
+/** Advance one char of an open string, clearing `state.quote` when it closes. */
+function stepStringState(ch: string, state: { quote: string | null }): void {
+  if (ch === '\\') {
+    return; // escaped char — stay inside the string
+  }
+  if (ch === state.quote) {
+    state.quote = null;
+  }
+}
+
 /**
  * Extract the raw source text of the `extend: { ... }` object inside
  * tailwind.config.js. Brace-matched (string-aware) so it stays correct once
  * Story 20.2 fills the block with nested value objects.
  */
 function extractExtendBlock(source: string): string {
-  const anchor = source.indexOf('extend');
-  expect(anchor).toBeGreaterThanOrEqual(0);
-  const openBrace = source.indexOf('{', anchor);
-  expect(openBrace).toBeGreaterThan(anchor);
-
+  const openBrace = source.indexOf('{', source.indexOf('extend'));
   let depth = 0;
-  let inString: string | null = null;
-  for (let i = openBrace; i < source.length; i++) {
+  const state: { quote: string | null } = { quote: null };
+  for (let i = openBrace; i < source.length; i += 1) {
     const ch = source[i];
-    if (inString) {
-      if (ch === '\\') {
-        i++;
-      } else if (ch === inString) {
-        inString = null;
-      }
+    if (state.quote !== null) {
+      stepStringState(ch, state);
       continue;
     }
-    if (ch === "'" || ch === '"' || ch === '`') {
-      inString = ch;
+    if (isQuoteChar(ch)) {
+      state.quote = ch;
     } else if (ch === '{') {
-      depth++;
-    } else if (ch === '}') {
-      depth--;
-      if (depth === 0) {
-        return source.slice(openBrace + 1, i);
-      }
+      depth += 1;
+    } else if (ch === '}' && --depth === 0) {
+      return source.slice(openBrace + 1, i);
     }
   }
   throw new Error('unbalanced braces in tailwind.config.js theme.extend');
@@ -65,6 +70,65 @@ function collectDmsTokenHexes(scss: string): string[] {
     hexes.add(match[1].toLowerCase());
   }
   return [...hexes];
+}
+
+/** Recursively collect every .ts/.html file under dir (components + templates). */
+function listComponentFiles(dir: string): string[] {
+  const files: string[] = [];
+  for (const entry of readdirSync(dir)) {
+    const full = join(dir, entry);
+    if (statSync(full).isDirectory()) {
+      files.push(...listComponentFiles(full));
+    } else if (/\.tsx?$|\.html$/.test(entry)) {
+      files.push(full);
+    }
+  }
+  return files;
+}
+
+/** Strip full-line SCSS comments so class tokens inside them are not counted. */
+function stripScssComments(source: string): string {
+  return source
+    .split('\n')
+    .map((line) => (line.trimStart().startsWith('//') ? '' : line))
+    .join('\n');
+}
+
+/**
+ * Extract every app-defined class name used in a selector of the SCSS.
+ * Framework classes (Material/CDK) are excluded: anything starting with
+ * `mdc-` or `mat-mdc-`.
+ */
+function extractCustomUtilityClasses(scss: string): string[] {
+  const names = new Set<string>();
+  const re = /\.([a-zA-Z][\w-]*)/g;
+  let match: RegExpExecArray | null;
+  while ((match = re.exec(stripScssComments(scss))) !== null) {
+    const name = match[1];
+    if (name.startsWith('mdc-') || name.startsWith('mat-mdc-')) {
+      continue;
+    }
+    names.add(name);
+  }
+  return [...names].sort((a, b) => a.localeCompare(b));
+}
+
+/** True when the class token appears as a standalone reference in any file. */
+function isClassReferenced(className: string, files: string[]): boolean {
+  const escaped = className.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  // Lookarounds keep `--dms-text-primary`-style custom-property usages from
+  // counting as a reference to the `.text-primary` class.
+  const re = new RegExp(`(?<![\\w-])${escaped}(?![\\w-])`);
+  return files.some((file) => re.test(readFileSync(file, 'utf-8')));
+}
+
+/** Classes defined in styles.scss that no component or template references. */
+function findDeadUtilityClasses(): string[] {
+  const scss = readFileSync(stylesScssPath, 'utf-8');
+  const files = listComponentFiles(componentTreeRoot);
+  return extractCustomUtilityClasses(scss).filter(
+    (name) => !isClassReferenced(name, files),
+  );
 }
 
 describe('Story 20.1 — shared --dms-* token source', () => {
@@ -85,5 +149,10 @@ describe('Story 20.1 — shared --dms-* token source', () => {
     });
   });
 
-  // Task 2 (AC #2): dead custom utility class assertions for styles.scss land here.
+  describe('dead custom utility classes in styles.scss (AC #2)', () => {
+    it.skip('every custom utility class defined in styles.scss is referenced by at least one component or template', () => {
+      const deadClasses = findDeadUtilityClasses();
+      expect(deadClasses).toEqual([]);
+    });
+  });
 });
