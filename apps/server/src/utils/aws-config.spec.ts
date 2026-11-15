@@ -388,5 +388,49 @@ describe('AWS Configuration', () => {
       const callSiteCount = [...source.matchAll(new RegExp(`this\\.${name}\\(\\)`, 'g'))].length;
       expect(callSiteCount).toBeGreaterThanOrEqual(2);
     });
+
+    // Story 19.1 Task 2 (AC #2): per-NODE_ENV correctness of the single
+    // classifier. RED against current code — `isDevEnvironment()` and
+    // `isDevOrTest()` disagree on NODE_ENV=local, so no single method can
+    // satisfy all four cases until Story 19.2 consolidates them. Skipped per
+    // AC #4; unskipping in Story 19.2 must fail first, then pass after the
+    // consolidation. The classifier is located dynamically (same definition as
+    // Task 1: a method whose body branches on process.env.NODE_ENV) so these
+    // assertions survive whichever name survives the consolidation.
+    // Invokes the single surviving private classifier by name (private in TS,
+    // so accessed via a function-typed record cast).
+    const invokeClassifier = (): boolean => {
+      const classifiers = source.match(
+        /private\s+\w+\s*\(\s*\)\s*:\s*boolean\s*\{[^}]*process\.env\.NODE_ENV[^}]*\}/gs,
+      ) ?? [];
+      expect(classifiers).toHaveLength(1);
+      const name = /private\s+(\w+)\s*\(\s*\)/.exec(classifiers[0])![1];
+      return (awsConfig as unknown as Record<string, () => boolean>)[name]();
+    };
+
+    it.skip('should classify NODE_ENV=development as a dev environment', () => {
+      process.env.NODE_ENV = 'development';
+      expect(invokeClassifier()).toBe(true);
+    });
+
+    it.skip('should classify NODE_ENV=test as a dev environment', () => {
+      process.env.NODE_ENV = 'test';
+      expect(invokeClassifier()).toBe(true);
+    });
+
+    it.skip('should classify NODE_ENV=local as a dev environment', () => {
+      // Judgment call: the two current classifiers disagree on `local`
+      // (isDevEnvironment() → true; isDevOrTest() → false when LocalStack
+      // flags are set). The contract encoded here is that local behaves like
+      // development — env-var based config, not Parameter Store. If Story 19.2
+      // decides otherwise, flip this expectation and the comment together.
+      process.env.NODE_ENV = 'local';
+      expect(invokeClassifier()).toBe(true);
+    });
+
+    it.skip('should classify NODE_ENV=production as a production environment', () => {
+      process.env.NODE_ENV = 'production';
+      expect(invokeClassifier()).toBe(false);
+    });
   });
 });
