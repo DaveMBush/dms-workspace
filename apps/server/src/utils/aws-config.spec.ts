@@ -432,5 +432,27 @@ describe('AWS Configuration', () => {
       process.env.NODE_ENV = 'production';
       expect(invokeClassifier()).toBe(false);
     });
+
+    // Story 19.1 Task 3 (AC #3): no broken-config fallback from missing DATABASE_URL.
+    // RED against current code — getLocalDatabaseConfig() returns { url: '' } when
+    // DATABASE_URL is absent in dev/test/local environments, silently producing a
+    // broken config that Prisma/ORM cannot use. The contract: the code must either
+    // throw (explicit failure) or return a clearly-named default; it must never
+    // resolve with an empty URL string. Skipped per AC #4; Story 19.2 removes the
+    // skip marker, confirms this fails against current code, then fixes
+    // getLocalDatabaseConfig() to satisfy the contract.
+    it.skip('should not silently fall back to an empty database URL when DATABASE_URL is absent', async () => {
+      process.env.NODE_ENV = 'development';
+      delete process.env.DATABASE_URL;
+
+      const result = await awsConfig.getDatabaseConfig().catch((e) => e);
+
+      if (result instanceof Error) {
+        // Throwing is acceptable per the contract — explicit failure over silent broken config.
+        return;
+      }
+
+      expect(result.url).not.toBe('');
+    });
   });
 });
