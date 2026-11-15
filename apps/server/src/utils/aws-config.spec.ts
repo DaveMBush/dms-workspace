@@ -1,29 +1,32 @@
 /* eslint-disable vitest/no-conditional-expect -- Pre-existing: catch-block assertions verify error properties */
-/* eslint-disable vitest/no-disabled-tests -- red-phase (Story 19.2) contract tests; intentionally skipped until the single-classifier consolidation lands */
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { AwsConfigManager, validateEnvironmentVariables } from './aws-config';
 
-// Story 19.1 (red phase): the assertions in the "Single Environment Classifier"
-// block below are RED against current production code — aws-config.ts exposes
-// two divergent NODE_ENV classifiers (`isDevEnvironment()` and `isDevOrTest()`)
-// instead of one. They stay `it.skip` per Story 19.1 AC #4/#5 so the suite is
-// green until then; Story 19.2's first task removes the skip markers, confirms
-// they fail, then consolidates until they pass. No production code changes in
-// this story (see scripts/check-no-skipped-tests.sh for the exemption rule).
+// Story 19.1 (red phase) / Story 19.2: the assertions in the "Single
+// Environment Classifier" block below were RED against production code that
+// exposed two divergent NODE_ENV classifiers (`isDevEnvironment()` and
+// `isDevOrTest()`) instead of one, plus an empty-URL fallback for missing
+// DATABASE_URL. Story 19.2 unskipped them (confirming red), consolidated the
+// classifiers into one, and removed the broken-config fallback — these tests
+// now pass as the standing contract for that consolidation.
 
 // Mock AWS SDK with factory functions to avoid hoisting issues
 const { mockSend, mockSSMClient, mockGetParametersCommand } = vi.hoisted(() => {
-  const mockSend = vi.fn();
-  const mockSSMClient = vi.fn().mockImplementation(function (
+  const sendMock = vi.fn();
+  const ssmClientMock = vi.fn().mockImplementation(function (
     this: Record<string, unknown>,
   ) {
-    this.send = mockSend;
+    this.send = sendMock;
   });
-  const mockGetParametersCommand = vi.fn();
+  const getParametersCommandMock = vi.fn();
 
-  return { mockSend, mockSSMClient, mockGetParametersCommand };
+  return {
+    mockSend: sendMock,
+    mockSSMClient: ssmClientMock,
+    mockGetParametersCommand: getParametersCommandMock,
+  };
 });
 
 vi.mock('@aws-sdk/client-ssm', () => ({
@@ -359,9 +362,10 @@ describe('AWS Configuration', () => {
   describe('Single Environment Classifier (Story 19.1 red phase)', () => {
     const source = readFileSync(join(__dirname, 'aws-config.ts'), 'utf-8');
 
-    it.skip('should define exactly one NODE_ENV environment classifier', () => {
+    it('should define exactly one NODE_ENV environment classifier', () => {
       // A "classifier" is a method whose body branches on process.env.NODE_ENV.
-      // Today both `isDevEnvironment()` and `isDevOrTest()` match, so this fails.
+      // In the red phase both `isDevEnvironment()` and `isDevOrTest()` matched;
+      // after consolidation exactly one does.
       const classifiers =
         source.match(
           /private\s+\w+\s*\(\s*\)\s*:\s*boolean\s*\{[^}]*process\.env\.NODE_ENV[^}]*\}/gs,
@@ -370,10 +374,11 @@ describe('AWS Configuration', () => {
       expect(classifiers).toHaveLength(1);
     });
 
-    it.skip('should route both former call sites through the single classifier', () => {
-      // getDatabaseConfig() calls isDevEnvironment(); getCognitoConfig() calls
-      // isDevOrTest(). After consolidation, neither name may remain and every
-      // NODE_ENV branch must go through the one surviving classifier.
+    it('should route both former call sites through the single classifier', () => {
+      // In the red phase getDatabaseConfig() called isDevEnvironment() and
+      // getCognitoConfig() called isDevOrTest(). After consolidation, neither
+      // name may remain and every NODE_ENV branch must go through the one
+      // surviving classifier.
       expect(source).not.toMatch(/isDevEnvironment\s*\(\s*\)/);
       expect(source).not.toMatch(/isDevOrTest\s*\(\s*\)/);
 
@@ -394,15 +399,11 @@ describe('AWS Configuration', () => {
     });
 
     // Story 19.1 Task 2 (AC #2): per-NODE_ENV correctness of the single
-    // classifier. RED against current code — `isDevEnvironment()` and
-    // `isDevOrTest()` disagree on NODE_ENV=local, so no single method can
-    // satisfy all four cases until Story 19.2 consolidates them. Skipped per
-    // AC #4; unskipping in Story 19.2 must fail first, then pass after the
-    // consolidation. The classifier is located dynamically (same definition as
+    // classifier. The classifier is located dynamically (same definition as
     // Task 1: a method whose body branches on process.env.NODE_ENV) so these
-    // assertions survive whichever name survives the consolidation.
-    // Invokes the single surviving private classifier by name (private in TS,
-    // so accessed via a function-typed record cast).
+    // assertions survive whichever name survives the consolidation. Invokes
+    // the single surviving private classifier by name (private in TS, so
+    // accessed via a function-typed record cast).
     const invokeClassifier = (): boolean => {
       const classifiers =
         source.match(
@@ -413,43 +414,28 @@ describe('AWS Configuration', () => {
       return (awsConfig as unknown as Record<string, () => boolean>)[name]();
     };
 
-    // Skipped per AC #4: red-phase contract assertion for Story 19.2, which removes the skip marker and confirms this fails against current code before consolidating the classifiers until it passes.
-    it.skip('should classify NODE_ENV=development as a dev environment', () => {
-      process.env.NODE_ENV = 'development';
-      expect(invokeClassifier()).toBe(true);
+    // Judgment call: the two former classifiers disagreed on `local`
+    // (isDevEnvironment() → true; isDevOrTest() → false when LocalStack flags
+    // are set). The contract encoded here is that local behaves like
+    // development — env-var based config, not Parameter Store. If a future
+    // story decides otherwise, flip this expectation and the comment together.
+    it.each([
+      ['development', true],
+      ['test', true],
+      ['local', true],
+      ['production', false],
+    ])('should classify NODE_ENV=%s as %s', (nodeEnv, expected) => {
+      process.env.NODE_ENV = nodeEnv;
+      expect(invokeClassifier()).toBe(expected);
     });
 
-    // Skipped per AC #4: red-phase contract assertion for Story 19.2, which removes the skip marker and confirms this fails against current code before consolidating the classifiers until it passes.
-    it.skip('should classify NODE_ENV=test as a dev environment', () => {
-      process.env.NODE_ENV = 'test';
-      expect(invokeClassifier()).toBe(true);
-    });
-
-    it.skip('should classify NODE_ENV=local as a dev environment', () => {
-      // Judgment call: the two current classifiers disagree on `local`
-      // (isDevEnvironment() → true; isDevOrTest() → false when LocalStack
-      // flags are set). The contract encoded here is that local behaves like
-      // development — env-var based config, not Parameter Store. If Story 19.2
-      // decides otherwise, flip this expectation and the comment together.
-      process.env.NODE_ENV = 'local';
-      expect(invokeClassifier()).toBe(true);
-    });
-
-    // Skipped per AC #4: red-phase contract assertion for Story 19.2, which removes the skip marker and confirms this fails against current code before consolidating the classifiers until it passes.
-    it.skip('should classify NODE_ENV=production as a production environment', () => {
-      process.env.NODE_ENV = 'production';
-      expect(invokeClassifier()).toBe(false);
-    });
-
-    // Story 19.1 Task 3 (AC #3): no broken-config fallback from missing DATABASE_URL.
-    // RED against current code — getLocalDatabaseConfig() returns { url: '' } when
-    // DATABASE_URL is absent in dev/test/local environments, silently producing a
-    // broken config that Prisma/ORM cannot use. The contract: the code must either
-    // throw (explicit failure) or return a clearly-named default; it must never
-    // resolve with an empty URL string. Skipped per AC #4; Story 19.2 removes the
-    // skip marker, confirms this fails against current code, then fixes
-    // getLocalDatabaseConfig() to satisfy the contract.
-    it.skip('should not silently fall back to an empty database URL when DATABASE_URL is absent', async () => {
+    // Story 19.1 Task 3 (AC #3): no broken-config fallback from missing
+    // DATABASE_URL. getLocalDatabaseConfig() must never resolve with an empty
+    // URL string — it either throws (explicit failure) or returns a
+    // clearly-named default. Story 19.2 removed the `|| ''` placeholder and
+    // made the method throw when DATABASE_URL is absent; this test pins that
+    // contract.
+    it('should not silently fall back to an empty database URL when DATABASE_URL is absent', async () => {
       process.env.NODE_ENV = 'development';
       delete process.env.DATABASE_URL;
 

@@ -42,7 +42,7 @@ export class AwsConfigManager {
    * Get database configuration from AWS Parameter Store
    */
   async getDatabaseConfig(): Promise<DatabaseConfig> {
-    return this.isDevEnvironment()
+    return this.isDevelopmentLikeEnvironment()
       ? this.getLocalDatabaseConfig()
       : this.getParameterStoreDatabaseConfig();
   }
@@ -52,7 +52,7 @@ export class AwsConfigManager {
    */
   async getParameter(
     name: string,
-    encrypted: boolean = true
+    encrypted: boolean = true,
   ): Promise<string | undefined> {
     try {
       const command = new GetParameterCommand({
@@ -73,7 +73,7 @@ export class AwsConfigManager {
    */
   async getParameters(
     names: string[],
-    encrypted: boolean = true
+    encrypted: boolean = true,
   ): Promise<Map<string, string>> {
     try {
       const command = new GetParametersCommand({
@@ -104,7 +104,7 @@ export class AwsConfigManager {
    * Get Cognito configuration from AWS Parameter Store or environment variables
    */
   async getCognitoConfig(): Promise<CognitoConfig> {
-    return this.isDevOrTest()
+    return this.isDevelopmentLikeEnvironment()
       ? this.getDevCognitoConfig()
       : this.getProdCognitoConfig();
   }
@@ -143,7 +143,11 @@ export class AwsConfigManager {
     );
   }
 
-  private isDevEnvironment(): boolean {
+  /**
+   * Single environment classifier: true for env-var based environments
+   * (development, test, local), false otherwise (e.g. production).
+   */
+  private isDevelopmentLikeEnvironment(): boolean {
     return (
       process.env.NODE_ENV === 'development' ||
       process.env.NODE_ENV === 'test' ||
@@ -152,9 +156,13 @@ export class AwsConfigManager {
   }
 
   private getLocalDatabaseConfig(): DatabaseConfig {
-    return {
-      url: process.env.DATABASE_URL || '',
-    };
+    const databaseUrl = process.env.DATABASE_URL;
+    if (!databaseUrl) {
+      throw new Error(
+        'DATABASE_URL is not set; cannot build local database configuration',
+      );
+    }
+    return { url: databaseUrl };
   }
 
   private async getParameterStoreDatabaseConfig(): Promise<DatabaseConfig> {
@@ -165,14 +173,14 @@ export class AwsConfigManager {
     } catch (error) {
       console.error(
         'Failed to fetch database config from AWS Parameter Store:',
-        error
+        error,
       );
       return this.getFallbackDatabaseConfig();
     }
   }
 
   private async getDatabaseParameters(
-    env: string
+    env: string,
   ): Promise<Map<string, string>> {
     const parameterNames = [
       `/dms/${env}/database-url`,
@@ -191,13 +199,13 @@ export class AwsConfigManager {
     }
 
     return new Map(
-      response.Parameters.map((param) => [param.Name!, param.Value!])
+      response.Parameters.map((param) => [param.Name!, param.Value!]),
     );
   }
 
   private buildDatabaseConfig(
     params: Map<string, string>,
-    env: string
+    env: string,
   ): DatabaseConfig {
     const databaseUrl = params.get(`/dms/${env}/database-url`);
     const databasePassword = params.get(`/dms/${env}/database-password`);
@@ -220,18 +228,7 @@ export class AwsConfigManager {
     }
 
     throw new Error(
-      'Unable to get database configuration from Parameter Store or environment variables'
-    );
-  }
-
-  /**
-   * Check if environment is development, test, or local development
-   */
-  private isDevOrTest(): boolean {
-    return (
-      process.env.NODE_ENV === 'development' ||
-      process.env.NODE_ENV === 'test' ||
-      (process.env.NODE_ENV === 'local' && !this.isLocalEnvironment())
+      'Unable to get database configuration from Parameter Store or environment variables',
     );
   }
 
@@ -260,7 +257,7 @@ export class AwsConfigManager {
     } catch (error) {
       console.error(
         'Failed to fetch Cognito config from AWS Parameter Store:',
-        error
+        error,
       );
       return this.getFallbackCognitoConfig();
     }
@@ -286,14 +283,14 @@ export class AwsConfigManager {
    * Build Cognito config from Parameter Store parameters
    */
   private buildCognitoConfigFromParams(
-    params: Map<string, string>
+    params: Map<string, string>,
   ): CognitoConfig {
     // Use 'local' environment for LocalStack parameters
     const env = this.isLocalEnvironment() ? 'local' : this.environment;
     const region = params.get(`/dms/${env}/aws-region`) || 'us-east-1';
     const userPoolId = params.get(`/dms/${env}/cognito-user-pool-id`);
     const userPoolWebClientId = params.get(
-      `/dms/${env}/cognito-user-pool-client-id`
+      `/dms/${env}/cognito-user-pool-client-id`,
     );
     const jwtIssuer = params.get(`/dms/${env}/cognito-jwt-issuer`);
 
@@ -319,7 +316,7 @@ export class AwsConfigManager {
 
     if (fallbackUserPoolId && fallbackClientId && fallbackJwtIssuer) {
       console.warn(
-        'Using fallback Cognito configuration from environment variables'
+        'Using fallback Cognito configuration from environment variables',
       );
       return {
         region: process.env.AWS_REGION || 'us-east-1',
@@ -330,7 +327,7 @@ export class AwsConfigManager {
     }
 
     throw new Error(
-      'Unable to get Cognito configuration from Parameter Store or environment variables'
+      'Unable to get Cognito configuration from Parameter Store or environment variables',
     );
   }
 }
@@ -354,7 +351,7 @@ export async function initializeDatabaseUrl(): Promise<string> {
 
     console.log(
       '✅ Database configuration loaded successfully: ',
-      dbConfig.url
+      dbConfig.url,
     );
     return dbConfig.url;
   } catch (error) {
@@ -372,7 +369,7 @@ export function validateEnvironmentVariables(): void {
 
   if (missing.length > 0) {
     throw new Error(
-      `Missing required environment variables: ${missing.join(', ')}`
+      `Missing required environment variables: ${missing.join(', ')}`,
     );
   }
 
@@ -383,7 +380,7 @@ export function validateEnvironmentVariables(): void {
     !process.env.DATABASE_URL
   ) {
     console.warn(
-      '⚠️ DATABASE_URL not set, will attempt to fetch from Parameter Store'
+      '⚠️ DATABASE_URL not set, will attempt to fetch from Parameter Store',
     );
   }
 
