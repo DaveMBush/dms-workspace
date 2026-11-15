@@ -408,11 +408,13 @@ describe('AWS Configuration', () => {
       return (awsConfig as unknown as Record<string, () => boolean>)[name]();
     };
 
+    // Skipped per AC #4: red-phase contract assertion for Story 19.2, which removes the skip marker and confirms this fails against current code before consolidating the classifiers until it passes.
     it.skip('should classify NODE_ENV=development as a dev environment', () => {
       process.env.NODE_ENV = 'development';
       expect(invokeClassifier()).toBe(true);
     });
 
+    // Skipped per AC #4: red-phase contract assertion for Story 19.2, which removes the skip marker and confirms this fails against current code before consolidating the classifiers until it passes.
     it.skip('should classify NODE_ENV=test as a dev environment', () => {
       process.env.NODE_ENV = 'test';
       expect(invokeClassifier()).toBe(true);
@@ -428,6 +430,7 @@ describe('AWS Configuration', () => {
       expect(invokeClassifier()).toBe(true);
     });
 
+    // Skipped per AC #4: red-phase contract assertion for Story 19.2, which removes the skip marker and confirms this fails against current code before consolidating the classifiers until it passes.
     it.skip('should classify NODE_ENV=production as a production environment', () => {
       process.env.NODE_ENV = 'production';
       expect(invokeClassifier()).toBe(false);
