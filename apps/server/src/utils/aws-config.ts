@@ -42,7 +42,7 @@ export class AwsConfigManager {
    * Get database configuration from AWS Parameter Store
    */
   async getDatabaseConfig(): Promise<DatabaseConfig> {
-    return this.isDevEnvironment()
+    return this.isDevelopmentLikeEnvironment()
       ? this.getLocalDatabaseConfig()
       : this.getParameterStoreDatabaseConfig();
   }
@@ -104,7 +104,7 @@ export class AwsConfigManager {
    * Get Cognito configuration from AWS Parameter Store or environment variables
    */
   async getCognitoConfig(): Promise<CognitoConfig> {
-    return this.isDevOrTest()
+    return this.isDevelopmentLikeEnvironment()
       ? this.getDevCognitoConfig()
       : this.getProdCognitoConfig();
   }
@@ -143,7 +143,11 @@ export class AwsConfigManager {
     );
   }
 
-  private isDevEnvironment(): boolean {
+  /**
+   * Single environment classifier: true for env-var based environments
+   * (development, test, local), false otherwise (e.g. production).
+   */
+  private isDevelopmentLikeEnvironment(): boolean {
     return (
       process.env.NODE_ENV === 'development' ||
       process.env.NODE_ENV === 'test' ||
@@ -152,9 +156,13 @@ export class AwsConfigManager {
   }
 
   private getLocalDatabaseConfig(): DatabaseConfig {
-    return {
-      url: process.env.DATABASE_URL || '',
-    };
+    const databaseUrl = process.env.DATABASE_URL;
+    if (!databaseUrl) {
+      throw new Error(
+        'DATABASE_URL is not set; cannot build local database configuration'
+      );
+    }
+    return { url: databaseUrl };
   }
 
   private async getParameterStoreDatabaseConfig(): Promise<DatabaseConfig> {
@@ -221,17 +229,6 @@ export class AwsConfigManager {
 
     throw new Error(
       'Unable to get database configuration from Parameter Store or environment variables'
-    );
-  }
-
-  /**
-   * Check if environment is development, test, or local development
-   */
-  private isDevOrTest(): boolean {
-    return (
-      process.env.NODE_ENV === 'development' ||
-      process.env.NODE_ENV === 'test' ||
-      (process.env.NODE_ENV === 'local' && !this.isLocalEnvironment())
     );
   }
 
