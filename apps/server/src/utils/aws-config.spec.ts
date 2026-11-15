@@ -362,9 +362,10 @@ describe('AWS Configuration', () => {
     it.skip('should define exactly one NODE_ENV environment classifier', () => {
       // A "classifier" is a method whose body branches on process.env.NODE_ENV.
       // Today both `isDevEnvironment()` and `isDevOrTest()` match, so this fails.
-      const classifiers = source.match(
-        /private\s+\w+\s*\(\s*\)\s*:\s*boolean\s*\{[^}]*process\.env\.NODE_ENV[^}]*\}/gs,
-      ) ?? [];
+      const classifiers =
+        source.match(
+          /private\s+\w+\s*\(\s*\)\s*:\s*boolean\s*\{[^}]*process\.env\.NODE_ENV[^}]*\}/gs,
+        ) ?? [];
 
       expect(classifiers).toHaveLength(1);
     });
@@ -376,16 +377,19 @@ describe('AWS Configuration', () => {
       expect(source).not.toMatch(/isDevEnvironment\s*\(\s*\)/);
       expect(source).not.toMatch(/isDevOrTest\s*\(\s*\)/);
 
-      const classifiers = source.match(
-        /private\s+\w+\s*\(\s*\)\s*:\s*boolean\s*\{[^}]*process\.env\.NODE_ENV[^}]*\}/gs,
-      ) ?? [];
+      const classifiers =
+        source.match(
+          /private\s+\w+\s*\(\s*\)\s*:\s*boolean\s*\{[^}]*process\.env\.NODE_ENV[^}]*\}/gs,
+        ) ?? [];
       expect(classifiers).toHaveLength(1);
 
       // Both call sites must reference the single classifier.
       const [classifier] = classifiers;
       const name = /private\s+(\w+)\s*\(\s*\)/.exec(classifier)?.[1];
       expect(name).toBeDefined();
-      const callSiteCount = [...source.matchAll(new RegExp(`this\\.${name}\\(\\)`, 'g'))].length;
+      const callSiteCount = [
+        ...source.matchAll(new RegExp(`this\\.${name}\\(\\)`, 'g')),
+      ].length;
       expect(callSiteCount).toBeGreaterThanOrEqual(2);
     });
 
@@ -400,9 +404,10 @@ describe('AWS Configuration', () => {
     // Invokes the single surviving private classifier by name (private in TS,
     // so accessed via a function-typed record cast).
     const invokeClassifier = (): boolean => {
-      const classifiers = source.match(
-        /private\s+\w+\s*\(\s*\)\s*:\s*boolean\s*\{[^}]*process\.env\.NODE_ENV[^}]*\}/gs,
-      ) ?? [];
+      const classifiers =
+        source.match(
+          /private\s+\w+\s*\(\s*\)\s*:\s*boolean\s*\{[^}]*process\.env\.NODE_ENV[^}]*\}/gs,
+        ) ?? [];
       expect(classifiers).toHaveLength(1);
       const name = /private\s+(\w+)\s*\(\s*\)/.exec(classifiers[0])![1];
       return (awsConfig as unknown as Record<string, () => boolean>)[name]();
