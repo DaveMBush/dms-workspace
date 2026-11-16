@@ -24,24 +24,6 @@
         )
       );
     }
-
-    .btn-tertiary {
-      @include mat.button-overrides(
-        (
-          filled-container-color: #f59e0b,
-          filled-label-text-color: #000000,
-        )
-      );
-    }
-
-    .btn-error {
-      @include mat.button-overrides(
-        (
-          filled-container-color: #ef4444,
-          filled-label-text-color: #ffffff,
-        )
-      );
-    }
   }
 
   // Apply dark theme when .dark-theme class is present
@@ -54,24 +36,6 @@
       @include mat.button-overrides(
         (
           filled-container-color: #3b82f6,
-          filled-label-text-color: #ffffff,
-        )
-      );
-    }
-
-    .btn-tertiary {
-      @include mat.button-overrides(
-        (
-          filled-container-color: #fbbf24,
-          filled-label-text-color: #000000,
-        )
-      );
-    }
-
-    .btn-error {
-      @include mat.button-overrides(
-        (
-          filled-container-color: #ef4444,
           filled-label-text-color: #ffffff,
         )
       );
@@ -92,34 +56,15 @@ body {
 // Smooth theme transitions — apply only outside CDK virtual scroll viewports
 // to prevent transition from firing on every row create/recycle during scroll
 * {
-  transition: background-color 0.2s ease, color 0.2s ease,
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
     border-color 0.2s ease;
 }
 
 // P1 fix: suppress transitions inside virtual scroll to eliminate scroll jank
 cdk-virtual-scroll-viewport * {
   transition: none;
-}
-
-// Custom utility classes for theming
-.surface-ground {
-  background-color: var(--dms-background);
-}
-
-.surface-card {
-  background-color: var(--dms-surface);
-}
-
-.text-primary {
-  color: var(--dms-text-primary);
-}
-
-.text-secondary {
-  color: var(--dms-text-secondary);
-}
-
-.border-default {
-  border-color: var(--dms-border);
 }
 
 // Snackbar (toast notification) styles
@@ -199,8 +144,10 @@ mat-form-field .mat-mdc-form-field-error {
 // equal-specificity in the same layer.
 body:not(.dark-theme) .mat-mdc-dialog-surface {
   background-color: #ffffff !important;
-  box-shadow: 0px 11px 15px -7px rgba(0, 0, 0, 0.2),
-    0px 24px 38px 3px rgba(0, 0, 0, 0.14), 0px 9px 46px 8px rgba(0, 0, 0, 0.12) !important;
+  box-shadow:
+    0px 11px 15px -7px rgba(0, 0, 0, 0.2),
+    0px 24px 38px 3px rgba(0, 0, 0, 0.14),
+    0px 9px 46px 8px rgba(0, 0, 0, 0.12) !important;
 }
 
 body:not(.dark-theme) .mat-mdc-dialog-container {

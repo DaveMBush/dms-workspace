@@ -1,11 +1,8 @@
-/* eslint-disable vitest/no-disabled-tests, sonarjs/no-skipped-tests -- red-phase (Story 20.1) contract tests; intentionally skipped until the token wiring lands */
-
 // Story 20.1: red-phase contract tests for a single shared `--dms-*` token source.
 // AC #1 — Tailwind's `theme.extend` must resolve from the same `--dms-*` custom
 //         properties defined in the theme SCSS, not from a parallel hardcoded set.
-// These assertions are marked it.skip so the suite stays green BEFORE Story 20.2
-// wires the tokens; Story 20.2's first task removes the skip markers, confirms
-// they FAIL against current code, then implements until green.
+// They were skipped during Story 20.1 (red phase); Story 20.2 Task 1 unskips
+// them to confirm red, then wires the tokens until green.
 
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
@@ -97,11 +94,15 @@ function stripScssComments(source: string): string {
 /**
  * Extract every app-defined class name used in a selector of the SCSS.
  * Framework classes (Material/CDK) are excluded: anything starting with
- * `mdc-` or `mat-mdc-`.
+ * `mdc-` or `mat-mdc-`. Sass member access (`@include mat.xxx(...)`) is
+ * excluded by requiring no word char or `(` immediately after the name —
+ * a CSS class selector is followed by whitespace/comma/brace, never by an
+ * identifier continuation or a call parenthesis. (A plain negative lookahead
+ * on `(` alone would let greedy backtracking match a truncated prefix.)
  */
 function extractCustomUtilityClasses(scss: string): string[] {
   const names = new Set<string>();
-  const re = /\.([a-zA-Z][\w-]*)/g;
+  const re = /\.([a-zA-Z][\w-]*)(?![\w(-])/g;
   let match: RegExpExecArray | null;
   while ((match = re.exec(stripScssComments(scss))) !== null) {
     const name = match[1];
@@ -133,7 +134,7 @@ function findDeadUtilityClasses(): string[] {
 
 describe('Story 20.1 — shared --dms-* token source', () => {
   describe('Tailwind theme.extend (AC #1)', () => {
-    it.skip('references the --dms-* custom properties and does not duplicate hardcoded SCSS values', () => {
+    it('references the --dms-* custom properties and does not duplicate hardcoded SCSS values', () => {
       const configSource = readFileSync(tailwindConfigPath, 'utf-8');
       const extendBlock = extractExtendBlock(configSource);
 
@@ -150,7 +151,7 @@ describe('Story 20.1 — shared --dms-* token source', () => {
   });
 
   describe('dead custom utility classes in styles.scss (AC #2)', () => {
-    it.skip('every custom utility class defined in styles.scss is referenced by at least one component or template', () => {
+    it('every custom utility class defined in styles.scss is referenced by at least one component or template', () => {
       const deadClasses = findDeadUtilityClasses();
       expect(deadClasses).toEqual([]);
     });
