@@ -24,24 +24,6 @@
         )
       );
     }
-
-    .btn-tertiary {
-      @include mat.button-overrides(
-        (
-          filled-container-color: #f59e0b,
-          filled-label-text-color: #000000,
-        )
-      );
-    }
-
-    .btn-error {
-      @include mat.button-overrides(
-        (
-          filled-container-color: #ef4444,
-          filled-label-text-color: #ffffff,
-        )
-      );
-    }
   }
 
   // Apply dark theme when .dark-theme class is present
@@ -54,24 +36,6 @@
       @include mat.button-overrides(
         (
           filled-container-color: #3b82f6,
-          filled-label-text-color: #ffffff,
-        )
-      );
-    }
-
-    .btn-tertiary {
-      @include mat.button-overrides(
-        (
-          filled-container-color: #fbbf24,
-          filled-label-text-color: #000000,
-        )
-      );
-    }
-
-    .btn-error {
-      @include mat.button-overrides(
-        (
-          filled-container-color: #ef4444,
           filled-label-text-color: #ffffff,
         )
       );
@@ -99,27 +63,6 @@ body {
 // P1 fix: suppress transitions inside virtual scroll to eliminate scroll jank
 cdk-virtual-scroll-viewport * {
   transition: none;
-}
-
-// Custom utility classes for theming
-.surface-ground {
-  background-color: var(--dms-background);
-}
-
-.surface-card {
-  background-color: var(--dms-surface);
-}
-
-.text-primary {
-  color: var(--dms-text-primary);
-}
-
-.text-secondary {
-  color: var(--dms-text-secondary);
-}
-
-.border-default {
-  border-color: var(--dms-border);
 }
 
 // Snackbar (toast notification) styles

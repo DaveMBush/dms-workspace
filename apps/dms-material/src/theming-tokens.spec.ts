@@ -94,11 +94,15 @@ function stripScssComments(source: string): string {
 /**
  * Extract every app-defined class name used in a selector of the SCSS.
  * Framework classes (Material/CDK) are excluded: anything starting with
- * `mdc-` or `mat-mdc-`.
+ * `mdc-` or `mat-mdc-`. Sass member access (`@include mat.xxx(...)`) is
+ * excluded by requiring no word char or `(` immediately after the name —
+ * a CSS class selector is followed by whitespace/comma/brace, never by an
+ * identifier continuation or a call parenthesis. (A plain negative lookahead
+ * on `(` alone would let greedy backtracking match a truncated prefix.)
  */
 function extractCustomUtilityClasses(scss: string): string[] {
   const names = new Set<string>();
-  const re = /\.([a-zA-Z][\w-]*)/g;
+  const re = /\.([a-zA-Z][\w-]*)(?![\w(-])/g;
   let match: RegExpExecArray | null;
   while ((match = re.exec(stripScssComments(scss))) !== null) {
     const name = match[1];
