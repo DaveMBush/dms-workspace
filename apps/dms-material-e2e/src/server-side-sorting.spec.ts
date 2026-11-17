@@ -1,8 +1,9 @@
 import { expect, Page, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
-import { settle } from './helpers/settle.helper';
+import { seedAccount } from './helpers/seed-account.helper';
 
-const ACCOUNT_UUID = '1677e04f-ef9b-4372-adb3-b740443088dc';
+let ACCOUNT_UUID = '';
+let cleanup: (() => Promise<void>) | undefined;
 
 /**
  * Helper: set sort state in localStorage so the interceptor picks it up.
@@ -98,6 +99,12 @@ function _extractSortParams(url: string): {
 // ─── Universe Table – Server-Side Sorting ────────────────────────────────────
 
 test.describe('Universe Table - Server-Side Sorting', () => {
+  test.beforeAll(async () => {
+    const seeded = await seedAccount();
+    ACCOUNT_UUID = seeded.accountId;
+    cleanup = seeded.cleanup;
+  });
+
   test.beforeEach(async ({ page }) => {
     await login(page);
     await clearSortState(page);
@@ -111,12 +118,11 @@ test.describe('Universe Table - Server-Side Sorting', () => {
     // Click the Symbol sort header
     const symbolHeader = page.getByRole('columnheader', { name: 'Symbol' });
     await symbolHeader.click();
-    await settle(page, 300);
 
-    // Verify sort state was saved to localStorage as sortColumns
-    const cols = await getSortColumnsState(page, 'universes');
-    expect(cols).not.toBeNull();
-    expect(cols).toEqual([{ column: 'symbol', direction: 'asc' }]);
+    // Verify sort state was saved to localStorage as sortColumns.
+    await expect
+      .poll(async () => getSortColumnsState(page, 'universes'))
+      .toEqual([{ column: 'symbol', direction: 'asc' }]);
   });
 
   test('should toggle sort direction on second click', async ({ page }) => {
@@ -124,15 +130,15 @@ test.describe('Universe Table - Server-Side Sorting', () => {
 
     // First click → asc
     await symbolHeader.click();
-    await settle(page, 300);
-    let cols = await getSortColumnsState(page, 'universes');
-    expect(cols).toEqual([{ column: 'symbol', direction: 'asc' }]);
+    await expect
+      .poll(async () => getSortColumnsState(page, 'universes'))
+      .toEqual([{ column: 'symbol', direction: 'asc' }]);
 
     // Second click → desc
     await symbolHeader.click();
-    await settle(page, 300);
-    cols = await getSortColumnsState(page, 'universes');
-    expect(cols).toEqual([{ column: 'symbol', direction: 'desc' }]);
+    await expect
+      .poll(async () => getSortColumnsState(page, 'universes'))
+      .toEqual([{ column: 'symbol', direction: 'desc' }]);
   });
 
   test('should save sort state to localStorage on sort click', async ({
@@ -140,11 +146,11 @@ test.describe('Universe Table - Server-Side Sorting', () => {
   }) => {
     const symbolHeader = page.getByRole('columnheader', { name: 'Symbol' });
     await symbolHeader.click();
-    await settle(page, 500);
 
-    const cols = await getSortColumnsState(page, 'universes');
-    expect(cols).not.toBeNull();
-    expect(cols).toEqual([{ column: 'symbol', direction: 'asc' }]);
+    // Verify sort state was saved to localStorage.
+    await expect
+      .poll(async () => getSortColumnsState(page, 'universes'))
+      .toEqual([{ column: 'symbol', direction: 'asc' }]);
   });
 
   test('should send sort params for Risk Group column', async ({ page }) => {
@@ -152,12 +158,11 @@ test.describe('Universe Table - Server-Side Sorting', () => {
       name: 'Risk Group',
     });
     await riskGroupHeader.click();
-    await settle(page, 300);
 
-    // Verify sort state was saved
-    const cols = await getSortColumnsState(page, 'universes');
-    expect(cols).not.toBeNull();
-    expect(cols).toEqual([{ column: 'risk_group', direction: 'asc' }]);
+    // Verify sort state was saved.
+    await expect
+      .poll(async () => getSortColumnsState(page, 'universes'))
+      .toEqual([{ column: 'risk_group', direction: 'asc' }]);
   });
 
   test('should update localStorage sort state when column is clicked', async ({
@@ -166,17 +171,16 @@ test.describe('Universe Table - Server-Side Sorting', () => {
     const symbolHeader = page.getByRole('columnheader', { name: 'Symbol' });
 
     // Before sorting, verify no sort state
-    let cols = await getSortColumnsState(page, 'universes');
+    const cols = await getSortColumnsState(page, 'universes');
     expect(cols).toBeNull();
 
     // Click to sort
     await symbolHeader.click();
-    await settle(page, 300);
 
-    // After sorting, verify state changed
-    cols = await getSortColumnsState(page, 'universes');
-    expect(cols).not.toBeNull();
-    expect(cols![0].column).toBe('symbol');
+    // After sorting, verify state changed.
+    await expect
+      .poll(async () => (await getSortColumnsState(page, 'universes'))?.[0]?.column)
+      .toBe('symbol');
   });
 });
 
@@ -195,21 +199,20 @@ test.describe('Universe Sort Persistence', () => {
     // Click Symbol to sort
     const symbolHeader = page.getByRole('columnheader', { name: 'Symbol' });
     await symbolHeader.click();
-    await settle(page, 500);
 
-    // Confirm state is saved
-    let cols = await getSortColumnsState(page, 'universes');
-    expect(cols).not.toBeNull();
-    expect(cols![0].column).toBe('symbol');
+    // Confirm state is saved.
+    await expect
+      .poll(async () => (await getSortColumnsState(page, 'universes'))?.[0]?.column)
+      .toBe('symbol');
 
     // Refresh the page
     await page.reload();
     await page.waitForLoadState('networkidle');
 
-    // Verify sort state persisted after refresh
-    cols = await getSortColumnsState(page, 'universes');
-    expect(cols).not.toBeNull();
-    expect(cols).toEqual([{ column: 'symbol', direction: 'asc' }]);
+    // Verify sort state persisted after refresh.
+    await expect
+      .poll(async () => getSortColumnsState(page, 'universes'))
+      .toEqual([{ column: 'symbol', direction: 'asc' }]);
   });
 
   test('should persist sort state across navigation', async ({ page }) => {
@@ -221,11 +224,11 @@ test.describe('Universe Sort Persistence', () => {
       name: 'Risk Group',
     });
     await riskGroupHeader.click();
-    await settle(page, 500);
 
-    // Confirm state is saved
-    let cols = await getSortColumnsState(page, 'universes');
-    expect(cols![0].column).toBe('risk_group');
+    // Confirm state is saved.
+    await expect
+      .poll(async () => (await getSortColumnsState(page, 'universes'))?.[0]?.column)
+      .toBe('risk_group');
 
     // Navigate away to a different page
     await page.goto(`/account/${ACCOUNT_UUID}/open`);
@@ -235,10 +238,10 @@ test.describe('Universe Sort Persistence', () => {
     await page.goto('/global/universe');
     await page.waitForLoadState('networkidle');
 
-    // Verify sort state persisted
-    cols = await getSortColumnsState(page, 'universes');
-    expect(cols).not.toBeNull();
-    expect(cols).toEqual([{ column: 'risk_group', direction: 'asc' }]);
+    // Verify sort state persisted.
+    await expect
+      .poll(async () => getSortColumnsState(page, 'universes'))
+      .toEqual([{ column: 'risk_group', direction: 'asc' }]);
   });
 
   test('should restore sort arrow indicator on page load from saved state', async ({
@@ -250,7 +253,10 @@ test.describe('Universe Sort Persistence', () => {
     // Sort by Symbol ascending
     const symbolHeader = page.getByRole('columnheader', { name: 'Symbol' });
     await symbolHeader.click();
-    await settle(page, 500);
+    // Ensure sort state is persisted before navigating away.
+    await expect
+      .poll(async () => (await getSortColumnsState(page, 'universes'))?.[0]?.column)
+      .toBe('symbol');
 
     // Navigate away
     await page.goto(`/account/${ACCOUNT_UUID}/open`);
@@ -328,7 +334,6 @@ test.describe('Open Positions - Sort Interceptor', () => {
 
     const buyDateButton = page.getByRole('columnheader', { name: 'Buy Date' });
     await buyDateButton.click();
-    await settle(page, 300);
 
     // Sort indicator should appear
     const sortIndicator = page.locator(
@@ -384,7 +389,6 @@ test.describe('Closed Positions - Sort Interceptor', () => {
       exact: true,
     });
     await sellDateButton.click();
-    await settle(page, 300);
 
     // Sort indicator should appear
     const sortIndicator = page.locator(
@@ -397,6 +401,12 @@ test.describe('Closed Positions - Sort Interceptor', () => {
 // ─── Cross-Table Sort Independence ───────────────────────────────────────────
 
 test.describe('Cross-Table Sort Independence', () => {
+  test.afterAll(async () => {
+    if (cleanup) {
+      await cleanup();
+    }
+  });
+
   test.beforeEach(async ({ page }) => {
     await login(page);
     await clearSortState(page);
@@ -441,20 +451,12 @@ test.describe('Cross-Table Sort Independence', () => {
 
     const symbolHeader = page.getByRole('columnheader', { name: 'Symbol' });
 
-    // Click 1 → asc
+    // Click 1 → asc, click 2 → desc, click 3 → clear sort.
     await symbolHeader.click();
-    await settle(page, 300);
-
-    // Click 2 → desc
     await symbolHeader.click();
-    await settle(page, 300);
-
-    // Click 3 → clear sort
     await symbolHeader.click();
-    await settle(page, 300);
 
-    // Verify sort state was cleared from localStorage
-    const cols = await getSortColumnsState(page, 'universes');
-    expect(cols).toBeNull();
+    // Verify sort state was cleared from localStorage.
+    await expect.poll(async () => getSortColumnsState(page, 'universes')).toBeNull();
   });
 });

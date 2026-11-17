@@ -5,9 +5,24 @@
 
 import { expect, test } from '@playwright/test';
 import { login } from './helpers/login.helper';
-import { settle } from './helpers/settle.helper';
+import { seedAccount } from './helpers/seed-account.helper';
+
+let ACCOUNT_UUID = '';
+let cleanup: (() => Promise<void>) | undefined;
 
 test.describe('Loading Spinner Centering', () => {
+  test.beforeAll(async () => {
+    const seeded = await seedAccount();
+    ACCOUNT_UUID = seeded.accountId;
+    cleanup = seeded.cleanup;
+  });
+
+  test.afterAll(async () => {
+    if (cleanup) {
+      await cleanup();
+    }
+  });
+
   test.beforeEach(async ({ page }) => {
     await login(page);
     // Wait for app to be fully loaded
@@ -186,8 +201,6 @@ test.describe('Loading Spinner Centering', () => {
   });
 
   test('AC 3.2: Account screens spinner is centered', async ({ page }) => {
-    const ACCOUNT_UUID = '1677e04f-ef9b-4372-adb3-b740443088dc';
-
     // Fulfill account summary APIs with a delay so the spinner is visible
     await page.route(
       /\/api\/summary/,
@@ -391,8 +404,6 @@ test.describe('Loading Spinner Centering', () => {
 
       const loadingOverlay = page.locator('[data-testid="loading-overlay"]');
       await loadingOverlay.waitFor({ state: 'visible', timeout: 5000 });
-      // Allow CSS layout to settle before measuring
-      await settle(page, 200);
 
       // Verify overlay covers entire viewport via computed CSS (fixed inset-0)
       const overlayStyle = await page.evaluate(() => {

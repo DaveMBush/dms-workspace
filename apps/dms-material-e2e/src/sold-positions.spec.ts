@@ -1,12 +1,27 @@
 import { expect, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
-import { settle } from './helpers/settle.helper';
+import { seedAccount } from './helpers/seed-account.helper';
+
+let ACCOUNT_UUID = '';
+let cleanup: (() => Promise<void>) | undefined;
 
 test.describe('Sold Positions', () => {
+  test.beforeAll(async () => {
+    const seeded = await seedAccount();
+    ACCOUNT_UUID = seeded.accountId;
+    cleanup = seeded.cleanup;
+  });
+
+  test.afterAll(async () => {
+    if (cleanup) {
+      await cleanup();
+    }
+  });
+
   test.beforeEach(async ({ page }) => {
     await login(page);
     // Navigate to sold positions tab
-    await page.goto('/account/1677e04f-ef9b-4372-adb3-b740443088dc/sold');
+    await page.goto(`/account/${ACCOUNT_UUID}/sold`);
   });
 
   test.describe('Core Functionality', () => {
@@ -73,9 +88,6 @@ test.describe('Sold Positions', () => {
       // Click to sort
       await sellDateButton.click();
 
-      // Wait for sort to apply
-      await settle(page, 300);
-
       // Verify the button is still visible (sorting completed without error)
       await expect(sellDateButton).toBeVisible();
     });
@@ -85,9 +97,6 @@ test.describe('Sold Positions', () => {
 
       // Type a symbol to search
       await searchInput.fill('AAPL');
-
-      // Wait for filter to apply
-      await settle(page, 300);
 
       // Table should still be visible (even if no results)
       const table = page.locator('dms-base-table');
@@ -100,7 +109,6 @@ test.describe('Sold Positions', () => {
       // Filter by non-existent symbol
       const searchInput = page.getByPlaceholder('Search Symbol');
       await searchInput.fill('NONEXISTENT123');
-      await settle(page, 300);
 
       // Table should be visible but rows should be empty or show no results message
       const table = page.locator('dms-base-table');
@@ -160,9 +168,7 @@ test.describe('Sold Positions', () => {
 
       // Type and then clear
       await searchInput.fill('AAPL');
-      await settle(page, 300);
       await searchInput.clear();
-      await settle(page, 300);
 
       // Table should still be visible
       const table = page.locator('dms-base-table');
@@ -212,7 +218,6 @@ test.describe('Sold Positions', () => {
 
       // Type partial symbol
       await searchInput.fill('AA');
-      await settle(page, 300);
 
       // Table should still be visible
       const table = page.locator('dms-base-table');
@@ -224,7 +229,6 @@ test.describe('Sold Positions', () => {
 
       // Type lowercase
       await searchInput.fill('aapl');
-      await settle(page, 300);
 
       // Table should still be visible and filter should work
       const table = page.locator('dms-base-table');

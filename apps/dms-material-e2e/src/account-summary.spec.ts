@@ -1,9 +1,23 @@
 import { expect, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
+import { seedAccount } from './helpers/seed-account.helper';
 
-const accountUuid = '1677e04f-ef9b-4372-adb3-b740443088dc';
+let accountUuid = '';
+let cleanup: (() => Promise<void>) | undefined;
 
 test.describe('Account Summary', () => {
+  test.beforeAll(async () => {
+    const seeded = await seedAccount();
+    accountUuid = seeded.accountId;
+    cleanup = seeded.cleanup;
+  });
+
+  test.afterAll(async () => {
+    if (cleanup) {
+      await cleanup();
+    }
+  });
+
   test.beforeEach(async ({ page }) => {
     await login(page);
     // Navigate to a specific account (summary is default tab)

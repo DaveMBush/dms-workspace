@@ -1,8 +1,9 @@
 import { expect, Page, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
-import { settle } from './helpers/settle.helper';
+import { seedAccount } from './helpers/seed-account.helper';
 
-const accountUuid = '1677e04f-ef9b-4372-adb3-b740443088dc';
+let accountUuid = '';
+let cleanup: (() => Promise<void>) | undefined;
 
 /**
  * Helper: read filter state from localStorage.
@@ -32,6 +33,18 @@ async function clearState(page: Page): Promise<void> {
 }
 
 test.describe('Universe Filter Persistence', () => {
+  test.beforeAll(async () => {
+    const seeded = await seedAccount();
+    accountUuid = seeded.accountId;
+    cleanup = seeded.cleanup;
+  });
+
+  test.afterAll(async () => {
+    if (cleanup) {
+      await cleanup();
+    }
+  });
+
   test.beforeEach(async ({ page }) => {
     await login(page);
     await clearState(page);
@@ -46,13 +59,11 @@ test.describe('Universe Filter Persistence', () => {
     // Type in the Symbol filter input
     const symbolInput = page.getByPlaceholder('Search Symbol');
     await symbolInput.fill('XYZ');
-    // Wait for debounced save (300ms) plus a buffer
-    await settle(page, 600);
 
-    // Verify filter was saved to localStorage
-    const filters = await getFilterState(page, 'universes');
-    expect(filters).not.toBeNull();
-    expect(filters!['symbol']).toBe('XYZ');
+    // Wait for the debounced save to land in localStorage, then verify.
+    await expect
+      .poll(async () => (await getFilterState(page, 'universes'))?.symbol)
+      .toBe('XYZ');
 
     // Navigate away
     await page.goto(`/account/${accountUuid}/open`);
