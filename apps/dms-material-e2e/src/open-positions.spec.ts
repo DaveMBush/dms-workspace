@@ -1,10 +1,23 @@
 import { expect, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
-import { settle } from './helpers/settle.helper';
+import { seedAccount } from './helpers/seed-account.helper';
 
-const ACCOUNT_UUID = '1677e04f-ef9b-4372-adb3-b740443088dc';
+let ACCOUNT_UUID = '';
+let cleanup: (() => Promise<void>) | undefined;
 
 test.describe('Open Positions', () => {
+  test.beforeAll(async () => {
+    const seeded = await seedAccount();
+    ACCOUNT_UUID = seeded.accountId;
+    cleanup = seeded.cleanup;
+  });
+
+  test.afterAll(async () => {
+    if (cleanup) {
+      await cleanup();
+    }
+  });
+
   test.beforeEach(async ({ page }) => {
     await login(page);
     // Navigate to open positions tab
@@ -12,7 +25,6 @@ test.describe('Open Positions', () => {
 
     // Wait for page to be fully loaded
     await page.waitForLoadState('networkidle');
-    await settle(page, 2000); // Give time for universe data to load
   });
 
   test('should display open positions table', async ({ page }) => {
@@ -78,7 +90,6 @@ test.describe('Open Positions', () => {
       '[data-testid="symbol-autocomplete"] input',
     );
     await symbolInput.fill('AAPL');
-    await settle(page, 500);
     await page.keyboard.press('Enter');
 
     const quantityInput = page.locator('[data-testid="quantity-input"]');

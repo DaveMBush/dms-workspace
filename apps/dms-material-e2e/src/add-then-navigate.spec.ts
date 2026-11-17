@@ -1,13 +1,26 @@
 import { expect, test } from 'playwright/test';
 import { login } from './helpers/login.helper';
-import { settle } from './helpers/settle.helper';
+import { seedAccount } from './helpers/seed-account.helper';
 
 // Seeded account (tools/create-test-db.js) with universe symbols TESTEQ1/TESTIN1/TESTTF1
-const ACCOUNT_UUID = '1677e04f-ef9b-4372-adb3-b740443088dc';
+let ACCOUNT_UUID = '';
+let cleanup: (() => Promise<void>) | undefined;
 
 test.describe('Add then navigate (no console errors)', () => {
   let pageErrors: string[];
   let consoleErrors: string[];
+
+  test.beforeAll(async () => {
+    const seeded = await seedAccount();
+    ACCOUNT_UUID = seeded.accountId;
+    cleanup = seeded.cleanup;
+  });
+
+  test.afterAll(async () => {
+    if (cleanup) {
+      await cleanup();
+    }
+  });
 
   test.beforeEach(async ({ page }) => {
     // Capture uncaught page exceptions and browser console.error events for the
@@ -42,7 +55,6 @@ test.describe('Add then navigate (no console errors)', () => {
   }) => {
     await page.goto(`/account/${ACCOUNT_UUID}/open`);
     await page.waitForLoadState('networkidle');
-    await settle(page, 2000); // Give time for universe data to load
 
     const table = page.locator('[data-testid="open-positions-table"]');
     await expect(table).toBeVisible({ timeout: 10000 });
@@ -58,7 +70,6 @@ test.describe('Add then navigate (no console errors)', () => {
     );
     await symbolInput.click();
     await symbolInput.fill('TESTEQ1'); // Seeded universe symbol
-    await settle(page, 1000); // Give time for autocomplete search to complete
     const firstOption = page.locator('mat-option').first();
     await expect(firstOption).toBeVisible({ timeout: 5000 });
     await firstOption.click();
@@ -82,7 +93,6 @@ test.describe('Add then navigate (no console errors)', () => {
     });
 
     // Added row is visible in the table before navigating away
-    await settle(page, 1000); // Wait for table to update
     const addedRow = page
       .locator('.dms-body-row[role="row"]')
       .filter({ hasText: 'TESTEQ1' })
@@ -92,7 +102,6 @@ test.describe('Add then navigate (no console errors)', () => {
     // Row survives a full page reload (server round-trip confirmed)
     await page.reload();
     await page.waitForLoadState('networkidle');
-    await settle(page, 2000); // Give time for universe data to load
     const reloadedRow = page
       .locator('.dms-body-row[role="row"]')
       .filter({ hasText: 'TESTEQ1' })
@@ -103,7 +112,6 @@ test.describe('Add then navigate (no console errors)', () => {
     // threw on route change
     await page.locator('[data-testid="account-tab-sold"]').click();
     await expect(page).toHaveURL(/\/sold$/);
-    await settle(page, 1500);
 
     // Target route renders its table normally
     await expect(
@@ -132,7 +140,6 @@ test.describe('Add then navigate (no console errors)', () => {
 
     await page.goto(`/account/${accounts[0].id}/div-dep`);
     await page.waitForLoadState('networkidle');
-    await settle(page, 2000); // Give time for universe data to load
 
     // Add a deposit via the dialog (Deposit type — no symbol required)
     await page.locator('[data-testid="add-new-position-button"]').click();
@@ -164,7 +171,6 @@ test.describe('Add then navigate (no console errors)', () => {
     });
 
     // Added row is visible in the table before navigating away
-    await settle(page, 1000); // Wait for table to update
     const addedRow = page
       .locator('.dms-body-row[role="row"]')
       .filter({ hasText: '$678.90' })
@@ -174,7 +180,6 @@ test.describe('Add then navigate (no console errors)', () => {
     // Row survives a full page reload (server round-trip confirmed)
     await page.reload();
     await page.waitForLoadState('networkidle');
-    await settle(page, 2000); // Give time for table data to load
     const reloadedRow = page
       .locator('.dms-body-row[role="row"]')
       .filter({ hasText: '$678.90' })
@@ -185,7 +190,6 @@ test.describe('Add then navigate (no console errors)', () => {
     // threw on route change
     await page.locator('[data-testid="account-tab-open"]').click();
     await expect(page).toHaveURL(/\/open$/);
-    await settle(page, 1500);
 
     // Target route renders its table normally
     const table = page.locator('[data-testid="open-positions-table"]');

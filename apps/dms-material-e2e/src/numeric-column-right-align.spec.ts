@@ -1,9 +1,10 @@
 import { expect, test } from 'playwright/test';
 import type { Page } from 'playwright/test';
 import { login } from './helpers/login.helper';
-import { settle } from './helpers/settle.helper';
+import { seedAccount } from './helpers/seed-account.helper';
 
-const ACCOUNT_UUID = '1677e04f-ef9b-4372-adb3-b740443088dc';
+let ACCOUNT_UUID = '';
+let cleanup: (() => Promise<void>) | undefined;
 
 /** Tolerance (px) for "content sits at the cell edge". */
 const EDGE_TOLERANCE_PX = 4;
@@ -58,11 +59,22 @@ async function measureCellAlignment(
 }
 
 test.describe('Numeric column right-alignment', () => {
+  test.beforeAll(async () => {
+    const seeded = await seedAccount();
+    ACCOUNT_UUID = seeded.accountId;
+    cleanup = seeded.cleanup;
+  });
+
+  test.afterAll(async () => {
+    if (cleanup) {
+      await cleanup();
+    }
+  });
+
   test.beforeEach(async ({ page }) => {
     await login(page);
     await page.goto(`/account/${ACCOUNT_UUID}/open`);
     await page.waitForLoadState('networkidle');
-    await settle(page, 2000); // Give time for positions data to load
 
     const table = page.locator('[data-testid="open-positions-table"]');
     await expect(table).toBeVisible({ timeout: 10000 });

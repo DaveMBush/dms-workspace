@@ -34,7 +34,7 @@ const SPEC_DIR = __dirname;
  * green before Story 21.2 exists. Story 21.2 flips it to `true` first, confirms
  * red against current code, then implements until green.
  */
-const STORY_21_2_IMPLEMENTED = false;
+const STORY_21_2_IMPLEMENTED = true;
 
 /** All e2e spec files, excluding this red-phase contract file itself. */
 function listSpecFiles(): string[] {
