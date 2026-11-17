@@ -1,6 +1,5 @@
-import type { PrismaClient } from '@prisma/client';
 import { randomUUID } from 'crypto';
-
+import type { PrismaClient } from '@prisma/client';
 import { initializePrismaClient } from './shared-prisma-client.helper';
 
 interface UniverseSeed {
@@ -80,9 +79,7 @@ async function ensureUniverse(
   return created.id;
 }
 
-async function ensureDividendType(
-  prisma: PrismaClient,
-): Promise<string> {
+async function ensureDividendType(prisma: PrismaClient): Promise<string> {
   const existing = await prisma.divDepositType.findFirst({
     where: { name: 'Dividend' },
   });

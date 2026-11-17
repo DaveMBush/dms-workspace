@@ -62,7 +62,7 @@ test.describe('Universe Filter Persistence', () => {
 
     // Wait for the debounced save to land in localStorage, then verify.
     await expect
-      .poll(async () => (await getFilterState(page, 'universes'))?.symbol)
+      .poll(async () => (await getFilterState(page, 'universes'))?.['symbol'])
       .toBe('XYZ');
 
     // Navigate away

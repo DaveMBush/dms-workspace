@@ -179,7 +179,9 @@ test.describe('Universe Table - Server-Side Sorting', () => {
 
     // After sorting, verify state changed.
     await expect
-      .poll(async () => (await getSortColumnsState(page, 'universes'))?.[0]?.column)
+      .poll(
+        async () => (await getSortColumnsState(page, 'universes'))?.[0]?.column,
+      )
       .toBe('symbol');
   });
 });
@@ -202,7 +204,9 @@ test.describe('Universe Sort Persistence', () => {
 
     // Confirm state is saved.
     await expect
-      .poll(async () => (await getSortColumnsState(page, 'universes'))?.[0]?.column)
+      .poll(
+        async () => (await getSortColumnsState(page, 'universes'))?.[0]?.column,
+      )
       .toBe('symbol');
 
     // Refresh the page
@@ -227,7 +231,9 @@ test.describe('Universe Sort Persistence', () => {
 
     // Confirm state is saved.
     await expect
-      .poll(async () => (await getSortColumnsState(page, 'universes'))?.[0]?.column)
+      .poll(
+        async () => (await getSortColumnsState(page, 'universes'))?.[0]?.column,
+      )
       .toBe('risk_group');
 
     // Navigate away to a different page
@@ -255,7 +261,9 @@ test.describe('Universe Sort Persistence', () => {
     await symbolHeader.click();
     // Ensure sort state is persisted before navigating away.
     await expect
-      .poll(async () => (await getSortColumnsState(page, 'universes'))?.[0]?.column)
+      .poll(
+        async () => (await getSortColumnsState(page, 'universes'))?.[0]?.column,
+      )
       .toBe('symbol');
 
     // Navigate away
@@ -457,6 +465,8 @@ test.describe('Cross-Table Sort Independence', () => {
     await symbolHeader.click();
 
     // Verify sort state was cleared from localStorage.
-    await expect.poll(async () => getSortColumnsState(page, 'universes')).toBeNull();
+    await expect
+      .poll(async () => getSortColumnsState(page, 'universes'))
+      .toBeNull();
   });
 });
