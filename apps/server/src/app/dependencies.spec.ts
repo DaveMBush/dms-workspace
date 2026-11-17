@@ -57,7 +57,7 @@ function readDeclaredPackages(): Set<string> {
 }
 
 /** Red-phase guard (NOT test.skip — that trips the no-skipped-tests gate). */
-const STORY_22_2_IMPLEMENTED = false;
+const STORY_22_2_IMPLEMENTED = true;
 
 /** The eight direct deps Story 22.2 must remove from the root manifest. */
 const REMOVAL_TARGETS: string[] = [
