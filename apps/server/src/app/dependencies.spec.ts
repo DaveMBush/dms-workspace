@@ -218,13 +218,27 @@ function requiredPeerDeclarers(): PeerDeclarer[] {
     if (!manifest) {
       continue;
     }
-    const peers = (manifest as PackageJsonLike & { peerDependencies?: Record<string, string> }).peerDependencies ?? {};
-    const meta = (manifest as PackageJsonLike & { peerDependenciesMeta?: Record<string, { optional?: boolean }> })
-      .peerDependenciesMeta ?? {};
+    const peers =
+      (
+        manifest as PackageJsonLike & {
+          peerDependencies?: Record<string, string>;
+        }
+      ).peerDependencies ?? {};
+    const meta =
+      (
+        manifest as PackageJsonLike & {
+          peerDependenciesMeta?: Record<string, { optional?: boolean }>;
+        }
+      ).peerDependenciesMeta ?? {};
     const required = (pkg: string): boolean =>
-      pkg in peers && !(meta[pkg] !== undefined && meta[pkg]?.optional === true);
+      pkg in peers &&
+      !(meta[pkg] !== undefined && meta[pkg]?.optional === true);
     if (required('@ngrx/store') || required('@ngrx/entity')) {
-      declarers.push({ name, storeRequired: required('@ngrx/store'), entityRequired: required('@ngrx/entity') });
+      declarers.push({
+        name,
+        storeRequired: required('@ngrx/store'),
+        entityRequired: required('@ngrx/entity'),
+      });
     }
   }
   return declarers;
@@ -247,7 +261,9 @@ function runtimeBundleFiles(name: string): string[] {
 function runtimeImports(name: string, spec: string): boolean {
   const escaped = spec.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const re = new RegExp(`['"]${escaped}(?:/[^'"]*)?['"]`);
-  return runtimeBundleFiles(name).some((file) => re.test(readFileSync(file, 'utf-8')));
+  return runtimeBundleFiles(name).some((file) =>
+    re.test(readFileSync(file, 'utf-8')),
+  );
 }
 
 describe('Epic 22: dependency pruning contract (red-phase scaffold for Story 22.2)', () => {
@@ -259,7 +275,10 @@ describe('Epic 22: dependency pruning contract (red-phase scaffold for Story 22.
           // eslint-disable-next-line sonarjs/explicit-test-skip -- mandated red-phase guard pattern (see file header), not a disabled test
           return;
         }
-        expect(readDeclaredPackages().has(name), `${name} should be removed from the root manifest by Story 22.2`).toBe(false);
+        expect(
+          readDeclaredPackages().has(name),
+          `${name} should be removed from the root manifest by Story 22.2`,
+        ).toBe(false);
       });
     }
 
@@ -269,14 +288,19 @@ describe('Epic 22: dependency pruning contract (red-phase scaffold for Story 22.
         // eslint-disable-next-line sonarjs/explicit-test-skip -- mandated red-phase guard pattern (see file header), not a disabled test
         return;
       }
-      expect(existsSync(join(repoRoot, 'apps', 'electron', 'package-lock.json'))).toBe(false);
+      expect(
+        existsSync(join(repoRoot, 'apps', 'electron', 'package-lock.json')),
+      ).toBe(false);
     });
   });
 
   describe('AC #1 safety — the six non-ngrx targets are genuinely unused (green now and after removal)', () => {
     for (const name of UNUSED_TARGETS) {
       it(`${name} has no module-specifier reference in app source, config, or scripts`, () => {
-        expect(findReferences(name), `unexpected references to ${name}`).toEqual([]);
+        expect(
+          findReferences(name),
+          `unexpected references to ${name}`,
+        ).toEqual([]);
       });
     }
   });
@@ -293,7 +317,9 @@ describe('Epic 22: dependency pruning contract (red-phase scaffold for Story 22.
     });
 
     it("every '@ngrx/entity' runtime importer declares it as a required peer (pnpm auto-install-peers keeps it resolvable)", () => {
-      const importers = requiredPeerDeclarers().filter((d) => runtimeImports(d.name, '@ngrx/entity'));
+      const importers = requiredPeerDeclarers().filter((d) =>
+        runtimeImports(d.name, '@ngrx/entity'),
+      );
       // @smarttools/smart-core's fesm bundle imports createEntityAdapter from
       // '@ngrx/entity' exactly once. Its manifest declares @ngrx/entity as a
       // REQUIRED peer (no peerDependenciesMeta), and pnpm runs with the default
@@ -301,7 +327,10 @@ describe('Epic 22: dependency pruning contract (red-phase scaffold for Story 22.
       // — so after Story 22.2 removes @ngrx/entity from the root manifest,
       // pnpm still installs it as a peer (with a warning) and resolution holds.
       for (const importer of importers) {
-        expect(importer.entityRequired, `${importer.name} imports '@ngrx/entity' at runtime but does not declare it as a required peer`).toBe(true);
+        expect(
+          importer.entityRequired,
+          `${importer.name} imports '@ngrx/entity' at runtime but does not declare it as a required peer`,
+        ).toBe(true);
       }
     });
   });
