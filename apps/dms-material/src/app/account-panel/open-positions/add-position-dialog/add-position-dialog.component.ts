@@ -303,7 +303,8 @@ export class AddPositionDialogComponent implements AfterViewInit {
     }
 
     // Symbol doesn't exist - clear selection
-    this.clearSelectedSymbol();
+    this.selectedSymbolId = null;
+    this.selectedUniverseId = null;
     return { invalidSymbol: true };
   }
 
@@ -340,11 +341,6 @@ export class AddPositionDialogComponent implements AfterViewInit {
       this.selectedSymbolId = upperSymbol;
       this.selectedUniverseId = universe.id;
     }
-  }
-
-  private clearSelectedSymbol(): void {
-    this.selectedSymbolId = null;
-    this.selectedUniverseId = null;
   }
 
   // Named method used for the class-level allUniversesLoaded computed field.

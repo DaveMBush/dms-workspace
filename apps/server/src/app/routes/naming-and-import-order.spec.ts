@@ -62,7 +62,8 @@ describe('suffix conformance (Story 24.1)', () => {
 
     // The module must still exist — renamed to the convention or not.
     expect(
-      existsSync(join(dir, original)) || existsSync(join(dir, `${stem}.function.ts`)),
+      existsSync(join(dir, original)) ||
+        existsSync(join(dir, `${stem}.function.ts`)),
     ).toBe(true);
 
     expect(conforms(dir, original)).toBe(true);
@@ -75,7 +76,8 @@ describe('suffix conformance (Story 24.1)', () => {
 
     // The module must still exist — renamed to the convention or not.
     expect(
-      existsSync(join(dir, original)) || existsSync(join(dir, `${stem}.function.ts`)),
+      existsSync(join(dir, original)) ||
+        existsSync(join(dir, `${stem}.function.ts`)),
     ).toBe(true);
 
     expect(conforms(dir, original)).toBe(true);
@@ -94,7 +96,8 @@ describe('suffix conformance (Story 24.1)', () => {
 const repoRoot = join(__dirname, '..', '..', '..', '..', '..');
 
 /** The deliberately mis-ordered fixture file (node:path before node:fs). */
-const importOrderFixturePath = 'apps/server/src/app/routes/import-order-fixture.ts';
+const importOrderFixturePath =
+  'apps/server/src/app/routes/import-order-fixture.ts';
 
 async function lintFile(filePath: string): Promise<string> {
   const eslintBin = join(repoRoot, 'node_modules', '.bin', 'eslint');
@@ -113,19 +116,18 @@ async function lintFile(filePath: string): Promise<string> {
 
 describe('import/order rule (Story 24.1)', () => {
   it.skip('eslint.config.mjs configures an import/order rule', () => {
-    const eslintConfig = readFileSync(join(repoRoot, 'eslint.config.mjs'), 'utf-8');
+    const eslintConfig = readFileSync(
+      join(repoRoot, 'eslint.config.mjs'),
+      'utf-8',
+    );
     // Must match the exact `import/order` rule id — not import/no-duplicates,
     // import/prefer-default-export or any other import/* rule.
     expect(eslintConfig).toMatch(/['"]import\/order['"]/);
   });
 
-  it.skip(
-    'linting the mis-ordered fixture produces an import/order error',
-    async () => {
-      const output = await lintFile(importOrderFixturePath);
-      // The fixture must be flagged by the import/order rule specifically.
-      expect(output).toContain('import/order');
-    },
-    30_000, // eslint cold start takes ~5s; leave headroom for CI
-  );
+  it.skip('linting the mis-ordered fixture produces an import/order error', async () => {
+    const output = await lintFile(importOrderFixturePath);
+    // The fixture must be flagged by the import/order rule specifically.
+    expect(output).toContain('import/order');
+  }, 30_000); // eslint cold start takes ~5s; leave headroom for CI
 });
