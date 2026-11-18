@@ -77,7 +77,7 @@ export class AddPositionDialogComponent implements AfterViewInit {
   // @smarttools/no-anonymous-functions. Accessing all items inside computed
   // triggers SmartNgRX batch server request for universe rows.
   private readonly allUniversesLoaded = computed(
-    this.checkUniversesLoaded.bind(this)
+    this.checkUniversesLoaded.bind(this),
   );
 
   // Bound symbol search function for autocomplete
@@ -151,10 +151,12 @@ export class AddPositionDialogComponent implements AfterViewInit {
     if (this.allUniversesLoaded()) {
       return of(this.searchSymbolsSync(query));
     }
-    return toObservable(this.allUniversesLoaded, { injector: this.injector }).pipe(
+    return toObservable(this.allUniversesLoaded, {
+      injector: this.injector,
+    }).pipe(
       filter(Boolean),
       take(1),
-      map(this.searchSymbolsSync.bind(this, query))
+      map(this.searchSymbolsSync.bind(this, query)),
     );
   }
 
@@ -282,7 +284,7 @@ export class AddPositionDialogComponent implements AfterViewInit {
   // Custom validator to check if symbol exists in universe
   // Also auto-selects first match (exact match first, then partial match)
   private symbolExistsValidator(
-    control: AbstractControl
+    control: AbstractControl,
   ): ValidationErrors | null {
     const value: unknown = control.value;
     if (typeof value !== 'string' || value.length === 0) {
@@ -307,7 +309,7 @@ export class AddPositionDialogComponent implements AfterViewInit {
 
   private findMatchingUniverse(
     universes: ReturnType<typeof selectUniverses>,
-    symbolValue: string
+    symbolValue: string,
   ): (typeof universes)[0] | null {
     let partialMatch: (typeof universes)[0] | null = null;
 
@@ -331,7 +333,7 @@ export class AddPositionDialogComponent implements AfterViewInit {
   }
 
   private updateSelectedSymbol(
-    universe: ReturnType<typeof selectUniverses>[0]
+    universe: ReturnType<typeof selectUniverses>[0],
   ): void {
     const upperSymbol = universe.symbol.toUpperCase();
     if (this.selectedSymbolId !== upperSymbol) {
@@ -372,8 +374,10 @@ export class AddPositionDialogComponent implements AfterViewInit {
       // Guard: server does not return a 'name' field, so u.name may be undefined at runtime
       const uSymbol = typeof u.symbol === 'string' ? u.symbol : '';
       const uName = typeof u.name === 'string' ? u.name : '';
-      const symbolMatch = uSymbol !== '' && uSymbol.toLowerCase().includes(lowerQuery);
-      const nameMatch = uName !== '' && uName.toLowerCase().includes(lowerQuery);
+      const symbolMatch =
+        uSymbol !== '' && uSymbol.toLowerCase().includes(lowerQuery);
+      const nameMatch =
+        uName !== '' && uName.toLowerCase().includes(lowerQuery);
 
       if (symbolMatch || nameMatch) {
         results.push({

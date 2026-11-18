@@ -14,7 +14,16 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { debounceTime, filter, from, Observable, ObservableInput, of, switchMap, tap } from 'rxjs';
+import {
+  debounceTime,
+  filter,
+  from,
+  Observable,
+  ObservableInput,
+  of,
+  switchMap,
+  tap,
+} from 'rxjs';
 
 import { SymbolOption } from './symbol-option.interface';
 
@@ -95,7 +104,7 @@ export class SymbolAutocompleteComponent implements OnInit {
         filter(filterFn),
         tap(setLoadingFn),
         switchMap(doSearchFn),
-        takeUntilDestroyed(this.destroyRef)
+        takeUntilDestroyed(this.destroyRef),
       )
       .subscribe(handleResultsFn);
   }
