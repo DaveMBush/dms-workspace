@@ -9,7 +9,7 @@
 // delete these assertions to make them pass — only implement the production
 // code they describe.
 
-// eslint-disable vitest/no-disabled-tests, sonarjs/no-skipped-tests
+/* eslint-disable vitest/no-disabled-tests, sonarjs/no-skipped-tests -- red-phase contract tests intentionally skipped until Story 23.2 implements the shared sanitizer and takeUntilDestroyed teardown (see header) */
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNativeDateAdapter } from '@angular/material/core';
