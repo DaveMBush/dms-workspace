@@ -5,11 +5,12 @@ import {
   ChangeDetectorRef,
   Component,
   computed,
+  DestroyRef,
   inject,
   Injector,
   ViewChild,
 } from '@angular/core';
-import { toObservable } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import {
   AbstractControl,
   FormBuilder,
@@ -58,6 +59,7 @@ export class AddPositionDialogComponent implements AfterViewInit {
   private readonly fb = inject(FormBuilder);
   private readonly dialogRef = inject(MatDialogRef<AddPositionDialogComponent>);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly injector = inject(Injector);
   readonly data: AddPositionData = inject<AddPositionData>(MAT_DIALOG_DATA);
 
@@ -117,9 +119,9 @@ export class AddPositionDialogComponent implements AfterViewInit {
         self.symbolControl.markAsTouched();
       }
     }
-    this.symbolAutocomplete.searchControl.valueChanges.subscribe(
-      onSearchValueChange
-    );
+    this.symbolAutocomplete.searchControl.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(onSearchValueChange);
   }
 
   // Expose controls for template access without function calls
