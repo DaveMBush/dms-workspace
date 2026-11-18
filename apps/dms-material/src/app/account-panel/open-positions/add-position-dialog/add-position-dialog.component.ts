@@ -188,27 +188,11 @@ export class AddPositionDialogComponent implements AfterViewInit {
     this.cdr.markForCheck();
   }
 
-  onQuantityInput(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    let value = input.value;
-
-    // Remove any non-digit characters
-    value = value.replace(/\D/g, '');
-
-    // Update the input and form control
-    input.value = value;
-    this.quantityControl.setValue(value || null);
-    this.quantityControl.updateValueAndValidity();
-    this.cdr.markForCheck();
-  }
-
-  onPriceInput(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    let value = input.value;
-
-    // Allow digits, one decimal point, and up to 5 decimal places
+  // Shared sanitizer for quantity/price inputs (PRICE-style rule):
+  // keep digits and '.', only the first decimal point, max 5 decimal places.
+  private sanitizeNumericInput(raw: string): string {
     // Remove any characters that aren't digits or decimal point
-    value = value.replace(/[^0-9.]/g, '');
+    let value = raw.replace(/[^0-9.]/g, '');
 
     // Only keep first decimal point
     const parts = value.split('.');
@@ -220,6 +204,24 @@ export class AddPositionDialogComponent implements AfterViewInit {
     if (parts.length === 2 && parts[1].length > 5) {
       value = parts[0] + '.' + parts[1].substring(0, 5);
     }
+
+    return value;
+  }
+
+  onQuantityInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const value = this.sanitizeNumericInput(input.value);
+
+    // Update the input and form control
+    input.value = value;
+    this.quantityControl.setValue(value || null);
+    this.quantityControl.updateValueAndValidity();
+    this.cdr.markForCheck();
+  }
+
+  onPriceInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const value = this.sanitizeNumericInput(input.value);
 
     // Update the input and form control
     input.value = value;
