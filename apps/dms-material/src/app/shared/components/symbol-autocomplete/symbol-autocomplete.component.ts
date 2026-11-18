@@ -1,11 +1,14 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
+  inject,
   input,
   OnInit,
   output,
   signal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -37,6 +40,7 @@ export class SymbolAutocompleteComponent implements OnInit {
   readonly searchFn =
     input.required<(query: string) => ObservableInput<SymbolOption[]>>();
 
+  private readonly destroyRef = inject(DestroyRef);
   private filteredOptionsSig = signal<SymbolOption[]>([]);
   private isLoadingSig = signal(false);
 
@@ -90,7 +94,8 @@ export class SymbolAutocompleteComponent implements OnInit {
         debounceTime(300),
         filter(filterFn),
         tap(setLoadingFn),
-        switchMap(doSearchFn)
+        switchMap(doSearchFn),
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(handleResultsFn);
   }

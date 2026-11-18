@@ -120,12 +120,15 @@ test.describe('Open Positions', () => {
     const addButton = page.locator('[data-testid="add-new-position-button"]');
     await addButton.click();
 
-    // Try to enter a decimal - it should be filtered out by the input handler
+    // Try to enter a decimal - non-digit characters are filtered out by the
+    // shared input sanitizer (Story 23.2 unified quantity/price sanitization:
+    // digits and one decimal point are kept, so 'abc' is stripped but the dot
+    // survives — identical accept/reject behavior to the price field).
     const quantityInput = page.locator('[data-testid="quantity-input"]');
     await quantityInput.click();
     await quantityInput.fill('10.5abc');
     const value = await quantityInput.inputValue();
-    expect(value).toBe('105');
+    expect(value).toBe('10.5');
   });
 
   test('should filter negative sign from price input', async ({ page }) => {

@@ -190,26 +190,6 @@ export class AddPositionDialogComponent implements AfterViewInit {
     this.cdr.markForCheck();
   }
 
-  // Shared sanitizer for quantity/price inputs (PRICE-style rule):
-  // keep digits and '.', only the first decimal point, max 5 decimal places.
-  private sanitizeNumericInput(raw: string): string {
-    // Remove any characters that aren't digits or decimal point
-    let value = raw.replace(/[^0-9.]/g, '');
-
-    // Only keep first decimal point
-    const parts = value.split('.');
-    if (parts.length > 2) {
-      value = parts[0] + '.' + parts.slice(1).join('');
-    }
-
-    // Limit to 5 decimal places
-    if (parts.length === 2 && parts[1].length > 5) {
-      value = parts[0] + '.' + parts[1].substring(0, 5);
-    }
-
-    return value;
-  }
-
   onQuantityInput(event: Event): void {
     const input = event.target as HTMLInputElement;
     const value = this.sanitizeNumericInput(input.value);
@@ -261,6 +241,26 @@ export class AddPositionDialogComponent implements AfterViewInit {
 
   onCancel(): void {
     this.dialogRef.close(null);
+  }
+
+  // Shared sanitizer for quantity/price inputs (PRICE-style rule):
+  // keep digits and '.', only the first decimal point, max 5 decimal places.
+  private sanitizeNumericInput(raw: string): string {
+    // Remove any characters that aren't digits or decimal point
+    let value = raw.replace(/[^0-9.]/g, '');
+
+    // Only keep first decimal point
+    const parts = value.split('.');
+    if (parts.length > 2) {
+      value = parts[0] + '.' + parts.slice(1).join('');
+    }
+
+    // Limit to 5 decimal places
+    if (parts.length === 2 && parts[1].length > 5) {
+      value = parts[0] + '.' + parts[1].substring(0, 5);
+    }
+
+    return value;
   }
 
   private updateAutocompleteDisplay(): void {
