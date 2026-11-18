@@ -83,6 +83,7 @@ export default defineConfig(() => ({
         'src/app/account-panel/div-dep-modal/div-dep-modal.component.ts',
         'src/app/account-panel/dividend-deposits/dividend-deposits-component.service.ts',
         'src/app/account-panel/dividend-deposits/dividend-deposits.component.ts',
+        'src/app/account-panel/open-positions/add-position-dialog/add-position-dialog.component.ts',
         'src/app/account-panel/open-positions/open-positions-component.service.ts',
         'src/app/account-panel/open-positions/open-positions.component.ts',
         'src/app/account-panel/sold-positions/sold-positions-component.service.ts',
