@@ -1,7 +1,6 @@
 import { describe, expect, test } from 'vitest';
-
-import { isSplitFromRow } from './is-split-from-row.function';
 import { FidelityCsvRow } from './fidelity-csv-row.interface';
+import { isSplitFromRow } from './is-split-from-row.function';
 
 function makeRow(description: string, action = 'YOU BOUGHT'): FidelityCsvRow {
   return {
@@ -21,8 +20,8 @@ describe('isSplitFromRow', function () {
   test('returns true for web-format FROM row (description contains R/S FROM)', function () {
     expect(
       isSplitFromRow(
-        makeRow('REVERSE SPLIT R/S FROM 691543102#REOR M005168075001')
-      )
+        makeRow('REVERSE SPLIT R/S FROM 691543102#REOR M005168075001'),
+      ),
     ).toBe(true);
   });
 
@@ -32,9 +31,9 @@ describe('isSplitFromRow', function () {
       isSplitFromRow(
         makeRow(
           'MSTY UNIT',
-          'REVERSE SPLIT R/S FROM 88634T493#REOR M0051704770001'
-        )
-      )
+          'REVERSE SPLIT R/S FROM 88634T493#REOR M0051704770001',
+        ),
+      ),
     ).toBe(true);
   });
 
@@ -43,9 +42,9 @@ describe('isSplitFromRow', function () {
       isSplitFromRow(
         makeRow(
           'ULTY ETF',
-          'REVERSE SPLIT R/S FROM 88636J527#REOR M0051702900001'
-        )
-      )
+          'REVERSE SPLIT R/S FROM 88636J527#REOR M0051702900001',
+        ),
+      ),
     ).toBe(true);
   });
 
@@ -54,9 +53,9 @@ describe('isSplitFromRow', function () {
       isSplitFromRow(
         makeRow(
           'OXLC COMMON STOCK',
-          'REVERSE SPLIT R/S FROM 691543102#REOR M0051680750001'
-        )
-      )
+          'REVERSE SPLIT R/S FROM 691543102#REOR M0051680750001',
+        ),
+      ),
     ).toBe(true);
   });
 
@@ -66,24 +65,24 @@ describe('isSplitFromRow', function () {
       isSplitFromRow(
         makeRow(
           'MSTY UNIT',
-          'REVERSE SPLIT R/S TO 88636X732#REOR M0051704770000'
-        )
-      )
+          'REVERSE SPLIT R/S TO 88636X732#REOR M0051704770000',
+        ),
+      ),
     ).toBe(false);
   });
 
   test('returns false for web-format TO row (description contains R/S TO)', function () {
     expect(
       isSplitFromRow(
-        makeRow('REVERSE SPLIT R/S TO 88636X732#REOR M0051704770000')
-      )
+        makeRow('REVERSE SPLIT R/S TO 88636X732#REOR M0051704770000'),
+      ),
     ).toBe(false);
   });
 
   // Non-split rows
   test('returns false for a dividend row', function () {
     expect(isSplitFromRow(makeRow('MSTY UNIT', 'DIVIDEND RECEIVED'))).toBe(
-      false
+      false,
     );
   });
 
@@ -96,7 +95,7 @@ describe('isSplitFromRow', function () {
       isSplitFromRow({
         description: undefined,
         action: undefined,
-      } as unknown as FidelityCsvRow)
+      } as unknown as FidelityCsvRow),
     ).toBe(false);
   });
 });

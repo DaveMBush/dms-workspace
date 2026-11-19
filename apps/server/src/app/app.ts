@@ -1,6 +1,6 @@
+import * as path from 'path';
 import autoLoad from '@fastify/autoload';
 import { FastifyInstance } from 'fastify';
-import * as path from 'path';
 
 type AppOptions = Record<string, unknown>;
 

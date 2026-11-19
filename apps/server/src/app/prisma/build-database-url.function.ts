@@ -1,11 +1,10 @@
-import type { ConnectionPoolConfig } from './create-connection-pool-config.function';
-
 import * as path from 'path';
+import type { ConnectionPoolConfig } from './create-connection-pool-config.function';
 
 export function buildDatabaseUrl(
   provider: string,
   baseUrl?: string,
-  poolConfig?: ConnectionPoolConfig
+  poolConfig?: ConnectionPoolConfig,
 ): string {
   if (
     provider === 'postgresql' &&

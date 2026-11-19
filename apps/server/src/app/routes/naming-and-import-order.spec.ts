@@ -1,11 +1,6 @@
-/* eslint-disable vitest/no-disabled-tests, sonarjs/no-skipped-tests -- red-phase (Story 24.1) contract tests; intentionally skipped until Story 24.2 lands */
-//
-// These assertions are RED against current production code and are kept
-// `it.skip` per Story 24.1 AC #3 so the suite stays green. Story 24.2's first
-// task removes the skip markers, confirms they fail, then implements (file
-// renames + eslint import/order rule) until they pass. The file-level disable
-// is the documented exemption for intentional unit-test deferrals (see
-// scripts/check-no-skipped-tests.sh).
+// Story 24.1 contract tests, turned green by Story 24.2: the two non-conforming
+// route files were renamed to `*.function.ts` and eslint.config.mjs now
+// enforces alphabetical import ordering (see import-order-fixture.ts).
 
 import { execFile } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
@@ -47,18 +42,28 @@ function hasDocumentedException(fileName: string): boolean {
  *   - a documented exception for its original basename exists.
  */
 function conforms(dir: string, originalName: string): boolean {
-  const stem = originalName.replace(/\.[^.]+$/, '');
+  const stem = stemOf(originalName);
   if (existsSync(join(dir, `${stem}.function.ts`))) {
     return true;
   }
   return hasDocumentedException(originalName);
 }
 
+/**
+ * Strip the trailing `.const.ts` / `.helper.ts`-style suffixes so that e.g.
+ * `account-page-size.const.ts` yields stem `account-page-size`, matching the
+ * spine-convention rename target `account-page-size.function.ts`. Stripping a
+ * single extension would leave `account-page-size.const` and never match.
+ */
+function stemOf(originalName: string): string {
+  return originalName.replace(/\.[^.]*\.[^.]*$/, '');
+}
+
 describe('suffix conformance (Story 24.1)', () => {
-  it.skip('accounts/account-page-size.const.ts carries the *.function.ts suffix or a documented exception', () => {
+  it('accounts/account-page-size.const.ts carries the *.function.ts suffix or a documented exception', () => {
     const dir = join(__dirname, 'accounts');
     const original = 'account-page-size.const.ts';
-    const stem = original.replace(/\.[^.]+$/, '');
+    const stem = stemOf(original);
 
     // The module must still exist — renamed to the convention or not.
     expect(
@@ -69,10 +74,10 @@ describe('suffix conformance (Story 24.1)', () => {
     expect(conforms(dir, original)).toBe(true);
   });
 
-  it.skip('import/build-cef-classification.helper.ts carries the *.function.ts suffix or a documented exception', () => {
+  it('import/build-cef-classification.helper.ts carries the *.function.ts suffix or a documented exception', () => {
     const dir = join(__dirname, 'import');
     const original = 'build-cef-classification.helper.ts';
-    const stem = original.replace(/\.[^.]+$/, '');
+    const stem = stemOf(original);
 
     // The module must still exist — renamed to the convention or not.
     expect(
@@ -115,7 +120,7 @@ async function lintFile(filePath: string): Promise<string> {
 }
 
 describe('import/order rule (Story 24.1)', () => {
-  it.skip('eslint.config.mjs configures an import/order rule', () => {
+  it('eslint.config.mjs configures an import/order rule', () => {
     const eslintConfig = readFileSync(
       join(repoRoot, 'eslint.config.mjs'),
       'utf-8',
@@ -125,7 +130,7 @@ describe('import/order rule (Story 24.1)', () => {
     expect(eslintConfig).toMatch(/['"]import\/order['"]/);
   });
 
-  it.skip('linting the mis-ordered fixture produces an import/order error', async () => {
+  it('linting the mis-ordered fixture produces an import/order error', async () => {
     const output = await lintFile(importOrderFixturePath);
     // The fixture must be flagged by the import/order rule specifically.
     expect(output).toContain('import/order');

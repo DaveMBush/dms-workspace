@@ -1,10 +1,4 @@
-/* eslint-disable vitest/no-disabled-tests -- red-phase (Story 17.2) contract tests; intentionally skipped until the fix lands */
-//
-// These assertions are RED against current production code and are kept
-// `it.skip` per Story 17.1 AC #4/#5 so the suite stays green. Story 17.2's
-// first task removes the skip markers, confirms they fail, then implements
-// until they pass. The file-level disable is the documented exemption for
-// intentional unit-test deferrals (see scripts/check-no-skipped-tests.sh).
+// Story 17.2 removed the red-phase skip markers; these assertions now run.
 
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';

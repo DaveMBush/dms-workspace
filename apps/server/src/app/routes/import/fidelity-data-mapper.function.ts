@@ -1,5 +1,5 @@
 import { prisma } from '../../prisma/prisma-client';
-import { buildCefClassification } from './build-cef-classification.helper';
+import { buildCefClassification } from './build-cef-classification.function';
 import { createUniverseEntry } from './create-universe-entry.helper';
 import { FidelityCsvRow } from './fidelity-csv-row.interface';
 import { isInLieuRow } from './is-in-lieu-row.function';

@@ -1,6 +1,6 @@
 import { prisma } from '../../prisma/prisma-client';
 import { PartialArrayDefinition } from '../top/partial-array-definition.interface';
-import { ACCOUNT_PAGE_SIZE } from './account-page-size.const';
+import { ACCOUNT_PAGE_SIZE } from './account-page-size.function';
 
 type PrismaCountFn = (args: { where: unknown }) => Promise<number>;
 type PrismaFindManyFn = (args: {
@@ -18,7 +18,7 @@ type PrismaFindManyFn = (args: {
 export async function fetchStandardPage(
   modelName: 'divDeposits' | 'trades',
   where: unknown,
-  orderBy: unknown
+  orderBy: unknown,
 ): Promise<PartialArrayDefinition> {
   const model = prisma[modelName] as unknown as {
     count: PrismaCountFn;
