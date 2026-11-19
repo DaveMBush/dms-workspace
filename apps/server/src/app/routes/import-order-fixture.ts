@@ -7,8 +7,8 @@
 // future import/order rule should flag it. Do NOT "fix" the order;
 // naming-and-import-order.spec.ts depends on it staying mis-ordered.
 
-import { basename } from 'node:path';
 import { existsSync } from 'node:fs';
+import { basename } from 'node:path';
 
 /** Whether the fixture file itself exists on disk. */
 export const importOrderFixture = existsSync(
