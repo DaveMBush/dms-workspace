@@ -21,10 +21,7 @@ export default [
     // lints to prove this rule fires.
     files: ['src/**/*.ts'],
     rules: {
-      'import/order': [
-        'error',
-        { alphabetize: { order: 'asc' } },
-      ],
+      'import/order': ['error', { alphabetize: { order: 'asc' } }],
     },
   },
   {

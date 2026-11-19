@@ -1,5 +1,4 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
-
 import { prisma } from '../prisma/prisma-client';
 import type { ProcessedRow } from '../routes/common/distribution-api.function';
 import { normalizeToMonthlyEquivalents } from './normalize-to-monthly-equivalents.function';
@@ -51,7 +50,7 @@ describe('recalculateUniverseVolatility', function () {
   test('computes volatility_long from 5y window and volatility_short from 1y window when history spans more than 5 years', async function () {
     const history = buildMonthlyRecords(
       72,
-      new Date('2026-04-01T00:00:00.000Z')
+      new Date('2026-04-01T00:00:00.000Z'),
     );
 
     await recalculateUniverseVolatility('universe-1', history);
@@ -69,7 +68,7 @@ describe('recalculateUniverseVolatility', function () {
   test('computes both volatility values from same 8-month subset when history covers only 8 months', async function () {
     const history = buildMonthlyRecords(
       8,
-      new Date('2026-04-01T00:00:00.000Z')
+      new Date('2026-04-01T00:00:00.000Z'),
     );
 
     await recalculateUniverseVolatility('universe-2', history);
@@ -111,19 +110,19 @@ describe('recalculateUniverseVolatility', function () {
         return 3;
       }),
       quarterlyStart,
-      90
+      90,
     );
     // 17 monthly payments of $1 each starting 30 days after last quarterly payment
     const lastQuarterlyDate = quarterlyRows[quarterlyRows.length - 1].date;
     const monthlyStart = new Date(
-      lastQuarterlyDate.getTime() + 30 * 24 * 60 * 60 * 1000
+      lastQuarterlyDate.getTime() + 30 * 24 * 60 * 60 * 1000,
     );
     const monthlyRows = buildRows(
       Array.from({ length: 17 }, function () {
         return 1;
       }),
       monthlyStart,
-      30
+      30,
     );
     const history = [...quarterlyRows, ...monthlyRows];
 
@@ -145,11 +144,11 @@ describe('recalculateUniverseVolatility', function () {
 function buildRows(
   amounts: number[],
   startDate: Date,
-  intervalDays: number
+  intervalDays: number,
 ): ProcessedRow[] {
   return amounts.map(function buildRow(amount, index) {
     const date = new Date(
-      startDate.getTime() + index * intervalDays * 24 * 60 * 60 * 1000
+      startDate.getTime() + index * intervalDays * 24 * 60 * 60 * 1000,
     );
     return { amount, date };
   });

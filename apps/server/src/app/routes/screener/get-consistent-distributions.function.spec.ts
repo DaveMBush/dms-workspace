@@ -1,5 +1,4 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
-
 import { logger } from '../../../utils/structured-logger';
 import type { ProcessedRow } from '../../common/distribution-api.function';
 import { getConsistentDistributions } from './get-consistent-distributions.function';
@@ -155,7 +154,7 @@ describe('getConsistentDistributions', () => {
       mockFetchDistributionData.mockResolvedValueOnce(mockRows);
 
       const result = await getConsistentDistributions(
-        'DUPLICATES_INSUFFICIENT'
+        'DUPLICATES_INSUFFICIENT',
       );
 
       // Only 2 unique dates after de-duplication
@@ -414,7 +413,7 @@ describe('getConsistentDistributions', () => {
       expect(mockFetchDistributionData).toHaveBeenCalledWith('NOLISTING');
       expect(vi.mocked(logger.warn)).toHaveBeenCalledWith(
         'fetchDividendHistory returned no data for NOLISTING',
-        { symbol: 'NOLISTING' }
+        { symbol: 'NOLISTING' },
       );
     });
   });

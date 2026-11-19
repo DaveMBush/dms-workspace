@@ -7,7 +7,7 @@ import {
 } from '../common/cef-classification.function';
 
 export async function buildCefClassification(
-  symbol: string
+  symbol: string,
 ): Promise<{ riskGroupId: string; isCef: boolean }> {
   const groups = await prisma.risk_group.findMany();
   const defaultGroup = groups.find(function findEquities(g) {
@@ -15,7 +15,7 @@ export async function buildCefClassification(
   });
   if (!defaultGroup) {
     throw new Error(
-      'Equities risk group not found in database. Cannot create universe entry.'
+      'Equities risk group not found in database. Cannot create universe entry.',
     );
   }
   const riskGroups: RiskGroupMap = {

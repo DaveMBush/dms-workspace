@@ -881,10 +881,7 @@ const eslintConfig = async () => {
       // `nx lint server`, whose cwd is apps/server. Keep both in sync.
       files: ['apps/server/src/**/*.ts'],
       rules: {
-        'import/order': [
-          'error',
-          { alphabetize: { order: 'asc' } },
-        ],
+        'import/order': ['error', { alphabetize: { order: 'asc' } }],
       },
     },
   ];

@@ -1,6 +1,5 @@
 import fastify, { FastifyInstance } from 'fastify';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-
 import registerAccountIndexesRoutes from './index';
 
 // Story AX.13: Tests verifying sort/filter state is parsed from headers
@@ -61,7 +60,7 @@ describe('GET /indexes - sort/filter state passthrough (AX.13)', () => {
       expect(mockPrismaTrades.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           orderBy: { buy_date: 'desc' },
-        })
+        }),
       );
     });
 
@@ -88,7 +87,7 @@ describe('GET /indexes - sort/filter state passthrough (AX.13)', () => {
       expect(mockPrismaTrades.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           orderBy: { universe: { symbol: 'asc' } },
-        })
+        }),
       );
     });
 
@@ -147,7 +146,7 @@ describe('GET /indexes - sort/filter state passthrough (AX.13)', () => {
           where: expect.objectContaining({
             universe: { symbol: { contains: 'AAPL' } },
           }),
-        })
+        }),
       );
     });
   });
@@ -178,7 +177,7 @@ describe('GET /indexes - sort/filter state passthrough (AX.13)', () => {
       expect(mockPrismaTrades.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           orderBy: { sell_date: 'desc' },
-        })
+        }),
       );
     });
 
@@ -209,7 +208,7 @@ describe('GET /indexes - sort/filter state passthrough (AX.13)', () => {
         expect.objectContaining({
           gte: expect.any(Date),
           lte: expect.any(Date),
-        })
+        }),
       );
     });
   });
@@ -238,7 +237,7 @@ describe('GET /indexes - sort/filter state passthrough (AX.13)', () => {
       expect(mockPrismaDivDeposits.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           orderBy: { date: 'asc' },
-        })
+        }),
       );
     });
 
@@ -265,7 +264,7 @@ describe('GET /indexes - sort/filter state passthrough (AX.13)', () => {
       expect(mockPrismaDivDeposits.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           orderBy: { amount: 'desc' },
-        })
+        }),
       );
     });
 
@@ -292,7 +291,7 @@ describe('GET /indexes - sort/filter state passthrough (AX.13)', () => {
       expect(mockPrismaDivDeposits.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           orderBy: { universe: { symbol: 'asc' } },
-        })
+        }),
       );
     });
 
@@ -322,7 +321,7 @@ describe('GET /indexes - sort/filter state passthrough (AX.13)', () => {
       expect(call.where.date).toEqual(
         expect.objectContaining({
           gte: expect.any(Date),
-        })
+        }),
       );
     });
 
@@ -344,7 +343,7 @@ describe('GET /indexes - sort/filter state passthrough (AX.13)', () => {
       expect(mockPrismaDivDeposits.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           orderBy: { date: 'desc' },
-        })
+        }),
       );
     });
   });
@@ -399,7 +398,7 @@ describe('GET /indexes - sortColumns format (Story 37.2 fix)', () => {
     expect(mockPrismaTrades.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
         orderBy: { buy_date: 'asc' },
-      })
+      }),
     );
   });
 
@@ -429,7 +428,7 @@ describe('GET /indexes - sortColumns format (Story 37.2 fix)', () => {
     expect(mockPrismaTrades.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
         orderBy: { sell_date: 'asc' },
-      })
+      }),
     );
   });
 
@@ -458,7 +457,7 @@ describe('GET /indexes - sortColumns format (Story 37.2 fix)', () => {
     expect(mockPrismaDivDeposits.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
         orderBy: { amount: 'asc' },
-      })
+      }),
     );
   });
 

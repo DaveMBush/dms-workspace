@@ -12,7 +12,7 @@ import { getTradeComputedValue } from './get-trade-computed-value.function';
 import { isComputedTradeSort } from './is-computed-trade-sort.function';
 
 function getSortFieldAndOrder(
-  state: TableState
+  state: TableState,
 ): { field: string; order: 'asc' | 'desc' } | undefined {
   if (state.sortColumns !== undefined && state.sortColumns.length > 0) {
     return {
@@ -36,18 +36,18 @@ function extractMonthsFromDates(dates: Array<Date | null>): Set<string> {
       })
       .map(function mapDateToMonth(date) {
         return `${date.getFullYear()}-${date.getMonth() + 1}`;
-      })
+      }),
   );
 }
 
 function combineAndSortMonths(
   months1: Set<string>,
-  months2: Set<string>
+  months2: Set<string>,
 ): MonthData[] {
   const combinedMonths = [...new Set([...months1, ...months2])];
   const sortedMonths = combinedMonths.toSorted(function sortMonthsDescending(
     a: string,
-    b: string
+    b: string,
   ) {
     const [aYear, aMonth] = a.split('-').map(Number);
     const [bYear, bMonth] = b.split('-').map(Number);
@@ -64,7 +64,7 @@ function combineAndSortMonths(
 
 async function getOpenTradesPage(
   openState: TableState,
-  accountId: string
+  accountId: string,
 ): Promise<PartialArrayDefinition> {
   const where = buildTradeWhere(openState, accountId, true);
 
@@ -115,7 +115,7 @@ async function getOpenTradesPage(
 
 async function getSoldTradesPage(
   closedState: TableState,
-  accountId: string
+  accountId: string,
 ): Promise<PartialArrayDefinition> {
   const where = buildTradeWhere(closedState, accountId, false);
   return fetchStandardPage('trades', where, buildTradeOrderBy(closedState));
@@ -123,19 +123,19 @@ async function getSoldTradesPage(
 
 async function getDivDepositsPage(
   divState: TableState,
-  accountId: string
+  accountId: string,
 ): Promise<PartialArrayDefinition> {
   const where = buildDivDepositWhere(divState, accountId);
   return fetchStandardPage(
     'divDeposits',
     where,
-    buildDivDepositOrderBy(divState)
+    buildDivDepositOrderBy(divState),
   );
 }
 
 async function getSoldTradeMonthDates(
   closedState: TableState,
-  accountId: string
+  accountId: string,
 ): Promise<Array<Date | null>> {
   const soldTrades = await prisma.trades.findMany({
     where: buildTradeWhere(closedState, accountId, false),
@@ -148,7 +148,7 @@ async function getSoldTradeMonthDates(
 
 async function getDivDepositMonthDates(
   divState: TableState,
-  accountId: string
+  accountId: string,
 ): Promise<Date[]> {
   const divDeposits = await prisma.divDeposits.findMany({
     where: buildDivDepositWhere(divState, accountId),
@@ -163,7 +163,7 @@ export async function buildAccountResponse(
   account: { id: string; name: string },
   openState: TableState,
   closedState: TableState,
-  divState: TableState
+  divState: TableState,
 ): Promise<Account> {
   const [
     openTrades,

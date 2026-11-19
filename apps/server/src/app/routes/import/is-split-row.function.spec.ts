@@ -1,5 +1,4 @@
 import { describe, expect, test } from 'vitest';
-
 import { FidelityCsvRow } from './fidelity-csv-row.interface';
 import { isSplitRow } from './is-split-row.function';
 
@@ -23,7 +22,9 @@ describe('isSplitRow', function () {
 
   test('returns true when description contains "SPLIT" (uppercase)', function () {
     expect(
-      isSplitRow(makeRow('REVERSE SPLIT R/S FROM 691543102#REOR M005168075001'))
+      isSplitRow(
+        makeRow('REVERSE SPLIT R/S FROM 691543102#REOR M005168075001'),
+      ),
     ).toBe(true);
   });
 
@@ -53,9 +54,9 @@ describe('isSplitRow', function () {
       isSplitRow(
         makeRow(
           'MSTY UNIT',
-          'REVERSE SPLIT R/S FROM 88634T493#REOR M0051704770001'
-        )
-      )
+          'REVERSE SPLIT R/S FROM 88634T493#REOR M0051704770001',
+        ),
+      ),
     ).toBe(true);
   });
 
@@ -64,9 +65,9 @@ describe('isSplitRow', function () {
       isSplitRow(
         makeRow(
           'MSTY UNIT',
-          'REVERSE SPLIT R/S TO 88636X732#REOR M0051704770000'
-        )
-      )
+          'REVERSE SPLIT R/S TO 88636X732#REOR M0051704770000',
+        ),
+      ),
     ).toBe(true);
   });
 
@@ -79,7 +80,7 @@ describe('isSplitRow', function () {
       isSplitRow({
         description: undefined,
         action: undefined,
-      } as unknown as FidelityCsvRow)
+      } as unknown as FidelityCsvRow),
     ).toBe(false);
   });
 });

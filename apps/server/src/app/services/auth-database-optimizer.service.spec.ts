@@ -1,7 +1,6 @@
 import { rmSync } from 'fs';
 import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 import { PrismaClient } from '@prisma/client';
-
 import { authDatabaseOptimizerService } from './auth-database-optimizer.service';
 import { databasePerformanceService } from './database-performance.service';
 
@@ -186,7 +185,7 @@ describe('AuthDatabaseOptimizerService', () => {
     it('should find existing user efficiently', async () => {
       const result = await authDatabaseOptimizerService.optimizedUserLookup(
         testClient,
-        'auth-user-1'
+        'auth-user-1',
       );
 
       expect(result).toBeDefined();
@@ -197,7 +196,7 @@ describe('AuthDatabaseOptimizerService', () => {
     it('should return null for non-existent user', async () => {
       const result = await authDatabaseOptimizerService.optimizedUserLookup(
         testClient,
-        'nonexistent-user'
+        'nonexistent-user',
       );
 
       expect(result).toBeNull();
@@ -206,7 +205,7 @@ describe('AuthDatabaseOptimizerService', () => {
     it('should track performance metrics', async () => {
       await authDatabaseOptimizerService.optimizedUserLookup(
         testClient,
-        'auth-user-1'
+        'auth-user-1',
       );
 
       const stats = databasePerformanceService.getQueryStatistics();
@@ -225,21 +224,21 @@ describe('AuthDatabaseOptimizerService', () => {
       const usernames = ['auth-user-1', 'auth-user-2', 'auth-user-3'];
       const result = await authDatabaseOptimizerService.batchUserLookup(
         testClient,
-        usernames
+        usernames,
       );
 
       expect(result).toHaveLength(3);
       expect(
         result.map(function mapToName(user) {
           return user.name;
-        })
+        }),
       ).toEqual(expect.arrayContaining(usernames));
     });
 
     it('should handle empty array input', async () => {
       const result = await authDatabaseOptimizerService.batchUserLookup(
         testClient,
-        []
+        [],
       );
 
       expect(result).toHaveLength(0);
@@ -250,7 +249,7 @@ describe('AuthDatabaseOptimizerService', () => {
       const usernames = ['auth-user-1', 'auth-user-2'];
       const result = await authDatabaseOptimizerService.batchUserLookup(
         testClient,
-        usernames
+        usernames,
       );
 
       expect(result).toHaveLength(2);
@@ -265,17 +264,17 @@ describe('AuthDatabaseOptimizerService', () => {
       for (const username of usernames) {
         await authDatabaseOptimizerService.optimizedUserLookup(
           testClient,
-          username
+          username,
         );
       }
       const [individualStats] = databasePerformanceService.getQueryStatistics(
-        'auth:optimized_user_lookup'
+        'auth:optimized_user_lookup',
       );
 
       databasePerformanceService.clearMetrics();
       await authDatabaseOptimizerService.batchUserLookup(testClient, usernames);
       const [batchStats] = databasePerformanceService.getQueryStatistics(
-        'auth:batch_user_lookup'
+        'auth:batch_user_lookup',
       );
 
       expect(individualStats?.count).toBe(usernames.length);
@@ -289,7 +288,7 @@ describe('AuthDatabaseOptimizerService', () => {
       const result =
         await authDatabaseOptimizerService.optimizedSessionDataQuery(
           testClient,
-          'auth-test-1'
+          'auth-test-1',
         );
 
       expect(result).toBeDefined();
@@ -304,7 +303,7 @@ describe('AuthDatabaseOptimizerService', () => {
       const result =
         await authDatabaseOptimizerService.optimizedSessionDataQuery(
           testClient,
-          'non-existent-id'
+          'non-existent-id',
         );
 
       expect(result).toBeNull();
@@ -314,7 +313,7 @@ describe('AuthDatabaseOptimizerService', () => {
       const result =
         await authDatabaseOptimizerService.optimizedSessionDataQuery(
           testClient,
-          'auth-test-1'
+          'auth-test-1',
         );
 
       expect(result?.recentTrades.length).toBeGreaterThan(1);
@@ -324,7 +323,7 @@ describe('AuthDatabaseOptimizerService', () => {
         const currentDate = new Date(trades[i - 1].buy_date);
         const nextDate = new Date(trades[i].buy_date);
         expect(currentDate.getTime()).toBeGreaterThanOrEqual(
-          nextDate.getTime()
+          nextDate.getTime(),
         );
       }
     });
@@ -335,7 +334,7 @@ describe('AuthDatabaseOptimizerService', () => {
       const accountIds = ['auth-test-1', 'auth-test-2', 'non-existent-id'];
       const result = await authDatabaseOptimizerService.batchAuthValidation(
         testClient,
-        accountIds
+        accountIds,
       );
 
       expect(result.length).toBeGreaterThanOrEqual(2); // Should find at least 2 accounts
@@ -351,7 +350,7 @@ describe('AuthDatabaseOptimizerService', () => {
     it('should correctly identify active status', async () => {
       const result = await authDatabaseOptimizerService.batchAuthValidation(
         testClient,
-        ['auth-test-1']
+        ['auth-test-1'],
       );
 
       expect(result).toHaveLength(1);
@@ -363,7 +362,7 @@ describe('AuthDatabaseOptimizerService', () => {
     it('should return accurate account statistics', async () => {
       const stats = await authDatabaseOptimizerService.getAccountSessionStats(
         testClient,
-        'auth-test-1'
+        'auth-test-1',
       );
 
       expect(stats.totalTrades).toBe(2);
@@ -375,7 +374,7 @@ describe('AuthDatabaseOptimizerService', () => {
     it('should handle account with no trades', async () => {
       const stats = await authDatabaseOptimizerService.getAccountSessionStats(
         testClient,
-        'auth-test-3'
+        'auth-test-3',
       );
 
       expect(stats.totalTrades).toBe(0);
@@ -388,7 +387,7 @@ describe('AuthDatabaseOptimizerService', () => {
     it('should return true for existing account', async () => {
       const exists = await authDatabaseOptimizerService.accountExists(
         testClient,
-        'auth-user-1'
+        'auth-user-1',
       );
 
       expect(exists).toBe(true);
@@ -397,7 +396,7 @@ describe('AuthDatabaseOptimizerService', () => {
     it('should return false for non-existent account', async () => {
       const exists = await authDatabaseOptimizerService.accountExists(
         testClient,
-        'non-existent-user'
+        'non-existent-user',
       );
 
       expect(exists).toBe(false);
@@ -407,7 +406,7 @@ describe('AuthDatabaseOptimizerService', () => {
       const startTime = performance.now();
       await authDatabaseOptimizerService.accountExists(
         testClient,
-        'auth-user-1'
+        'auth-user-1',
       );
       const duration = performance.now() - startTime;
 
@@ -420,15 +419,15 @@ describe('AuthDatabaseOptimizerService', () => {
     it('should track authentication query statistics', async () => {
       await authDatabaseOptimizerService.optimizedUserLookup(
         testClient,
-        'auth-user-1'
+        'auth-user-1',
       );
       await authDatabaseOptimizerService.optimizedSessionDataQuery(
         testClient,
-        'auth-test-1'
+        'auth-test-1',
       );
       await authDatabaseOptimizerService.accountExists(
         testClient,
-        'auth-user-2'
+        'auth-user-2',
       );
 
       const authStats = authDatabaseOptimizerService.getAuthQueryStats();
@@ -438,14 +437,14 @@ describe('AuthDatabaseOptimizerService', () => {
         return stat.queryName;
       });
       expect(statNames).toEqual(
-        expect.arrayContaining([expect.stringContaining('auth:')])
+        expect.arrayContaining([expect.stringContaining('auth:')]),
       );
     });
 
     it('should clear metrics properly', async () => {
       await authDatabaseOptimizerService.optimizedUserLookup(
         testClient,
-        'auth-user-1'
+        'auth-user-1',
       );
 
       // Clear metrics
@@ -468,8 +467,8 @@ describe('AuthDatabaseOptimizerService', () => {
       await expect(
         authDatabaseOptimizerService.optimizedUserLookup(
           failingClient,
-          'test-user'
-        )
+          'test-user',
+        ),
       ).rejects.toThrow();
 
       await failingClient.$disconnect();
@@ -478,7 +477,7 @@ describe('AuthDatabaseOptimizerService', () => {
     it('should handle invalid input parameters', async () => {
       const emptyResult = await authDatabaseOptimizerService.batchUserLookup(
         testClient,
-        []
+        [],
       );
       expect(emptyResult).toHaveLength(0);
 

@@ -1,6 +1,5 @@
 import fastify, { FastifyInstance } from 'fastify';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-
 import registerYearsRoutes from './index';
 
 // Hoisted mocks

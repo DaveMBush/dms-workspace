@@ -1,5 +1,4 @@
 import { FastifyInstance } from 'fastify';
-
 import { prisma } from '../../prisma/prisma-client';
 import { createAccountQuery } from '../common/query-utils.function';
 import { aggregateAccountData } from './aggregate-account-data.function';
@@ -72,7 +71,7 @@ function createSummarySchema(): SummarySchema {
 async function getAccountsThisMonth(
   sellDateStart: Date,
   sellDateEnd: Date,
-  accountId?: string
+  accountId?: string,
 ): Promise<AccountWithTradesAndDeposits[]> {
   if (accountId !== undefined) {
     const account = await prisma.accounts.findUnique({
@@ -85,13 +84,13 @@ async function getAccountsThisMonth(
     return [account];
   }
   return prisma.accounts.findMany(
-    createAccountQuery(sellDateStart, sellDateEnd)
+    createAccountQuery(sellDateStart, sellDateEnd),
   );
 }
 
 async function getAccountsPriorMonths(
   sellDateStart: Date,
-  accountId?: string
+  accountId?: string,
 ): Promise<AccountWithTradesAndDeposits[]> {
   const where = accountId !== undefined ? { id: accountId } : undefined;
   return prisma.accounts.findMany({
@@ -118,7 +117,7 @@ async function getAccountsPriorMonths(
 async function calculateSummaryData(
   accountId: string | undefined,
   sellDateStart: Date,
-  sellDateEnd: Date
+  sellDateEnd: Date,
 ): Promise<{
   deposits: number;
   dividends: number;
@@ -129,7 +128,7 @@ async function calculateSummaryData(
   const thisMonth = await getAccountsThisMonth(
     sellDateStart,
     sellDateEnd,
-    accountId
+    accountId,
   );
   const priorMonths = await getAccountsPriorMonths(sellDateStart, accountId);
 
@@ -158,13 +157,13 @@ function handleSummaryRoute(fastify: FastifyInstance): void {
       const { year, monthNum } = parseMonthString(month);
       const { start: sellDateStart, end: sellDateEnd } = calculateDateRange(
         year,
-        monthNum
+        monthNum,
       );
 
       const summaryData = await calculateSummaryData(
         account_id,
         sellDateStart,
-        sellDateEnd
+        sellDateEnd,
       );
 
       const result = await getRiskGroupData(year, monthNum, account_id);
@@ -186,7 +185,7 @@ function handleSummaryRoute(fastify: FastifyInstance): void {
         tax_free_income:
           taxFreeIncomeValue !== undefined ? taxFreeIncomeValue : 0,
       });
-    }
+    },
   );
 }
 

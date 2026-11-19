@@ -18,7 +18,7 @@ type PrismaFindManyFn = (args: {
 export async function fetchStandardPage(
   modelName: 'divDeposits' | 'trades',
   where: unknown,
-  orderBy: unknown
+  orderBy: unknown,
 ): Promise<PartialArrayDefinition> {
   const model = prisma[modelName] as unknown as {
     count: PrismaCountFn;

@@ -1,5 +1,4 @@
 import { describe, expect, test } from 'vitest';
-
 import { FidelityCsvRow } from './fidelity-csv-row.interface';
 import { isSplitToRow } from './is-split-to-row.function';
 
@@ -21,8 +20,8 @@ describe('isSplitToRow', function () {
   test('returns true for web-format TO row (description contains R/S TO)', function () {
     expect(
       isSplitToRow(
-        makeRow('REVERSE SPLIT R/S TO 88636X732#REOR M0051704770000')
-      )
+        makeRow('REVERSE SPLIT R/S TO 88636X732#REOR M0051704770000'),
+      ),
     ).toBe(true);
   });
 
@@ -32,9 +31,9 @@ describe('isSplitToRow', function () {
       isSplitToRow(
         makeRow(
           'MSTY UNIT',
-          'REVERSE SPLIT R/S TO 88636X732#REOR M0051704770000'
-        )
-      )
+          'REVERSE SPLIT R/S TO 88636X732#REOR M0051704770000',
+        ),
+      ),
     ).toBe(true);
   });
 
@@ -43,9 +42,9 @@ describe('isSplitToRow', function () {
       isSplitToRow(
         makeRow(
           'ULTY ETF',
-          'REVERSE SPLIT R/S TO 88636X708#REOR M0051702900000'
-        )
-      )
+          'REVERSE SPLIT R/S TO 88636X708#REOR M0051702900000',
+        ),
+      ),
     ).toBe(true);
   });
 
@@ -54,9 +53,9 @@ describe('isSplitToRow', function () {
       isSplitToRow(
         makeRow(
           'OXLC COMMON STOCK',
-          'REVERSE SPLIT R/S TO 691543847#REOR M0051680750000'
-        )
-      )
+          'REVERSE SPLIT R/S TO 691543847#REOR M0051680750000',
+        ),
+      ),
     ).toBe(true);
   });
 
@@ -66,17 +65,17 @@ describe('isSplitToRow', function () {
       isSplitToRow(
         makeRow(
           'MSTY UNIT',
-          'REVERSE SPLIT R/S FROM 88634T493#REOR M0051704770001'
-        )
-      )
+          'REVERSE SPLIT R/S FROM 88634T493#REOR M0051704770001',
+        ),
+      ),
     ).toBe(false);
   });
 
   test('returns false for web-format FROM row (description contains R/S FROM)', function () {
     expect(
       isSplitToRow(
-        makeRow('REVERSE SPLIT R/S FROM 691543102#REOR M005168075001')
-      )
+        makeRow('REVERSE SPLIT R/S FROM 691543102#REOR M005168075001'),
+      ),
     ).toBe(false);
   });
 
@@ -94,7 +93,7 @@ describe('isSplitToRow', function () {
       isSplitToRow({
         description: undefined,
         action: undefined,
-      } as unknown as FidelityCsvRow)
+      } as unknown as FidelityCsvRow),
     ).toBe(false);
   });
 });
