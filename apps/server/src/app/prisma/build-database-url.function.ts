@@ -1,6 +1,6 @@
+import * as path from 'path';
 import type { ConnectionPoolConfig } from './create-connection-pool-config.function';
 
-import * as path from 'path';
 
 export function buildDatabaseUrl(
   provider: string,

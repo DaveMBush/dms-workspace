@@ -1,6 +1,6 @@
 import { prisma } from '../../prisma/prisma-client';
 import { PartialArrayDefinition } from '../top/partial-array-definition.interface';
-import { ACCOUNT_PAGE_SIZE } from './account-page-size.const';
+import { ACCOUNT_PAGE_SIZE } from './account-page-size.function';
 
 type PrismaCountFn = (args: { where: unknown }) => Promise<number>;
 type PrismaFindManyFn = (args: {

@@ -1,6 +1,6 @@
 import fastify, { FastifyInstance } from 'fastify';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { ACCOUNT_PAGE_SIZE } from './account-page-size.const';
+import { ACCOUNT_PAGE_SIZE } from './account-page-size.function';
 import registerAccountRoutes from './index';
 
 // Hoisted mocks

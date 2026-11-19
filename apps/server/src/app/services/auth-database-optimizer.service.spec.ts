@@ -1,6 +1,6 @@
-import { PrismaClient } from '@prisma/client';
-import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 import { rmSync } from 'fs';
+import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
+import { PrismaClient } from '@prisma/client';
 
 import { authDatabaseOptimizerService } from './auth-database-optimizer.service';
 import { databasePerformanceService } from './database-performance.service';

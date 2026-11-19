@@ -9,8 +9,8 @@ import { calculatePriorDivDeposits } from './calculate-prior-div-deposits.functi
 import { createRiskGroupMap } from './create-risk-group-map.function';
 import { getRiskGroupData } from './get-risk-group-data.function';
 import { parseMonthString } from './parse-month-string.function';
-import { Summary } from './summary.interface';
 import { SummaryRequest } from './summary-request.interface';
+import { Summary } from './summary.interface';
 
 interface DivDeposit {
   universeId: string | null;

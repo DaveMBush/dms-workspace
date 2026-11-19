@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest';
 
-import { isSplitToRow } from './is-split-to-row.function';
 import { FidelityCsvRow } from './fidelity-csv-row.interface';
+import { isSplitToRow } from './is-split-to-row.function';
 
 function makeRow(description: string, action = 'YOU BOUGHT'): FidelityCsvRow {
   return {

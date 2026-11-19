@@ -1,8 +1,8 @@
 import { prisma } from '../../prisma/prisma-client';
 import { TableState } from '../common/table-state.interface';
 import { PartialArrayDefinition } from '../top/partial-array-definition.interface';
+import { ACCOUNT_PAGE_SIZE } from './account-page-size.function';
 import { Account } from './account.interface';
-import { ACCOUNT_PAGE_SIZE } from './account-page-size.const';
 import { buildDivDepositOrderBy } from './build-div-deposit-order-by.function';
 import { buildDivDepositWhere } from './build-div-deposit-where.function';
 import { buildTradeOrderBy } from './build-trade-order-by.function';

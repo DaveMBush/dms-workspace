@@ -872,6 +872,21 @@ const eslintConfig = async () => {
         'no-console': 'off',
       },
     },
+    {
+      // Story 24.2 (AC #1): enforce alphabetical import ordering in the server
+      // app. Flat-config `files` globs are CWD-relative, so this block only
+      // fires when eslint runs from the repo root — which is exactly how the
+      // canary naming-and-import-order.spec.ts lints the fixture. The twin
+      // block in apps/server/eslint.config.mjs (glob `src/**/*.ts`) covers
+      // `nx lint server`, whose cwd is apps/server. Keep both in sync.
+      files: ['apps/server/src/**/*.ts'],
+      rules: {
+        'import/order': [
+          'error',
+          { alphabetize: { order: 'asc' } },
+        ],
+      },
+    },
   ];
 };
 

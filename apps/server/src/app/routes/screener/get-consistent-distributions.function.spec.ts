@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
-import type { ProcessedRow } from '../../common/distribution-api.function';
 import { logger } from '../../../utils/structured-logger';
+import type { ProcessedRow } from '../../common/distribution-api.function';
 import { getConsistentDistributions } from './get-consistent-distributions.function';
 
 // Hoisted mocks

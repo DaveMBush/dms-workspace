@@ -11,6 +11,30 @@ export default [
     ],
   },
   {
+    // Story 24.2 (AC #1): enforce alphabetical import ordering in the server
+    // app. Lives here rather than in the root config because `nx lint server`
+    // runs eslint with cwd=apps/server, where a root-relative glob like
+    // `apps/server/**/*.ts` would match nothing and silently disable the rule.
+    // The plugin is registered by baseConfig; only the rule is added here.
+    // `import-order-fixture.ts` is deliberately mis-ordered for Story 24.1 AC #2
+    // and must stay that way — it is the canary naming-and-import-order.spec.ts
+    // lints to prove this rule fires.
+    files: ['src/**/*.ts'],
+    rules: {
+      'import/order': [
+        'error',
+        { alphabetize: { order: 'asc' } },
+      ],
+    },
+  },
+  {
+    // The canary fixture must stay mis-ordered (see above); exempt it from
+    // this rule so `nx lint server` stays green while the root-config canary
+    // still proves the rule fires.
+    files: ['src/app/routes/import-order-fixture.ts'],
+    rules: { 'import/order': 'off' },
+  },
+  {
     files: ['**/*.ts'],
     rules: {
       'import/no-default-export': 'off',
