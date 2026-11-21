@@ -175,9 +175,26 @@ function killProcess(proc: ChildProcess): Promise<void> {
       resolve();
       return;
     }
+    // On POSIX we spawn detached so the whole tree shares one process group.
+    // The Linux app runs under an xvfb-run wrapper, making the real Electron
+    // binary a grandchild: killing only the direct child leaves DMS alive and
+    // still writing to userDataDir, which makes fs.rmSync throw ENOTEMPTY in
+    // afterEach. Signal the entire group instead so no descendant survives.
+    const isPosix = process.platform !== 'win32';
+    function signalGroup(sig: NodeJS.Signals): void {
+      if (isPosix && proc.pid !== undefined) {
+        try {
+          process.kill(-proc.pid, sig);
+          return;
+        } catch {
+          // Group already gone — fall through to the direct child.
+        }
+      }
+      proc.kill(sig);
+    }
     const timer = setTimeout(function forceKill(): void {
       if (proc.exitCode === null) {
-        proc.kill('SIGKILL');
+        signalGroup('SIGKILL');
       }
       resolve();
     }, 5000);
@@ -185,7 +202,7 @@ function killProcess(proc: ChildProcess): Promise<void> {
       clearTimeout(timer);
       resolve();
     });
-    proc.kill('SIGTERM');
+    signalGroup('SIGTERM');
   });
 }
 
@@ -428,6 +445,8 @@ describe('Packaged Electron launch — Linux AppImage', () => {
     delete spawnEnv['DMS_NODE_EXEC_PATH'];
     delete spawnEnv['npm_node_execpath'];
     delete spawnEnv['NODE_ENV'];
+    // detached gives the whole tree (xvfb-run → DMS → server) its own process
+    // group on POSIX so killProcess can signal it wholesale; a no-op on Windows.
     child = spawn(cmd, args, {
       env: {
         ...spawnEnv,
@@ -435,6 +454,7 @@ describe('Packaged Electron launch — Linux AppImage', () => {
         HOME: tempHome,
       },
       stdio: 'pipe',
+      detached: process.platform !== 'win32',
     });
 
     child.stdout?.on('data', function onStdout(chunk: Buffer): void {
@@ -665,6 +685,7 @@ describe('Packaged Electron launch — macOS DMG', () => {
             HOME: tempHome,
           },
           stdio: 'pipe',
+          detached: process.platform !== 'win32',
         },
       );
 
