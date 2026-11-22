@@ -46,7 +46,7 @@
     "@fastify/static": "^10.1.4",
     "@prisma/adapter-better-sqlite3": "^7.2.0",
     "@prisma/client": "^7.9.1",
-    "better-sqlite3": "^12.6.0",
+    "better-sqlite3": "^13.0.3",
     "@smarttools/smart-core": "4.0.3",
     "@smarttools/smart-signals": "4.0.3",
     "axios": "^1.19.0",
@@ -157,6 +157,11 @@
     "vite": "8.1.6",
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "5.0.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "better-sqlite3": "^13.0.3"
+    }
   },
   "packageManager": "pnpm@11.17.0",
   "engines": {

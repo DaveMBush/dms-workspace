@@ -10,19 +10,20 @@ type CorsCallback = (error: Error | null, allow: boolean) => void;
 
 type CorsOriginHandler = (
   origin: string | undefined,
-  callback: CorsCallback
+  callback: CorsCallback,
 ) => void;
 
 function createNoOriginHandler(
   isProduction: boolean,
   isDevelopment: boolean,
   isLocalDevelopment: boolean,
-  nodeEnv: string
 ) {
   return function handleNoOrigin(callback: CorsCallback): void {
     if (isProduction) {
-      logSecurityViolation('cors_no_origin_production', nodeEnv);
-      callback(new Error('Origin required in production'), false);
+      // No Origin header means same-origin or non-browser traffic (e.g. the
+      // desktop app's own local client). Proceed without CORS headers instead
+      // of rejecting — there is no cross-origin browser to validate.
+      callback(null, false);
     } else if (isDevelopment || isLocalDevelopment) {
       callback(null, true);
     }
@@ -32,11 +33,11 @@ function createNoOriginHandler(
 function createOriginValidator(
   allowedOrigins: string[],
   isDevelopment: boolean,
-  isLocalDevelopment: boolean
+  isLocalDevelopment: boolean,
 ) {
   return function handleValidOrigin(
     origin: string,
-    callback: CorsCallback
+    callback: CorsCallback,
   ): boolean {
     if (!isValidOrigin(origin)) {
       callback(new Error('Invalid origin'), false);
@@ -60,11 +61,11 @@ function createOriginValidator(
 function createOriginRejector(
   allowedOrigins: string[],
   nodeEnv: string,
-  logger: Logger
+  logger: Logger,
 ) {
   return function rejectUnauthorizedOrigin(
     origin: string | undefined,
-    callback: CorsCallback
+    callback: CorsCallback,
   ): void {
     logger.warn(
       {
@@ -72,7 +73,7 @@ function createOriginRejector(
         allowedOrigins,
         environment: nodeEnv,
       },
-      'CORS origin not allowed'
+      'CORS origin not allowed',
     );
 
     logSecurityViolation('cors_unauthorized_origin', nodeEnv, {
@@ -90,7 +91,7 @@ function createOriginRejector(
 export function createCorsOriginHandler(
   allowedOrigins: string[],
   nodeEnv: string,
-  logger: Logger
+  logger: Logger,
 ): CorsOriginHandler {
   const isProduction = nodeEnv === 'production';
   const isDevelopment = nodeEnv === 'development';
@@ -101,22 +102,21 @@ export function createCorsOriginHandler(
     isProduction,
     isDevelopment,
     isLocalDevelopment,
-    nodeEnv
   );
   const handleValidOrigin = createOriginValidator(
     allowedOrigins,
     isDevelopment,
-    isLocalDevelopment
+    isLocalDevelopment,
   );
   const rejectUnauthorizedOrigin = createOriginRejector(
     allowedOrigins,
     nodeEnv,
-    logger
+    logger,
   );
 
   return function corsOriginHandler(
     origin: string | undefined,
-    callback: CorsCallback
+    callback: CorsCallback,
   ): void {
     if (origin === undefined) {
       handleNoOrigin(callback);

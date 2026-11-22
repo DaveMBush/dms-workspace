@@ -36,12 +36,9 @@ extraResources:
     to: prisma-migration-engine
     filter:
       - 'schema-engine-*'
-  # The server bundle keeps better-sqlite3's native binding external because
-  # Node addons cannot be embedded in the JavaScript bundle.
-  - from: '../../node_modules/better-sqlite3/build/Release/better_sqlite3.node'
-    to: apps/server/build/Release/better_sqlite3.node
-  - from: '../../node_modules/better-sqlite3/build/Release/better_sqlite3.node'
-    to: apps/server/node_modules/.pnpm/better-sqlite3@12.11.1/node_modules/better-sqlite3/build/Release/better_sqlite3.node
+  # better-sqlite3 v13 ships N-API prebuilds inside its npm package (prebuilds/<platform>-<arch>.node),
+  # which load under Electron's ABI without any rebuild. They reach the packaged app via the server
+  # node_modules copy in scripts/after-pack.js, so no compiled-binding extraResources are needed here.
 
 linux:
   # Without this, electron-builder falls back to the scoped package name

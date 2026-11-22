@@ -50,7 +50,7 @@
         }
       ],
       "options": {
-        "command": "pnpm --dir ../../dist/apps/server install --prod --offline --ignore-workspace; node scripts/prepare-server-runtime.js && node scripts/build-electron-binding.js && ../../node_modules/.bin/electron-builder --config electron-builder.yml --linux",
+        "command": "node scripts/patch-server-package.js && pnpm --dir ../../dist/apps/server install --prod --offline --ignore-workspace; node scripts/repoint-better-sqlite3.js && node scripts/prepare-server-runtime.js && ../../node_modules/.bin/electron-builder --config electron-builder.yml --linux",
         "cwd": "apps/electron"
       }
     },

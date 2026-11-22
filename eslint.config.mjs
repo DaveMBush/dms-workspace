@@ -35,6 +35,10 @@ const eslintConfig = async () => {
         '.nx/cache/**',
         '.nx/workspace-data/**',
         'tmp/**',
+        // Build tooling (CommonJS, no tsconfig); apps/electron/eslint.config.mjs
+        // ignores scripts/** too — keep root/IDE runs consistent with nx lint.
+        'apps/electron/scripts/**',
+        'tools/create-test-db.js',
       ],
     },
     {
