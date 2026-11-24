@@ -1,6 +1,7 @@
 import * as crypto from 'node:crypto';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { extractSessionIdFromRequest } from '../../middleware/tracing-helpers';
+import { getCookieValue } from '../utils/get-cookie-value.function';
 import { csrfTokenStore } from './csrf-token-store.constant';
 import { TOKEN_EXPIRY } from './token-expiry.constant';
 
@@ -63,7 +64,8 @@ function extractTokens(request: FastifyRequest): {
 } {
   return {
     tokenFromHeader: request.headers['x-csrf-token'] as string | undefined,
-    tokenFromCookie: request.cookies['csrf-token'],
+    // request.cookies is null at onRequest — parse the raw header instead.
+    tokenFromCookie: getCookieValue(request, 'csrf-token'),
   };
 }
 

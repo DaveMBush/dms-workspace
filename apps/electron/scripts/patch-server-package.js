@@ -1,17 +1,24 @@
 const fs = require('fs');
 const path = require('path');
 
-// The staged server (dist/apps/server) is installed with `--ignore-workspace`, so it does NOT
-// inherit the workspace root's pnpm.overrides. Without an override here, @prisma/adapter-
-// better-sqlite3 re-resolves its transitive `better-sqlite3: ^12.6.0` to a 12.x copy — which has
-// no N-API prebuilds and fails at runtime under Electron ("Could not locate the bindings file").
-// This injects the same override into the generated package.json before that isolated install runs,
-// so every better-sqlite3 (direct + transitive) dedupes to a single 13.x copy with prebuilds.
-
-const BETTER_SQLITE3_OVERRIDE = '^13.0.3';
+// Prepares the staged server (dist/apps/server) for its isolated `pnpm install --prod --offline
+// --ignore-workspace`. Two problems this solves:
+//
+// 1. Offline re-resolution drift — with no lockfile, pnpm resolves each transitive dep to the
+//    newest version in cached metadata, which can be newer than what the root workspace actually
+//    installed (e.g. @aws-sdk/core 3.981.x vs locked 3.978.x). Those tarballs are not in the local
+//    store → ERR_PNPM_NO_OFFLINE_TARBALL. Seeding the staged dir with a copy of the root lockfile
+//    pins every transitive dep to the exact versions that ARE in the store, while pnpm still
+//    resolves the staged package.json's own direct deps fresh (so version bumps there keep working).
+//
+// 2. Stale "pnpm" field — older revisions of this script wrote overrides into package.json's
+//    "pnpm" key. Since pnpm v10 that field is ignored (the install log warns about it), so remove
+//    any leftover to keep the generated manifest clean.
 
 const serverDir = path.resolve(__dirname, '../../../dist/apps/server');
 const pkgPath = path.join(serverDir, 'package.json');
+const rootLockfilePath = path.resolve(__dirname, '../../../pnpm-lock.yaml');
+const stagedLockfilePath = path.join(serverDir, 'pnpm-lock.yaml');
 
 if (!fs.existsSync(pkgPath)) {
   console.error(
@@ -20,23 +27,26 @@ if (!fs.existsSync(pkgPath)) {
   process.exit(1);
 }
 
-const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
-pkg.pnpm = pkg.pnpm || {};
-pkg.pnpm.overrides = pkg.pnpm.overrides || {};
-pkg.pnpm.overrides['better-sqlite3'] = BETTER_SQLITE3_OVERRIDE;
-
-fs.writeFileSync(pkgPath, `${JSON.stringify(pkg, null, 2)}\n`);
-console.log(
-  `[patch-server-package] forced better-sqlite3 -> ${BETTER_SQLITE3_OVERRIDE} in ${pkgPath}`,
-);
-
-// The isolated install honors any existing staged lockfile. A stale one can still map the adapter's
-// transitive dep to a 12.x copy, defeating the override (and --offline would then keep it). Remove it
-// so pnpm re-resolves from cache with the override applied. It is a build artifact regenerated each run.
-const lockPath = path.join(serverDir, 'pnpm-lock.yaml');
-if (fs.existsSync(lockPath)) {
-  fs.rmSync(lockPath);
+if (fs.existsSync(rootLockfilePath)) {
+  fs.copyFileSync(rootLockfilePath, stagedLockfilePath);
   console.log(
-    `[patch-server-package] removed stale staged lockfile: ${lockPath}`,
+    `[patch-server-package] seeded staged lockfile from root (${rootLockfilePath})`,
+  );
+} else {
+  // Without the seed, offline install re-resolves to newest cached versions and may fail.
+  if (fs.existsSync(stagedLockfilePath)) {
+    fs.rmSync(stagedLockfilePath);
+  }
+  console.warn(
+    `[patch-server-package] WARNING: no root pnpm-lock.yaml at ${rootLockfilePath}; staged install will re-resolve from scratch`,
+  );
+}
+
+const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+if (pkg.pnpm) {
+  delete pkg.pnpm;
+  fs.writeFileSync(pkgPath, `${JSON.stringify(pkg, null, 2)}\n`);
+  console.log(
+    `[patch-server-package] removed stale "pnpm" field from ${pkgPath}`,
   );
 }

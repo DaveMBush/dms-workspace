@@ -1,4 +1,5 @@
 import { ChildProcess, fork } from 'child_process';
+import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { app, BrowserWindow, dialog, ipcMain, session, shell } from 'electron';
@@ -45,6 +46,20 @@ function resolveServerPaths(): ServerPaths {
     serverCwd: workspaceRoot,
     staticDir: path.join(workspaceRoot, 'dist/apps/dms-material/browser'),
   };
+}
+
+// Reads the build-time-baked server config (scripts/bake-server-env.js writes it next to
+// server/main.js). Returns {} when absent so dev runs and older packages behave as before.
+function loadBakedServerEnv(serverPath: string): Record<string, string> {
+  const bakedPath = path.join(path.dirname(serverPath), 'server-runtime.env.json');
+  try {
+    return JSON.parse(fs.readFileSync(bakedPath, 'utf8')) as Record<
+      string,
+      string
+    >;
+  } catch {
+    return {};
+  }
 }
 
 function attachServerProcessListeners(
@@ -109,9 +124,23 @@ function startServer(port: number): Promise<void> {
       childEnv['NODE_ENV'] = 'production';
     }
 
+    // The desktop frontend is hardwired to mock auth (environment.electron.ts),
+    // which mints an unsigned token. Tell the packaged server to accept that mock
+    // token instead of enforcing real Cognito JWKS validation. Cloud/production
+    // builds never run this code path, so they keep full Cognito auth.
+    childEnv['DMS_DESKTOP_AUTH'] = 'mock';
+
     const { serverPath, serverCwd, staticDir } = resolveServerPaths();
     childEnv['PORT'] = String(port);
     childEnv['STATIC_DIR'] = staticDir;
+
+    // Fill in build-time-baked config (e.g. Cognito pool/client/issuer) only where the
+    // runtime env didn't already provide it, so a real environment still wins over the bake.
+    for (const [key, value] of Object.entries(loadBakedServerEnv(serverPath))) {
+      if (childEnv[key] === undefined) {
+        childEnv[key] = value;
+      }
+    }
 
     serverProcess = fork(serverPath, [], {
       cwd: serverCwd,
@@ -204,6 +233,10 @@ function createWindow(port: number): void {
     }
     return { action: 'deny' };
   });
+
+  if (process.argv.includes('--devtools')) {
+    win.webContents.openDevTools();
+  }
 
   void win.loadURL(`http://localhost:${port}`);
 }
