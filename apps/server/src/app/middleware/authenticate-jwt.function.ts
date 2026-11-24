@@ -1,13 +1,16 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
 
 import { validateCognitoConfig } from '../config/cognito-validation.function';
+import { isDesktopMockAuth } from '../config/is-desktop-mock-auth.function';
 import { isTokenBlacklisted } from '../routes/auth/is-token-blacklisted.function';
 import { auditLogService } from '../services/audit-log-service.instance';
 import { JWTUser } from '../types/jwt-user.interface';
 import { applyRateLimitingWithValidation } from '../utils/apply-rate-limiting.function';
 import { extractTokenFromHeader } from '../utils/extract-token-from-header.function';
 import { getAuthCookieName } from '../utils/get-auth-cookie-name.function';
+import { getCookieValue } from '../utils/get-cookie-value.function';
 import { validateJwtToken } from '../utils/validate-jwt-token.function';
+import { validateMockToken } from '../utils/validate-mock-token.function';
 import { AuthenticatedRequest } from './authenticated-request.interface';
 import { handleAuthenticationError } from './handle-authentication-error.function';
 import { logAuthenticationSuccess } from './log-authentication-success.function';
@@ -21,7 +24,12 @@ export async function authenticateJWT(
   const clientIP = request.ip || 'unknown';
 
   try {
-    validateCognitoConfig();
+    // Desktop builds ship without a Cognito deployment and use the frontend's
+    // mock auth; in that mode we skip real Cognito config/JWKS validation.
+    const desktopMockAuth = isDesktopMockAuth();
+    if (!desktopMockAuth) {
+      validateCognitoConfig();
+    }
 
     const isRateLimited = await applyRateLimitingWithValidation(request, reply);
     if (isRateLimited) {
@@ -29,7 +37,9 @@ export async function authenticateJWT(
     }
 
     const token = extractAndValidateToken(request);
-    const user = await validateJwtToken(token);
+    const user = desktopMockAuth
+      ? validateMockToken(token)
+      : await validateJwtToken(token);
 
     processSuccessfulAuthentication(request, {
       user,
@@ -46,11 +56,13 @@ export async function authenticateJWT(
 }
 
 function extractAndValidateToken(request: FastifyRequest): string {
-  let token = extractTokenFromHeader(request.headers.authorization);
+  let token: string | undefined = extractTokenFromHeader(
+    request.headers.authorization
+  );
 
   const cookieName = getAuthCookieName();
-  if (!token && typeof request.cookies[cookieName] === 'string') {
-    token = request.cookies[cookieName];
+  if (!token) {
+    token = getCookieValue(request, cookieName);
   }
 
   if (!token) {
@@ -109,7 +121,7 @@ async function handleFailedAuthentication(
     {
       duration: Date.now() - startTime,
       hasAuthHeader: typeof request.headers.authorization === 'string',
-      hasSecureCookie: typeof request.cookies[cookieName] === 'string',
+      hasSecureCookie: getCookieValue(request, cookieName) !== undefined,
       userAgent: request.headers['user-agent'],
     }
   );

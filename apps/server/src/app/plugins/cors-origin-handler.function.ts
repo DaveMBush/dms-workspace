@@ -1,3 +1,4 @@
+import { isDesktopMockAuth } from '../config/is-desktop-mock-auth.function';
 import { isLocalhostPattern } from './is-localhost-pattern.function';
 import { isValidOrigin } from './is-valid-origin.function';
 import { logSecurityViolation } from './log-security-violation.function';
@@ -32,8 +33,7 @@ function createNoOriginHandler(
 
 function createOriginValidator(
   allowedOrigins: string[],
-  isDevelopment: boolean,
-  isLocalDevelopment: boolean,
+  allowsLocalhost: boolean,
 ) {
   return function handleValidOrigin(
     origin: string,
@@ -49,7 +49,7 @@ function createOriginValidator(
       return true;
     }
 
-    if ((isDevelopment || isLocalDevelopment) && isLocalhostPattern(origin)) {
+    if (allowsLocalhost && isLocalhostPattern(origin)) {
       callback(null, true);
       return true;
     }
@@ -98,6 +98,11 @@ export function createCorsOriginHandler(
   const isLocalDevelopment =
     nodeEnv === 'local' && !(process.env.USE_LOCAL_SERVICES ?? '');
 
+  // The desktop build serves the frontend same-origin from localhost, but
+  // Chromium still sends an Origin header on POSTs; allow it there too.
+  const allowsLocalhost =
+    isDevelopment || isLocalDevelopment || isDesktopMockAuth();
+
   const handleNoOrigin = createNoOriginHandler(
     isProduction,
     isDevelopment,
@@ -105,8 +110,7 @@ export function createCorsOriginHandler(
   );
   const handleValidOrigin = createOriginValidator(
     allowedOrigins,
-    isDevelopment,
-    isLocalDevelopment,
+    allowsLocalhost,
   );
   const rejectUnauthorizedOrigin = createOriginRejector(
     allowedOrigins,
