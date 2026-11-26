@@ -68,3 +68,6 @@ apps/server/coverage
 .nx/migrate-runs
 .agents
 skills-lock.json
+
+# Stray npm lockfile in a pnpm workspace (Epic 22 / Story 22.2) — must not drift back
+apps/electron/package-lock.json
