@@ -96,6 +96,7 @@
         </ng-container>
       }
 
+      <div class="dms-header-container">
       <!-- Filter Columns -->
       @if (filterRowTemplate) {
         @for (column of columns(); track column.field) {
@@ -127,7 +128,7 @@
         *matHeaderRowDef="displayedColumns(); sticky: true"
         class="dms-column-header-row"
       ></mat-header-row>
-
+      </div>
       <!-- Body Rows -->
       <mat-row
         *matRowDef="let row; columns: displayedColumns()"
