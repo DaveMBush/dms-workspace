@@ -1141,3 +1141,81 @@ So that server file naming is consistent and import-order drift is prevented by 
 **Then** the server file naming matches the spine convention, lint enforces import order across the touched code, behavior is unchanged, and the previously-skipped assertions pass
 
 ---
+
+## Epic 25: Restore column spreading so dms-base-table columns fill the row width while honoring configured widths
+
+After this Epic, `.dms-header-cell` and `.dms-body-cell` in `dms-base-table` use a flex shorthand with grow enabled (`flex: 1 1 auto`) so columns spread to fill the full row width of the mat-table again — the pre-regression behavior — while each column's configured `ColumnDef.width` still renders as its starting size (flex-basis) and shrink stays enabled for narrow viewports. The regression was introduced by Story 10.3, which set `flex: 0 1 auto` to make the inline `[style.width.px]` binding take effect against Material MDC's default `mat-cell, mat-header-cell { flex: 1 }`; that fixed "configured widths ignored" but disabled grow, so cells now take exactly their configured width and never expand. (The Epic request suspected Epic 20; Epic 20 was theming-only — `--dms-*` tokens into Tailwind `theme.extend` plus dead-class removal — and never touched table layout.)
+
+**ADs covered:** AD-8 (UI component conventions)
+**FRs covered:** FR-1, FR-4, FR-8–FR-12 (all dms-base-table consumers: universe, screener, open/sold positions, div-deposits)
+
+### Story 25.1: Red-phase unit tests for column spread (flex-grow) in dms-base-table
+
+As a developer,
+I want red-phase unit tests asserting that `.dms-header-cell` and `.dms-body-cell` in `dms-base-table` declare a flex shorthand with grow enabled (`flex: 1 1 auto`) so columns spread to fill the row width while configured widths still render as their basis,
+So that Story 25.2 has a defined, executable contract to make pass and the regression where columns stopped spreading is locked in.
+
+**Acceptance Criteria:**
+
+**Given** `apps/dms-material/src/app/shared/components/base-table/base-table.component.scss` currently declares `flex: 0 1 auto;` on both `.dms-header-cell` (line ~83) and `.dms-body-cell` (line ~148), which disables flex-grow so each cell takes only its configured width and the row no longer fills
+**When** new unit tests are written that extract the top-level `.dms-header-cell { ... }` and `.dms-body-cell { ... }` rule bodies from the SCSS source and assert each declares a flex shorthand with grow = 1 and basis `auto` (i.e. matches `/flex:\s*1\s+1\s+auto/`)
+**Then** every newly written test is marked `.skip()` in code (`it.skip`) so the dms-material Vitest suite runs green BEFORE Story 25.2 exists — red-phase by skip, not by failure
+
+### Story 25.2: Enable flex-grow on header and body cells so columns spread to fill row width
+
+As a developer,
+I want `.dms-header-cell` and `.dms-body-cell` in `dms-base-table` to use `flex: 1 1 auto` so columns spread to fill the full row width while configured widths still render as their basis,
+So that tables no longer leave unused space on wide viewports (the regression introduced by Story 10.3's `flex: 0 1 auto`) and configured column widths are preserved.
+
+**Acceptance Criteria:**
+
+**Given** Story 25.1's red-phase tests exist at `apps/dms-material/src/app/shared/components/base-table/base-table-column-spread.spec.ts` (skipped) and `base-table.component.scss` currently declares `flex: 0 1 auto;` on both `.dms-header-cell` (line ~83) and `.dms-body-cell` (line ~148)
+**When** the skip markers are removed from Story 25.1's tests, they are confirmed red against the current SCSS, then `flex: 0 1 auto;` is changed to `flex: 1 1 auto;` on both `.dms-header-cell` and `.dms-body-cell`
+**Then** the previously-skipped tests pass, configured column widths still render as each cell's flex-basis (Story 10.3 behavior preserved), spare row width is distributed across columns so they fill the row again, shrink stays enabled for narrow viewports, and header/body cells keep identical rules so header/body width parity holds
+
+### Story 25.3: E2E regression test that dms-base-table columns spread to fill the row width
+
+As a developer,
+I want an e2e regression test asserting that on a wide viewport (1920px) the Universe table's columns spread to fill the available row width — each column renders wider than its configured minimum rather than leaving unused space after the last column —
+So that the "columns stopped spreading" regression is locked in at the browser level and any future change that re-disables flex-grow (or otherwise stops cells from expanding) fails CI.
+
+**Acceptance Criteria:**
+
+**Given** Story 25.2 has landed (`flex: 1 1 auto` on both cell classes), so at a 1920px viewport the Universe table's configured column widths (~1530px + select column) leave spare row width that flex-grow distributes across columns
+**When** an e2e test navigates to `/global/universe`, filters to a known seeded row, and measures each rendered header cell's `getBoundingClientRect().width` against the column's configured minimum (read from the Universe table's `ColumnDef[]`)
+**Then** every column with a configured width renders strictly wider than that configured minimum (spare space was distributed), proving columns spread to fill the row; the test runs on Chromium + Firefox with no `.skip`/`.only`, and existing invariants stay green — header/body parity within 1px (`base-table-two-region-regression.spec.ts`), ex-date ≥ 200px floor (`universe-ex-date-column-width.spec.ts`), and scroll/no-overflow behavior (`base-table-layout-regression.spec.ts`)
+
+---
+
+## Epic 26: Consolidate code-review.md guidance and the epics-2026-11-13 review standards into review-story.md
+
+After this Epic, `.github/instructions/review-story.md` — the Darkfactory story-review gate — carries the quality standards from `.github/instructions/code-review.md` (severity taxonomy, clean-code/error-handling/security/testing/architecture/documentation checklists with examples) and the spirit of the extensive `epics-2026-11-13.md` code review (nine aspects: architectural alignment to spine ADs, domain modeling consistency, error-handling uniformity, data integrity, security posture, test coverage depth, dependency hygiene, documentation freshness, refactor opportunities), so every story review judges findings against the same standards established by that review instead of relying on ad-hoc judgment. The integration keeps `review-story.md` self-contained and headless: the standards become a reference section its three review layers apply as their rubric (Layer 2 stays pure path tracing; Layers 1 and 3 judge quality), and code-review.md's Critical/Important/Minor severities map onto the existing triage buckets so severity calibrates patch vs defer.
+
+**ADs covered:** — (process/tooling; no spine AD)
+**FRs covered:** — (review-driven; no new FR)
+
+### Story 26.1: Red-phase tests for review-story.md standards integration
+
+As a developer,
+I want red-phase unit tests asserting that `.github/instructions/review-story.md` contains the integrated review-standards content — a reference to `code-review.md`, the severity taxonomy (Critical/Important), and condensed checklists covering security, testing, architecture, documentation, and the epics-2026-11-13 quality aspects —
+So that Story 26.2 has a defined, executable contract to make pass and the consolidation is locked in against future drift.
+
+**Acceptance Criteria:**
+
+**Given** `.github/instructions/review-story.md` currently contains no reference to `code-review.md`, no severity taxonomy, and none of the condensed quality checklists (verified: zero matches for "code-review", "Critical", or aspect headings)
+**When** new unit tests are written that read `review-story.md` from disk and assert it references `code-review.md`, defines a severity scale with Critical/Important levels, contains a standards section covering security, testing, architecture, and documentation checklists, and names the epics-2026-11-13 review aspects (architectural alignment, domain modeling, error handling, data integrity, security posture, test coverage, dependency hygiene, documentation freshness)
+**Then** every newly written test is marked `.skip()` in code (`it.skip`) so the server Vitest suite runs green BEFORE Story 26.2 exists — red-phase by skip, not by failure
+
+### Story 26.2: Integrate code-review.md standards and epics-2026-11-13 review aspects into review-story.md
+
+As a developer,
+I want `.github/instructions/review-story.md` to carry a self-contained "Review Standards" section that condenses `code-review.md`'s severity taxonomy and quality checklists (clean code, error handling, security, testing, architecture, documentation) plus the nine epics-2026-11-13 review aspects as a quality baseline, with an explicit mapping from severities to triage buckets,
+So that every Darkfactory story review judges findings against the standards established by the 2026-11-13 code review and `code-review.md`, while remaining headless (no questions, no menus) and read-only with respect to implementation code.
+
+**Acceptance Criteria:**
+
+**Given** Story 26.1's red-phase tests exist (skipped) and `review-story.md` currently has no standards section
+**When** the skip markers are removed and confirmed red, then a "Review Standards" section is added to `review-story.md` containing: (a) code-review.md's severity taxonomy (Critical/Important/Minor with definitions), (b) condensed checklists for clean code, error handling, security, testing, architecture/design, and documentation — each with at least one ❌/✅ example pair carried over from code-review.md, (c) the nine epics-2026-11-13 aspects as a quality baseline (architectural alignment to spine ADs, domain modeling consistency, error-handling uniformity, data integrity, security posture, test coverage depth, dependency hygiene, documentation freshness, refactor opportunities), and (d) an explicit mapping: Critical/Important findings → `patch` or `spec` triage buckets; Minor → `defer`; with a note that Layer 2 (Edge Case Hunter) remains pure path tracing and does not apply quality judgment
+**Then** the previously-skipped tests pass, `review-story.md` remains self-contained and headless (its Hard Rules — no questions, read-only implementation code, single append-only review log — are unchanged), and the three-layer workflow references the standards section as the rubric for Layers 1 and 3
+
+---
