@@ -1,15 +1,12 @@
-/* eslint-disable vitest/no-disabled-tests -- Story 25.1 red-phase contract tests; unskipped by Story 25.2 */
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 
-// TDD RED Phase: Story 25.1 - column spread (flex-grow) in dms-base-table.
-// These tests define the contract that Story 25.2 must satisfy when it changes
-// `.dms-header-cell` and `.dms-body-cell` from `flex: 0 1 auto` to
+// Active contract assertions (Story 25.1, unskipped by Story 25.2): the
+// top-level `.dms-header-cell` and `.dms-body-cell` rules must declare
 // `flex: 1 1 auto` so columns spread over the full row width while configured
-// widths still render as their flex-basis. They are intentionally red against
-// the current SCSS; each test is marked it.skip so CI stays green until Story
-// 25.2 unskips, confirms red, then implements. No production code changes in
-// this story.
+// widths still render as their flex-basis. Red against the current SCSS, which
+// still says `flex: 0 1 auto`; Story 25.2 turns them green by changing those
+// two declarations only.
 
 // The component's declared styles. This test environment does not inject
 // component SCSS into the DOM (computed styles resolve empty on a rendered
@@ -89,7 +86,7 @@ describe('BaseTableComponent - column spread (flex-grow)', () => {
   // with grow = 1 and basis `auto` so columns spread to fill the row width while
   // configured widths render as their flex-basis. Red against the current SCSS,
   // which still says `flex: 0 1 auto`.
-  it.skip('should declare flex: 1 1 auto on .dms-header-cell', () => {
+  it('should declare flex: 1 1 auto on .dms-header-cell', () => {
     const body = headerCellRuleBody();
     expect(/flex:\s*1\s+1\s+auto/.test(body)).toBe(true);
   });
@@ -98,7 +95,7 @@ describe('BaseTableComponent - column spread (flex-grow)', () => {
   // with grow = 1 and basis `auto` so columns spread to fill the row width while
   // configured widths render as their flex-basis. Red against the current SCSS,
   // which still says `flex: 0 1 auto`.
-  it.skip('should declare flex: 1 1 auto on .dms-body-cell', () => {
+  it('should declare flex: 1 1 auto on .dms-body-cell', () => {
     const body = bodyCellRuleBody();
     expect(/flex:\s*1\s+1\s+auto/.test(body)).toBe(true);
   });
